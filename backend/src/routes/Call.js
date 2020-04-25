@@ -33,6 +33,8 @@ function CallRoutes() {
       .number(targetNumber);
     res.send(response.toString());
   })
+
+  return router;
 }
 
 module.exports = CallRoutes;

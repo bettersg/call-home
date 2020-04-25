@@ -42,7 +42,7 @@ function userToUserResponse(user) {
 }
 
 function UserRoutes(userService) {
-  const router = express.Router()
+  const router = express.Router();
 
   router.get('/:userId', async (req, res) => {
     const user = await userService.getUser(req.params.userId);
