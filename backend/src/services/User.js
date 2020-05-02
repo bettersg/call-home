@@ -1,27 +1,71 @@
-function UserService(UserModel) {
+const { sanitizeDbErrors } = require('./lib');
+
+async function injectCallees(userOrUsers) {
+  if (!userOrUsers) {
+    return userOrUsers;
+  }
+  const isSingular = !Array.isArray(userOrUsers);
+  const users = isSingular ? [userOrUsers] : userOrUsers;
+  const callees = await Promise.all(users.map((user) => user.getCallees()));
+  const injectedUsers = users.map((user, idx) => {
+    user.callees = callees[idx];
+    return user;
+  });
+  return isSingular ? injectedUsers[0] : injectedUsers;
+}
+
+function UserService(UserModel, CalleeModel) {
   async function listUsers() {
-    return UserModel.findAll();
+    return injectCallees(
+      await UserModel.findAll({
+        order: ['email'],
+      })
+    );
   }
 
   async function createUser(user) {
-    return UserModel.create(user);
+    const { callees, ...plainUser } = user;
+    plainUser.email = plainUser.email.toLowerCase();
+
+    const createdUser = await sanitizeDbErrors(() => UserModel.create(user));
+    createdUser.setCallees(callees);
+    await createdUser.save();
+    await createdUser.reload();
+    return createdUser;
   }
 
-  async function getUser(userId) {
-    return UserModel.findOne({
-      where: {
-        id: userId,
-      },
-    });
+  async function getUser(userEmail) {
+    return injectCallees(
+      await UserModel.findOne({
+        where: {
+          email: userEmail,
+        },
+      })
+    );
   }
 
-  async function updateUser(userId, user) {
-    await UserModel.update(user, {
+  async function updateUser(userEmailUpper, user) {
+    const userEmail = userEmailUpper.toLowerCase();
+    const { callees, ...plainUser } = user;
+    plainUser.email = plainUser.email.toLowerCase();
+
+    console.log('useruser', user);
+    await UserModel.update(plainUser, {
       where: {
-        id: userId,
+        email: userEmail,
       },
     });
-    return getUser(userId);
+    const updatedUser = await getUser(userEmail);
+    await updatedUser.setCallees(callees.map((callee) => callee.id));
+    await updatedUser.save();
+    await updatedUser.reload();
+    return injectCallees(updatedUser);
+  }
+
+  async function deleteUser(userEmailUpper) {
+    const userEmail = userEmailUpper.toLowerCase();
+    const user = await getUser(userEmail);
+    await user.destroy();
   }
 
   return {
@@ -29,7 +73,8 @@ function UserService(UserModel) {
     createUser,
     getUser,
     updateUser,
+    deleteUser,
   };
-};
+}
 
 module.exports = UserService;

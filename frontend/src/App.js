@@ -1,62 +1,73 @@
 import React, { useState, useEffect } from 'react';
-import UserLanguages from './components/UserLanguages';
-import Phone from './components/Phone';
-import { updateUser, getUser } from './services/Users';
-import getToken from './services/TwilioAuth';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Typography from '@material-ui/core/Typography';
+import AppBar from '@material-ui/core/AppBar';
+import Grid from '@material-ui/core/Grid';
+import Toolbar from '@material-ui/core/Toolbar';
+import Container from '@material-ui/core/Container';
+
+import UserInfo from './components/UserInfo';
+import AdminDashboard from './components/AdminDashboard';
+import CallerDashboard from './components/CallerDashboard';
+import { getSelf, UserTypes } from './services/Users';
+import * as Sentry from '@sentry/browser';
 import './App.css';
 
-// TODO figure out login
-const USER_ID = 1;
-// TODO fetch this instead
-const ALL_LANGUAGES = ['english', 'malay', 'mandarin', 'tamil'];
+// TODO this should probably be injected via env
+Sentry.init({dsn: "https://1a5285e10558497d9484dfa1f09ecdab@o384207.ingest.sentry.io/5215064"});
+console.log('sentry initted')
+
+function Dashboard({ userInfo, dashboardChoice }) {
+  if (!userInfo) {
+    return null;
+  }
+  if (
+    userInfo.role === UserTypes.ADMIN &&
+    dashboardChoice === UserTypes.ADMIN
+  ) {
+    return <AdminDashboard userInfo={userInfo} />;
+  }
+  return <CallerDashboard userInfo={userInfo} />;
+}
 
 function App() {
-  const [userLanguages, setUserLanguages] = useState(new Set());
-  const [twilioToken, setTwilioToken] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
+  const [dashboardChoice, setDashboardChoice] = useState(null);
+
   useEffect(() => {
     (async () => {
-      const user = await getUser(USER_ID);
-      setUserLanguages(new Set(user.languages));
+      const myInfo = await getSelf();
+      setUserInfo(myInfo);
+      setDashboardChoice(myInfo.role);
     })();
   }, []);
-  useEffect(() => {
-    (async () => {
-      const newToken = await getToken();
-      setTwilioToken(newToken);
-    })();
-  }, []);
-
-  const addUserLanguage = (userLanguage) => {
-    const newUserLanguages = new Set(userLanguages);
-    newUserLanguages.add(userLanguage);
-    setUserLanguages(newUserLanguages);
-  };
-  const removeUserLanguage = (userLanguage) => {
-    const newUserLanguages = new Set(userLanguages);
-    newUserLanguages.delete(userLanguage);
-    setUserLanguages(newUserLanguages);
-  };
-
-  const handleSubmit = async () => {
-    const newUser = await updateUser(USER_ID, userLanguages);
-    setUserLanguages(new Set(newUser.languages));
-  };
 
   return (
     <>
-      <h1>Ring a senior</h1>
-      <div id="userLanguagesDiv">
-        <h2>Which of these do you speak?</h2>
-      </div>
-      <div id="callsDiv" />
-      <UserLanguages
-        allLanguages={ALL_LANGUAGES}
-        removeUserLanguage={removeUserLanguage}
-        userLanguages={userLanguages}
-        addUserLanguage={addUserLanguage}
-        handleSubmit={handleSubmit}
-      />
-      {twilioToken ? <Phone token={twilioToken} /> : null}
+      <CssBaseline />
+      <AppBar>
+        <Toolbar>
+          <Typography component="h1" variant="h6">
+            Care Corner-Ring a Senior
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Toolbar />
+      <Container className="main-container">
+        <Grid justify="center" container spacing={2}>
+          <UserInfo
+            userInfo={userInfo}
+            toggleDashboardChoice={() => {
+              if (dashboardChoice === UserTypes.ADMIN) {
+                setDashboardChoice(UserTypes.CALLER);
+              } else {
+                setDashboardChoice(UserTypes.ADMIN);
+              }
+            }}
+          />
+          <Dashboard userInfo={userInfo} dashboardChoice={dashboardChoice} />
+        </Grid>
+      </Container>
     </>
   );
 }

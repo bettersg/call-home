@@ -1,9 +1,9 @@
 const { DataTypes, Model } = require('sequelize');
 
 const UserTypes = {
+  ADMIN: 'ADMIN',
   CALLER: 'CALLER',
-  CALLEE: 'CALLEE',
-}
+};
 
 function UserModel(sequelize) {
   class User extends Model {}
@@ -13,19 +13,26 @@ function UserModel(sequelize) {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      phoneNumber: {
+      email: {
         type: DataTypes.STRING,
-      },
-      // TODO yo this is lazy af for sql
-      languages: {
-        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        validate: {
+          isEmail: {
+            msg: 'Email field must have email format',
+          },
+        },
       },
       userType: {
         type: DataTypes.STRING,
+        allowNull: false,
         validate: {
-          isIn: Object.values(UserTypes),
+          isIn: {
+            args: [Object.values(UserTypes)],
+            msg: 'Invalid user type specified. Must be ADMIN or CALLER',
+          },
         },
-      }
+      },
     },
     {
       sequelize,
@@ -33,6 +40,9 @@ function UserModel(sequelize) {
     }
   );
   return User;
-};
+}
 
-module.exports = UserModel;
+module.exports = {
+  model: UserModel,
+  UserTypes,
+};

@@ -1,52 +1,82 @@
 import React, { useState, useEffect } from 'react';
 import * as Twilio from 'twilio-client';
-// import _ from 'lodash';
+import getToken from '../services/Calls';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import {red} from '@material-ui/core/colors';
+import CallEndIcon from '@material-ui/icons/CallEnd';
 
-function Phone({ token }) {
+
+function Phone({ call, calleeName, disconnectCall }) {
+  const [twilioToken, setTwilioToken] = useState(null);
   const [device, setDevice] = useState(null);
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    if (!token) {
+    (async () => {
+      const newToken = await getToken();
+      setTwilioToken(newToken);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!twilioToken) {
       return;
     }
-    console.log(token);
     const newDevice = new Twilio.Device();
-    newDevice.setup(token);
+    console.log('setting up device');
+    newDevice.setup(twilioToken);
+
+    newDevice.on('error', (e) => {
+      console.error('EROOORR', e);
+    });
+
     newDevice.on('ready', () => {
+      console.log('set up device');
       setDevice(newDevice);
     });
-  }, [token]);
 
-  const dialNumber = () => {
-    // connect makes the device talk back to the twilio app. your app then figures out what to do via TwiML and tells your frontend.
-    device.connect({
-      targetNumber: phoneNumber,
+    newDevice.on('connect', () => {
+      setIsConnected(true);
     });
-  };
+
+    newDevice.on('disconnect', () => {
+      disconnectCall();
+      setIsConnected(false);
+    });
+  }, [twilioToken]);
+
+  useEffect(() => {
+    if (!device) {
+      return;
+    }
+    if (!call) {
+      device.disconnectAll();
+      return;
+    }
+    device.connect(call);
+  }, [device, call]);
 
   if (!device) {
     return <div>Not Connected</div>;
   }
-  return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        dialNumber();
-      }}
-    >
-      <label htmlFor="phone-number-input">
-        Who you gonna call
-        <input
-          type="text"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-          id="phone-number-input"
-        />
-      </label>
-      <input type="submit" value="Call!" />
-    </form>
-  );
+
+  if (!call) {
+    return <div>You are not in a call</div>;
+  }
+
+  if (!isConnected) {
+    return <div>Trying to call to {calleeName}</div>;
+  }
+
+  return <>
+    <Typography variant="subtitle2">Connected to {calleeName}!!</Typography>
+    <Button
+      onClick={() => device.disconnectAll()}
+      variant="contained" style={{ color: 'white', background: red[500]}}>
+      <CallEndIcon/>
+    </Button>
+  </>;
 }
 
 export default Phone;

@@ -1,6 +1,7 @@
 const passport = require('passport');
 const Auth0Strategy = require('passport-auth0');
 
+// TODO probably get rid of Auth0
 // Configure passport after configuring sessions
 module.exports = function PassportConfig(app) {
   const {
@@ -8,7 +9,7 @@ module.exports = function PassportConfig(app) {
     AUTH0_DOMAIN,
     AUTH0_CLIENT_ID,
     AUTH0_CLIENT_SECRET,
-  } = process.env
+  } = process.env;
 
   const strategy = new Auth0Strategy(
     {
@@ -21,7 +22,6 @@ module.exports = function PassportConfig(app) {
       // accessToken is the token to call Auth0 API (not needed in the most cases)
       // extraParams.id_token has the JSON Web Token
       // profile has all the information from the user
-      console.log('Passport', profile)
       return done(null, profile);
     }
   );
@@ -37,4 +37,4 @@ module.exports = function PassportConfig(app) {
 
   app.use(passport.initialize());
   app.use(passport.session());
-}
+};

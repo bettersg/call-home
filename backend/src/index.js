@@ -1,11 +1,15 @@
 const express = require('express');
+require('express-async-errors');
 const proxy = require('express-http-proxy');
 require('dotenv').config();
 const morgan = require('morgan');
 const {
   User: userRoutes,
+  Callee: calleeRoutes,
+  Twilio: twilioRoutes,
   Call: callRoutes,
   OAuth: oauthRoutes,
+  middlewares: { secureRoutes },
 } = require('./routes');
 const {
   Passport: PassportConfig,
@@ -15,7 +19,8 @@ const {
 const app = express();
 
 // Env vars
-const { PORT = 3000, STATIC_DIR = 'static' } = process.env;
+const { PORT = 4000, STATIC_DIR = 'static', NODE_ENV } = process.env;
+const isProd = NODE_ENV !== 'development';
 
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
@@ -23,27 +28,31 @@ app.use(express.urlencoded({ extended: false }));
 
 // Configure sessions with passport. SessionConfig must be applied first
 SessionConfig(app);
-PassportConfig(app)
+PassportConfig(app);
 
-// This gets populated in a docker build
-app.use(express.static(STATIC_DIR));
-app.use('/users', userRoutes);
-app.use('/twilio', callRoutes);
+// Make sure oauth is first and NOT secured
 app.use('/oauth', oauthRoutes);
+// Also ensure that twilio is NOT secured by oauth, just twilio auth
+app.use('/twilio', twilioRoutes);
+app.use('/users', secureRoutes, userRoutes);
+app.use('/callees', secureRoutes, calleeRoutes);
+app.use('/calls', secureRoutes, callRoutes);
+// STATIC_DIR gets populated in a docker build
+// expose manifest.json
+app.use('/manifest.json', express.static(STATIC_DIR));
+app.use(secureRoutes, express.static(STATIC_DIR));
 
-// TODO proxy requests to development frontend
-app.use('/', (req, res, next) => {
-  next();
-}, proxy('http://localhost:3000'));
+if (!isProd) {
+  // proxy requests to development frontend
+  app.use('/', secureRoutes, proxy('http://localhost:3000'));
+  // This is just for setting things up
+  require('../setupDemo')().catch(console.error);
+}
 
 try {
   app.listen(PORT, () => {
     console.log(`Example app listening on port ${PORT}!`);
   });
-
-  // TODO this is just for setting things up
-  require('../setupDemo')()
-    .catch(console.error);
 } catch (err) {
   console.error(err);
   throw err;

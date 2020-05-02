@@ -4,4 +4,4 @@ const Session = require('./session');
 module.exports = {
   Passport,
   Session,
-}
+};
