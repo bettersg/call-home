@@ -53,7 +53,8 @@ function UserRoutes(userService) {
     const user = req.body;
     try {
       const savedUser = await userService.createUser(user);
-      return res.status(200).json(userToUserResponse(savedUser));
+      console.log('created user', user)
+      return res.status(200).json(userToUserResponse(savedUser, true));
     } catch (e) {
       // TODO do this smarter
       if (e.message.startsWith('Validation Error:')) {

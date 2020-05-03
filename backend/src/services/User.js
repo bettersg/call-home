@@ -28,10 +28,10 @@ function UserService(UserModel, CalleeModel) {
     plainUser.email = plainUser.email.toLowerCase();
 
     const createdUser = await sanitizeDbErrors(() => UserModel.create(user));
-    createdUser.setCallees(callees);
+    await createdUser.setCallees(callees);
     await createdUser.save();
     await createdUser.reload();
-    return createdUser;
+    return injectCallees(createdUser);
   }
 
   async function getUser(userEmail) {

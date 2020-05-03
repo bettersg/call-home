@@ -31,6 +31,19 @@ function parseUserRequestBody(req, res, next) {
   return next();
 }
 
+function calleeToCalleeResponse(callee, isAdmin) {
+  const { id, name, phoneNumber } = callee;
+
+  const response = {
+    id,
+    name,
+  };
+  if (isAdmin) {
+    response.phoneNumber = phoneNumber;
+  }
+  return response;
+}
+
 function userToUserResponse(user, isAdmin) {
   const { id, name, email, userType, callees } = user;
 
@@ -75,19 +88,6 @@ function parseCalleeRequestBody(req, res, next) {
   };
 
   return next();
-}
-
-function calleeToCalleeResponse(callee, isAdmin) {
-  const { id, name, phoneNumber } = callee;
-
-  const response = {
-    id,
-    name,
-  };
-  if (isAdmin) {
-    response.phoneNumber = phoneNumber;
-  }
-  return response;
 }
 
 module.exports = {
