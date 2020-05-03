@@ -1,9 +1,8 @@
-import axios from 'axios';
+import apiClient from './apiClient';
 
 // TODO make this configurable
 const callEndpoint = '/calls';
 
 export default async function getToken() {
-  const response = await axios.get(`${callEndpoint}/token`);
-  return response.data;
+  return apiClient.get(`${callEndpoint}/token`);
 }

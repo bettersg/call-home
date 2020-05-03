@@ -3,6 +3,8 @@ const { User: UserService } = require('../services');
 const { UserTypes } = require('../models');
 
 const { getUser } = UserService;
+// TODO don't hardcode this
+const LOGIN_ROUTE = '/oauth/login';
 
 async function findUserRole(userProfile) {
   const emails = userProfile.emails.map(({ value }) => value);
@@ -34,7 +36,7 @@ async function requireAdmin(req, res, next) {
 }
 
 async function secureRoutes(req, res, next) {
-  console.log('securing route', req.user);
+  console.log('Securing route. User: ', req.user);
   console.log('Sessions', req.session);
   if (req.user) {
     console.log('Found user: ', req.user);
@@ -50,10 +52,26 @@ async function secureRoutes(req, res, next) {
     req.user.role = userRole;
     return next();
   }
-  console.log('No user found, redirecting');
-  req.session.returnTo = req.originalUrl;
-  // TODO don't hardcode this
-  return res.redirect('/oauth/login');
+  console.log('No user found');
+
+  // We return a different result based on the Accept header of the request.
+  // We redirect html requests to the login route
+  // However, if the request is an xhr, a redirection does not work because the browser hides the intermediate HTTP redirects. Instead, we return a 403 and hint the caller to go to another location
+  return res.format({
+    json: () => {
+      console.log('Encountered api call, sending 401');
+      res.status(401).json({ location: LOGIN_ROUTE });
+    },
+    html: () => {
+      console.log('Encountered browser request, redirecting to ', LOGIN_ROUTE);
+      req.session.returnTo = req.originalUrl;
+      return res.redirect(LOGIN_ROUTE);
+    },
+    default: () => {
+      req.session.returnTo = req.originalUrl;
+      return res.redirect(LOGIN_ROUTE);
+    },
+  });
 }
 
 module.exports = {

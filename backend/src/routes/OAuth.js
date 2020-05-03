@@ -16,7 +16,8 @@ function OAuthRoutes() {
       connection: 'google-oauth2',
     }),
     (req, res) => {
-      res.redirect('/');
+      console.log('Received login');
+      return res.redirect('/');
     }
   );
 
