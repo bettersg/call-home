@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import * as Twilio from 'twilio-client';
-import getToken from '../services/Calls';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import {red} from '@material-ui/core/colors';
+import { red } from '@material-ui/core/colors';
 import CallEndIcon from '@material-ui/icons/CallEnd';
-
+import getToken from '../services/Calls';
 
 function Phone({ call, calleeName, disconnectCall }) {
   const [twilioToken, setTwilioToken] = useState(null);
@@ -55,6 +54,7 @@ function Phone({ call, calleeName, disconnectCall }) {
       return;
     }
     device.connect(call);
+    // TODO add effect cleanup
   }, [device, call]);
 
   if (!device) {
@@ -69,14 +69,18 @@ function Phone({ call, calleeName, disconnectCall }) {
     return <div>Trying to call to {calleeName}</div>;
   }
 
-  return <>
-    <Typography variant="subtitle2">Connected to {calleeName}!!</Typography>
-    <Button
-      onClick={() => device.disconnectAll()}
-      variant="contained" style={{ color: 'white', background: red[500]}}>
-      <CallEndIcon/>
-    </Button>
-  </>;
+  return (
+    <>
+      <Typography variant="subtitle2">Connected to {calleeName}!!</Typography>
+      <Button
+        onClick={() => device.disconnectAll()}
+        variant="contained"
+        style={{ color: 'white', background: red[500] }}
+      >
+        <CallEndIcon />
+      </Button>
+    </>
+  );
 }
 
 export default Phone;

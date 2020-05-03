@@ -31,7 +31,7 @@ function handleApiError(wrappedFn) {
       Sentry.captureException(e);
       return undefined;
     }
-  }
+  };
 }
 
 export default Object.freeze({

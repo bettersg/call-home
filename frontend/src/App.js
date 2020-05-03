@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
 import AppBar from '@material-ui/core/AppBar';
@@ -6,41 +6,48 @@ import Grid from '@material-ui/core/Grid';
 import Toolbar from '@material-ui/core/Toolbar';
 import Container from '@material-ui/core/Container';
 
-import UserInfo from './components/UserInfo';
-import AdminDashboard from './components/AdminDashboard';
-import CallerDashboard from './components/CallerDashboard';
-import { getSelf, UserTypes } from './services/Users';
 import * as Sentry from '@sentry/browser';
+import { UserInfo, AdminDashboard, CallerDashboard } from './components';
+import {
+  UserServiceContext,
+  useUserService,
+  CalleeServiceContext,
+} from './contexts';
+// TODO this export is probably misplaced
+import { UserTypes } from './services/User';
+import { User as UserService, Callee as CalleeService } from './services';
 import './App.css';
 
 // TODO this should probably be injected via env
-Sentry.init({dsn: "https://1a5285e10558497d9484dfa1f09ecdab@o384207.ingest.sentry.io/5215064"});
-console.log('sentry initted')
+if (window.NODE_ENV === 'production') {
+  Sentry.init({
+    dsn:
+      'https://311e61bcb9f24ab7b601e085cce9eb6d@o386666.ingest.sentry.io/5221206',
+  });
+  console.log('sentry initted');
+}
 
-function Dashboard({ userInfo, dashboardChoice }) {
+function Dashboard({ dashboardChoice, userInfo }) {
   if (!userInfo) {
     return null;
   }
   if (
-    userInfo.role === UserTypes.ADMIN &&
-    dashboardChoice === UserTypes.ADMIN
+    userInfo.role === UserTypes.ADMIN && dashboardChoice === UserTypes.ADMIN
   ) {
-    return <AdminDashboard userInfo={userInfo} />;
+    return <AdminDashboard />;
   }
-  return <CallerDashboard userInfo={userInfo} />;
+  return <CallerDashboard />;
 }
 
 function App() {
-  const [userInfo, setUserInfo] = useState(null);
   const [dashboardChoice, setDashboardChoice] = useState(null);
-
+  const [userState] = useUserService();
+  const { me: userInfo } = userState;
   useEffect(() => {
-    (async () => {
-      const myInfo = await getSelf();
-      setUserInfo(myInfo);
-      setDashboardChoice(myInfo.role);
-    })();
-  }, []);
+    if (userInfo) {
+      setDashboardChoice(userInfo.role)
+    }
+  }, [userInfo])
 
   return (
     <>
@@ -56,7 +63,6 @@ function App() {
       <Container className="main-container">
         <Grid justify="center" container spacing={2}>
           <UserInfo
-            userInfo={userInfo}
             toggleDashboardChoice={() => {
               if (dashboardChoice === UserTypes.ADMIN) {
                 setDashboardChoice(UserTypes.CALLER);
@@ -72,4 +78,20 @@ function App() {
   );
 }
 
-export default App;
+function AppProvider() {
+  const userService = new UserService();
+  // TODO could probably consolidate this into one method
+  userService.refreshSelf();
+  userService.refreshAllUsers();
+  const calleeService = new CalleeService();
+  calleeService.refreshAllCallees();
+  return (
+    <CalleeServiceContext.Provider value={calleeService}>
+      <UserServiceContext.Provider value={userService}>
+        <App />
+      </UserServiceContext.Provider>
+    </CalleeServiceContext.Provider>
+  );
+}
+
+export default AppProvider;

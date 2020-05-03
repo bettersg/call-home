@@ -1,47 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import { UserTypes } from '../../services/Users';
+import { UserTypes } from '../../services/User';
 import UserList from './UserList';
 import CalleeList from './CalleeList';
-import './index.css';
-import { createCallee, deleteCallee, getAllCallees } from '../../services/Callees';
+import { useUserService } from '../../contexts';
 
-function AdminDashboard({ userInfo }) {
-  const [callees, setCallees] = useState([]);
-  useEffect(() => {
-    (async () => {
-      const newCallees = await getAllCallees();
-      setCallees(newCallees);
-    })();
-  }, []);
+function AdminDashboard() {
+  const [userState] = useUserService();
+  const { me: userInfo } = userState;
 
   if (!userInfo || !userInfo.role === UserTypes.ADMIN) {
     return null;
   }
 
-  const createCalleeAndUpdate = async (callee) => {
-    await createCallee(callee);
-    const newCallees = await getAllCallees();
-    setCallees(newCallees);
-  };
-
-  const deleteCalleeAndUpdate = async (callee) => {
-    await deleteCallee(callee);
-    const newCallees = await getAllCallees();
-    setCallees(newCallees);
-  };
-
   return (
     <>
       <Grid item xs={12} lg={6}>
         <Paper className="fixed-height-paper">
-          <UserList callees={callees} />
+          <UserList />
         </Paper>
       </Grid>
       <Grid item xs={12} lg={6}>
         <Paper className="fixed-height-paper">
-          <CalleeList callees={callees} deleteCallee={deleteCalleeAndUpdate} createCallee={createCalleeAndUpdate} />
+          <CalleeList />
         </Paper>
       </Grid>
     </>

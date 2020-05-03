@@ -1,48 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './index.css';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import UserCalleeForm from './UserCalleeForm';
-import {
-  createUser,
-  updateUser,
-  deleteUser,
-  getAllUsers,
-  UserTypes,
-} from '../../../services/Users';
 import IconButton from '@material-ui/core/IconButton';
 import ClearIcon from '@material-ui/icons/Clear';
+import UserCalleeForm from './UserCalleeForm';
+import { UserTypes } from '../../../services/User';
+import { useUserService } from '../../../contexts';
 
 function uppercaseToNormalCase(uppercased) {
   return uppercased[0] + uppercased.substr(1).toLocaleLowerCase();
 }
 
-function UserList({ callees }) {
-  const [allUsers, setAllUsers] = useState([]);
+function UserList() {
+  const [userState, userService] = useUserService();
+  const { users } = userState;
 
   const [newUserName, setNewUserName] = useState('');
   const [newUserEmail, setNewUserEmail] = useState('');
 
-  useEffect(() => {
-    (async () => {
-      const newAllUsers = await getAllUsers();
-      setAllUsers(newAllUsers);
-    })();
-  }, []);
-
-  const updateUserAndUpdateUsers = async (user) => {
-    await updateUser(user.email, user);
-    const newAllUsers = await getAllUsers();
-    setAllUsers(newAllUsers);
-  };
-  const deleteUserAndUpdateUsers = async (userEmail) => {
-    await deleteUser(userEmail);
-    const newAllUsers = await getAllUsers();
-    setAllUsers(newAllUsers);
-  };
   const updateNewUserName = (event) => setNewUserName(event.target.value);
   const updateNewUserEmail = (event) => setNewUserEmail(event.target.value);
 
@@ -50,16 +29,14 @@ function UserList({ callees }) {
     <>
       <Typography variant="h6">All Users</Typography>
       <form
-        onSubmit={async (e) => {
+        onSubmit={(e) => {
           e.preventDefault();
-          await createUser({
+          userService.createUser({
             name: newUserName,
             email: newUserEmail,
             userType: UserTypes.CALLER,
             callees: [],
           });
-          const newAllUsers = await getAllUsers();
-          setAllUsers(newAllUsers);
         }}
       >
         <TextField
@@ -89,12 +66,15 @@ function UserList({ callees }) {
           Submit
         </Button>
       </form>
-      {allUsers.map((user) => (
+      {users.map((user) => (
         <Card key={user.email} className="user-card">
           <CardContent>
             <Typography variant="subtitle2" color="textSecondary">
               Name
-              <IconButton aria-label="delete" onClick={() => deleteUserAndUpdateUsers(user.email)}>
+              <IconButton
+                aria-label="delete"
+                onClick={() => userService.deleteUser(user.email)}
+              >
                 <ClearIcon />
               </IconButton>
             </Typography>
@@ -109,11 +89,7 @@ function UserList({ callees }) {
             <Typography variant="body1">
               {uppercaseToNormalCase(user.userType)}
             </Typography>
-            <UserCalleeForm
-              user={user}
-              callees={callees}
-              updateUser={updateUserAndUpdateUsers}
-            />
+            <UserCalleeForm user={user} />
           </CardContent>
         </Card>
       ))}

@@ -4,9 +4,13 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import { UserTypes } from '../services/Users';
+import { UserTypes } from '../services/User';
+import { useUserService } from '../contexts';
 
-function UserInfo({ userInfo, toggleDashboardChoice }) {
+function UserInfo({ toggleDashboardChoice }) {
+  const [userState] = useUserService();
+  const { me: userInfo } = userState;
+
   if (!userInfo) {
     return <div>You are not logged in.</div>;
   }

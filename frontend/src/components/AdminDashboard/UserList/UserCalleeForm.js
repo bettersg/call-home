@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
+import { useUserService, useCalleeService } from '../../../contexts';
 
 function doesUserHaveCallee(user, callee) {
   return (
@@ -13,16 +14,21 @@ function doesUserHaveCallee(user, callee) {
 }
 
 // TODO improve this filtering
-function UserCalleeForm({ user, callees: allCallees, updateUser }) {
+function UserCalleeForm({ user }) {
+  const [, userService] = useUserService();
+
+  const [calleeState] = useCalleeService();
+  const { callees } = calleeState;
+
   const toggleUserCallee = (callee) => async () => {
     const userHasCallee = doesUserHaveCallee(user, callee);
     if (userHasCallee) {
-      return updateUser({
+      return userService.updateUser({
         ...user,
         callees: user.callees.filter((c) => c.id !== callee.id),
       });
     }
-    return updateUser({
+    return userService.updateUser({
       ...user,
       callees: [...user.callees, callee],
     });
@@ -35,7 +41,7 @@ function UserCalleeForm({ user, callees: allCallees, updateUser }) {
           Authorised callees:
         </Typography>
         <List dense disablePadding>
-          {allCallees.map((callee) => (
+          {callees.map((callee) => (
             <ListItem divider key={callee.id}>
               <Checkbox
                 checked={doesUserHaveCallee(user, callee)}
