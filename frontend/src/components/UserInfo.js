@@ -2,12 +2,10 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import { UserTypes } from '../services/User';
 import { useUserService } from '../contexts';
 
-function UserInfo({ toggleDashboardChoice }) {
+function UserInfo({ dashboardChoice }) {
   const [userState] = useUserService();
   const { me: userInfo } = userState;
 
@@ -15,24 +13,14 @@ function UserInfo({ toggleDashboardChoice }) {
     return <div>You are not logged in.</div>;
   }
 
-  const { displayName, role } = userInfo;
+  const { displayName } = userInfo;
+  const dashboardText =
+    dashboardChoice === UserTypes.ADMIN ? 'Admin Dashboard' : 'Call Dashboard';
 
   return (
     <Grid item xs={12} lg={12}>
-      <Card>
-        <CardContent>
-          <Typography variant="h6">Welcome! {displayName}</Typography>
-          {role === UserTypes.ADMIN ? (
-            <Button
-              onClick={toggleDashboardChoice}
-              color="primary"
-              variant="contained"
-            >
-              Toggle dashboard
-            </Button>
-          ) : null}
-        </CardContent>
-      </Card>
+      <Typography variant="subtitle1">Welcome, {displayName}</Typography>
+      <Typography variant="h4">{dashboardText}</Typography>
     </Grid>
   );
 }

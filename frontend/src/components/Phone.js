@@ -28,7 +28,9 @@ function Phone({ call, calleeName, disconnectCall }) {
       // TODO handle the errored state
       newDevice.setup(twilioToken);
     } catch (e) {
-      alert('We were unable to set up the phone connection. Make sure that the website starts with https. If the problem persists, contact an admin');
+      alert(
+        'We were unable to set up the phone connection. Make sure that the website starts with https. If the problem persists, contact an admin'
+      );
       setIsConnected(false);
     }
 

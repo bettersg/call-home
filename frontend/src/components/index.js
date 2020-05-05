@@ -1,3 +1,3 @@
 export { default as UserInfo } from './UserInfo';
-export { default as AdminDashboard } from './AdminDashboard';
-export { default as CallerDashboard } from './CallerDashboard';
+export { default as Dashboard } from './Dashboard';
+export { default as Layout } from './Layout';

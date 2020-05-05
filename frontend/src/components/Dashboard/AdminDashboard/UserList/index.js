@@ -8,8 +8,8 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import ClearIcon from '@material-ui/icons/Clear';
 import UserCalleeForm from './UserCalleeForm';
-import { UserTypes } from '../../../services/User';
-import { useUserService } from '../../../contexts';
+import { UserTypes } from '../../../../services/User';
+import { useUserService } from '../../../../contexts';
 
 function uppercaseToNormalCase(uppercased) {
   return uppercased[0] + uppercased.substr(1).toLocaleLowerCase();

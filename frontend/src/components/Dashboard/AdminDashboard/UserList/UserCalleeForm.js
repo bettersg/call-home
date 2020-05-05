@@ -5,7 +5,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-import { useUserService, useCalleeService } from '../../../contexts';
+import { useUserService, useCalleeService } from '../../../../contexts';
 
 function doesUserHaveCallee(user, callee) {
   return (
