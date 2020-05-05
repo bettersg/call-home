@@ -1,0 +1,15 @@
+.user-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-panel-buttons {
+  display: flex;
+  flex-basis: 100%;
+  justify-content: flex-end;
+  margin: 12px 0;
+}
+
+.user-list {
+  padding: 12px;
+}

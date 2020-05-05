@@ -1,7 +1,7 @@
-import React from 'react';
+import React, {useState} from 'react';
 import * as Sentry from '@sentry/browser';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { UserServiceContext, CalleeServiceContext } from './contexts';
+import { UserServiceProvider, CalleeServiceContext } from './contexts';
 // TODO this export is probably misplaced
 import { User as UserService, Callee as CalleeService } from './services';
 import { Layout } from './components';
@@ -16,19 +16,15 @@ if (window.NODE_ENV === 'production') {
 }
 
 function AppProvider() {
-  const userService = new UserService();
-  // TODO could probably consolidate this into one method
-  userService.refreshSelf();
-  userService.refreshAllUsers();
   const calleeService = new CalleeService();
   calleeService.refreshAllCallees();
   return (
+    <UserServiceProvider>
     <CalleeServiceContext.Provider value={calleeService}>
-      <UserServiceContext.Provider value={userService}>
         <CssBaseline />
         <Layout />
-      </UserServiceContext.Provider>
     </CalleeServiceContext.Provider>
+    </UserServiceProvider>
   );
 }
 
