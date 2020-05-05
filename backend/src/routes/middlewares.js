@@ -6,6 +6,16 @@ const { getUser } = UserService;
 // TODO don't hardcode this
 const LOGIN_ROUTE = '/oauth/login';
 
+async function httpsRedirect(req, res, next) {
+  // Detect the protocol of the user's request. Reading req.protocol does not work.
+  // https://devcenter.heroku.com/articles/http-routing#heroku-headers
+  if (req.headers['x-forwarded-proto'] !== 'https') {
+    console.log('Detected http, redirecting');
+    return res.redirect(`https://${req.host}${req.originalUrl}`);
+  }
+  return next();
+}
+
 async function findUserRole(userProfile) {
   const emails = userProfile.emails.map(({ value }) => value);
   // TODO this is ugly but it works
@@ -75,6 +85,7 @@ async function secureRoutes(req, res, next) {
 }
 
 module.exports = {
+  httpsRedirect,
   secureRoutes,
   requireAdmin,
 };

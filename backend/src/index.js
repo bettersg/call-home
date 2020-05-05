@@ -9,7 +9,7 @@ const {
   Twilio: twilioRoutes,
   Call: callRoutes,
   OAuth: oauthRoutes,
-  middlewares: { secureRoutes },
+  middlewares: { secureRoutes, httpsRedirect },
 } = require('./routes');
 const {
   Passport: PassportConfig,
@@ -30,6 +30,9 @@ app.use(express.urlencoded({ extended: false }));
 SessionConfig(app);
 PassportConfig(app);
 
+if (isProd) {
+  app.use(httpsRedirect);
+}
 // Make sure oauth is first and NOT secured
 app.use('/oauth', oauthRoutes);
 // Also ensure that twilio is NOT secured by oauth, just twilio auth
@@ -46,7 +49,7 @@ if (!isProd) {
   // proxy requests to development frontend
   app.use('/', secureRoutes, proxy('http://localhost:3000'));
   // This is just for setting things up
-  require('../setupDemo')().catch(console.error);
+  require('../setupDemo')().catch(console.error); // eslint-disable-line global-require
 }
 
 try {
