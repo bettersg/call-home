@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import * as Sentry from '@sentry/browser';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { UserServiceProvider, CalleeServiceContext } from './contexts';
@@ -20,10 +20,10 @@ function AppProvider() {
   calleeService.refreshAllCallees();
   return (
     <UserServiceProvider>
-    <CalleeServiceContext.Provider value={calleeService}>
+      <CalleeServiceContext.Provider value={calleeService}>
         <CssBaseline />
         <Layout />
-    </CalleeServiceContext.Provider>
+      </CalleeServiceContext.Provider>
     </UserServiceProvider>
   );
 }

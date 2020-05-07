@@ -1,27 +1,27 @@
 import React, { useState } from 'react';
 import AdminPanel from '../AdminPanel';
-import UserTable from './UserTable';
-import UserDrawer from './UserDrawer';
+import CalleeTable from './CalleeTable';
+import CalleeDrawer from './CalleeDrawer';
 
-function UserPanel() {
+function CalleePanel() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   // TODO using one drawer for everything may not be the best approach.
   const [drawerPage, setDrawerPage] = useState(0);
-  const [userToEdit, setUserToEdit] = useState(null);
-  const openAddUserDrawer = () => {
+  const [calleeToEdit, setCalleeToEdit] = useState(null);
+  const openAddCalleeDrawer = () => {
     setDrawerPage(0);
     setDrawerOpen(true);
   };
-  const openEditUserDrawer = (user) => {
-    setUserToEdit(user);
-    setDrawerPage(2);
+  const openEditCalleeDrawer = (callee) => {
+    setCalleeToEdit(callee);
+    setDrawerPage(1);
     setDrawerOpen(true);
   };
 
-  const table = <UserTable openEditUserDrawer={openEditUserDrawer} />;
+  const table = <CalleeTable openEditCalleeDrawer={openEditCalleeDrawer} />;
   const drawer = (
-    <UserDrawer
-      user={userToEdit}
+    <CalleeDrawer
+      callee={calleeToEdit}
       open={drawerOpen}
       drawerPage={drawerPage}
       setDrawerPage={setDrawerPage}
@@ -32,10 +32,10 @@ function UserPanel() {
     <AdminPanel
       table={table}
       drawer={drawer}
-      addText="Add Volunteer"
-      onAddClicked={openAddUserDrawer}
+      addText="Add Senior"
+      onAddClicked={openAddCalleeDrawer}
     />
   );
 }
 
-export default UserPanel;
+export default CalleePanel;

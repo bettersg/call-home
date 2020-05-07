@@ -21,6 +21,7 @@ function Drawer({ children, header, onCloseClick, ...rest }) {
     <MuiDrawer
       classes={{ paper: drawerClasses.paper }}
       anchor="right"
+      onClose={onCloseClick}
       {...rest}
     >
       <div className={drawerClasses.child}>

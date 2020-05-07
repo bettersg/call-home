@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import './index.css';
 import Button from '@material-ui/core/Button';
 import TableCell from '@material-ui/core/TableCell';
 import Typography from '@material-ui/core/Typography';
 import CreateIcon from '@material-ui/icons/Create';
-import { UserTypes } from '../../../../../services/User';
-import { useUserService } from '../../../../../contexts';
-import CheckboxTable from '../../../../shared/CheckboxTable';
+import { UserTypes } from '../../../../services/User';
+import { useUserService } from '../../../../contexts';
+import CheckboxTable from '../../../shared/CheckboxTable';
 
 const HEADER_LABELS = [
   "VOLUNTEER'S NAME",
@@ -25,11 +24,13 @@ function UserTable({ openEditUserDrawer }) {
     /* const callers = users.filter((user) => user.role === UserTypes.CALLER); */
     // TODO remove this
     const callers = users;
-    setRowItems(callers.map((caller) => ({
-      key: caller.email,
-      data: caller,
-    })));
-  }, [users])
+    setRowItems(
+      callers.map((caller) => ({
+        key: caller.email,
+        data: caller,
+      }))
+    );
+  }, [users]);
 
   const rowItemToTableRow = (caller) => {
     const numCallees = caller.callees.length;
@@ -49,7 +50,7 @@ function UserTable({ openEditUserDrawer }) {
         <TableCell>TODO</TableCell>
         <TableCell>{calleesCellContent}</TableCell>
         <TableCell>
-          <Button color="primary" onClick={() => openEditUserDrawer(caller)}>
+          <Button color="primary" onClick={(e) => { e.stopPropagation(); openEditUserDrawer(caller) }}>
             <CreateIcon />
             Edit
           </Button>
@@ -62,7 +63,7 @@ function UserTable({ openEditUserDrawer }) {
       headerLabels={HEADER_LABELS}
       rowItems={rowItems}
       rowItemToTableRow={rowItemToTableRow}
-    selectedIndices={selectedIndices}
+      selectedIndices={selectedIndices}
       setSelectedIndices={setSelectedIndices}
     />
   );

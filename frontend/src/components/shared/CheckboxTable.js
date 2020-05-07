@@ -53,7 +53,7 @@ function CheckboxTable({
     </TableHead>
   );
   const rows = rowItems.map(({ data, key }, idx) => (
-    <TableRow hover role="checkbox" key={key}>
+    <TableRow hover onClick={() => selectIndex(idx)} role="checkbox" key={key}>
       <TableCell padding="checkbox">
         <Checkbox
           onChange={() => selectIndex(idx)}

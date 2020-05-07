@@ -4,13 +4,16 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { UserTypes } from '../../../services/User';
 import UserPanel from './UserPanel';
-import CalleeList from './CalleeList';
+import CalleePanel from './CalleePanel';
 import { useUserService } from '../../../contexts';
 import './index.css';
 
 function AdminTabPanel({ activeIndex, index, children }) {
+  if (activeIndex !== index) {
+    return null;
+  }
   return (
-    <div className="admin-panel" hidden={activeIndex !== index}>
+    <div className="admin-panel">
       {children}
     </div>
   );
@@ -44,7 +47,7 @@ function AdminDashboard() {
           <UserPanel />
         </AdminTabPanel>
         <AdminTabPanel index={1} activeIndex={activeIndex}>
-          <CalleeList />
+          <CalleePanel />
         </AdminTabPanel>
       </Grid>
     </Grid>

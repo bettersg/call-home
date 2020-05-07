@@ -3,10 +3,10 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import TableCell from '@material-ui/core/TableCell';
 import TextField from '@material-ui/core/TextField';
-import { useUserService, useCalleeService } from '../../../contexts';
-import { UserTypes } from '../../../services/User';
-import Drawer from '../../shared/Drawer';
-import CheckboxTable from '../../shared/CheckboxTable';
+import { useUserService, useCalleeService } from '../../../../contexts';
+import { UserTypes } from '../../../../services/User';
+import Drawer from '../../../shared/Drawer';
+import CheckboxTable from '../../../shared/CheckboxTable';
 
 function NewUserForm({
   setNewUserName,
@@ -94,7 +94,7 @@ function AssignCalleesForm({ newUserName, newUserEmail, closeDrawer }) {
       <Typography variant="subtitle1">To: {newUserName}</Typography>
       <AssignCalleesTable
         callees={callees}
-      selectedIndices={selectedIndices}
+        selectedIndices={selectedIndices}
         setSelectedIndices={setSelectedIndices}
       />
       <form onSubmit={onSubmit}>

@@ -1,15 +1,15 @@
-.user-panel {
+.admin-panel {
   display: flex;
   flex-direction: column;
 }
 
-.user-panel-buttons {
+.admin-panel-buttons {
   display: flex;
   flex-basis: 100%;
   justify-content: flex-end;
   margin: 12px 0;
 }
 
-.user-list {
+.data-list {
   padding: 12px;
 }
