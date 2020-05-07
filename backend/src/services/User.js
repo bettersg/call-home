@@ -8,13 +8,14 @@ async function injectCallees(userOrUsers) {
   const users = isSingular ? [userOrUsers] : userOrUsers;
   const callees = await Promise.all(users.map((user) => user.getCallees()));
   const injectedUsers = users.map((user, idx) => {
-    user.callees = callees[idx];
+    // this needs to be the actual model instance
+    user.callees = callees[idx]; // eslint-disable-line no-param-reassign
     return user;
   });
   return isSingular ? injectedUsers[0] : injectedUsers;
 }
 
-function UserService(UserModel, CalleeModel) {
+function UserService(UserModel) {
   async function listUsers() {
     return injectCallees(
       await UserModel.findAll({
@@ -27,8 +28,10 @@ function UserService(UserModel, CalleeModel) {
     const { callees, ...plainUser } = user;
     plainUser.email = plainUser.email.toLowerCase();
 
-    const createdUser = await sanitizeDbErrors(() => UserModel.create(user));
-    await createdUser.setCallees(callees);
+    const createdUser = await sanitizeDbErrors(() =>
+      UserModel.create(plainUser)
+    );
+    await createdUser.setCallees(callees.map((callee) => callee.id));
     await createdUser.save();
     await createdUser.reload();
     return injectCallees(createdUser);

@@ -15,12 +15,12 @@ export function UserServiceProvider({ children }) {
     }
   }, [userService]);
   return (
-      <UserServiceContext.Provider value={userService}>
+    <UserServiceContext.Provider value={userService}>
       <UserStateContext.Provider value={userState}>
         {children}
       </UserStateContext.Provider>
-      </UserServiceContext.Provider>
-  )
+    </UserServiceContext.Provider>
+  );
 }
 
 export function useUserService() {
