@@ -16,7 +16,7 @@ const HEADER_LABELS = [
 
 function UserTable({ openEditUserDrawer }) {
   const [userState] = useUserService();
-  const { users } = userState;
+  const { users, me: userInfo } = userState;
   const [selectedIndices, setSelectedIndices] = useState(new Set());
 
   const [rowItems, setRowItems] = useState([]);
@@ -50,7 +50,13 @@ function UserTable({ openEditUserDrawer }) {
         <TableCell>TODO</TableCell>
         <TableCell>{calleesCellContent}</TableCell>
         <TableCell>
-          <Button color="primary" onClick={(e) => { e.stopPropagation(); openEditUserDrawer(caller) }}>
+          <Button
+            color="primary"
+            onClick={(e) => {
+              e.stopPropagation();
+              openEditUserDrawer(caller);
+            }}
+          >
             <CreateIcon />
             Edit
           </Button>

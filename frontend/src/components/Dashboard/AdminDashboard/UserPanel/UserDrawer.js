@@ -137,7 +137,7 @@ function EditCallerForm({ user, closeDrawer }) {
     await userService.updateUser(user.email, {
       name: newUserName,
       email: user.email,
-      userType: UserTypes.CALLER,
+      userType: user.userType,
       callees: Array.from(selectedIndices).map((idx) => callees[idx]),
     });
     closeDrawer();

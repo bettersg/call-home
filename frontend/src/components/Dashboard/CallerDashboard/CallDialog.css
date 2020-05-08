@@ -1,0 +1,10 @@
+.call-dialog-content {
+  height: 450px;
+  width: 300px;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+}
+

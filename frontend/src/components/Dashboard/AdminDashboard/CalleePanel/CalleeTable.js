@@ -6,10 +6,7 @@ import CreateIcon from '@material-ui/icons/Create';
 import { useCalleeService } from '../../../../contexts';
 import CheckboxTable from '../../../shared/CheckboxTable';
 
-const HEADER_LABELS = [
-  "SENIOR'S NAME",
-  'EDIT?',
-];
+const HEADER_LABELS = ["SENIOR'S NAME", 'EDIT?'];
 
 function CalleeTable({ openEditCalleeDrawer }) {
   const [calleeState] = useCalleeService();
@@ -34,7 +31,13 @@ function CalleeTable({ openEditCalleeDrawer }) {
           <Typography variant="subtitle2">{callee.phoneNumber}</Typography>
         </TableCell>
         <TableCell>
-          <Button color="primary" onClick={(e) => { e.stopPropagation(); openEditCalleeDrawer(callee)}}>
+          <Button
+            color="primary"
+            onClick={(e) => {
+              e.stopPropagation();
+              openEditCalleeDrawer(callee);
+            }}
+          >
             <CreateIcon />
             Edit
           </Button>

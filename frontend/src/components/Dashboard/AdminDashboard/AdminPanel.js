@@ -1,28 +1,24 @@
 import React from 'react';
 import AddIcon from '@material-ui/icons/Add';
 import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
-import roundedButtonStyles from '../../shared/RoundedButtonStyles';
+import RoundedButton from '../../shared/RoundedButton';
 import './index.css';
 import './AdminPanel.css';
 
 function AdminPanel({ addText, onAddClicked, drawer, table }) {
-  const classes = roundedButtonStyles();
-
   return (
     <div className="admin-panel">
       <div className="admin-panel-buttons">
-        <Button color="primary" className={classes.root}>
+        <RoundedButton color="primary">
           <AddIcon /> Import from csv
-        </Button>
-        <Button
+        </RoundedButton>
+        <RoundedButton
           variant="contained"
           color="primary"
-          className={classes.root}
           onClick={onAddClicked}
         >
           <AddIcon /> {addText}
-        </Button>
+        </RoundedButton>
       </div>
       <Paper className="data-list">{table}</Paper>
       {drawer}

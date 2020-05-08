@@ -12,11 +12,7 @@ function AdminTabPanel({ activeIndex, index, children }) {
   if (activeIndex !== index) {
     return null;
   }
-  return (
-    <div className="admin-panel">
-      {children}
-    </div>
-  );
+  return <div className="admin-panel">{children}</div>;
 }
 
 function AdminDashboard() {

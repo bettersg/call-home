@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import Typography from '@material-ui/core/Typography';
-import AppBar from '@material-ui/core/AppBar';
 import Grid from '@material-ui/core/Grid';
-import Toolbar from '@material-ui/core/Toolbar';
 import Container from '@material-ui/core/Container';
 import UserInfo from './UserInfo';
 import Dashboard from './Dashboard';
+import TopAppBar from './TopAppBar';
 
 import { useUserService } from '../contexts';
 
@@ -21,14 +19,10 @@ function Layout() {
 
   return (
     <>
-      <AppBar>
-        <Toolbar>
-          <Typography component="h1" variant="h6">
-            Care Corner-Ring a Senior
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Toolbar />
+      <TopAppBar
+        dashboardChoice={dashboardChoice}
+        setDashboardChoice={setDashboardChoice}
+      />
       <Container className="main-container">
         <Grid justify="center" container spacing={2}>
           <UserInfo dashboardChoice={dashboardChoice} />
