@@ -14,10 +14,13 @@ const HEADER_LABELS = [
   'EDIT?',
 ];
 
-function UserTable({ openEditUserDrawer }) {
+function UserTable({
+  openEditUserDrawer,
+  selectedIndices,
+  setSelectedIndices,
+}) {
   const [userState] = useUserService();
   const { users } = userState;
-  const [selectedIndices, setSelectedIndices] = useState(new Set());
 
   const [rowItems, setRowItems] = useState([]);
   useEffect(() => {

@@ -2,12 +2,17 @@ import React, { useState } from 'react';
 import AdminPanel from '../AdminPanel';
 import UserTable from './UserTable';
 import UserDrawer from './UserDrawer';
+import { useUserService } from '../../../../contexts';
 
 function UserPanel() {
+  const [userState, userService] = useUserService();
+  const { users } = userState;
   const [drawerOpen, setDrawerOpen] = useState(false);
   // TODO using one drawer for everything may not be the best approach.
   const [drawerPage, setDrawerPage] = useState(0);
   const [userToEdit, setUserToEdit] = useState(null);
+  const [selectedIndices, setSelectedIndices] = useState(new Set());
+
   const openAddUserDrawer = () => {
     setDrawerPage(0);
     setDrawerOpen(true);
@@ -18,7 +23,13 @@ function UserPanel() {
     setDrawerOpen(true);
   };
 
-  const table = <UserTable openEditUserDrawer={openEditUserDrawer} />;
+  const table = (
+    <UserTable
+      selectedIndices={selectedIndices}
+      setSelectedIndices={setSelectedIndices}
+      openEditUserDrawer={openEditUserDrawer}
+    />
+  );
   const drawer = (
     <UserDrawer
       user={userToEdit}
@@ -28,12 +39,26 @@ function UserPanel() {
       closeDrawer={() => setDrawerOpen(false)}
     />
   );
+  const deleteCount = selectedIndices.size;
+  const deleteSelected = () => {
+    const selectedUserEmails = Array.from(selectedIndices).map(
+      (idx) => users[idx].email
+    );
+    setSelectedIndices(new Set());
+    // TODO due to the implementation of deleteUser, the frontend will make an unnecessary 'refresh' request after every delete. Ideally the service should know how to batch these updates so that the refresh only happens once.
+    selectedUserEmails.forEach((userEmail) =>
+      userService.deleteUser(userEmail)
+    );
+  };
   return (
     <AdminPanel
       table={table}
       drawer={drawer}
       addText="Add Volunteer"
       onAddClicked={openAddUserDrawer}
+      deleteCount={deleteCount}
+      deleteText="DELETE VOLUNTEERS"
+      deleteSelected={deleteSelected}
     />
   );
 }

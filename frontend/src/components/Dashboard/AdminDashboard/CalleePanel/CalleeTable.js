@@ -8,10 +8,13 @@ import CheckboxTable from '../../../shared/CheckboxTable';
 
 const HEADER_LABELS = ["SENIOR'S NAME", 'EDIT?'];
 
-function CalleeTable({ openEditCalleeDrawer }) {
+function CalleeTable({
+  openEditCalleeDrawer,
+  selectedIndices,
+  setSelectedIndices,
+}) {
   const [calleeState] = useCalleeService();
   const { callees } = calleeState;
-  const [selectedIndices, setSelectedIndices] = useState(new Set());
 
   const [rowItems, setRowItems] = useState([]);
   useEffect(() => {
