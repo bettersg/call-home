@@ -46,7 +46,7 @@ async function requireAdmin(req, res, next) {
 }
 
 async function secureRoutes(req, res, next) {
-  console.log('Securing route. User: ', req.user);
+  console.log('Securing route: ', req.originalUrl);
   console.log('Sessions', req.session);
   if (req.user) {
     console.log('Found user: ', req.user);

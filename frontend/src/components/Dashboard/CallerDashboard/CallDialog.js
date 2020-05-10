@@ -63,6 +63,7 @@ function CallDialog({ call, disconnectCall }) {
       setIsConnected(false);
     });
   }, [twilioToken]);
+
   useEffect(() => {
     if (!call && isConnected) {
       device.disconnectAll();
