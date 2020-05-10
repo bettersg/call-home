@@ -3,6 +3,7 @@ require('express-async-errors');
 const proxy = require('express-http-proxy');
 require('dotenv').config();
 const morgan = require('morgan');
+const helmet = require('helmet');
 const {
   User: userRoutes,
   Callee: calleeRoutes,
@@ -32,6 +33,7 @@ PassportConfig(app);
 
 if (isProd) {
   app.use(httpsRedirect);
+  app.use(helmet());
 }
 // Make sure oauth is first and NOT secured
 app.use('/oauth', oauthRoutes);
