@@ -3,7 +3,7 @@ const SessionStore = require('express-session-sequelize')(session.Store);
 const { sequelize } = require('../models');
 
 module.exports = function PassportConfig(app) {
-  const {APP_SECRET} = process.env;
+  const { APP_SECRET } = process.env;
   const IS_PROD = process.env.NODE_ENV === 'prod';
 
   const sessionConfig = {

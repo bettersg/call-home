@@ -30,7 +30,7 @@ function CallService(CallModel, userService, calleeService) {
       phoneNumber: callee.phoneNumber,
       userEmail,
     };
-    return await sanitizeDbErrors(() => CallModel.create(call));
+    return sanitizeDbErrors(() => CallModel.create(call));
   }
   return {
     createCall,

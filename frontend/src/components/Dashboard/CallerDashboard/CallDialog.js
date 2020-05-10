@@ -1,9 +1,7 @@
 import Dialog from '@material-ui/core/Dialog';
 import React, { useState, useEffect } from 'react';
 import * as Twilio from 'twilio-client';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import { red } from '@material-ui/core/colors';
 import CallEndIcon from '@material-ui/icons/CallEnd';
 import RoundedButton from '../../shared/RoundedButton';
 
@@ -24,7 +22,7 @@ const connectedProps = {
 
 function CallDialog({ call, disconnectCall }) {
   const [twilioToken, setTwilioToken] = useState(null);
-  const [device, setDevice] = useState(new Twilio.Device());
+  const [device] = useState(new Twilio.Device());
   const [isConnected, setIsConnected] = useState(false);
   useEffect(() => {
     (async () => {
@@ -81,6 +79,7 @@ function CallDialog({ call, disconnectCall }) {
     <Dialog open={Boolean(call)}>
       <div className="call-dialog-content">
         <img
+          alt=""
           className="call-uncle-image"
           src={connectedProps[isConnected].imgSrc}
         />
@@ -95,6 +94,7 @@ function CallDialog({ call, disconnectCall }) {
           color="primary"
           onClick={() => disconnectCall()}
         >
+          <CallEndIcon />
           End Call
         </RoundedButton>
       </div>

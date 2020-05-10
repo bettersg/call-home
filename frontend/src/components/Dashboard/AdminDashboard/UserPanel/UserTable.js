@@ -3,7 +3,7 @@ import Button from '@material-ui/core/Button';
 import TableCell from '@material-ui/core/TableCell';
 import Typography from '@material-ui/core/Typography';
 import CreateIcon from '@material-ui/icons/Create';
-import { UserTypes } from '../../../../services/User';
+/* import { UserTypes } from '../../../../services/User'; */
 import { useUserService } from '../../../../contexts';
 import CheckboxTable from '../../../shared/CheckboxTable';
 
@@ -16,7 +16,7 @@ const HEADER_LABELS = [
 
 function UserTable({ openEditUserDrawer }) {
   const [userState] = useUserService();
-  const { users, me: userInfo } = userState;
+  const { users } = userState;
   const [selectedIndices, setSelectedIndices] = useState(new Set());
 
   const [rowItems, setRowItems] = useState([]);

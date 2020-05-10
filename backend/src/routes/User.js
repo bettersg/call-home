@@ -53,7 +53,7 @@ function UserRoutes(userService) {
     const user = req.body;
     try {
       const savedUser = await userService.createUser(user);
-      console.log('created user', user)
+      console.log('created user', user);
       return res.status(200).json(userToUserResponse(savedUser, true));
     } catch (e) {
       // TODO do this smarter
@@ -78,14 +78,10 @@ function UserRoutes(userService) {
     }
   );
 
-  router.delete(
-    '/:userEmail',
-    requireAdmin,
-    async (req, res) => {
-      await userService.deleteUser(req.params.userEmail);
-      res.status(200).send();
-    }
-  );
+  router.delete('/:userEmail', requireAdmin, async (req, res) => {
+    await userService.deleteUser(req.params.userEmail);
+    res.status(200).send();
+  });
   return router;
 }
 

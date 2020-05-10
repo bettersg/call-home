@@ -43,16 +43,10 @@ function CalleeRoutes(calleeService) {
     }
   );
 
-  router.delete(
-    '/:calleeId',
-    requireAdmin,
-    async (req, res) => {
-      await calleeService.deleteCallee(
-        req.params.calleeId,
-      );
-      res.status(200).send();
-    }
-  );
+  router.delete('/:calleeId', requireAdmin, async (req, res) => {
+    await calleeService.deleteCallee(req.params.calleeId);
+    res.status(200).send();
+  });
   return router;
 }
 

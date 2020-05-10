@@ -8,7 +8,7 @@ function CalleeService(CalleeModel) {
   }
 
   async function createCallee(callee) {
-    return await sanitizeDbErrors(() => CalleeModel.create(callee));
+    return sanitizeDbErrors(() => CalleeModel.create(callee));
   }
 
   async function getCallee(calleeId) {

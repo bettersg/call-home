@@ -32,7 +32,7 @@ function TopAppBar({ dashboardChoice, setDashboardChoice }) {
   const openOptionsMenu = (e) => {
     setOptionsMenuAnchorEl(e.currentTarget);
   };
-  const closeOptionsMenu = (e) => {
+  const closeOptionsMenu = () => {
     setOptionsMenuAnchorEl(null);
   };
   const toggleDashboardChoice = () => {

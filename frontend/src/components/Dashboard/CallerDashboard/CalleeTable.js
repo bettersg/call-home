@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import PhoneIcon from '@material-ui/icons/Phone';
@@ -18,7 +18,7 @@ function CalleeTable({ onCallClick }) {
   const header = (
     <TableHead>
       <TableRow>
-        <TableCell>SENIOR'S NAME</TableCell>
+        <TableCell>SENIOR&apos;S NAME</TableCell>
         <TableCell>LAST CALLED BY ME</TableCell>
         <TableCell>CALL?</TableCell>
       </TableRow>

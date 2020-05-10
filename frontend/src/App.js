@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import * as Sentry from '@sentry/browser';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { UserServiceProvider, CalleeServiceContext } from './contexts';
 // TODO this export is probably misplaced
-import { User as UserService, Callee as CalleeService } from './services';
+import { Callee as CalleeService } from './services';
 import { Layout } from './components';
 
 // TODO this should probably be injected via env
