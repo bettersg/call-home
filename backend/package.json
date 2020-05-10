@@ -9,12 +9,8 @@
     "lint": "eslint",
     "lint:js": "npm run lint -- . --ext .js",
     "lint:js:fix": "npm run lint:js -- --fix",
-    "lint:fix": "npm run lint -- --fix"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
+    "lint:fix": "npm run lint -- --fix",
+    "precommit": "lint-staged"
   },
   "lint-staged": {
     "*.js": [
@@ -53,7 +49,6 @@
     "eslint-plugin-react": "^7.19.0",
     "eslint-plugin-react-hooks": "^2.5.0",
     "nodemon": "^2.0.3",
-    "husky": "^4.2.5",
     "lint-staged": "^10.1.4",
     "prettier": "^2.0.4"
   }

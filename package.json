@@ -1,0 +1,28 @@
+{
+  "name": "ring-a-senior-mvp",
+  "version": "1.0.0",
+  "description": "This is very much in the MVP stage.",
+  "scripts": {
+    "precommit:frontend": "cd frontend && npm run precommit",
+    "precommit:backend": "cd backend && npm run precommit",
+    "precommit": "npm run precommit:frontend && npm run precommit:backend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/glencbz/ring-a-senior.git"
+  },
+  "author": "glencbz@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/glencbz/ring-a-senior/issues"
+  },
+  "homepage": "https://github.com/glencbz/ring-a-senior#readme",
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run precommit"
+    }
+  },
+  "devDependencies": {
+    "husky": "^4.2.5"
+  }
+}
