@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "This is very much in the MVP stage.",
   "scripts": {
+    "build": "docker build . -t ring-a-senior",
+    "deploy": "docker tag ring-a-senior registry.heroku.com/ring-a-senior/web && docker push registry.heroku.com/ring-a-senior/web && heroku container:release web",
     "precommit:frontend": "cd frontend && npm run precommit",
     "precommit:backend": "cd backend && npm run precommit",
     "precommit": "npm run precommit:frontend && npm run precommit:backend"
