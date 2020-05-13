@@ -4,8 +4,8 @@ function CallModel(sequelize) {
   class Call extends Model {}
   Call.init(
     {
-      userEmail: {
-        type: DataTypes.STRING,
+      userId: {
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
       phoneNumber: {

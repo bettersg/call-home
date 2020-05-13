@@ -37,7 +37,17 @@ function UserService(UserModel) {
     return injectCallees(createdUser);
   }
 
-  async function getUser(userEmail) {
+  async function getUser(userId) {
+    return injectCallees(
+      await UserModel.findOne({
+        where: {
+          id: userId,
+        },
+      })
+    );
+  }
+
+  async function getUserByEmail(userEmail) {
     return injectCallees(
       await UserModel.findOne({
         where: {
@@ -47,27 +57,25 @@ function UserService(UserModel) {
     );
   }
 
-  async function updateUser(userEmailUpper, user) {
-    const userEmail = userEmailUpper.toLowerCase();
+  async function updateUser(userId, user) {
     const { callees, ...plainUser } = user;
     plainUser.email = plainUser.email.toLowerCase();
 
     console.log('useruser', user);
     await UserModel.update(plainUser, {
       where: {
-        email: userEmail,
+        id: userId,
       },
     });
-    const updatedUser = await getUser(userEmail);
+    const updatedUser = await getUser(userId);
     await updatedUser.setCallees(callees.map((callee) => callee.id));
     await updatedUser.save();
     await updatedUser.reload();
     return injectCallees(updatedUser);
   }
 
-  async function deleteUser(userEmailUpper) {
-    const userEmail = userEmailUpper.toLowerCase();
-    const user = await getUser(userEmail);
+  async function deleteUser(userId) {
+    const user = await getUser(userId);
     await user.destroy();
   }
 
@@ -75,6 +83,7 @@ function UserService(UserModel) {
     listUsers,
     createUser,
     getUser,
+    getUserByEmail,
     updateUser,
     deleteUser,
   };

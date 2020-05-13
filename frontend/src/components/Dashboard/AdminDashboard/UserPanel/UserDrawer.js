@@ -134,7 +134,7 @@ function EditCallerForm({ user, closeDrawer }) {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    await userService.updateUser(user.email, {
+    await userService.updateUser(user.id, {
       name: newUserName,
       email: user.email,
       userType: user.userType,

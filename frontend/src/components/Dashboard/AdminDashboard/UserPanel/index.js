@@ -41,14 +41,12 @@ function UserPanel() {
   );
   const deleteCount = selectedIndices.size;
   const deleteSelected = () => {
-    const selectedUserEmails = Array.from(selectedIndices).map(
-      (idx) => users[idx].email
+    const selectedUserIds = Array.from(selectedIndices).map(
+      (idx) => users[idx].id
     );
     setSelectedIndices(new Set());
     // TODO due to the implementation of deleteUser, the frontend will make an unnecessary 'refresh' request after every delete. Ideally the service should know how to batch these updates so that the refresh only happens once.
-    selectedUserEmails.forEach((userEmail) =>
-      userService.deleteUser(userEmail)
-    );
+    selectedUserIds.forEach((userId) => userService.deleteUser(userId));
   };
   return (
     <AdminPanel

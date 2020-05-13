@@ -43,14 +43,14 @@ export default class UserService extends ObservableService {
     return result;
   }
 
-  async updateUser(userEmail, newUser) {
-    const result = await apiClient.put(`${userEndpoint}/${userEmail}`, newUser);
+  async updateUser(userId, newUser) {
+    const result = await apiClient.put(`${userEndpoint}/${userId}`, newUser);
     await this.refreshAllUsers();
     return result;
   }
 
-  async deleteUser(userEmail) {
-    const result = await apiClient.delete(`${userEndpoint}/${userEmail}`);
+  async deleteUser(userId) {
+    const result = await apiClient.delete(`${userEndpoint}/${userId}`);
     await this.refreshAllUsers();
     return result;
   }

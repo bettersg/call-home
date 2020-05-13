@@ -22,13 +22,16 @@ function UserRoutes(userService) {
     );
 
     console.log('Getting info for user profile', userProfile);
-    // TODO this is literally only the first email in emails
     const allPossibleUsers = await Promise.all(
-      req.user.emails.map((emailValue) => userService.getUser(emailValue.value))
+      req.user.emails.map((emailValue) =>
+        userService.getUserByEmail(emailValue.value)
+      )
     );
-    const userResponse = userToUserResponse(
-      allPossibleUsers.filter((user) => user)[0]
-    );
+    const validUsers = allPossibleUsers.filter((user) => user);
+    if (validUsers.length < 1) {
+      return res.status(404).send('Not found');
+    }
+    const userResponse = userToUserResponse(validUsers[0]);
     return res.status(200).json({
       ...userProfileResponse,
       ...userResponse,
@@ -44,8 +47,8 @@ function UserRoutes(userService) {
       .json(allUsers.map((user) => userToUserResponse(user)));
   });
 
-  router.get('/:userEmail', requireAdmin, async (req, res) => {
-    const user = await userService.getUser(req.params.userEmail);
+  router.get('/:userId', requireAdmin, async (req, res) => {
+    const user = await userService.getUser(req.params.userId);
     res.status(200).json(userToUserResponse(user));
   });
 
@@ -65,21 +68,18 @@ function UserRoutes(userService) {
   });
 
   router.put(
-    '/:userEmail',
+    '/:userId',
     parseUserRequestBody,
     requireAdmin,
     async (req, res) => {
       const user = req.body;
-      const savedUser = await userService.updateUser(
-        req.params.userEmail,
-        user
-      );
+      const savedUser = await userService.updateUser(req.params.userId, user);
       res.status(200).json(userToUserResponse(savedUser));
     }
   );
 
-  router.delete('/:userEmail', requireAdmin, async (req, res) => {
-    await userService.deleteUser(req.params.userEmail);
+  router.delete('/:userId', requireAdmin, async (req, res) => {
+    await userService.deleteUser(req.params.userId);
     res.status(200).send();
   });
   return router;

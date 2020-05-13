@@ -3,10 +3,10 @@ const { UserTypes } = require('../models');
 
 // TODO The DI is a mess
 function CallService(CallModel, userService, calleeService) {
-  async function validateCall(userEmail, calleeId) {
-    const user = await userService.getUser(userEmail);
+  async function validateCall(userId, calleeId) {
+    const user = await userService.getUser(userId);
     console.log('Call for callee', calleeId);
-    console.log('Creating call for user', userEmail);
+    console.log('Creating call for user', userId);
     console.dir(user);
     if (user.userType === UserTypes.ADMIN) {
       return true;
@@ -18,17 +18,17 @@ function CallService(CallModel, userService, calleeService) {
     );
 
     if (user.callees.findIndex((callee) => callee.id === calleeId) < 0) {
-      throw new Error(`Authorization error for user ${userEmail}`);
+      throw new Error(`Authorization error for user ${userId}`);
     }
     return true;
   }
 
-  async function createCall({ userEmail, calleeId }) {
-    validateCall(userEmail, calleeId);
+  async function createCall({ userId, calleeId }) {
+    validateCall(userId, calleeId);
     const callee = await calleeService.getCallee(calleeId);
     const call = {
       phoneNumber: callee.phoneNumber,
-      userEmail,
+      userId,
     };
     return sanitizeDbErrors(() => CallModel.create(call));
   }

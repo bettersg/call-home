@@ -10,7 +10,7 @@ function CallerDashboard() {
   const [activeCall, setActiveCall] = useState(null);
   const onCallClick = (callee) => {
     setActiveCall({
-      userEmail: userInfo.email,
+      userId: userInfo.id,
       calleeId: callee.id,
       calleeName: callee.name,
     });

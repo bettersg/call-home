@@ -2,7 +2,7 @@
 const { User: UserService } = require('../services');
 const { UserTypes } = require('../models');
 
-const { getUser } = UserService;
+const { getUserByEmail } = UserService;
 // TODO don't hardcode this
 const LOGIN_ROUTE = '/oauth/login';
 
@@ -21,7 +21,7 @@ async function findUserRole(userProfile) {
   // TODO this is ugly but it works
   console.log('Searching for role for profile:', userProfile);
   const dbUsersForEmails = await Promise.all(
-    emails.map((email) => getUser(email))
+    emails.map((email) => getUserByEmail(email))
   );
   console.log('Found potential users:', dbUsersForEmails);
   const validDbUsers = dbUsersForEmails.filter((user) => user);
