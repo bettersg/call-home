@@ -12,7 +12,12 @@ function CallModel(sequelize) {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      // TODO update this with twilio info as it goes on
+      twilioCallId: {
+        type: DataTypes.STRING,
+      },
+      twilioCallStatus: {
+        type: DataTypes.STRING,
+      },
     },
     {
       sequelize,

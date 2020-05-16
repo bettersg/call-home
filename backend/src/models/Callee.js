@@ -10,6 +10,7 @@ function CalleeModel(sequelize) {
       },
       phoneNumber: {
         type: DataTypes.STRING,
+        unique: true,
         allowNull: false,
         validate: {
           is: {

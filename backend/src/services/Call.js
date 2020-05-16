@@ -23,12 +23,19 @@ function CallService(CallModel, userService, calleeService) {
     return true;
   }
 
-  async function createCall({ userId, calleeId }) {
+  async function createCall({
+    userId,
+    calleeId,
+    twilioCallId,
+    twilioCallStatus,
+  }) {
     validateCall(userId, calleeId);
     const callee = await calleeService.getCallee(calleeId);
     const call = {
       phoneNumber: callee.phoneNumber,
       userId,
+      twilioCallId,
+      twilioCallStatus,
     };
     return sanitizeDbErrors(() => CallModel.create(call));
   }

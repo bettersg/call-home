@@ -24,11 +24,21 @@ function TwilioRoutes(callService) {
     },
     twilio.webhook(webhookOptions),
     async (req, res) => {
-      const { userId, calleeId } = req.body;
+      const {
+        userId,
+        calleeId,
+        CallSid: twilioCallId,
+        CallStatus: twilioCallStatus,
+      } = req.body;
       console.log('creating call for', userId, calleeId);
 
       try {
-        const call = await callService.createCall({ userId, calleeId });
+        const call = await callService.createCall({
+          userId,
+          calleeId,
+          twilioCallId,
+          twilioCallStatus,
+        });
         const response = new VoiceResponse()
           .dial({ callerId: TWILIO_PHONE_NUMBER })
           .number(call.phoneNumber);
