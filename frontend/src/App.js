@@ -1,9 +1,8 @@
 import React from 'react';
 import * as Sentry from '@sentry/browser';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { UserServiceProvider, CalleeServiceContext } from './contexts';
+import { UserServiceProvider, CalleeServiceProvider } from './contexts';
 // TODO this export is probably misplaced
-import { Callee as CalleeService } from './services';
 import { Layout } from './components';
 
 // TODO this should probably be injected via env
@@ -15,17 +14,43 @@ if (window.NODE_ENV === 'production') {
   console.log('sentry initted');
 }
 
-function AppProvider() {
-  const calleeService = new CalleeService();
-  calleeService.refreshAllCallees();
+function AppContent({ errorMessage }) {
+  // if we encounter an error, we stop using the background services
+  if (errorMessage) {
+    return (
+      <>
+        <CssBaseline />
+        <Layout errorMessage={errorMessage} />
+      </>
+    );
+  }
+
   return (
     <UserServiceProvider>
-      <CalleeServiceContext.Provider value={calleeService}>
+      <CalleeServiceProvider>
         <CssBaseline />
-        <Layout />
-      </CalleeServiceContext.Provider>
+        <Layout errorMessage={errorMessage} />
+      </CalleeServiceProvider>
     </UserServiceProvider>
   );
 }
 
-export default AppProvider;
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      errorMessage: undefined,
+    };
+  }
+
+  static getDerivedStateFromError(e) {
+    return { errorMessage: e.message };
+  }
+
+  render() {
+    const { errorMessage } = this.state;
+    return <AppContent errorMessage={errorMessage} />;
+  }
+}
+
+export default App;

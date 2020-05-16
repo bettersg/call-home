@@ -27,8 +27,9 @@ function TopAppBar({ dashboardChoice, setDashboardChoice }) {
   const [userState] = useUserService();
   const [optionsMenuAnchorEl, setOptionsMenuAnchorEl] = useState(null);
   const isOptionsMenuOpen = Boolean(optionsMenuAnchorEl);
-  const { me: userInfo } = userState;
+  const { me: userInfo } = userState || {};
   const { picture = null } = userInfo || {};
+
   const openOptionsMenu = (e) => {
     setOptionsMenuAnchorEl(e.currentTarget);
   };
@@ -46,7 +47,7 @@ function TopAppBar({ dashboardChoice, setDashboardChoice }) {
   // We render two Toolbars because otherwise, content gets hidden
   return (
     <>
-      <AppBar style={appBarStyles[dashboardChoice]}>
+      <AppBar position="sticky" style={appBarStyles[dashboardChoice]}>
         <Toolbar>
           <div className="app-toolbar-container">
             <Typography component="h1" variant="h6">
@@ -57,7 +58,7 @@ function TopAppBar({ dashboardChoice, setDashboardChoice }) {
             ) : null}
             <div>
               <div className="avatar-menu">
-                <Avatar src={picture} />
+                {picture ? <Avatar src={picture} /> : null}
                 <IconButton onClick={openOptionsMenu}>
                   <MoreVertIcon className="avatar-menu-icon" />
                 </IconButton>
@@ -75,7 +76,6 @@ function TopAppBar({ dashboardChoice, setDashboardChoice }) {
           </div>
         </Toolbar>
       </AppBar>
-      <Toolbar />
     </>
   );
 }

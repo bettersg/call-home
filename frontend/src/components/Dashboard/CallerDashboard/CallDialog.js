@@ -38,10 +38,10 @@ function CallDialog({ call, disconnectCall }) {
     try {
       device.setup(twilioToken);
     } catch (e) {
-      alert(
+      setIsConnected(false);
+      throw new Error(
         'We were unable to set up the phone connection. Make sure that the website starts with https. If the problem persists, contact an admin'
       );
-      setIsConnected(false);
     }
 
     device.on('error', (e) => {

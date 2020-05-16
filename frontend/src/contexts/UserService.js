@@ -1,19 +1,25 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User as UserService } from '../services';
+import { useAsyncError } from '../hooks';
 
 const UserServiceContext = createContext(null);
 const UserStateContext = createContext(null);
 
+const userService = new UserService();
+
 export function UserServiceProvider({ children }) {
-  const [userService] = useState(new UserService());
   const [userState, setUserState] = useState({});
+  const throwError = useAsyncError();
+
   useEffect(() => {
     if (userService) {
       userService.subscribe(setUserState);
-      userService.refreshSelf();
-      userService.refreshAllUsers();
+      Promise.all([
+        userService.refreshSelf(),
+        userService.refreshAllUsers(),
+      ]).catch(throwError);
     }
-  }, [userService]);
+  }, [userService, throwError]);
   return (
     <UserServiceContext.Provider value={userService}>
       <UserStateContext.Provider value={userState}>
@@ -24,7 +30,7 @@ export function UserServiceProvider({ children }) {
 }
 
 export function useUserService() {
-  const userService = useContext(UserServiceContext);
+  const innerUserService = useContext(UserServiceContext);
   const userState = useContext(UserStateContext);
-  return [userState, userService];
+  return [userState, innerUserService];
 }

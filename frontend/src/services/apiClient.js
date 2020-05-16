@@ -12,8 +12,7 @@ function handleApiError(wrappedFn) {
       // Worst case, there isn't even a response. Perhaps blocked by CORS. This is unactionable, we just alert and stop.
       if (!response) {
         Sentry.captureException(e);
-        alert('An unknown error has occurred.');
-        return undefined;
+        throw new Error('An unknown error has occurred.');
       }
       // 401 Means that the user is unauthenticated. This should always be accompanied with a location to redirect to.
       if (response.status === 401 && response.data.location) {
@@ -23,13 +22,11 @@ function handleApiError(wrappedFn) {
       // 400 is a bad request, we alert the users somehow but do not report to Sentry.
       if (response.status === 400) {
         // TODO improve the API request handling
-        alert(response.data);
-        return undefined;
+        throw new Error(response.data);
       }
       // Alert users and Sentry by default
-      alert(response.data);
       Sentry.captureException(e);
-      return undefined;
+      throw new Error(response.data);
     }
   };
 }

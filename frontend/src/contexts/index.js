@@ -1,2 +1,2 @@
 export { UserServiceProvider, useUserService } from './UserService';
-export { CalleeServiceContext, useCalleeService } from './CalleeService';
+export { CalleeServiceProvider, useCalleeService } from './CalleeService';
