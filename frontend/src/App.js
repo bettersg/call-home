@@ -1,16 +1,12 @@
 import React from 'react';
-import * as Sentry from '@sentry/browser';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { UserServiceProvider, CalleeServiceProvider } from './contexts';
-// TODO this export is probably misplaced
+import { initSentry } from './services/Sentry';
 import { Layout } from './components';
 
-// TODO this should probably be injected via env
-if (window.NODE_ENV === 'production') {
-  Sentry.init({
-    dsn:
-      'https://311e61bcb9f24ab7b601e085cce9eb6d@o386666.ingest.sentry.io/5221206',
-  });
+const isProd = window.NODE_ENV === 'production';
+if (isProd) {
+  initSentry();
   console.log('sentry initted');
 }
 

@@ -8,6 +8,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { green } from '@material-ui/core/colors';
+import FeedbackDialog from './FeedbackDialog';
 import { useUserService } from '../contexts';
 import { UserTypes } from '../services/User';
 import './TopAppBar.css';
@@ -25,10 +26,12 @@ const switchViewName = {
 
 function TopAppBar({ dashboardChoice, setDashboardChoice }) {
   const [userState] = useUserService();
+  const { me: userInfo } = userState || {};
+  const { picture = null, role } = userInfo || {};
+
+  const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
   const [optionsMenuAnchorEl, setOptionsMenuAnchorEl] = useState(null);
   const isOptionsMenuOpen = Boolean(optionsMenuAnchorEl);
-  const { me: userInfo } = userState || {};
-  const { picture = null } = userInfo || {};
 
   const openOptionsMenu = (e) => {
     setOptionsMenuAnchorEl(e.currentTarget);
@@ -47,6 +50,10 @@ function TopAppBar({ dashboardChoice, setDashboardChoice }) {
   // We render two Toolbars because otherwise, content gets hidden
   return (
     <>
+      <FeedbackDialog
+        isOpen={isFeedbackDialogOpen}
+        setIsOpen={setIsFeedbackDialogOpen}
+      />
       <AppBar position="sticky" style={appBarStyles[dashboardChoice]}>
         <Toolbar>
           <div className="app-toolbar-container">
@@ -69,9 +76,18 @@ function TopAppBar({ dashboardChoice, setDashboardChoice }) {
               onClose={closeOptionsMenu}
               anchorEl={optionsMenuAnchorEl}
             >
-              <MenuItem onClick={toggleDashboardChoice}>
-                Switch to {switchViewName[dashboardChoice]} view
+              <MenuItem
+                onClick={() => {
+                  setIsFeedbackDialogOpen(true);
+                }}
+              >
+                Feedback/Report Issue
               </MenuItem>
+              {role === UserTypes.ADMIN ? (
+                <MenuItem onClick={toggleDashboardChoice}>
+                  Switch to {switchViewName[dashboardChoice]} view
+                </MenuItem>
+              ) : null}
             </Menu>
           </div>
         </Toolbar>

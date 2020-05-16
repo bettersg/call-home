@@ -40,7 +40,7 @@ function Layout({ errorMessage }) {
         setDashboardChoice={setDashboardChoice}
       />
       <Container className="main-container">
-        <Grid justify="center" container spacing={2}>
+        <Grid justify="center" container>
           {mainContent}
         </Grid>
       </Container>
