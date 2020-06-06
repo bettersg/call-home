@@ -50,7 +50,7 @@ if (!isProd) {
   // proxy requests to development frontend
   app.use('/', secureRoutes, proxy('http://localhost:3000'));
   // This is just for setting things up
-  require('../setupDemo')().catch(console.error); // eslint-disable-line global-require
+  // require('../setupDemo')().catch(console.error); // eslint-disable-line global-require
 } else {
   app.use(secureRoutes, express.static(STATIC_DIR));
 }

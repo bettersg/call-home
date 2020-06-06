@@ -22,7 +22,6 @@ COPY backend/package-lock.json .
 RUN npm install
 
 COPY backend/src/ src/
-COPY backend/setupDemo.js .
 
 # Set the static directory for the backend
 ENV STATIC_DIR=static
