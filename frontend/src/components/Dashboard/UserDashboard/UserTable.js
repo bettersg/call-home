@@ -62,25 +62,27 @@ export default function UserTable() {
     </Button>
   );
   return (
-    <Paper>
-      {showNewPhone ? (
-        <NewPhone
-          onSubmit={() => {
-            setShowNewPhone(false);
-          }}
-        ></NewPhone>
-      ) : (
-        <>
-          <Grid container direction="column" spacing={4}>
-            {rows.concat(addPhone)}
-          </Grid>
-          <CallDialog
-            call={activeCall}
-            open={Boolean(activeCall)}
-            disconnectCall={() => setActiveCall(null)}
-          />
-        </>
-      )}
-    </Paper>
+    <Grid item spacing={1} xs={12}>
+      <Paper>
+        {showNewPhone ? (
+          <NewPhone
+            onSubmit={() => {
+              setShowNewPhone(false);
+            }}
+          ></NewPhone>
+        ) : (
+          <>
+            <Grid container direction="column" spacing={4}>
+              {rows.concat(addPhone)}
+            </Grid>
+            <CallDialog
+              call={activeCall}
+              open={Boolean(activeCall)}
+              disconnectCall={() => setActiveCall(null)}
+            />
+          </>
+        )}
+      </Paper>
+    </Grid>
   );
 }

@@ -1,7 +1,6 @@
 import React from 'react';
-import { TextField, Button } from '@material-ui/core';
+import { TextField, Button, Grid } from '@material-ui/core';
 import { useCalleeService, useUserService } from '../../../contexts';
-
 export default function NewPhone({ onSubmit }) {
   const [calleeState, calleeService] = useCalleeService();
   const [userState, userService] = useUserService();
@@ -9,7 +8,8 @@ export default function NewPhone({ onSubmit }) {
   const { me: user } = userState;
 
   return (
-    <div>
+    <Grid container direction="column" style={{ padding: 10 }}>
+      <Grid item>Add New Phone Number</Grid>
       <form
         noValidate
         autoComplete="off"
@@ -33,28 +33,29 @@ export default function NewPhone({ onSubmit }) {
           onSubmit();
         }}
       >
-        <div>
+        <Grid item>
           <TextField id="name" label="Name" fullWidth />
-        </div>
-        <div>
+        </Grid>
+        <Grid item>
           <TextField
             id="phonenumber"
             label="Phone Number"
             fullWidth
             placeholder="+880 03317 4137"
           />
-        </div>
-        <div>
+        </Grid>
+        <Grid item>
           <Button
             color="primary"
             variant="contained"
             type="submit"
             value="Submit"
+            style={{ marginTop: 20 }}
           >
             Submit
           </Button>
-        </div>
+        </Grid>
       </form>
-    </div>
+    </Grid>
   );
 }
