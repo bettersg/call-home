@@ -12,7 +12,6 @@ function OAuthRoutes() {
     '/login',
     passport.authenticate('auth0', {
       scope: `openid email profile`,
-      connection: 'google-oauth2',
     }),
     (req, res) => {
       console.log('Received login');
