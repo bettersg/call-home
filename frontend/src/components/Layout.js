@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
-import Container from '@material-ui/core/Container';
+import { Container, CircularProgress } from '@material-ui/core';
 import UserInfo from './UserInfo';
 import Dashboard from './Dashboard';
 import TopAppBar from './TopAppBar';
@@ -17,7 +17,9 @@ function Layout() {
     }
   }, [userInfo]);
 
-  return (
+  return userInfo == null ? (
+    <CircularProgress />
+  ) : (
     <>
       <TopAppBar
         dashboardChoice={dashboardChoice}

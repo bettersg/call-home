@@ -11,7 +11,7 @@ export function UserServiceProvider({ children }) {
     if (userService) {
       userService.subscribe(setUserState);
       userService.refreshSelf();
-      userService.refreshAllUsers();
+      // userService.refreshAllUsers();
     }
   }, [userService]);
   return (

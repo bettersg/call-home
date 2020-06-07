@@ -5,6 +5,7 @@ import UserDashboard from './UserDashboard';
 import { UserTypes } from '../../services/User';
 
 function Dashboard({ dashboardChoice, userInfo }) {
+  console.log('Dashboard', userInfo);
   if (!userInfo) {
     return null;
   }

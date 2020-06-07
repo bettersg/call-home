@@ -16,15 +16,19 @@ const appBarStyles = {
   [UserTypes.ADMIN]: {
     background: green[700],
   },
+  [UserTypes.USER]: {
+    background: '#52B2CF',
+  },
 };
 
 const switchViewName = {
   [UserTypes.ADMIN]: 'caller',
   [UserTypes.CALLER]: 'admin',
+  [UserTypes.USER]: 'user',
 };
 
 function TopAppBar({ dashboardChoice, setDashboardChoice }) {
-  const [userState] = useUserService();
+  const [userState, userService] = useUserService();
   const [optionsMenuAnchorEl, setOptionsMenuAnchorEl] = useState(null);
   const isOptionsMenuOpen = Boolean(optionsMenuAnchorEl);
   const { me: userInfo } = userState;
@@ -43,6 +47,11 @@ function TopAppBar({ dashboardChoice, setDashboardChoice }) {
     }
   };
 
+  const logout = () => {
+    console.log('click logout');
+    userService.logout();
+  };
+
   // We render two Toolbars because otherwise, content gets hidden
   return (
     <>
@@ -50,7 +59,7 @@ function TopAppBar({ dashboardChoice, setDashboardChoice }) {
         <Toolbar>
           <div className="app-toolbar-container">
             <Typography component="h1" variant="h6">
-              Care Corner-Ring a Senior
+              Call Home
             </Typography>
             {dashboardChoice === UserTypes.ADMIN ? (
               <Typography variant="subtitle1"> Admin View</Typography>
@@ -68,9 +77,12 @@ function TopAppBar({ dashboardChoice, setDashboardChoice }) {
               onClose={closeOptionsMenu}
               anchorEl={optionsMenuAnchorEl}
             >
-              <MenuItem onClick={toggleDashboardChoice}>
-                Switch to {switchViewName[dashboardChoice]} view
-              </MenuItem>
+              {dashboardChoice !== UserTypes.USER ? (
+                <MenuItem onClick={toggleDashboardChoice}>
+                  Switch to {switchViewName[dashboardChoice]} view
+                </MenuItem>
+              ) : null}
+              <MenuItem onClick={logout}>Logout</MenuItem>
             </Menu>
           </div>
         </Toolbar>

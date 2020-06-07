@@ -17,7 +17,7 @@ if (window.NODE_ENV === 'production') {
 
 function AppProvider() {
   const calleeService = new CalleeService();
-  calleeService.refreshAllCallees();
+  // calleeService.refreshAllCallees();
   return (
     <UserServiceProvider>
       <CalleeServiceContext.Provider value={calleeService}>

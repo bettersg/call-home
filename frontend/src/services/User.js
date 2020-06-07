@@ -29,6 +29,15 @@ export default class UserService extends ObservableService {
     return users;
   }
 
+  async logout() {
+    const me = await apiClient.get(`oauth/logout`);
+    this.state = {
+      users: [],
+      me: null,
+    };
+    this.notify();
+  }
+
   async refreshSelf() {
     const me = await apiClient.get(`${userEndpoint}/me`);
     this.state = {
