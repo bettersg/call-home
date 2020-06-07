@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import PhoneIcon from '@material-ui/icons/Phone';
+import AddIcon from '@material-ui/icons/Add';
 import Table from '@material-ui/core/Table';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
@@ -46,10 +47,21 @@ export default function UserTable() {
       </Grid>
     </Grid>
   ));
+
+  const addPhone = (
+    <Grid item container spacing={4} alignItems="center">
+      <Grid item>
+        <AddIcon style={{ marginLeft: '18px' }} />
+      </Grid>
+      <Grid item>
+        <Typography>Add Phone Numnber</Typography>
+      </Grid>
+    </Grid>
+  );
   return (
     <Paper>
       <Grid container direction="column" spacing={4}>
-        {rows}
+        {rows.concat(addPhone)}
       </Grid>
       <CallDialog
         call={activeCall}
