@@ -23,11 +23,11 @@ function handleApiError(wrappedFn) {
       // 400 is a bad request, we alert the users somehow but do not report to Sentry.
       if (response.status === 400) {
         // TODO improve the API request handling
-        alert(response.data);
+        console.log(response.data);
         return undefined;
       }
       // Alert users and Sentry by default
-      alert(response.data);
+      console.log(response.data);
       Sentry.captureException(e);
       return undefined;
     }
