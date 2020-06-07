@@ -24,15 +24,22 @@ function TwilioRoutes(callService) {
     },
     twilio.webhook(webhookOptions),
     async (req, res) => {
-      const { userEmail, calleeId } = req.body;
-      console.log('creating call for', userEmail, calleeId);
+      const { userEmail, calleeId, phoneNumber } = req.body;
+      console.log('creating call for', userEmail, calleeId, phoneNumber);
 
       try {
-        const call = await callService.createCall({ userEmail, calleeId });
-        const response = new VoiceResponse()
-          .dial({ callerId: TWILIO_PHONE_NUMBER })
-          .number(call.phoneNumber);
-        return res.send(response.toString());
+        if (phoneNumber == null) {
+          const call = await callService.createCall({ userEmail, calleeId });
+          const response = new VoiceResponse()
+            .dial({ callerId: TWILIO_PHONE_NUMBER })
+            .number(call.phoneNumber);
+          return res.send(response.toString());
+        } else {
+          const response = new VoiceResponse()
+            .dial({ callerId: TWILIO_PHONE_NUMBER })
+            .number(phoneNumber);
+          return res.send(response.toString());
+        }
       } catch (e) {
         if (e.message.startsWith('Authorization')) {
           return res.status(403).send(e.message);

@@ -31,6 +31,11 @@ function OAuthRoutes() {
       if (!user) {
         return res.redirect('/login');
       }
+      if (user.emails == null) {
+        user.emails = [
+          { value: `${user.nickname.replace('+', '')}@openid.com` },
+        ]; //TODO: Hack, should add openid column
+      }
       req.logIn(user, (reqErr) => {
         if (reqErr) {
           return next(reqErr);
