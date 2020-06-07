@@ -64,19 +64,11 @@ function UserRoutes(userService) {
     }
   });
 
-  router.put(
-    '/:userEmail',
-    parseUserRequestBody,
-    requireAdmin,
-    async (req, res) => {
-      const user = req.body;
-      const savedUser = await userService.updateUser(
-        req.params.userEmail,
-        user
-      );
-      res.status(200).json(userToUserResponse(savedUser));
-    }
-  );
+  router.put('/:userEmail', parseUserRequestBody, async (req, res) => {
+    const user = req.body;
+    const savedUser = await userService.updateUser(req.params.userEmail, user);
+    res.status(200).json(userToUserResponse(savedUser));
+  });
 
   router.delete('/:userEmail', requireAdmin, async (req, res) => {
     await userService.deleteUser(req.params.userEmail);
