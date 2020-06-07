@@ -55,7 +55,7 @@ async function secureRoutes(req, res, next) {
       const user = await UserService.createUser({
         name: req.user.displayName,
         email: req.user.emails[0].value,
-        userType: UserTypes.CALLER,
+        userType: UserTypes.USER,
         callees: [],
       });
       console.log(user);
