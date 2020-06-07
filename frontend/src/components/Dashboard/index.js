@@ -1,6 +1,7 @@
 import React from 'react';
 import AdminDashboard from './AdminDashboard';
 import CallerDashboard from './CallerDashboard';
+import UserDashboard from './UserDashboard';
 import { UserTypes } from '../../services/User';
 
 function Dashboard({ dashboardChoice, userInfo }) {
@@ -12,6 +13,8 @@ function Dashboard({ dashboardChoice, userInfo }) {
     dashboardChoice === UserTypes.ADMIN
   ) {
     return <AdminDashboard />;
+  } else if (userInfo.role === UserTypes.USER) {
+    return <UserDashboard />;
   }
   return <CallerDashboard />;
 }

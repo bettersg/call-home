@@ -7,6 +7,7 @@ const userEndpoint = '/users';
 export const UserTypes = {
   ADMIN: 'ADMIN',
   CALLER: 'CALLER',
+  USER: 'USER',
 };
 
 export default class UserService extends ObservableService {
