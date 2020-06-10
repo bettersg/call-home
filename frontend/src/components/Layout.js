@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
+import { CircularProgress } from '@material-ui/core/CircularProgress';
 import UserInfo from './UserInfo';
 import Dashboard from './Dashboard';
 import TopAppBar from './TopAppBar';
 
 import { useUserService } from '../contexts';
 
-function ErrorContent({ errorMessage }) {
-  return (
-    <Paper>Sorry, something went wrong. Error Message: {errorMessage}</Paper>
-  );
-}
-
-function Layout({ errorMessage }) {
+function Layout() {
   const [dashboardChoice, setDashboardChoice] = useState(null);
   const [userState] = useUserService();
   const { me: userInfo } = userState || {};
@@ -24,16 +18,9 @@ function Layout({ errorMessage }) {
     }
   }, [userInfo]);
 
-  const mainContent = errorMessage ? (
-    <ErrorContent errorMessage={errorMessage} />
+  return userInfo == null ? (
+    <CircularProgress />
   ) : (
-    <>
-      <UserInfo dashboardChoice={dashboardChoice} />
-      <Dashboard userInfo={userInfo} dashboardChoice={dashboardChoice} />
-    </>
-  );
-
-  return (
     <>
       <TopAppBar
         dashboardChoice={dashboardChoice}
@@ -41,7 +28,8 @@ function Layout({ errorMessage }) {
       />
       <Container className="main-container">
         <Grid justify="center" container>
-          {mainContent}
+          <UserInfo dashboardChoice={dashboardChoice} />
+          <Dashboard userInfo={userInfo} dashboardChoice={dashboardChoice} />
         </Grid>
       </Container>
     </>

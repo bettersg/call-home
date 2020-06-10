@@ -12,7 +12,6 @@ function OAuthRoutes() {
     '/login',
     passport.authenticate('auth0', {
       scope: `openid email profile`,
-      connection: 'google-oauth2',
     }),
     (req, res) => {
       console.log('Received login');
@@ -30,6 +29,13 @@ function OAuthRoutes() {
       }
       if (!user) {
         return res.redirect('/login');
+      }
+      if (user.emails == null) {
+        // TODO: Hack, should add openid column
+        /* eslint-disable-next-line */
+        user.emails = [
+          { value: `${user.nickname.replace('+', '')}@openid.com` },
+        ];
       }
       req.logIn(user, (reqErr) => {
         if (reqErr) {

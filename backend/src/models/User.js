@@ -3,6 +3,7 @@ const { DataTypes, Model } = require('sequelize');
 const UserTypes = {
   ADMIN: 'ADMIN',
   CALLER: 'CALLER',
+  USER: 'USER',
 };
 
 function UserModel(sequelize) {

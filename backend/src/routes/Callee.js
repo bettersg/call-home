@@ -15,7 +15,7 @@ function CalleeRoutes(calleeService) {
     res.status(200).json(allCallees);
   });
 
-  router.post('/', parseCalleeRequestBody, requireAdmin, async (req, res) => {
+  router.post('/', parseCalleeRequestBody, async (req, res) => {
     const callee = req.body;
     try {
       const savedCallee = await calleeService.createCallee(callee);

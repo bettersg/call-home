@@ -29,19 +29,26 @@ function TwilioRoutes(callService) {
         calleeId,
         CallSid: twilioCallId,
         CallStatus: twilioCallStatus,
+        phoneNumber: requestPhoneNumber,
       } = req.body;
       console.log('creating call for', userId, calleeId);
 
       try {
+        let phoneNumber;
         const call = await callService.createCall({
           userId,
           calleeId,
           twilioCallId,
           twilioCallStatus,
         });
+        if (requestPhoneNumber !== null) {
+          phoneNumber = requestPhoneNumber;
+        } else {
+          phoneNumber = call.phoneNumber;
+        }
         const response = new VoiceResponse()
           .dial({ callerId: TWILIO_PHONE_NUMBER })
-          .number(call.phoneNumber);
+          .number(phoneNumber);
         return res.send(response.toString());
       } catch (e) {
         if (e.message.startsWith('Authorization')) {

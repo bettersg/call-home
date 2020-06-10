@@ -52,12 +52,13 @@ async function secureRoutes(req, res, next) {
     console.log('Found user: ', req.user);
     const userRole = await findUserRole(req.user);
     if (!userRole) {
-      console.log('Unable to find a role for', req.user);
-      return res
-        .status(403)
-        .send(
-          'Sorry, you are not a registered user. If you think this is an error, please reach out to an admin.'
-        );
+      const user = await UserService.createUser({
+        name: req.user.displayName,
+        email: req.user.emails[0].value,
+        userType: UserTypes.USER,
+        callees: [],
+      });
+      console.log(user);
     }
     req.user.role = userRole;
     return next();

@@ -14,10 +14,7 @@ export function UserServiceProvider({ children }) {
   useEffect(() => {
     if (userService) {
       userService.subscribe(setUserState);
-      Promise.all([
-        userService.refreshSelf(),
-        userService.refreshAllUsers(),
-      ]).catch(throwError);
+      Promise.all([userService.refreshSelf()]).catch(throwError);
     }
   }, [userService, throwError]);
   return (

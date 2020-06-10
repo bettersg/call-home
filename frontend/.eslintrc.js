@@ -9,6 +9,7 @@ module.exports = {
     'plugin:react/recommended',
     'prettier',
   ],
+  parser: 'babel-eslint',
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',

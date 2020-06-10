@@ -7,6 +7,7 @@ const userEndpoint = '/users';
 export const UserTypes = {
   ADMIN: 'ADMIN',
   CALLER: 'CALLER',
+  USER: 'USER',
 };
 
 export default class UserService extends ObservableService {
@@ -26,6 +27,14 @@ export default class UserService extends ObservableService {
     };
     this.notify();
     return users;
+  }
+
+  async logout() {
+    this.state = {
+      users: [],
+      me: null,
+    };
+    this.notify();
   }
 
   async refreshSelf() {

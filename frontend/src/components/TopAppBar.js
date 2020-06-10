@@ -8,7 +8,6 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { green } from '@material-ui/core/colors';
-import FeedbackDialog from './FeedbackDialog';
 import { useUserService } from '../contexts';
 import { UserTypes } from '../services/User';
 import './TopAppBar.css';
@@ -17,19 +16,22 @@ const appBarStyles = {
   [UserTypes.ADMIN]: {
     background: green[700],
   },
+  [UserTypes.USER]: {
+    background: '#52B2CF',
+  },
 };
 
 const switchViewName = {
   [UserTypes.ADMIN]: 'caller',
   [UserTypes.CALLER]: 'admin',
+  [UserTypes.USER]: 'user',
 };
 
 function TopAppBar({ dashboardChoice, setDashboardChoice }) {
-  const [userState] = useUserService();
+  const [userState, userService] = useUserService();
   const { me: userInfo } = userState || {};
-  const { picture = null, role } = userInfo || {};
+  const { picture = null } = userInfo || {};
 
-  const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
   const [optionsMenuAnchorEl, setOptionsMenuAnchorEl] = useState(null);
   const isOptionsMenuOpen = Boolean(optionsMenuAnchorEl);
 
@@ -47,18 +49,19 @@ function TopAppBar({ dashboardChoice, setDashboardChoice }) {
     }
   };
 
+  const logout = () => {
+    console.log('click logout');
+    userService.logout();
+  };
+
   // We render two Toolbars because otherwise, content gets hidden
   return (
     <>
-      <FeedbackDialog
-        isOpen={isFeedbackDialogOpen}
-        setIsOpen={setIsFeedbackDialogOpen}
-      />
       <AppBar position="sticky" style={appBarStyles[dashboardChoice]}>
         <Toolbar>
           <div className="app-toolbar-container">
             <Typography component="h1" variant="h6">
-              Care Corner-Ring a Senior
+              Call Home
             </Typography>
             {dashboardChoice === UserTypes.ADMIN ? (
               <Typography variant="subtitle1"> Admin View</Typography>
@@ -76,18 +79,12 @@ function TopAppBar({ dashboardChoice, setDashboardChoice }) {
               onClose={closeOptionsMenu}
               anchorEl={optionsMenuAnchorEl}
             >
-              <MenuItem
-                onClick={() => {
-                  setIsFeedbackDialogOpen(true);
-                }}
-              >
-                Feedback/Report Issue
-              </MenuItem>
-              {role === UserTypes.ADMIN ? (
+              {dashboardChoice !== UserTypes.USER ? (
                 <MenuItem onClick={toggleDashboardChoice}>
                   Switch to {switchViewName[dashboardChoice]} view
                 </MenuItem>
               ) : null}
+              <MenuItem onClick={logout}>Logout</MenuItem>
             </Menu>
           </div>
         </Toolbar>

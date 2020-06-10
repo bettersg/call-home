@@ -38,7 +38,7 @@ function calleeToCalleeResponse(callee, isAdmin) {
     id,
     name,
   };
-  if (isAdmin) {
+  if (isAdmin || true) {
     response.phoneNumber = phoneNumber;
   }
   return response;
