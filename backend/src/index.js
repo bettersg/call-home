@@ -48,11 +48,11 @@ app.use('/manifest.json', express.static(STATIC_DIR));
 
 if (!isProd) {
   // proxy requests to development frontend
-  app.use('/', secureRoutes, proxy('http://localhost:3000'));
+  app.use('/', proxy('http://localhost:3000'));
   // This is just for setting things up
   // require('../setupDemo')().catch(console.error); // eslint-disable-line global-require
 } else {
-  app.use(secureRoutes, express.static(STATIC_DIR));
+  app.use(express.static(STATIC_DIR));
 }
 
 try {

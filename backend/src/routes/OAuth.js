@@ -2,6 +2,7 @@ const url = require('url');
 const querystring = require('querystring');
 const express = require('express');
 const passport = require('passport');
+const { UserService } = require('../services');
 
 const { AUTH0_DOMAIN, AUTH0_CLIENT_ID } = process.env;
 
@@ -19,9 +20,9 @@ function OAuthRoutes() {
     }
   );
 
-  router.get('/callback', (req, res, next) => {
+  router.get('/callback', async (req, res, next) => {
     // eslint-disable-next-line
-    passport.authenticate('auth0', (err, user, info) => {
+    passport.authenticate('auth0', async (err, user, info) => {
       if (err) {
         return req.session.destroy(() => {
           return next(err);
@@ -30,13 +31,19 @@ function OAuthRoutes() {
       if (!user) {
         return res.redirect('/login');
       }
-      if (user.emails == null) {
+      if (user.emails === null) {
         // TODO: Hack, should add openid column
         /* eslint-disable-next-line */
         user.emails = [
           { value: `${user.nickname.replace('+', '')}@openid.com` },
         ];
       }
+
+      await UserService.createUser({
+        name: req.user.displayName,
+        email: req.user.emails[0].value,
+      });
+
       req.logIn(user, (reqErr) => {
         if (reqErr) {
           return next(reqErr);

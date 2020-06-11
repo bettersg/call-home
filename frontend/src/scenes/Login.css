@@ -1,0 +1,14 @@
+.login-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 15% 0;
+}
+
+.login-buttons {
+  display: flex;
+  justify-content: space-around;
+  width: 30%;
+}

@@ -1,19 +1,19 @@
 const sequelize = require('./sequelize');
-const { model: UserModel, UserTypes } = require('./User');
-const CalleeModel = require('./Callee');
+const { model: UserModel } = require('./User');
+const ContactModel = require('./Contact');
 const CallModel = require('./Call');
 
 const User = UserModel(sequelize);
-const Callee = CalleeModel(sequelize);
+const Contact = ContactModel(sequelize);
 const Call = CallModel(sequelize);
 
-// User <-> Callee
-User.belongsToMany(Callee, { through: 'userCallees' });
-Callee.belongsToMany(User, { through: 'userCallees' });
+// User <-> Contact
+User.belongsToMany(Contact, { through: 'userContacts' });
+Contact.belongsToMany(User, { through: 'userContacts' });
 
-// Call <-> Callee
-Call.belongsToMany(Callee, { through: 'callCallees' });
-Callee.belongsToMany(Call, { through: 'callCallees' });
+// Call <-> Contact
+Call.belongsToMany(Contact, { through: 'callContacts' });
+Contact.belongsToMany(Call, { through: 'callContacts' });
 
 // Call <-> User
 Call.belongsToMany(User, { through: 'callUsers' });
@@ -22,7 +22,6 @@ User.belongsToMany(Call, { through: 'callUsers' });
 module.exports = {
   sequelize,
   User,
-  UserTypes,
-  Callee,
+  Contact,
   Call,
 };

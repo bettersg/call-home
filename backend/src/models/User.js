@@ -1,11 +1,5 @@
 const { DataTypes, Model } = require('sequelize');
 
-const UserTypes = {
-  ADMIN: 'ADMIN',
-  CALLER: 'CALLER',
-  USER: 'USER',
-};
-
 function UserModel(sequelize) {
   class User extends Model {}
   User.init(
@@ -24,16 +18,6 @@ function UserModel(sequelize) {
           },
         },
       },
-      userType: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          isIn: {
-            args: [Object.values(UserTypes)],
-            msg: 'Invalid user type specified. Must be ADMIN or CALLER',
-          },
-        },
-      },
     },
     {
       sequelize,
@@ -45,5 +29,4 @@ function UserModel(sequelize) {
 
 module.exports = {
   model: UserModel,
-  UserTypes,
 };

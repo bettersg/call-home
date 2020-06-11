@@ -1,11 +1,5 @@
 function parseUserRequestBody(req, res, next) {
-  const {
-    name,
-    email,
-    userType,
-    // TODO we're gon be lazy af and assume that we always work with callees
-    callees = [],
-  } = req.body;
+  const { name, email } = req.body;
 
   const errorMessages = [];
   if (!name) {
@@ -14,9 +8,6 @@ function parseUserRequestBody(req, res, next) {
   if (!email) {
     errorMessages.push("User's email is missing");
   }
-  if (!userType) {
-    errorMessages.push("User's type is missing");
-  }
   if (errorMessages.length > 0) {
     return res.status(400).send(`Invalid User: ${errorMessages.join('\n')}`);
   }
@@ -24,62 +15,52 @@ function parseUserRequestBody(req, res, next) {
   req.body = {
     name,
     email,
-    userType,
-    callees,
   };
 
   return next();
 }
 
-function calleeToCalleeResponse(callee, isAdmin) {
-  const { id, name, phoneNumber } = callee;
+function contactToContactResponse(contact) {
+  const { id, name, phoneNumber } = contact;
 
   const response = {
     id,
     name,
+    phoneNumber,
   };
-  if (isAdmin || true) {
-    response.phoneNumber = phoneNumber;
-  }
   return response;
 }
 
-function userToUserResponse(user, isAdmin) {
-  const { id, name, email, userType, callees } = user;
+function userToUserResponse(user) {
+  const { id, name, email } = user;
 
   return {
     id,
     name,
     email,
-    userType,
-    callees: callees.map((callee) => calleeToCalleeResponse(callee, isAdmin)),
   };
 }
 
 function userProfileToUserProfileResponse(userProfile) {
-  const { displayName, name, emails, picture, role } = userProfile;
+  const { displayName, name, emails, picture } = userProfile;
 
   return {
     displayName,
     name,
     emails,
     picture,
-    role,
   };
 }
 
-function parseCalleeRequestBody(req, res, next) {
+function parseContactRequestBody(req, res, next) {
   const { name, phoneNumber } = req.body;
 
   const errorMessages = [];
   if (!name) {
-    errorMessages.push("Callee's name is missing");
+    errorMessages.push("Contact's name is missing");
   }
   if (!phoneNumber) {
-    errorMessages.push("Callee's phone number is missing");
-  }
-  if (errorMessages.length > 0) {
-    return res.status(400).send(`Invalid Callee: ${errorMessages.join('\n')}`);
+    errorMessages.push("Contact's phone number is missing");
   }
 
   req.body = {
@@ -94,6 +75,6 @@ module.exports = {
   parseUserRequestBody,
   userToUserResponse,
   userProfileToUserProfileResponse,
-  parseCalleeRequestBody,
-  calleeToCalleeResponse,
+  parseContactRequestBody,
+  contactToContactResponse,
 };

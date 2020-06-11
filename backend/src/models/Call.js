@@ -8,6 +8,10 @@ function CallModel(sequelize) {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      contactId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       phoneNumber: {
         type: DataTypes.STRING,
         allowNull: false,

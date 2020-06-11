@@ -1,25 +1,18 @@
 const express = require('express');
-const { requireAdmin } = require('./middlewares');
 const {
-  parseCalleeRequestBody,
-  calleeToCalleeResponse,
+  parseContactRequestBody,
+  contactToContactResponse,
 } = require('./transformers');
 
-// Reads a req and parses the body into a callee that can be saved.
-function CalleeRoutes(calleeService) {
+// Reads a req and parses the body into a contact that can be saved.
+function ContactRoutes(contactService) {
   const router = express.Router();
 
-  router.get('/', requireAdmin, async (req, res) => {
-    console.log('listing all callees');
-    const allCallees = await calleeService.listCallees();
-    res.status(200).json(allCallees);
-  });
-
-  router.post('/', parseCalleeRequestBody, async (req, res) => {
-    const callee = req.body;
+  router.post('/', parseContactRequestBody, async (req, res) => {
+    const contact = req.body;
     try {
-      const savedCallee = await calleeService.createCallee(callee);
-      return res.status(200).json(calleeToCalleeResponse(savedCallee));
+      const savedContact = await contactService.createContact(contact);
+      return res.status(200).json(contactToContactResponse(savedContact));
     } catch (e) {
       // TODO do this smarter
       if (e.message.startsWith('Validation Error:')) {
@@ -29,25 +22,20 @@ function CalleeRoutes(calleeService) {
     }
   });
 
-  router.put(
-    '/:calleeId',
-    parseCalleeRequestBody,
-    requireAdmin,
-    async (req, res) => {
-      const callee = req.body;
-      const savedCallee = await calleeService.updateCallee(
-        req.params.id,
-        callee
-      );
-      res.status(200).json(calleeToCalleeResponse(savedCallee));
-    }
-  );
+  router.put('/:contactId', parseContactRequestBody, async (req, res) => {
+    const contact = req.body;
+    const savedContact = await contactService.updateContact(
+      req.params.id,
+      contact
+    );
+    res.status(200).json(contactToContactResponse(savedContact));
+  });
 
-  router.delete('/:calleeId', requireAdmin, async (req, res) => {
-    await calleeService.deleteCallee(req.params.calleeId);
+  router.delete('/:contactId', async (req, res) => {
+    await contactService.deleteContact(req.params.contactId);
     res.status(200).send();
   });
   return router;
 }
 
-module.exports = CalleeRoutes;
+module.exports = ContactRoutes;

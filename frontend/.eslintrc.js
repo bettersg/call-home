@@ -27,6 +27,7 @@ module.exports = {
     'react/jsx-filename-extension': 'off',
     'react/jsx-one-expression-per-line': 'off',
     'react/jsx-props-no-spreading': 'off',
-    'react/prop-types': 'off'
+    'react/prop-types': 'off',
+    'import/prefer-default-export': 'off',
   },
 };
