@@ -29,9 +29,9 @@ function UserModel(sequelize) {
           },
         },
       },
-      // TODO find a more elegant way to validate user phone numbers
-      phoneNumberToken: {
-        type: DataTypes.STRING,
+      isPhoneNumberValidated: {
+        type: DataTypes.BOOLEAN,
+        default: false,
       },
     },
     {

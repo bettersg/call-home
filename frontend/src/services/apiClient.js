@@ -1,7 +1,15 @@
+/* eslint-disable max-classes-per-file */
 import axios from 'axios';
 import * as Sentry from '@sentry/browser';
 
 export class UnauthenticatedError extends Error {}
+
+export class ApiDataError extends Error {
+  constructor(apiData) {
+    super();
+    this.data = apiData;
+  }
+}
 
 function handleApiError(wrappedFn, { preventRedirect } = {}) {
   return async (...args) => {
@@ -28,11 +36,11 @@ function handleApiError(wrappedFn, { preventRedirect } = {}) {
       // 400 is a bad request, we alert the users somehow but do not report to Sentry.
       if (response.status === 400) {
         // TODO improve the API request handling
-        throw new Error(response.data);
+        throw new ApiDataError(response.data);
       }
       // Alert users and Sentry by default
       Sentry.captureException(e);
-      throw new Error(response.data);
+      throw new ApiDataError(response.data);
     }
   };
 }

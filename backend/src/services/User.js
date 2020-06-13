@@ -16,7 +16,7 @@ async function injectCallees(userOrUsers) {
   // return isSingular ? injectedUsers[0] : injectedUsers;
 }
 
-function UserService(UserModel) {
+function UserService(UserModel, whitelistEntryService) {
   async function listUsers() {
     return injectCallees(
       await UserModel.findAll({
@@ -74,9 +74,15 @@ function UserService(UserModel) {
     return updatedUser;
   }
 
-  async function verifyUserPhoneNumber(userId, phoneNumberToken) {
-    const user = await getUser(userId);
-    user.phoneNumberToken = phoneNumberToken;
+  async function verifyUserPhoneNumber(userId, phoneNumber) {
+    const [user, whitelistEntry] = await Promise.all([
+      getUser(userId),
+      whitelistEntryService.getWhitelistEntryByPhoneNumber(phoneNumber),
+    ]);
+    if (!whitelistEntry) {
+      return user;
+    }
+    user.isPhoneNumberValidated = true;
     await user.save();
     await user.reload();
     return user;

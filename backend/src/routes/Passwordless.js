@@ -22,24 +22,31 @@ function PasswordlessRoutes(userService, auth0Service) {
   });
 
   router.post('/login', async (req, res) => {
-    console.log('LOGGING IN');
-    const { phoneNumber, code } = req.body;
+    const { phoneNumber: rawPhoneNumber, code } = req.body;
+    const phoneNumber = sgfyPhoneNumber(rawPhoneNumber);
+
     const { id: userId } = req.user;
-    console.log('LOGGGING INGINNNNNN', phoneNumber, code, userId);
     if (!phoneNumber || !code) {
-      return res.status(400);
+      return res.status(400).send();
     }
     try {
-      const token = await auth0Service.signIn(
-        sgfyPhoneNumber(phoneNumber),
-        code
-      );
-      console.log('GOT ZE TOKEN', token);
-      await userService.verifyUserPhoneNumber(userId, JSON.stringify(token));
+      console.log('Received login attempt');
+      const token = await auth0Service.signIn(phoneNumber, code);
+      console.log('Received a token', token);
+      const user = await userService.verifyUserPhoneNumber(userId, phoneNumber);
+      if (!user.isPhoneNumberValidated) {
+        return res.status(403).json({ message: 'NOT_WHITELISTED' });
+      }
       return res.redirect('/');
     } catch (e) {
       console.error(e);
-      return res.status(403);
+      const { response } = e;
+      if (response && response.data && response.data.error) {
+        if (response.data.error === 'invalid_grant') {
+          res.status(403).send({ message: 'BAD_OTP' });
+        }
+      }
+      return res.status(403).send();
     }
   });
 

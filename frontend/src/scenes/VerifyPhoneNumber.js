@@ -32,9 +32,10 @@ function PhoneNumberForm({ submitPhoneNumber, phoneNumber, setPhoneNumber }) {
   );
 }
 
-function VerificationCodeForm({ phoneNumber }) {
+function VerificationCodeForm({ phoneNumber, setHasWhitelistError }) {
   const [, userService] = useUserService();
   const [code, setCode] = useState('');
+  const [hasBadOtpError, setHasBadOtpError] = useState(false);
 
   useEffect(() => {
     beginPasswordless(phoneNumber);
@@ -43,6 +44,7 @@ function VerificationCodeForm({ phoneNumber }) {
   return (
     <div>
       <div>Enter the verification code sent to {phoneNumber}.</div>
+      {hasBadOtpError ? <div>Wrong code</div> : null}
       <TextField
         fullWidth
         label="Verification code"
@@ -62,8 +64,20 @@ function VerificationCodeForm({ phoneNumber }) {
         variant="contained"
         disableElevation
         onClick={async () => {
-          await login(phoneNumber, code);
-          await userService.refreshSelf();
+          try {
+            await login(phoneNumber, code);
+            await userService.refreshSelf();
+          } catch (e) {
+            if (!e.data || !e.data.message) {
+              throw e;
+            }
+            const { message } = e.data;
+            if (message === 'NOT_WHITELISTED') {
+              setHasWhitelistError(true);
+            } else if (message === 'BAD_OTP') {
+              setHasBadOtpError(true);
+            }
+          }
         }}
       >
         Submit
@@ -76,6 +90,7 @@ export default function VerifyPhoneNumber({ navigate }) {
   const [userState, userService] = useUserService();
   const [phoneNumber, setPhoneNumber] = useState('');
   const [hasSubmittedPhoneNumber, setHasSubmittedPhoneNumber] = useState(false);
+  const [hasWhitelistError, setHasWhitelistError] = useState(false);
   const { me: user } = userState;
 
   useEffect(() => {
@@ -90,17 +105,29 @@ export default function VerifyPhoneNumber({ navigate }) {
     }
   }, [userState]);
 
-  return (
-    <Container>
-      {hasSubmittedPhoneNumber ? (
-        <VerificationCodeForm phoneNumber={phoneNumber} />
-      ) : (
-        <PhoneNumberForm
-          phoneNumber={phoneNumber}
-          setPhoneNumber={setPhoneNumber}
-          submitPhoneNumber={() => setHasSubmittedPhoneNumber(true)}
-        />
-      )}
-    </Container>
-  );
+  let content;
+  if (hasWhitelistError) {
+    content = (
+      <div>
+        Sorry, your phone number is not part of this programme. If you believe
+        this is an error, reach out to an administrator.
+      </div>
+    );
+  } else if (hasSubmittedPhoneNumber) {
+    content = (
+      <VerificationCodeForm
+        phoneNumber={phoneNumber}
+        setHasWhitelistError={setHasWhitelistError}
+      />
+    );
+  } else {
+    content = (
+      <PhoneNumberForm
+        phoneNumber={phoneNumber}
+        setPhoneNumber={setPhoneNumber}
+        submitPhoneNumber={() => setHasSubmittedPhoneNumber(true)}
+      />
+    );
+  }
+  return <Container>{content}</Container>;
 }

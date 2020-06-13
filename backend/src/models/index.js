@@ -2,10 +2,12 @@ const sequelize = require('./sequelize');
 const { model: UserModel } = require('./User');
 const ContactModel = require('./Contact');
 const CallModel = require('./Call');
+const WhitelistEntryModel = require('./WhitelistEntry');
 
 const User = UserModel(sequelize);
 const Contact = ContactModel(sequelize);
 const Call = CallModel(sequelize);
+const WhitelistEntry = WhitelistEntryModel(sequelize);
 
 // User <-> Contact
 User.hasMany(Contact, {
@@ -28,4 +30,5 @@ module.exports = {
   User,
   Contact,
   Call,
+  WhitelistEntry,
 };
