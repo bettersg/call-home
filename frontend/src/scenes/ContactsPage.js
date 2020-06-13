@@ -57,7 +57,7 @@ export default function ContactsPage({ navigate }) {
           <RoundedButton
             onClick={() => {
               contactService.setActiveContact(contact);
-              navigate(SCENES.CALLING_PAGE);
+              navigate(SCENES.CALLING);
             }}
           >
             Call them

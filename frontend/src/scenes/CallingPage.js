@@ -78,7 +78,7 @@ export default function CallingPage({ navigate }) {
 
   const navigateToContactPage = () => {
     contactService.setActiveContact(null);
-    navigate(SCENES.CONTACTS_PAGE);
+    navigate(SCENES.CONTACTS);
   };
 
   return (

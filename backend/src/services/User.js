@@ -26,11 +26,12 @@ function UserService(UserModel) {
   }
 
   async function createUser(user) {
-    const { callees, ...plainUser } = user;
-    plainUser.email = plainUser.email.toLowerCase();
-
     const createdUser = await sanitizeDbErrors(() =>
-      UserModel.create(plainUser)
+      UserModel.create({
+        ...user,
+        email: user.email.toLowerCase(),
+        isPhoneNumberValidated: false,
+      })
     );
     // await createdUser.setCallees(callees.map((callee) => callee.id));
     await createdUser.save();
@@ -59,20 +60,26 @@ function UserService(UserModel) {
   }
 
   async function updateUser(userId, user) {
-    const { callees, ...plainUser } = user;
-    plainUser.email = plainUser.email.toLowerCase();
+    const userPayload = {
+      ...user,
+      email: user.email.toLowerCase(),
+    };
 
-    console.log('useruser', user);
-    await UserModel.update(plainUser, {
+    await UserModel.update(userPayload, {
       where: {
         id: userId,
       },
     });
     const updatedUser = await getUser(userId);
-    await updatedUser.setCallees(callees.map((callee) => callee.id));
-    await updatedUser.save();
-    await updatedUser.reload();
-    return injectCallees(updatedUser);
+    return updatedUser;
+  }
+
+  async function verifyUserPhoneNumber(userId, phoneNumberToken) {
+    const user = await getUser(userId);
+    user.phoneNumberToken = phoneNumberToken;
+    await user.save();
+    await user.reload();
+    return user;
   }
 
   async function deleteUser(userId) {
@@ -80,12 +87,17 @@ function UserService(UserModel) {
     await user.destroy();
   }
 
-  // TODO this exists only for adding users via oauth. This may not belong here
-  async function registerUser(userEmails, name) {
+  async function getUserByEmails(userEmails) {
     const allUsers = await Promise.all(
       userEmails.map((userEmail) => getUserByEmail(userEmail))
     );
     const foundUser = allUsers.find((user) => user);
+    return foundUser;
+  }
+
+  // TODO this exists only for adding users via oauth. This may not belong here
+  async function registerUser(userEmails, name) {
+    const foundUser = await getUserByEmails(userEmails);
     if (foundUser) {
       return foundUser;
     }
@@ -94,7 +106,6 @@ function UserService(UserModel) {
       email: userEmails[0],
     });
   }
-
   return {
     listUsers,
     createUser,
@@ -103,6 +114,8 @@ function UserService(UserModel) {
     updateUser,
     deleteUser,
     registerUser,
+    verifyUserPhoneNumber,
+    getUserByEmails,
   };
 }
 

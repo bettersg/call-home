@@ -17,30 +17,23 @@ const SecondaryButton = withStyles((theme) => ({
 
 export default function Login({ navigate }) {
   const [userState, userService] = useUserService();
+  const { me: user } = userState;
   useEffect(() => {
     if (userService) {
       userService.refreshSelf();
     }
   }, [userService]);
-  const { me: user } = userState;
 
-  if (user) {
-    navigate(SCENES.CONTACTS_PAGE);
-    return null;
-  }
+  useEffect(() => {
+    if (user) {
+      navigate(SCENES.VERIFY_PHONE_NUMBER);
+    }
+  }, [userState]);
 
   return (
     <Container>
       <div className="login-content">
         <div className="login-buttons">
-          <RoundedButton
-            color="secondary"
-            variant="contained"
-            disableElevation
-            onClick={() => navigate(SCENES.SIGNUP)}
-          >
-            Sign Up
-          </RoundedButton>
           <SecondaryButton
             variant="contained"
             disableElevation
@@ -48,7 +41,7 @@ export default function Login({ navigate }) {
               window.location = '/oauth/login';
             }}
           >
-            Log In
+            Log in with Facebook
           </SecondaryButton>
         </div>
       </div>

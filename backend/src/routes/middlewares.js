@@ -1,4 +1,10 @@
 // TODO don't hardcode this
+const { User: UserService } = require('../services');
+const {
+  userToUserResponse,
+  userProfileToUserProfileResponse,
+} = require('./transformers');
+
 const LOGIN_ROUTE = '/';
 
 async function httpsRedirect(req, res, next) {
@@ -11,10 +17,33 @@ async function httpsRedirect(req, res, next) {
   return next();
 }
 
+async function injectDbUser(req) {
+  // This returns the OAuth user info
+  const { _raw, _json, ...userProfile } = req.user;
+  const userProfileResponse = userProfileToUserProfileResponse(userProfile);
+  console.log('Getting info for user profile', userProfile);
+  const user = await UserService.getUserByEmails(
+    req.user.emails.map((emailValue) => emailValue.value)
+  );
+  if (!user) {
+    // TODO think about this more carefully
+    console.error(
+      '===================================no user found, what do i do???'
+    );
+    return;
+  }
+  const userResponse = userToUserResponse(user);
+  req.user = {
+    ...userProfileResponse,
+    ...userResponse,
+  };
+}
+
 async function secureRoutes(req, res, next) {
   console.log('Securing route: ', req.originalUrl);
   console.log('Sessions', req.session);
   if (req.user) {
+    await injectDbUser(req);
     return next();
   }
   console.log('No user found');
@@ -25,7 +54,7 @@ async function secureRoutes(req, res, next) {
   return res.format({
     json: () => {
       console.log('Encountered api call, sending 401');
-      res.status(401).json({ location: LOGIN_ROUTE });
+      return res.status(401).json({ location: LOGIN_ROUTE });
     },
     html: () => {
       console.log('Encountered browser request, redirecting to ', LOGIN_ROUTE);

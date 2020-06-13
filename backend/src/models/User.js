@@ -29,7 +29,10 @@ function UserModel(sequelize) {
           },
         },
       },
-      // TODO add phone number verification
+      // TODO find a more elegant way to validate user phone numbers
+      phoneNumberToken: {
+        type: DataTypes.STRING,
+      },
     },
     {
       sequelize,

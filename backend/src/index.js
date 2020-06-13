@@ -38,7 +38,7 @@ if (isProd) {
 }
 // Make sure oauth is first and NOT secured
 app.use('/oauth', oauthRoutes);
-app.use('/passwordless', passwordlessRoutes);
+app.use('/passwordless', secureRoutes, passwordlessRoutes);
 // Also ensure that twilio is NOT secured by oauth, just twilio auth
 app.use('/twilio', twilioRoutes);
 app.use('/users', secureRoutes, userRoutes);

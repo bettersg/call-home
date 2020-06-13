@@ -32,12 +32,14 @@ function contactToContactResponse(contact) {
 }
 
 function userToUserResponse(user) {
-  const { id, name, email } = user;
+  const { id, name, email, phoneNumberToken } = user;
+  const isVerified = !!phoneNumberToken;
 
   return {
     id,
     name,
     email,
+    isVerified,
   };
 }
 
