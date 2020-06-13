@@ -1,5 +1,4 @@
 const express = require('express');
-const { UserTypes } = require('../models');
 const {
   userToUserResponse,
   userProfileToUserProfileResponse,
@@ -14,10 +13,7 @@ function UserRoutes(userService) {
   router.get('/me', async (req, res) => {
     // This returns the OAuth user info
     const { _raw, _json, ...userProfile } = req.user;
-    const userProfileResponse = userProfileToUserProfileResponse(
-      userProfile,
-      userProfile.userType === UserTypes.ADMIN
-    );
+    const userProfileResponse = userProfileToUserProfileResponse(userProfile);
 
     console.log('Getting info for user profile', userProfile);
     const allPossibleUsers = await Promise.all(

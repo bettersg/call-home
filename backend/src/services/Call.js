@@ -1,23 +1,13 @@
 const { sanitizeDbErrors } = require('./lib');
-const { UserTypes } = require('../models');
 
 // TODO The DI is a mess
-function CallService(CallModel, userService, calleeService) {
-  async function validateCall(userId, calleeId) {
-    const user = await userService.getUser(userId);
-    console.log('Call for callee', calleeId);
-    console.log('Creating call for user', userId);
-    console.dir(user);
-    if (user.userType === UserTypes.ADMIN) {
-      return true;
-    }
-    console.log("User's callees", user.callees);
-    console.log(
-      'User has callee',
-      user.callees.findIndex((callee) => callee.id === calleeId) < 0
-    );
+function CallService(CallModel, userService, contactService) {
+  async function validateCall(userId, contactId) {
+    const userContacts = await contactService.listContactsByUserId(userId);
 
-    if (user.callees.findIndex((callee) => callee.id === calleeId) < 0) {
+    console.log('validating call for', userId, contactId);
+    console.log(userContacts);
+    if (userContacts.findIndex((contact) => contact.id === contactId) < 0) {
       throw new Error(`Authorization error for user ${userId}`);
     }
     return true;
@@ -25,14 +15,15 @@ function CallService(CallModel, userService, calleeService) {
 
   async function createCall({
     userId,
-    calleeId,
+    contactId,
     twilioCallId,
     twilioCallStatus,
   }) {
-    validateCall(userId, calleeId);
-    const callee = await calleeService.getCallee(calleeId);
+    validateCall(userId, contactId);
+    const contact = await contactService.getContact(userId, contactId);
     const call = {
-      phoneNumber: callee.phoneNumber,
+      phoneNumber: contact.phoneNumber,
+      contactId,
       userId,
       twilioCallId,
       twilioCallStatus,

@@ -1,7 +1,9 @@
 import axios from 'axios';
 import * as Sentry from '@sentry/browser';
 
-function handleApiError(wrappedFn) {
+export class UnauthenticatedError extends Error {}
+
+function handleApiError(wrappedFn, { preventRedirect } = {}) {
   return async (...args) => {
     try {
       const response = await wrappedFn(...args);
@@ -16,8 +18,12 @@ function handleApiError(wrappedFn) {
       }
       // 401 Means that the user is unauthenticated. This should always be accompanied with a location to redirect to.
       if (response.status === 401 && response.data.location) {
-        window.location = response.data.location;
-        return undefined;
+        if (preventRedirect) {
+          throw new UnauthenticatedError('Unauthenticated');
+        } else {
+          window.location = response.data.location;
+          return undefined;
+        }
       }
       // 400 is a bad request, we alert the users somehow but do not report to Sentry.
       if (response.status === 400) {
@@ -36,4 +42,12 @@ export default Object.freeze({
   put: handleApiError(axios.put),
   delete: handleApiError(axios.delete),
   post: handleApiError(axios.post),
+});
+
+// Expose a version that doesn't automatically redirect in case the caller needs to make use of the unauthenticated status.
+export const noRedirectClient = Object.freeze({
+  get: handleApiError(axios.get, { preventRedirect: true }),
+  put: handleApiError(axios.put, { preventRedirect: true }),
+  delete: handleApiError(axios.delete, { preventRedirect: true }),
+  post: handleApiError(axios.post, { preventRedirect: true }),
 });

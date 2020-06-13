@@ -1,4 +1,4 @@
-const Passport = require('./passport');
+const Passport = require('./passportOauth');
 const Session = require('./session');
 
 module.exports = {

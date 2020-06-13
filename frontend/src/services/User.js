@@ -1,14 +1,8 @@
-import apiClient from './apiClient';
+import { noRedirectClient, UnauthenticatedError } from './apiClient';
 import ObservableService from './observableService';
 
 // TODO make this configurable
 const userEndpoint = '/users';
-
-export const UserTypes = {
-  ADMIN: 'ADMIN',
-  CALLER: 'CALLER',
-  USER: 'USER',
-};
 
 export default class UserService extends ObservableService {
   constructor() {
@@ -17,16 +11,6 @@ export default class UserService extends ObservableService {
       users: [],
       me: null,
     };
-  }
-
-  async refreshAllUsers() {
-    const users = await apiClient.get(userEndpoint);
-    this.state = {
-      ...this.state,
-      users,
-    };
-    this.notify();
-    return users;
   }
 
   async logout() {
@@ -38,29 +22,18 @@ export default class UserService extends ObservableService {
   }
 
   async refreshSelf() {
-    const me = await apiClient.get(`${userEndpoint}/me`);
-    this.state = {
-      ...this.state,
-      me,
-    };
-    this.notify();
-  }
-
-  async createUser(user) {
-    const result = await apiClient.post(`${userEndpoint}`, user);
-    await this.refreshAllUsers();
-    return result;
-  }
-
-  async updateUser(userId, newUser) {
-    const result = await apiClient.put(`${userEndpoint}/${userId}`, newUser);
-    await this.refreshAllUsers();
-    return result;
-  }
-
-  async deleteUser(userId) {
-    const result = await apiClient.delete(`${userEndpoint}/${userId}`);
-    await this.refreshAllUsers();
-    return result;
+    try {
+      const me = await noRedirectClient.get(`${userEndpoint}/me`);
+      this.state = {
+        ...this.state,
+        me,
+      };
+      this.notify();
+    } catch (e) {
+      if (e instanceof UnauthenticatedError) {
+        return;
+      }
+      throw e;
+    }
   }
 }

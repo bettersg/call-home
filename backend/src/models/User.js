@@ -18,6 +18,18 @@ function UserModel(sequelize) {
           },
         },
       },
+      phoneNumber: {
+        type: DataTypes.STRING,
+        unique: true,
+        validate: {
+          is: {
+            args: [/\+65[0-9]{8}$/],
+            msg:
+              'Phone number should start with +65 and be followed by 8 digits.',
+          },
+        },
+      },
+      // TODO add phone number verification
     },
     {
       sequelize,

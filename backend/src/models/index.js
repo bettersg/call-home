@@ -8,8 +8,12 @@ const Contact = ContactModel(sequelize);
 const Call = CallModel(sequelize);
 
 // User <-> Contact
-User.belongsToMany(Contact, { through: 'userContacts' });
-Contact.belongsToMany(User, { through: 'userContacts' });
+User.hasMany(Contact, {
+  foreignKey: {
+    name: 'UserId',
+  },
+});
+Contact.belongsTo(User);
 
 // Call <-> Contact
 Call.belongsToMany(Contact, { through: 'callContacts' });

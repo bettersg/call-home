@@ -2,7 +2,7 @@ import React from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {
   UserServiceProvider,
-  CalleeServiceProvider,
+  ContactServiceProvider,
   ThemeProvider,
 } from './contexts';
 import { initSentry } from './services/Sentry';
@@ -17,12 +17,12 @@ if (isProd) {
 function App() {
   return (
     <UserServiceProvider>
-      <CalleeServiceProvider>
+      <ContactServiceProvider>
         <CssBaseline />
         <ThemeProvider>
           <SceneRouter />
         </ThemeProvider>
-      </CalleeServiceProvider>
+      </ContactServiceProvider>
     </UserServiceProvider>
   );
 }

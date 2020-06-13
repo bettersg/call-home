@@ -1,14 +1,14 @@
 const models = require('../models');
 
 const User = require('./User');
-const Callee = require('./Callee');
+const Contact = require('./Contact');
 const Call = require('./Call');
 
-const userService = User(models.User, models.Callee);
-const calleeService = Callee(models.Callee);
+const userService = User(models.User, models.Contact);
+const contactService = Contact(models.Contact);
 
 module.exports = {
   User: userService,
-  Callee: calleeService,
-  Call: Call(models.Call, userService, calleeService),
+  Contact: contactService,
+  Call: Call(models.Call, userService, contactService),
 };

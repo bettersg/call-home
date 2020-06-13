@@ -26,26 +26,19 @@ function TwilioRoutes(callService) {
     async (req, res) => {
       const {
         userId,
-        calleeId,
+        contactId,
         CallSid: twilioCallId,
         CallStatus: twilioCallStatus,
-        phoneNumber: requestPhoneNumber,
       } = req.body;
-      console.log('creating call for', userId, calleeId);
+      console.log('creating call for', userId, contactId);
 
       try {
-        let phoneNumber;
-        const call = await callService.createCall({
-          userId,
-          calleeId,
+        const { phoneNumber } = await callService.createCall({
+          userId: Number(userId),
+          contactId: Number(contactId),
           twilioCallId,
           twilioCallStatus,
         });
-        if (requestPhoneNumber !== null) {
-          phoneNumber = requestPhoneNumber;
-        } else {
-          phoneNumber = call.phoneNumber;
-        }
         const response = new VoiceResponse()
           .dial({ callerId: TWILIO_PHONE_NUMBER })
           .number(phoneNumber);

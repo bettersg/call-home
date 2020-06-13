@@ -1,5 +1,5 @@
 // TODO don't hardcode this
-const LOGIN_ROUTE = '/oauth/login';
+const LOGIN_ROUTE = '/';
 
 async function httpsRedirect(req, res, next) {
   // Detect the protocol of the user's request. Reading req.protocol does not work.

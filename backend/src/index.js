@@ -6,10 +6,11 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const {
   User: userRoutes,
-  Callee: calleeRoutes,
+  Contact: contactRoutes,
   Twilio: twilioRoutes,
   Call: callRoutes,
   OAuth: oauthRoutes,
+  Passwordless: passwordlessRoutes,
   middlewares: { secureRoutes, httpsRedirect },
 } = require('./routes');
 const {
@@ -37,10 +38,12 @@ if (isProd) {
 }
 // Make sure oauth is first and NOT secured
 app.use('/oauth', oauthRoutes);
+app.use('/passwordless', passwordlessRoutes);
 // Also ensure that twilio is NOT secured by oauth, just twilio auth
 app.use('/twilio', twilioRoutes);
 app.use('/users', secureRoutes, userRoutes);
-app.use('/callees', secureRoutes, calleeRoutes);
+// TODO P1!!! add some kind of auth to allow only modification to self
+app.use('/users', secureRoutes, contactRoutes);
 app.use('/calls', secureRoutes, callRoutes);
 // STATIC_DIR gets populated in a docker build
 // expose manifest.json

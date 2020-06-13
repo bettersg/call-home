@@ -2,7 +2,7 @@ const url = require('url');
 const querystring = require('querystring');
 const express = require('express');
 const passport = require('passport');
-const { UserService } = require('../services');
+const { User: UserService } = require('../services');
 
 const { AUTH0_DOMAIN, AUTH0_CLIENT_ID } = process.env;
 
@@ -13,6 +13,7 @@ function OAuthRoutes() {
     '/login',
     passport.authenticate('auth0', {
       scope: `openid email profile`,
+      connection: 'facebook',
     }),
     (req, res) => {
       console.log('Received login');
@@ -31,18 +32,11 @@ function OAuthRoutes() {
       if (!user) {
         return res.redirect('/login');
       }
-      if (user.emails === null) {
-        // TODO: Hack, should add openid column
-        /* eslint-disable-next-line */
-        user.emails = [
-          { value: `${user.nickname.replace('+', '')}@openid.com` },
-        ];
-      }
 
-      await UserService.createUser({
-        name: req.user.displayName,
-        email: req.user.emails[0].value,
-      });
+      await UserService.registerUser(
+        user.emails.map((email) => email.value),
+        user.displayName
+      );
 
       req.logIn(user, (reqErr) => {
         if (reqErr) {

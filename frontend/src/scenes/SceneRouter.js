@@ -6,13 +6,13 @@ export default function SceneRouter() {
   const [currentScene, setCurrentScene] = useState(SCENES.LOGIN);
   switch (currentScene) {
     case SCENES.LOGIN:
-      return <Login setCurrentScene={setCurrentScene} />;
+      return <Login navigate={setCurrentScene} />;
     case SCENES.SIGNUP:
-      return <Signup />;
+      return <Signup navigate={setCurrentScene} />;
     case SCENES.CALLING_PAGE:
-      return <CallingPage />;
+      return <CallingPage navigate={setCurrentScene} />;
     case SCENES.CONTACTS_PAGE:
-      return <ContactsPage />;
+      return <ContactsPage navigate={setCurrentScene} />;
     default:
       // TODO handle the error gracefully
       throw new Error('Invalid scene specified');

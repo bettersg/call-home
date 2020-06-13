@@ -1,18 +1,19 @@
 const { sanitizeDbErrors } = require('./lib');
 
 async function injectCallees(userOrUsers) {
-  if (!userOrUsers) {
-    return userOrUsers;
-  }
-  const isSingular = !Array.isArray(userOrUsers);
-  const users = isSingular ? [userOrUsers] : userOrUsers;
-  const callees = await Promise.all(users.map((user) => user.getCallees()));
-  const injectedUsers = users.map((user, idx) => {
-    // this needs to be the actual model instance
-    user.callees = callees[idx]; // eslint-disable-line no-param-reassign
-    return user;
-  });
-  return isSingular ? injectedUsers[0] : injectedUsers;
+  return userOrUsers;
+  // if (!userOrUsers) {
+  //   return userOrUsers;
+  // }
+  // const isSingular = !Array.isArray(userOrUsers);
+  // const users = isSingular ? [userOrUsers] : userOrUsers;
+  // const callees = await Promise.all(users.map((user) => user.getCallees()));
+  // const injectedUsers = users.map((user, idx) => {
+  //   // this needs to be the actual model instance
+  //   user.callees = callees[idx]; // eslint-disable-line no-param-reassign
+  //   return user;
+  // });
+  // return isSingular ? injectedUsers[0] : injectedUsers;
 }
 
 function UserService(UserModel) {
@@ -31,7 +32,7 @@ function UserService(UserModel) {
     const createdUser = await sanitizeDbErrors(() =>
       UserModel.create(plainUser)
     );
-    await createdUser.setCallees(callees.map((callee) => callee.id));
+    // await createdUser.setCallees(callees.map((callee) => callee.id));
     await createdUser.save();
     await createdUser.reload();
     return injectCallees(createdUser);
@@ -79,6 +80,21 @@ function UserService(UserModel) {
     await user.destroy();
   }
 
+  // TODO this exists only for adding users via oauth. This may not belong here
+  async function registerUser(userEmails, name) {
+    const allUsers = await Promise.all(
+      userEmails.map((userEmail) => getUserByEmail(userEmail))
+    );
+    const foundUser = allUsers.find((user) => user);
+    if (foundUser) {
+      return foundUser;
+    }
+    return createUser({
+      name,
+      email: userEmails[0],
+    });
+  }
+
   return {
     listUsers,
     createUser,
@@ -86,6 +102,7 @@ function UserService(UserModel) {
     getUserByEmail,
     updateUser,
     deleteUser,
+    registerUser,
   };
 }
 
