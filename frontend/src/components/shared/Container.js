@@ -3,6 +3,7 @@ import MuContainer from '@material-ui/core/Container';
 
 const CONTAINER_STYLES = {
   height: '100vh',
+  padding: '5% 5%',
 };
 
 export default function Container({ children, style, ...rest }) {
@@ -13,7 +14,7 @@ export default function Container({ children, style, ...rest }) {
       }
     : CONTAINER_STYLES;
   return (
-    <MuContainer style={containerStyles} {...rest} maxWidth="lg">
+    <MuContainer style={containerStyles} {...rest} maxWidth="sm">
       {children}
     </MuContainer>
   );

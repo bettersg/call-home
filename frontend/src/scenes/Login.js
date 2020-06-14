@@ -1,21 +1,44 @@
 import React, { useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import Container from '../components/shared/Container';
-import RoundedButton from '../components/shared/RoundedButton';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
 import { useUserService } from '../contexts';
+import Container from '../components/shared/Container';
 import SCENES from './enums';
 
 import './Login.css';
 
-const SecondaryButton = withStyles((theme) => ({
+// TODO figure out where to put these later
+const STRINGS = {
+  en: {
+    DISPLAY_TITLE: 'Call Home',
+    DISPLAY_SUBTITLE: 'Make free calls to loved ones back home in Bangladesh',
+    DATA_CONSUMPTION_COPY: '100MB = 40 min talk',
+    FACEBOOK_SIGN_UP: 'Sign up with Facebook',
+  },
+};
+
+const DataConsumptionCopy = withStyles((theme) => ({
   root: {
-    backgroundColor: theme.palette.primary[900],
+    borderRadius: '10000px',
+    background: 'white',
+    border: `1px solid ${theme.palette.primary[800]}`,
+    padding: '0 12px',
+  },
+}))(Box);
+
+const FacebookButton = withStyles(() => ({
+  root: {
+    marginTop: '60px',
+    backgroundColor: '#1877F2',
+    width: '100%',
     color: 'white',
     padding: '10px',
   },
-}))(RoundedButton);
+}))(Button);
 
-export default function Login({ navigate }) {
+export default function Login({ navigate, locale }) {
   const [userState, userService] = useUserService();
   const { me: user } = userState;
   useEffect(() => {
@@ -33,17 +56,28 @@ export default function Login({ navigate }) {
   return (
     <Container>
       <div className="login-content">
-        <div className="login-buttons">
-          <SecondaryButton
-            variant="contained"
-            disableElevation
-            onClick={() => {
-              window.location = '/oauth/login';
-            }}
-          >
-            Log in with Facebook
-          </SecondaryButton>
-        </div>
+        <img alt="" src="/images/landing_splash.svg" />
+        <Typography style={{ marginTop: '24px' }} variant="h5" component="h1">
+          {STRINGS[locale].DISPLAY_TITLE}
+        </Typography>
+        <Typography style={{ marginTop: '12px' }} variant="body1">
+          {STRINGS[locale].DISPLAY_SUBTITLE}
+        </Typography>
+        <DataConsumptionCopy>
+          <Typography variant="body2">
+            {STRINGS[locale].DATA_CONSUMPTION_COPY}
+          </Typography>
+        </DataConsumptionCopy>
+        <FacebookButton
+          className="sign-up-button"
+          variant="contained"
+          disableElevation
+          onClick={() => {
+            window.location = '/oauth/login';
+          }}
+        >
+          {STRINGS[locale].FACEBOOK_SIGN_UP}
+        </FacebookButton>
       </div>
     </Container>
   );

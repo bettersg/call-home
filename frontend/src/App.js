@@ -18,9 +18,9 @@ function App() {
   return (
     <UserServiceProvider>
       <ContactServiceProvider>
-        <CssBaseline />
         <ThemeProvider>
           <SceneRouter />
+          <CssBaseline />
         </ThemeProvider>
       </ContactServiceProvider>
     </UserServiceProvider>
