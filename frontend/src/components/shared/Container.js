@@ -1,8 +1,20 @@
 import React from 'react';
 import MuContainer from '@material-ui/core/Container';
 
+document.documentElement.style.setProperty(
+  '--viewport-height',
+  `${window.innerHeight}px`
+);
+window.addEventListener('resize', () => {
+  document.documentElement.style.setProperty(
+    '--viewport-height',
+    `${window.innerHeight}px`
+  );
+});
+
 const CONTAINER_STYLES = {
-  height: 'calc(100%)',
+  // Mad hacks
+  height: 'var(--viewport-height)',
   padding: '5% 5%',
   display: 'flex',
   flexDirection: 'column',
