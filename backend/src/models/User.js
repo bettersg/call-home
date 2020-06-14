@@ -33,6 +33,13 @@ function UserModel(sequelize) {
         type: DataTypes.BOOLEAN,
         default: false,
       },
+      // TODO validate this better
+      destinationCountry: {
+        type: DataTypes.STRING,
+        validate: {
+          isIn: [['sg', 'bd', '']],
+        },
+      },
     },
     {
       sequelize,

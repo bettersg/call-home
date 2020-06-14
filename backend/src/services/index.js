@@ -8,7 +8,7 @@ const Auth0 = require('./Auth0');
 
 const whitelistEntryService = WhitelistEntry(models.WhitelistEntry);
 const userService = User(models.User, whitelistEntryService);
-const contactService = Contact(models.Contact);
+const contactService = Contact(models.Contact, userService);
 
 module.exports = {
   User: userService,

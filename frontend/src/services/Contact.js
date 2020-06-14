@@ -28,7 +28,7 @@ export default class ContactService extends ObservableService {
   }
 
   async createContact(userId, contact) {
-    const result = apiClient.post(userContactEndpoint(userId), contact);
+    const result = await apiClient.post(userContactEndpoint(userId), contact);
     this.refreshContacts(userId);
     return result;
   }
@@ -52,6 +52,10 @@ export default class ContactService extends ObservableService {
 
   // TODO make this an id
   setActiveContact(contact) {
-    this.state.activeContact = contact;
+    this.state = {
+      ...this.state,
+      activeContact: contact,
+    };
+    this.notify();
   }
 }

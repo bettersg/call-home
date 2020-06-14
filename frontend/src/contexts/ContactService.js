@@ -12,7 +12,6 @@ export function ContactServiceProvider({ children }) {
   useEffect(() => {
     if (contactService) {
       contactService.subscribe(setContactState);
-      /* contactService.refreshAllContacts().catch(e => alert(e)); */
     }
   }, [contactService]);
 

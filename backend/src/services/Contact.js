@@ -1,6 +1,7 @@
 const { sanitizeDbErrors } = require('./lib');
+const { normalizePhoneNumber } = require('../util/country');
 
-function ContactService(ContactModel) {
+function ContactService(ContactModel, userService) {
   async function listContacts() {
     return ContactModel.findAll({
       order: ['name'],
@@ -17,8 +18,13 @@ function ContactService(ContactModel) {
   }
 
   async function createContact(UserId, contact) {
+    const user = await userService.getUser(UserId);
     const contactToCreate = {
       ...contact,
+      phoneNumber: normalizePhoneNumber(
+        contact.phoneNumber,
+        user.destinationCountry
+      ),
       UserId,
     };
     return sanitizeDbErrors(() => ContactModel.create(contactToCreate));

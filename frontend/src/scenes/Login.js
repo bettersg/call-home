@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
+import { Redirect } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import { useUserService } from '../contexts';
 import Container from '../components/shared/Container';
-import SCENES from './enums';
+import PATHS from './paths';
 
 import './Login.css';
 
@@ -38,7 +39,7 @@ const FacebookButton = withStyles(() => ({
   },
 }))(Button);
 
-export default function Login({ navigate, locale }) {
+export default function Login({ locale }) {
   const [userState, userService] = useUserService();
   const { me: user } = userState;
   useEffect(() => {
@@ -47,11 +48,9 @@ export default function Login({ navigate, locale }) {
     }
   }, [userService]);
 
-  useEffect(() => {
-    if (user) {
-      navigate(SCENES.VERIFY_PHONE_NUMBER);
-    }
-  }, [userState]);
+  if (user) {
+    return <Redirect to={PATHS.VERIFY_PHONE_NUMBER} />;
+  }
 
   return (
     <Container>

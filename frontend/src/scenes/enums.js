@@ -1,6 +1,0 @@
-export default Object.freeze({
-  CALLING: 'CALLING',
-  CONTACTS: 'CONTACTS',
-  LOGIN: 'LOGIN',
-  VERIFY_PHONE_NUMBER: 'VERIFY_PHONE_NUMBER',
-});

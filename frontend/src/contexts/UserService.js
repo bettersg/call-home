@@ -12,7 +12,6 @@ export function UserServiceProvider({ children }) {
   useEffect(() => {
     if (userService) {
       userService.subscribe(setUserState);
-      /* Promise.all([userService.refreshSelf()]).catch(e => alert(e)); */
     }
   }, [userService]);
   return (

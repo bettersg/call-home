@@ -1,97 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import { Redirect } from 'react-router-dom';
 import Container from '../components/shared/Container';
-import RoundedButton from '../components/shared/RoundedButton';
-import { beginPasswordless, login } from '../services/Auth';
 import { useUserService } from '../contexts';
-import SCENES from './enums';
+import { PrimaryButton } from '../components/shared/RoundedButton';
+import PATHS from './paths';
 
-const SecondaryButton = withStyles((theme) => ({
-  root: {
-    backgroundColor: theme.palette.primary[900],
-    color: 'white',
-    padding: '10px',
+// TODO figure out where to put these later
+const STRINGS = {
+  en: {
+    VERIFY_PHONE_NUMBER_TITLE: "What's your mobile number?",
+    VERIFY_PHONE_NUMBER_NEXT: 'Next',
+    VERIFY_PHONE_NUMBER_PHONE_NUMBER_LABEL: 'Phone number',
   },
-}))(RoundedButton);
+};
 
-function PhoneNumberForm({ submitPhoneNumber, phoneNumber, setPhoneNumber }) {
-  return (
-    <div>
-      <TextField
-        fullWidth
-        label="Phone number"
-        value={phoneNumber}
-        variant="outlined"
-        onChange={(e) => setPhoneNumber(e.target.value)}
-      />
-      <RoundedButton onClick={() => submitPhoneNumber(phoneNumber)}>
-        Next
-      </RoundedButton>
-    </div>
-  );
-}
-
-function VerificationCodeForm({ phoneNumber, setHasWhitelistError }) {
-  const [, userService] = useUserService();
-  const [code, setCode] = useState('');
-  const [hasBadOtpError, setHasBadOtpError] = useState(false);
-
-  useEffect(() => {
-    beginPasswordless(phoneNumber);
-  }, [phoneNumber]);
-
-  return (
-    <div>
-      <div>Enter the verification code sent to {phoneNumber}.</div>
-      {hasBadOtpError ? <div>Wrong code</div> : null}
-      <TextField
-        fullWidth
-        label="Verification code"
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-      />
-      <RoundedButton
-        variant="contained"
-        disableElevation
-        onClick={() => {
-          beginPasswordless(phoneNumber);
-        }}
-      >
-        Resend code
-      </RoundedButton>
-      <SecondaryButton
-        variant="contained"
-        disableElevation
-        onClick={async () => {
-          try {
-            await login(phoneNumber, code);
-            await userService.refreshSelf();
-          } catch (e) {
-            if (!e.data || !e.data.message) {
-              throw e;
-            }
-            const { message } = e.data;
-            if (message === 'NOT_WHITELISTED') {
-              setHasWhitelistError(true);
-            } else if (message === 'BAD_OTP') {
-              setHasBadOtpError(true);
-            }
-          }
-        }}
-      >
-        Submit
-      </SecondaryButton>
-    </div>
-  );
-}
-
-export default function VerifyPhoneNumber({ navigate }) {
+export default function PhoneNumberForm({ locale }) {
   const [userState, userService] = useUserService();
+  const { me: user, verificationPhoneNumber } = userState;
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [hasSubmittedPhoneNumber, setHasSubmittedPhoneNumber] = useState(false);
-  const [hasWhitelistError, setHasWhitelistError] = useState(false);
-  const { me: user } = userState;
+  const [isTouched, setIsTouched] = useState(false);
 
   useEffect(() => {
     if (userService) {
@@ -99,35 +28,71 @@ export default function VerifyPhoneNumber({ navigate }) {
     }
   }, [userService]);
 
-  useEffect(() => {
-    if (user.isVerified) {
-      navigate(SCENES.CONTACTS);
-    }
-  }, [userState]);
-
-  let content;
-  if (hasWhitelistError) {
-    content = (
-      <div>
-        Sorry, your phone number is not part of this programme. If you believe
-        this is an error, reach out to an administrator.
-      </div>
-    );
-  } else if (hasSubmittedPhoneNumber) {
-    content = (
-      <VerificationCodeForm
-        phoneNumber={phoneNumber}
-        setHasWhitelistError={setHasWhitelistError}
-      />
-    );
-  } else {
-    content = (
-      <PhoneNumberForm
-        phoneNumber={phoneNumber}
-        setPhoneNumber={setPhoneNumber}
-        submitPhoneNumber={() => setHasSubmittedPhoneNumber(true)}
-      />
-    );
+  if (!user) {
+    return <Redirect to={PATHS.LOGIN} />;
   }
-  return <Container>{content}</Container>;
+  if (user.isVerified) {
+    return <Redirect to={PATHS.CONTACTS} />;
+  }
+  if (verificationPhoneNumber) {
+    return <Redirect to={PATHS.VERIFY_PHONE_NUMBER_CODE} />;
+  }
+
+  const validatePhoneNumber = () => {
+    if (!phoneNumber) {
+      return false;
+    }
+    return phoneNumber.match(/\d{8}/) || phoneNumber.match(/\+65\d{8}/);
+  };
+  const onSubmit = () => {
+    setIsTouched(true);
+    if (validatePhoneNumber()) {
+      userService.setPhoneNumber(phoneNumber);
+    }
+  };
+
+  return (
+    <Container>
+      <form onSubmit={onSubmit} style={{ height: '100%' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            height: '100%',
+          }}
+        >
+          <div>
+            <Typography
+              variant="h5"
+              component="h1"
+              style={{ marginBottom: '12px' }}
+            >
+              {STRINGS[locale].VERIFY_PHONE_NUMBER_TITLE}
+            </Typography>
+            <TextField
+              fullWidth
+              autoFocus
+              error={isTouched && !validatePhoneNumber()}
+              label={STRINGS[locale].VERIFY_PHONE_NUMBER_PHONE_NUMBER_LABEL}
+              value={phoneNumber}
+              variant="outlined"
+              onChange={(e) => {
+                setIsTouched(true);
+                setPhoneNumber(e.target.value);
+              }}
+            />
+          </div>
+          <PrimaryButton
+            disableFocusRipple
+            color="primary"
+            type="submit"
+            value="submit"
+          >
+            {STRINGS[locale].VERIFY_PHONE_NUMBER_NEXT}
+          </PrimaryButton>
+        </div>
+      </form>
+    </Container>
+  );
 }

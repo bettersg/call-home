@@ -1,12 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import * as Twilio from 'twilio-client';
 import CallEndIcon from '@material-ui/icons/CallEnd';
-import RoundedButton from '../components/shared/RoundedButton';
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import { Redirect } from 'react-router-dom';
 import { useUserService, useContactService } from '../contexts';
-import SCENES from './enums';
+import PATHS from './paths';
 import getToken from '../services/Calls';
 
-export default function CallingPage({ navigate }) {
+const STRINGS = {
+  en: {
+    CALLING_CONNECTING: 'Connecting...',
+    CALLING_CONNECTED: 'Connected!',
+    CALLING_CALL_FAILED: 'Call failed',
+  },
+};
+
+const CallEndButton = withStyles((theme) => ({
+  root: {
+    backgroundColor: theme.palette.error,
+    color: 'white',
+  },
+}))(Button);
+
+export default function CallingPage({ locale }) {
   const [twilioToken, setTwilioToken] = useState(null);
   const [device] = useState(new Twilio.Device());
   const [isReady, setIsReady] = useState(false);
@@ -15,22 +33,15 @@ export default function CallingPage({ navigate }) {
   const { me: user } = userState;
   const [contactState, contactService] = useContactService();
   const { activeContact } = contactState;
-
-  useEffect(() => {
-    if (!user) {
-      navigate(SCENES.LOGIN);
-    }
-  }, [user]);
-
   useEffect(() => {
     (async () => {
+      // TODO properly validate the user permissions for this
       const newToken = await getToken();
       setTwilioToken(newToken);
     })();
   }, []);
 
   useEffect(() => {
-    console.log('getting token', twilioToken);
     if (!twilioToken) {
       return;
     }
@@ -55,19 +66,18 @@ export default function CallingPage({ navigate }) {
     });
 
     device.on('connect', () => {
+      console.log('connected');
       setIsConnected(true);
     });
 
     device.on('disconnect', () => {
+      console.log('disconnected');
       setIsConnected(false);
-      // If we disconnect, we assume that something has happened and we need to stop
-      setIsReady(false);
       contactService.setActiveContact(null);
     });
   }, [twilioToken]);
 
   useEffect(() => {
-    console.log('trying to connect', isConnected, activeContact);
     if (isReady && !isConnected && activeContact) {
       device.connect({
         userId: user.id,
@@ -76,24 +86,43 @@ export default function CallingPage({ navigate }) {
     }
   }, [isReady, isConnected, activeContact]);
 
+  if (!user) {
+    return <Redirect to={PATHS.LOGIN} />;
+  }
+  if (!activeContact) {
+    return <Redirect to={PATHS.CONTACTS} />;
+  }
+
   const navigateToContactPage = () => {
     contactService.setActiveContact(null);
-    navigate(SCENES.CONTACTS);
   };
 
   return (
-    <div>
-      <RoundedButton onClick={navigateToContactPage}>Back</RoundedButton>
-      {activeContact ? <div>Calling {activeContact.name}</div> : 'Error'}
-      {isConnected ? 'Connected!' : 'Connecting'}
-      <RoundedButton
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}
+    >
+      <Button onClick={navigateToContactPage}>Back</Button>
+      <Typography variant="h5" component="h2">
+        {activeContact.name}
+      </Typography>
+      <Typography variant="body1">
+        {isConnected
+          ? STRINGS[locale].CALLING_CONNECTED
+          : STRINGS[locale].CALLING_CONNECTING}
+      </Typography>
+      <CallEndButton
         variant="contained"
-        color="primary"
-        onClick={() => device.disconnectAll()}
+        onClick={() => {
+          device.disconnectAll();
+        }}
       >
         <CallEndIcon />
-        End Call
-      </RoundedButton>
+      </CallEndButton>
     </div>
   );
 }

@@ -8,14 +8,13 @@ export default class UserService extends ObservableService {
   constructor() {
     super();
     this.state = {
-      users: [],
       me: null,
+      verificationPhoneNumber: null,
     };
   }
 
   async logout() {
     this.state = {
-      users: [],
       me: null,
     };
     this.notify();
@@ -35,5 +34,13 @@ export default class UserService extends ObservableService {
       }
       throw e;
     }
+  }
+
+  async setPhoneNumber(verificationPhoneNumber) {
+    this.state = {
+      ...this.state,
+      verificationPhoneNumber,
+    };
+    this.notify();
   }
 }

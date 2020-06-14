@@ -32,11 +32,19 @@ function contactToContactResponse(contact) {
 }
 
 function userToUserResponse(user) {
-  const { id, name, email, isPhoneNumberValidated: isVerified } = user;
+  const {
+    id,
+    name,
+    email,
+    destinationCountry,
+    isPhoneNumberValidated: isVerified,
+  } = user;
+
   return {
     id,
     name,
     email,
+    destinationCountry,
     isVerified,
   };
 }

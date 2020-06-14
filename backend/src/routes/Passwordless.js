@@ -1,12 +1,5 @@
 const express = require('express');
-
-function sgfyPhoneNumber(phoneNumber) {
-  if (phoneNumber.startsWith('+') && !phoneNumber.startsWith('+65')) {
-    throw new Error('Invalid country code');
-  }
-  const noSgCode = phoneNumber.replace('+65', '');
-  return `+65${noSgCode.replace(/\D/g, '')}`;
-}
+const { normalizePhoneNumber } = require('../util/country');
 
 function PasswordlessRoutes(userService, auth0Service) {
   const router = express.Router();
@@ -14,7 +7,9 @@ function PasswordlessRoutes(userService, auth0Service) {
   router.post('/begin', async (req, res) => {
     const { phoneNumber } = req.body;
     try {
-      console.log(await auth0Service.sendSms(sgfyPhoneNumber(phoneNumber)));
+      console.log(
+        await auth0Service.sendSms(normalizePhoneNumber(phoneNumber, 'sg'))
+      );
     } catch (e) {
       console.error(e);
     }
@@ -23,7 +18,7 @@ function PasswordlessRoutes(userService, auth0Service) {
 
   router.post('/login', async (req, res) => {
     const { phoneNumber: rawPhoneNumber, code } = req.body;
-    const phoneNumber = sgfyPhoneNumber(rawPhoneNumber);
+    const phoneNumber = normalizePhoneNumber(rawPhoneNumber, 'sg');
 
     const { id: userId } = req.user;
     if (!phoneNumber || !code) {

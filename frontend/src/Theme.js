@@ -15,6 +15,12 @@ const colors = {
   text: {
     primary: '#133844',
   },
+  grey: {
+    light: '#DBE0E1',
+  },
+  error: {
+    main: '#FF3131',
+  },
 };
 
 const callHomeTheme = createMuiTheme({
@@ -23,6 +29,8 @@ const callHomeTheme = createMuiTheme({
       default: colors.primary[100],
     },
     primary: colors.primary,
+    grey: colors.grey,
+    error: colors.error,
   },
   typography: {
     h1: {

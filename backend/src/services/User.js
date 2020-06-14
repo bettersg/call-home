@@ -83,6 +83,7 @@ function UserService(UserModel, whitelistEntryService) {
       return user;
     }
     user.isPhoneNumberValidated = true;
+    user.destinationCountry = whitelistEntry.destinationCountry;
     await user.save();
     await user.reload();
     return user;

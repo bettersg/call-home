@@ -9,9 +9,7 @@ function ContactRoutes(contactService) {
 
   router.get('/:userId/contacts/', async (req, res) => {
     const { userId } = req.params;
-    console.log(Number(userId));
     const contacts = await contactService.listContactsByUserId(Number(userId));
-    console.log('CONSIAONFIDOS', contacts);
     return res.status(200).json(contacts.map(contactToContactResponse));
   });
 
@@ -31,6 +29,9 @@ function ContactRoutes(contactService) {
       } catch (e) {
         // TODO do this smarter
         if (e.message.startsWith('Validation Error:')) {
+          return res.status(400).send(e.message);
+        }
+        if (e.message.startsWith('Invalid country code')) {
           return res.status(400).send(e.message);
         }
         return res.status(500);

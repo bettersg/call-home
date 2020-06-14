@@ -16,6 +16,13 @@ function WhitelistEntryModel(sequelize) {
           },
         },
       },
+      // TODO validate this better
+      destinationCountry: {
+        type: DataTypes.STRING,
+        validate: {
+          isIn: [['sg', 'bd', '']],
+        },
+      },
     },
     {
       sequelize,
