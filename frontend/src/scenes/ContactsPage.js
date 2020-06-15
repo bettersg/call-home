@@ -33,8 +33,18 @@ const AddContactButton = withStyles((theme) => ({
   root: {
     backgroundColor: 'white',
     border: `1px solid ${theme.palette.grey.light}`,
+    color: theme.palette.primary[700],
+    fontWeight: 'bold',
   },
 }))(Button);
+
+const AddContactIcon = withStyles((theme) => ({
+  root: {
+    color: 'white',
+    backgroundColor: theme.palette.primary[300],
+    borderRadius: '1000px',
+  },
+}))(AddIcon);
 
 const ContactBox = withStyles((theme) => ({
   root: {
@@ -83,41 +93,70 @@ export default function ContactsPage({ locale }) {
       <Typography variant="h5" component="h1">
         {STRINGS[locale].CONTACTS_TITLE}
       </Typography>
-      <Typography variant="body1">
-        {STRINGS[locale].CONTACTS_SUBTITLE}
-      </Typography>
-      <Typography variant="body1">
-        {STRINGS[locale].CONTACTS_COUNTRY_LABEL(user.destinationCountry)}
-      </Typography>
-      {contacts.map((contact) => (
-        <ContactBox
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-around',
-          }}
-          variant="outlined"
-          key={contact.id}
-        >
-          <Typography variant="body1">{contact.name}</Typography>
-          <Typography variant="body2">{contact.phoneNumber}</Typography>
-          <Button
-            onClick={() => {
-              contactService.setActiveContact(contact);
-            }}
-          >
-            <CallIcon />
-          </Button>
-        </ContactBox>
-      ))}
-      <AddContactButton
-        variant="outlined"
-        onClick={() => {
-          setIsDialogOpen(true);
+      <Typography
+        variant="body1"
+        style={{
+          marginBottom: '12px',
         }}
       >
-        <AddIcon /> {STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}
-      </AddContactButton>
+        {STRINGS[locale].CONTACTS_SUBTITLE}
+      </Typography>
+      <Typography
+        variant="body1"
+        style={{
+          marginBottom: '24px',
+        }}
+      >
+        {STRINGS[locale].CONTACTS_COUNTRY_LABEL(user.destinationCountry)}
+      </Typography>
+      <div
+        style={{
+          display: 'flex',
+          overflowY: 'scroll',
+        }}
+      >
+        {contacts.map((contact) => (
+          <ContactBox
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-around',
+              width: '100%',
+            }}
+            variant="outlined"
+            key={contact.id}
+          >
+            <Typography variant="body1">{contact.name}</Typography>
+            <Typography variant="body2">{contact.phoneNumber}</Typography>
+            <Button
+              onClick={() => {
+                contactService.setActiveContact(contact);
+              }}
+            >
+              <CallIcon />
+            </Button>
+          </ContactBox>
+        ))}
+        <AddContactButton
+          style={{
+            width: '100%',
+            padding: '0.5em',
+          }}
+          variant="outlined"
+          onClick={() => {
+            setIsDialogOpen(true);
+          }}
+        >
+          <AddContactIcon
+            style={{
+              marginRight: '1em',
+              height: '1.5em',
+              width: '1.5em',
+            }}
+          />
+          <div>{STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}</div>
+        </AddContactButton>
+      </div>
       <Dialog
         fullWidth
         maxWidth="lg"

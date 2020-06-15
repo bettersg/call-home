@@ -85,41 +85,60 @@ export default function VerificationPhoneNumberCode({ locale }) {
             height: '100%',
           }}
         >
-          <Typography
-            variant="h5"
-            component="h1"
-            style={{ marginBottom: '12px' }}
-          >
-            {hasBadOtpError
-              ? STRINGS[locale].VERIFY_PHONE_NUMBER_WRONG_CODE_TITLE
-              : STRINGS[locale].VERIFY_PHONE_NUMBER_VERIFICATION_TITLE.replace(
-                  '{phoneNumber}',
-                  phoneNumber
-                )}
-          </Typography>
-          <TextField
-            fullWidth
-            label={STRINGS[locale].VERIFY_PHONE_NUMBER_VERIFICATION_CODE_LABEL}
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-          />
-          <RoundedButton
-            variant="contained"
-            disableElevation
-            onClick={() => {
-              beginPasswordless(phoneNumber);
+          <div>
+            <Typography
+              variant="h5"
+              component="h1"
+              style={{ marginBottom: '12px' }}
+            >
+              {hasBadOtpError
+                ? STRINGS[locale].VERIFY_PHONE_NUMBER_WRONG_CODE_TITLE
+                : STRINGS[
+                    locale
+                  ].VERIFY_PHONE_NUMBER_VERIFICATION_TITLE.replace(
+                    '{phoneNumber}',
+                    phoneNumber
+                  )}
+            </Typography>
+            <TextField
+              fullWidth
+              label={
+                STRINGS[locale].VERIFY_PHONE_NUMBER_VERIFICATION_CODE_LABEL
+              }
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+            />
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-around',
             }}
           >
-            {STRINGS[locale].VERIFY_PHONE_NUMBER_RESEND_CODE_LABEL}
-          </RoundedButton>
-          <PrimaryButton
-            variant="contained"
-            disableElevation
-            type="submit"
-            value="submit"
-          >
-            {STRINGS[locale].VERIFY_PHONE_NUMBER_SUBMIT_LABEL}
-          </PrimaryButton>
+            <RoundedButton
+              style={{
+                width: '30%',
+              }}
+              variant="contained"
+              disableElevation
+              onClick={() => {
+                beginPasswordless(phoneNumber);
+              }}
+            >
+              {STRINGS[locale].VERIFY_PHONE_NUMBER_RESEND_CODE_LABEL}
+            </RoundedButton>
+            <PrimaryButton
+              style={{
+                width: '30%',
+              }}
+              variant="contained"
+              disableElevation
+              type="submit"
+              value="submit"
+            >
+              {STRINGS[locale].VERIFY_PHONE_NUMBER_SUBMIT_LABEL}
+            </PrimaryButton>
+          </div>
         </div>
       </form>
     );
