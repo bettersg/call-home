@@ -10,6 +10,7 @@ RUN npm install
 COPY frontend/src/ src/
 COPY frontend/public/ public/
 
+ENV NODE_ENV=production
 RUN npm run build
 
 # backend

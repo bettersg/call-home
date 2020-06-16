@@ -7,7 +7,11 @@ import Typography from '@material-ui/core/Typography';
 import { Redirect } from 'react-router-dom';
 import { useUserService, useContactService } from '../contexts';
 import PATHS from './paths';
+import Container from '../components/shared/Container';
 import getToken from '../services/Calls';
+
+// TODO handle production environments better
+const isProd = process.env.NODE_ENV === 'production';
 
 const STRINGS = {
   en: {
@@ -19,7 +23,10 @@ const STRINGS = {
 
 const CallEndButton = withStyles((theme) => ({
   root: {
-    backgroundColor: theme.palette.error,
+    backgroundColor: theme.palette.error.main,
+    height: '5em',
+    width: '5em',
+    borderRadius: '1000px',
     color: 'white',
   },
 }))(Button);
@@ -33,16 +40,24 @@ export default function CallingPage({ locale }) {
   const { me: user } = userState;
   const [contactState, contactService] = useContactService();
   const { activeContact } = contactState;
+
   useEffect(() => {
     (async () => {
-      // TODO properly validate the user permissions for this
-      const newToken = await getToken();
-      setTwilioToken(newToken);
+      if (isProd) {
+        // TODO the token endpoint needs authz on the application side
+        // the client should pass the intended contact, the backend verifies and then returns the twilio token and our own token
+        // the client can then use the twilio token to init the device and then exchange our token for the call
+        const newToken = await getToken();
+        setTwilioToken(newToken);
+      }
     })();
   }, []);
 
   useEffect(() => {
     if (!twilioToken) {
+      if (!isProd) {
+        setIsReady(true);
+      }
       return;
     }
     console.log('setting up device');
@@ -78,7 +93,7 @@ export default function CallingPage({ locale }) {
   }, [twilioToken]);
 
   useEffect(() => {
-    if (isReady && !isConnected && activeContact) {
+    if (isReady && !isConnected && activeContact && isProd) {
       device.connect({
         userId: user.id,
         contactId: activeContact.id,
@@ -93,36 +108,36 @@ export default function CallingPage({ locale }) {
     return <Redirect to={PATHS.CONTACTS} />;
   }
 
-  const navigateToContactPage = () => {
-    contactService.setActiveContact(null);
-  };
-
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}
-    >
-      <Button onClick={navigateToContactPage}>Back</Button>
-      <Typography variant="h5" component="h2">
-        {activeContact.name}
-      </Typography>
-      <Typography variant="body1">
-        {isConnected
-          ? STRINGS[locale].CALLING_CONNECTED
-          : STRINGS[locale].CALLING_CONNECTING}
-      </Typography>
-      <CallEndButton
-        variant="contained"
-        onClick={() => {
-          device.disconnectAll();
+    <Container>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}
       >
-        <CallEndIcon />
-      </CallEndButton>
-    </div>
+        <div>
+          <Typography variant="h5" component="h2">
+            {activeContact.name}
+          </Typography>
+          <Typography variant="body1">
+            {isConnected
+              ? STRINGS[locale].CALLING_CONNECTED
+              : STRINGS[locale].CALLING_CONNECTING}
+          </Typography>
+        </div>
+        <CallEndButton
+          variant="contained"
+          onClick={() => {
+            device.disconnectAll();
+          }}
+        >
+          <CallEndIcon />
+        </CallEndButton>
+      </div>
+    </Container>
   );
 }

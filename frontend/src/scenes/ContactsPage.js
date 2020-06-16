@@ -87,12 +87,11 @@ function AddContactDialog({ open, onClose, locale }) {
     setNewContactPhoneNumber('');
   }, [open]);
 
-  const createContact = () => {
+  const createContact = () =>
     contactService.createContact(user.id, {
       name: newContactName,
       phoneNumber: newContactPhoneNumber,
     });
-  };
 
   return (
     <Dialog
