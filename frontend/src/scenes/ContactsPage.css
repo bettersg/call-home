@@ -1,0 +1,26 @@
+.MuiDialog-paper {
+  height: calc(0.8 * var(--viewport-height));
+  padding: 24px;
+}
+
+.contacts-dialog-content {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.contacts-dialog-form-fields {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80%;
+}
+
+.contacts-dialog-actions {
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+}

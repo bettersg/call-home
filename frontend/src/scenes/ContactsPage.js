@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
 import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
@@ -9,10 +13,11 @@ import { withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import CallIcon from '@material-ui/icons/Call';
 import Container from '../components/shared/Container';
-import { PrimaryButton } from '../components/shared/RoundedButton';
+import { ErrorButton, PrimaryButton } from '../components/shared/RoundedButton';
 import { useUserService, useContactService } from '../contexts';
-
 import PATHS from './paths';
+
+import './ContactsPage.css';
 
 const COUNTRIES = {
   sg: '🇸🇬Singapore',
@@ -26,6 +31,11 @@ const STRINGS = {
     CONTACTS_ADD_CONTACT_LABEL: 'Add a loved one',
     CONTACTS_ADD_LABEL: 'Add',
     CONTACTS_COUNTRY_LABEL: (code) => `Country: ${COUNTRIES[code]}`,
+    CONTACTS_NAME_LABEL: 'Name',
+    CONTACTS_PHONE_NUMBER_LABEL: 'Phone number',
+    CONTACTS_EDIT_CONTACT_HEADER: 'Edit',
+    CONTACTS_EDIT_LABEL: 'Edit',
+    CONTACTS_DELETE_LABEL: 'Delete',
   },
 };
 
@@ -53,14 +63,177 @@ const ContactBox = withStyles((theme) => ({
   },
 }))(Box);
 
+const withDialogButtonStyles = withStyles(() => ({
+  root: {
+    padding: '1em 2em',
+    flex: '1 0',
+    margin: '0 0.5em',
+  },
+}));
+
+const DialogPrimaryButton = withDialogButtonStyles(PrimaryButton);
+
+const DialogErrorButton = withDialogButtonStyles(ErrorButton);
+
+function AddContactDialog({ open, onClose, locale }) {
+  const [userState] = useUserService();
+  const { me: user } = userState;
+  const [, contactService] = useContactService();
+  const [newContactName, setNewContactName] = useState('');
+  const [newContactPhoneNumber, setNewContactPhoneNumber] = useState('');
+
+  useEffect(() => {
+    setNewContactName('');
+    setNewContactPhoneNumber('');
+  }, [open]);
+
+  const createContact = () => {
+    contactService.createContact(user.id, {
+      name: newContactName,
+      phoneNumber: newContactPhoneNumber,
+    });
+  };
+
+  return (
+    <Dialog
+      className="contacts-dialog"
+      fullWidth
+      maxWidth="sm"
+      open={open}
+      onClose={onClose}
+    >
+      <DialogTitle
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
+        {STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}
+      </DialogTitle>
+      <DialogContent>
+        <form
+          onSubmit={async () => {
+            await createContact();
+            onClose();
+          }}
+          className="contacts-dialog-content"
+        >
+          <div className="contacts-dialog-form-fields">
+            <TextField
+              style={{
+                marginBottom: '12px',
+              }}
+              fullWidth
+              variant="outlined"
+              label={STRINGS[locale].CONTACTS_NAME_LABEL}
+              value={newContactName}
+              onChange={(e) => setNewContactName(e.target.value)}
+            />
+            <TextField
+              style={{
+                marginBottom: '12px',
+              }}
+              fullWidth
+              variant="outlined"
+              label="Phone number"
+              value={newContactPhoneNumber}
+              onChange={(e) => setNewContactPhoneNumber(e.target.value)}
+            />
+          </div>
+          <div className="contacts-dialog-actions">
+            <DialogPrimaryButton type="submit" value="submit">
+              {STRINGS[locale].CONTACTS_ADD_LABEL}
+            </DialogPrimaryButton>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function EditContactDialog({ contact, open, onClose, locale }) {
+  const [userState] = useUserService();
+  const { me: user } = userState;
+  const [, contactService] = useContactService();
+  const [newContactName, setNewContactName] = useState(contact.name);
+  const [newContactPhoneNumber, setNewContactPhoneNumber] = useState(
+    contact.phoneNumber
+  );
+
+  const updateContact = async () => {
+    await contactService.updateContact(user.id, contact.id, {
+      name: newContactName,
+      phoneNumber: newContactPhoneNumber,
+    });
+    onClose();
+  };
+
+  const deleteContact = async () => {
+    await contactService.deleteContact(user.id, contact.id);
+    onClose();
+  };
+
+  return (
+    <Dialog
+      className="contacts-dialog"
+      fullWidth
+      maxWidth="sm"
+      open={open}
+      onClose={onClose}
+    >
+      <DialogTitle
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
+        {STRINGS[locale].CONTACTS_EDIT_CONTACT_HEADER}
+      </DialogTitle>
+      <DialogContent>
+        <form className="contacts-dialog-content" onSubmit={updateContact}>
+          <div className="contacts-dialog-form-fields">
+            <TextField
+              style={{
+                marginBottom: '12px',
+              }}
+              fullWidth
+              variant="outlined"
+              label={STRINGS[locale].CONTACTS_NAME_LABEL}
+              value={newContactName}
+              onChange={(e) => setNewContactName(e.target.value)}
+            />
+            <TextField
+              style={{
+                marginBottom: '12px',
+              }}
+              fullWidth
+              variant="outlined"
+              label={STRINGS[locale].CONTACTS_PHONE_NUMBER_LABEL}
+              value={newContactPhoneNumber}
+              onChange={(e) => setNewContactPhoneNumber(e.target.value)}
+            />
+          </div>
+          <div className="contacts-dialog-actions">
+            <DialogErrorButton onClick={deleteContact}>
+              {STRINGS[locale].CONTACTS_DELETE_LABEL}
+            </DialogErrorButton>
+            <DialogPrimaryButton type="submit" value="submit">
+              {STRINGS[locale].CONTACTS_EDIT_LABEL}
+            </DialogPrimaryButton>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function ContactsPage({ locale }) {
   const [userState, userService] = useUserService();
   const { me: user } = userState;
   const [contactState, contactService] = useContactService();
   const { contacts = [], activeContact } = contactState;
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [newContactName, setNewContactName] = useState('');
-  const [newContactPhoneNumber, setNewContactPhoneNumber] = useState('');
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [contactToEdit, setContactToEdit] = useState(null);
 
   useEffect(() => {
     if (userService) {
@@ -80,13 +253,6 @@ export default function ContactsPage({ locale }) {
   if (activeContact) {
     return <Redirect to={PATHS.CALLING} />;
   }
-
-  const createContact = () => {
-    contactService.createContact(user.id, {
-      name: newContactName,
-      phoneNumber: newContactPhoneNumber,
-    });
-  };
 
   return (
     <Container>
@@ -109,113 +275,82 @@ export default function ContactsPage({ locale }) {
       >
         {STRINGS[locale].CONTACTS_COUNTRY_LABEL(user.destinationCountry)}
       </Typography>
-      <div
+      <List
         style={{
           display: 'flex',
-          overflowY: 'scroll',
+          flexDirection: 'column',
         }}
       >
         {contacts.map((contact) => (
-          <ContactBox
+          <ListItem key={contact.id}>
+            <ContactBox
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-around',
+                width: '100%',
+                height: '4em',
+                marginBottom: '8px',
+              }}
+              variant="outlined"
+            >
+              <div>
+                <Typography variant="body1">{contact.name}</Typography>
+                <Typography
+                  style={{ cursor: 'pointer' }}
+                  color="primary"
+                  role="button"
+                  onClick={() => setContactToEdit(contact)}
+                >
+                  {STRINGS[locale].CONTACTS_EDIT_LABEL}
+                </Typography>
+              </div>
+              <Typography variant="body2">{contact.phoneNumber}</Typography>
+              <Button
+                onClick={() => {
+                  contactService.setActiveContact(contact);
+                }}
+              >
+                <CallIcon />
+              </Button>
+            </ContactBox>
+          </ListItem>
+        ))}
+        <ListItem>
+          <AddContactButton
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-around',
               width: '100%',
+              height: '4em',
             }}
             variant="outlined"
-            key={contact.id}
+            onClick={() => {
+              setIsAddDialogOpen(true);
+            }}
           >
-            <Typography variant="body1">{contact.name}</Typography>
-            <Typography variant="body2">{contact.phoneNumber}</Typography>
-            <Button
-              onClick={() => {
-                contactService.setActiveContact(contact);
+            <AddContactIcon
+              style={{
+                marginRight: '1em',
+                height: '1.5em',
+                width: '1.5em',
               }}
-            >
-              <CallIcon />
-            </Button>
-          </ContactBox>
-        ))}
-        <AddContactButton
-          style={{
-            width: '100%',
-            padding: '0.5em',
-          }}
-          variant="outlined"
-          onClick={() => {
-            setIsDialogOpen(true);
-          }}
-        >
-          <AddContactIcon
-            style={{
-              marginRight: '1em',
-              height: '1.5em',
-              width: '1.5em',
-            }}
-          />
-          <div>{STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}</div>
-        </AddContactButton>
-      </div>
-      <Dialog
-        fullWidth
-        maxWidth="lg"
-        open={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
-      >
-        <form
-          onSubmit={async () => {
-            await createContact();
-            setIsDialogOpen(false);
-          }}
-        >
-          <div
-            style={{
-              padding: '12px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              height: '90vh',
-              justifyContent: 'space-between',
-            }}
-          >
-            <div>
-              <Typography
-                style={{
-                  marginBottom: '12px',
-                }}
-                variant="h5"
-                component="h2"
-              >
-                {STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}
-              </Typography>
-              <TextField
-                style={{
-                  marginBottom: '12px',
-                }}
-                fullWidth
-                variant="outlined"
-                label="Name"
-                value={newContactName}
-                onChange={(e) => setNewContactName(e.target.value)}
-              />
-              <TextField
-                style={{
-                  marginBottom: '12px',
-                }}
-                fullWidth
-                variant="outlined"
-                label="Phone number"
-                value={newContactPhoneNumber}
-                onChange={(e) => setNewContactPhoneNumber(e.target.value)}
-              />
-            </div>
-            <PrimaryButton type="submit" value="submit">
-              {STRINGS[locale].CONTACTS_ADD_LABEL}
-            </PrimaryButton>
-          </div>
-        </form>
-      </Dialog>
+            />
+            <div>{STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}</div>
+          </AddContactButton>
+        </ListItem>
+      </List>
+      <AddContactDialog
+        onClose={() => setIsAddDialogOpen(false)}
+        open={isAddDialogOpen}
+        locale={locale}
+      />
+      {contactToEdit ? (
+        <EditContactDialog
+          contact={contactToEdit}
+          onClose={() => setContactToEdit(null)}
+          open
+          locale={locale}
+        />
+      ) : null}
     </Container>
   );
 }
