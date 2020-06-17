@@ -8,7 +8,9 @@ function PasswordlessRoutes(userService, auth0Service) {
     const { phoneNumber } = req.body;
     try {
       console.log(
-        await auth0Service.sendSms(normalizePhoneNumber(phoneNumber, 'sg'))
+        await auth0Service.sendSms(
+          await normalizePhoneNumber(phoneNumber, 'SG')
+        )
       );
     } catch (e) {
       console.error(e);
@@ -18,7 +20,7 @@ function PasswordlessRoutes(userService, auth0Service) {
 
   router.post('/login', async (req, res) => {
     const { phoneNumber: rawPhoneNumber, code } = req.body;
-    const phoneNumber = normalizePhoneNumber(rawPhoneNumber, 'sg');
+    const phoneNumber = await normalizePhoneNumber(rawPhoneNumber, 'SG');
 
     const { id: userId } = req.user;
     if (!phoneNumber || !code) {

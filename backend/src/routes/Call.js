@@ -5,7 +5,7 @@ const { ClientCapability } = twilio.jwt;
 
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_APP_SID } = process.env;
 
-// TODO this is a weird mishmash of calls and twilio stuff. should clean this up
+// TODO This should only grant tokens for the amount of time needed to establish a connection (~20s)
 function CallRoutes() {
   const router = express.Router();
 

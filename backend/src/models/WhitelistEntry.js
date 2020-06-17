@@ -20,7 +20,7 @@ function WhitelistEntryModel(sequelize) {
       destinationCountry: {
         type: DataTypes.STRING,
         validate: {
-          isIn: [['sg', 'bd', '']],
+          isIn: [['SG', 'BD', '']],
         },
       },
     },

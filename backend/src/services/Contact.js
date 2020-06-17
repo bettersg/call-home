@@ -11,7 +11,7 @@ function ContactService(ContactModel, userService) {
   async function normalizeContact(user, contact) {
     return {
       ...contact,
-      phoneNumber: normalizePhoneNumber(
+      phoneNumber: await normalizePhoneNumber(
         contact.phoneNumber,
         user.destinationCountry
       ),
@@ -24,7 +24,7 @@ function ContactService(ContactModel, userService) {
       throw new Error('Validation Error: CONTACT_NAME_BLANK');
     }
 
-    const phoneNumber = normalizePhoneNumber(
+    const phoneNumber = await normalizePhoneNumber(
       contact.phoneNumber,
       user.destinationCountry
     );

@@ -1,20 +1,28 @@
-const countryAbbrevToCallingCode = {
-  sg: '+65',
-  bd: '+880',
-  in: '+91',
-};
+const twilio = require('twilio');
 
-// Prepend the country code and remove non numerics.
-function normalizePhoneNumber(phoneNumber, countryAbbrev) {
-  const callingCode = countryAbbrevToCallingCode[countryAbbrev];
-  if (phoneNumber.startsWith('+') && !phoneNumber.startsWith(callingCode)) {
-    throw new Error('Invalid country code');
+const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN } = process.env;
+const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+
+const supportedCountries = new Set(['SG', 'BD']);
+
+async function normalizePhoneNumber(phoneNumber, countryCodeIso) {
+  if (supportedCountries.has(countryCodeIso)) {
+    throw new Error('Validation Error: COUNTRY_NOT_SUPOPRTED');
   }
-  const noCallingCode = phoneNumber.replace(callingCode, '');
-  return `${callingCode}${noCallingCode.replace(/\D/g, '')}`;
+
+  try {
+    const twilioPhoneNumber = await twilioClient.lookups
+      .phoneNumbers(phoneNumber)
+      .fetch({ countryCode: countryCodeIso });
+    return twilioPhoneNumber.phoneNumber;
+  } catch (e) {
+    if (e.status === 404) {
+      throw new Error('Validation Error: INVALID_PHONE_NUMBER');
+    }
+  }
+  return null;
 }
 
 module.exports = {
-  countryAbbrevToCallingCode,
   normalizePhoneNumber,
 };

@@ -37,7 +37,7 @@ function UserModel(sequelize) {
       destinationCountry: {
         type: DataTypes.STRING,
         validate: {
-          isIn: [['sg', 'bd', '']],
+          isIn: [['SG', 'BD', '']],
         },
       },
     },
