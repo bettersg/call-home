@@ -8,6 +8,39 @@ function ContactService(ContactModel, userService) {
     });
   }
 
+  async function normalizeContact(user, contact) {
+    return {
+      ...contact,
+      phoneNumber: normalizePhoneNumber(
+        contact.phoneNumber,
+        user.destinationCountry
+      ),
+      UserId: user.id,
+    };
+  }
+
+  async function validateContact(user, contact) {
+    if (!contact.name) {
+      throw new Error('Validation Error: CONTACT_NAME_BLANK');
+    }
+
+    const phoneNumber = normalizePhoneNumber(
+      contact.phoneNumber,
+      user.destinationCountry
+    );
+
+    const duplicateContact = await ContactModel.findOne({
+      where: {
+        UserId: user.id,
+        phoneNumber,
+      },
+    });
+
+    if (duplicateContact) {
+      throw new Error('Validation Error: DUPLICATE_CONTACT');
+    }
+  }
+
   async function listContactsByUserId(UserId) {
     return ContactModel.findAll({
       order: ['name'],
@@ -19,14 +52,8 @@ function ContactService(ContactModel, userService) {
 
   async function createContact(UserId, contact) {
     const user = await userService.getUser(UserId);
-    const contactToCreate = {
-      ...contact,
-      phoneNumber: normalizePhoneNumber(
-        contact.phoneNumber,
-        user.destinationCountry
-      ),
-      UserId,
-    };
+    await validateContact(user, contact);
+    const contactToCreate = await normalizeContact(user, contact);
     return sanitizeDbErrors(() => ContactModel.create(contactToCreate));
   }
 
@@ -41,7 +68,10 @@ function ContactService(ContactModel, userService) {
   }
 
   async function updateContact(UserId, contactId, contact) {
-    await ContactModel.update(contact, {
+    const user = await userService.getUser(UserId);
+    await validateContact(user, contact);
+    const contactToUpdate = await normalizeContact(user, contact);
+    await ContactModel.update(contactToUpdate, {
       where: {
         id: contactId,
         UserId,

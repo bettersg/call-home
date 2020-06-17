@@ -4,6 +4,17 @@ const {
   contactToContactResponse,
 } = require('./transformers');
 
+function handleServiceError(e, res) {
+  // TODO do this smarter
+  if (e.message.startsWith('Validation Error:')) {
+    return res.status(400).send(e.message);
+  }
+  if (e.message.startsWith('Invalid country code')) {
+    return res.status(400).send(e.message);
+  }
+  return res.status(500);
+}
+
 function ContactRoutes(contactService) {
   const router = express.Router();
 
@@ -25,16 +36,9 @@ function ContactRoutes(contactService) {
           Number(userId),
           contact
         );
-        return res.status(200).json(contactToContactResponse(savedContact));
+        res.status(200).json(contactToContactResponse(savedContact));
       } catch (e) {
-        // TODO do this smarter
-        if (e.message.startsWith('Validation Error:')) {
-          return res.status(400).send(e.message);
-        }
-        if (e.message.startsWith('Invalid country code')) {
-          return res.status(400).send(e.message);
-        }
-        return res.status(500);
+        handleServiceError(e, res);
       }
     }
   );
@@ -45,12 +49,16 @@ function ContactRoutes(contactService) {
     async (req, res) => {
       const { userId, contactId } = req.params;
       const contact = req.body;
-      const savedContact = await contactService.updateContact(
-        userId,
-        contactId,
-        contact
-      );
-      res.status(200).json(contactToContactResponse(savedContact));
+      try {
+        const savedContact = await contactService.updateContact(
+          userId,
+          contactId,
+          contact
+        );
+        res.status(200).json(contactToContactResponse(savedContact));
+      } catch (e) {
+        handleServiceError(e, res);
+      }
     }
   );
 

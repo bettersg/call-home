@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
@@ -14,12 +11,14 @@ import AddIcon from '@material-ui/icons/Add';
 import CallIcon from '@material-ui/icons/Call';
 import Container from '../components/shared/Container';
 import { ErrorButton, PrimaryButton } from '../components/shared/RoundedButton';
+import ContactsDialog from '../components/shared/ContactsDialog';
 import { useUserService, useContactService } from '../contexts';
+import { ApiValidationError } from '../services/apiClient';
 import PATHS from './paths';
 
-import './ContactsPage.css';
-
 const COUNTRIES = {
+  // Unicode flag + country
+  // TODO make this localized
   sg: '🇸🇬Singapore',
   bd: '🇧🇩Bangladesh',
 };
@@ -36,6 +35,9 @@ const STRINGS = {
     CONTACTS_EDIT_CONTACT_HEADER: 'Edit',
     CONTACTS_EDIT_LABEL: 'Edit',
     CONTACTS_DELETE_LABEL: 'Delete',
+    CONTACTS_DUPLICATE_CONTACT_ERROR_MESSAGE:
+      'You already have a loved one with this number',
+    CONTACTS_UNKNOWN_ERROR_MESSAGE: 'Unknown error',
   },
 };
 
@@ -81,72 +83,75 @@ function AddContactDialog({ open, onClose, locale }) {
   const [, contactService] = useContactService();
   const [newContactName, setNewContactName] = useState('');
   const [newContactPhoneNumber, setNewContactPhoneNumber] = useState('');
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     setNewContactName('');
     setNewContactPhoneNumber('');
   }, [open]);
 
-  const createContact = () =>
-    contactService.createContact(user.id, {
-      name: newContactName,
-      phoneNumber: newContactPhoneNumber,
-    });
+  const createContact = async () => {
+    try {
+      setErrorMessage(null);
+      await contactService.createContact(user.id, {
+        name: newContactName,
+        phoneNumber: newContactPhoneNumber,
+      });
+      onClose();
+    } catch (e) {
+      if (e instanceof ApiValidationError) {
+        const { code } = e;
+        // TODO standardize this somewhere
+        if (code === 'DUPLICATE_CONTACT') {
+          setErrorMessage(
+            STRINGS[locale].CONTACTS_DUPLICATE_CONTACT_ERROR_MESSAGE
+          );
+        } else {
+          setErrorMessage(STRINGS[locale].CONTACTS_UNKNOWN_ERROR_MESSAGE);
+        }
+      }
+    }
+  };
 
+  const formFields = (
+    <>
+      <TextField
+        style={{
+          marginBottom: '12px',
+        }}
+        fullWidth
+        variant="outlined"
+        label={STRINGS[locale].CONTACTS_NAME_LABEL}
+        value={newContactName}
+        onChange={(e) => setNewContactName(e.target.value)}
+      />
+      <TextField
+        style={{
+          marginBottom: '12px',
+        }}
+        fullWidth
+        variant="outlined"
+        label="Phone number"
+        value={newContactPhoneNumber}
+        onChange={(e) => setNewContactPhoneNumber(e.target.value)}
+      />
+    </>
+  );
+  const actionButtons = (
+    <DialogPrimaryButton type="submit" value="submit">
+      {STRINGS[locale].CONTACTS_ADD_LABEL}
+    </DialogPrimaryButton>
+  );
   return (
-    <Dialog
-      className="contacts-dialog"
-      fullWidth
-      maxWidth="sm"
+    <ContactsDialog
       open={open}
       onClose={onClose}
-    >
-      <DialogTitle
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-        }}
-      >
-        {STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}
-      </DialogTitle>
-      <DialogContent>
-        <form
-          onSubmit={async () => {
-            await createContact();
-            onClose();
-          }}
-          className="contacts-dialog-content"
-        >
-          <div className="contacts-dialog-form-fields">
-            <TextField
-              style={{
-                marginBottom: '12px',
-              }}
-              fullWidth
-              variant="outlined"
-              label={STRINGS[locale].CONTACTS_NAME_LABEL}
-              value={newContactName}
-              onChange={(e) => setNewContactName(e.target.value)}
-            />
-            <TextField
-              style={{
-                marginBottom: '12px',
-              }}
-              fullWidth
-              variant="outlined"
-              label="Phone number"
-              value={newContactPhoneNumber}
-              onChange={(e) => setNewContactPhoneNumber(e.target.value)}
-            />
-          </div>
-          <div className="contacts-dialog-actions">
-            <DialogPrimaryButton type="submit" value="submit">
-              {STRINGS[locale].CONTACTS_ADD_LABEL}
-            </DialogPrimaryButton>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+      onSubmit={createContact}
+      titleText={STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}
+      formFields={formFields}
+      actionButtons={actionButtons}
+      errorText={errorMessage}
+    />
   );
 }
 
@@ -158,13 +163,29 @@ function EditContactDialog({ contact, open, onClose, locale }) {
   const [newContactPhoneNumber, setNewContactPhoneNumber] = useState(
     contact.phoneNumber
   );
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const updateContact = async () => {
-    await contactService.updateContact(user.id, contact.id, {
-      name: newContactName,
-      phoneNumber: newContactPhoneNumber,
-    });
-    onClose();
+    try {
+      setErrorMessage(null);
+      await contactService.updateContact(user.id, contact.id, {
+        name: newContactName,
+        phoneNumber: newContactPhoneNumber,
+      });
+      onClose();
+    } catch (e) {
+      if (e instanceof ApiValidationError) {
+        const { code } = e;
+        // TODO standardize this somewhere
+        if (code === 'DUPLICATE_CONTACT') {
+          setErrorMessage(
+            STRINGS[locale].CONTACTS_DUPLICATE_CONTACT_ERROR_MESSAGE
+          );
+        } else {
+          setErrorMessage(STRINGS[locale].CONTACTS_UNKNOWN_ERROR_MESSAGE);
+        }
+      }
+    }
   };
 
   const deleteContact = async () => {
@@ -172,57 +193,51 @@ function EditContactDialog({ contact, open, onClose, locale }) {
     onClose();
   };
 
+  const formFields = (
+    <>
+      <TextField
+        style={{
+          marginBottom: '12px',
+        }}
+        fullWidth
+        variant="outlined"
+        label={STRINGS[locale].CONTACTS_NAME_LABEL}
+        value={newContactName}
+        onChange={(e) => setNewContactName(e.target.value)}
+      />
+      <TextField
+        style={{
+          marginBottom: '12px',
+        }}
+        fullWidth
+        variant="outlined"
+        label={STRINGS[locale].CONTACTS_PHONE_NUMBER_LABEL}
+        value={newContactPhoneNumber}
+        onChange={(e) => setNewContactPhoneNumber(e.target.value)}
+      />
+    </>
+  );
+  const actionButtons = (
+    <>
+      <DialogErrorButton onClick={deleteContact}>
+        {STRINGS[locale].CONTACTS_DELETE_LABEL}
+      </DialogErrorButton>
+      <DialogPrimaryButton type="submit" value="submit">
+        {STRINGS[locale].CONTACTS_EDIT_LABEL}
+      </DialogPrimaryButton>
+    </>
+  );
+
   return (
-    <Dialog
-      className="contacts-dialog"
-      fullWidth
-      maxWidth="sm"
+    <ContactsDialog
       open={open}
       onClose={onClose}
-    >
-      <DialogTitle
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-        }}
-      >
-        {STRINGS[locale].CONTACTS_EDIT_CONTACT_HEADER}
-      </DialogTitle>
-      <DialogContent>
-        <form className="contacts-dialog-content" onSubmit={updateContact}>
-          <div className="contacts-dialog-form-fields">
-            <TextField
-              style={{
-                marginBottom: '12px',
-              }}
-              fullWidth
-              variant="outlined"
-              label={STRINGS[locale].CONTACTS_NAME_LABEL}
-              value={newContactName}
-              onChange={(e) => setNewContactName(e.target.value)}
-            />
-            <TextField
-              style={{
-                marginBottom: '12px',
-              }}
-              fullWidth
-              variant="outlined"
-              label={STRINGS[locale].CONTACTS_PHONE_NUMBER_LABEL}
-              value={newContactPhoneNumber}
-              onChange={(e) => setNewContactPhoneNumber(e.target.value)}
-            />
-          </div>
-          <div className="contacts-dialog-actions">
-            <DialogErrorButton onClick={deleteContact}>
-              {STRINGS[locale].CONTACTS_DELETE_LABEL}
-            </DialogErrorButton>
-            <DialogPrimaryButton type="submit" value="submit">
-              {STRINGS[locale].CONTACTS_EDIT_LABEL}
-            </DialogPrimaryButton>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+      onSubmit={updateContact}
+      titleText={STRINGS[locale].CONTACTS_EDIT_CONTACT_HEADER}
+      formFields={formFields}
+      actionButtons={actionButtons}
+      errorText={errorMessage}
+    />
   );
 }
 

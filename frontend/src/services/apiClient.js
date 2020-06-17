@@ -11,6 +11,19 @@ export class ApiDataError extends Error {
   }
 }
 
+export class ApiValidationError extends Error {
+  constructor(message) {
+    super();
+    this.code = message.replace(ApiValidationError.validationErrorPrefix, '');
+  }
+
+  static validationErrorPrefix = 'Validation Error: ';
+
+  static isValidationErrorMessage(message) {
+    return message.startsWith(ApiValidationError.validationErrorPrefix);
+  }
+}
+
 function handleApiError(wrappedFn, { preventRedirect } = {}) {
   return async (...args) => {
     try {
@@ -33,9 +46,16 @@ function handleApiError(wrappedFn, { preventRedirect } = {}) {
           return undefined;
         }
       }
+
       // 400 is a bad request, we alert the users somehow but do not report to Sentry.
       if (response.status === 400) {
         // TODO improve the API request handling
+        if (
+          typeof response.data === 'string' &&
+          ApiValidationError.isValidationErrorMessage(response.data)
+        ) {
+          throw new ApiValidationError(response.data);
+        }
         throw new ApiDataError(response.data);
       }
       // Alert users and Sentry by default
