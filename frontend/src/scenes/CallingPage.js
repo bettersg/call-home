@@ -90,7 +90,7 @@ export default function CallingPage({ locale }) {
       setIsConnected(false);
       contactService.setActiveContact(null);
     });
-  }, [twilioToken]);
+  }, [device, user.id, twilioToken, contactService]);
 
   useEffect(() => {
     if (isReady && !isConnected && activeContact && isProd) {
@@ -99,7 +99,7 @@ export default function CallingPage({ locale }) {
         contactId: activeContact.id,
       });
     }
-  }, [isReady, isConnected, activeContact]);
+  }, [device, user.id, isReady, isConnected, activeContact]);
 
   if (!user) {
     return <Redirect to={PATHS.LOGIN} />;

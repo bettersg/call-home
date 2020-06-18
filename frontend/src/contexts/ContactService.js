@@ -13,7 +13,7 @@ export function ContactServiceProvider({ children }) {
     if (contactService) {
       contactService.subscribe(setContactState);
     }
-  }, [contactService]);
+  }, []);
 
   return (
     <ContactServiceContext.Provider value={contactService}>

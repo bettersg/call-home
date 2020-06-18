@@ -13,7 +13,7 @@ export function UserServiceProvider({ children }) {
     if (userService) {
       userService.subscribe(setUserState);
     }
-  }, [userService]);
+  }, []);
   return (
     <UserServiceContext.Provider value={userService}>
       <UserStateContext.Provider value={userState}>
