@@ -9,6 +9,7 @@ import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import CallIcon from '@material-ui/icons/Call';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import Container from '../components/shared/Container';
 import { ErrorButton, PrimaryButton } from '../components/shared/RoundedButton';
 import ContactsDialog from '../components/shared/ContactsDialog';
@@ -269,6 +270,10 @@ export default function ContactsPage({ locale }) {
     return <Redirect to={PATHS.CALLING} />;
   }
 
+  const logout = async () => {
+    window.location = '/oauth/logout';
+  };
+
   return (
     <Container>
       <Typography variant="h5" component="h1">
@@ -353,6 +358,22 @@ export default function ContactsPage({ locale }) {
           </AddContactButton>
         </ListItem>
       </List>
+      <Typography
+        variant="body1"
+        color="primary"
+        role="button"
+        style={{
+          cursor: 'pointer',
+          position: 'absolute',
+          bottom: '3em',
+          right: '3em',
+          display: 'flex',
+        }}
+        onClick={logout}
+      >
+        <ExitToAppIcon style={{ transform: 'rotate(180deg)' }} />
+        Logout
+      </Typography>
       <AddContactDialog
         onClose={() => setIsAddDialogOpen(false)}
         open={isAddDialogOpen}

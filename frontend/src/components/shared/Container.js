@@ -18,6 +18,7 @@ const CONTAINER_STYLES = {
   padding: '5% 5%',
   display: 'flex',
   flexDirection: 'column',
+  position: 'relative',
 };
 
 export default function Container({ children, style, ...rest }) {
