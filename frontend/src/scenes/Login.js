@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -41,13 +41,18 @@ const FacebookButton = withStyles(() => ({
 
 export default function Login({ locale }) {
   const [userState, userService] = useUserService();
+  const [shouldHideScreen, setShouldHideScreen] = useState(true);
   const { me: user } = userState;
+
   useEffect(() => {
     if (userService) {
-      userService.refreshSelf();
+      userService.refreshSelf().finally(() => setShouldHideScreen(false));
     }
   }, [userService]);
 
+  if (shouldHideScreen) {
+    return null;
+  }
   if (user) {
     return <Redirect to={PATHS.VERIFY_PHONE_NUMBER} />;
   }
