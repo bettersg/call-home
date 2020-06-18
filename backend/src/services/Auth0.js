@@ -12,6 +12,7 @@ function Auth0Service() {
   };
 
   async function sendSms(phoneNumber) {
+    console.log('Sending passwordless sms', phoneNumber);
     const response = await axios.post(`${AUTH0_HOST}/passwordless/start`, {
       ...auth0Args,
       phone_number: phoneNumber,

@@ -6,12 +6,14 @@ function PasswordlessRoutes(userService, auth0Service) {
 
   router.post('/begin', async (req, res) => {
     const { phoneNumber } = req.body;
+    console.log('Beginning passwordless for', phoneNumber);
     try {
-      console.log(
-        await auth0Service.sendSms(
-          await normalizePhoneNumber(phoneNumber, 'SG')
-        )
+      const formattedPhoneNumber = await normalizePhoneNumber(
+        phoneNumber,
+        'SG'
       );
+      console.log('Phone number is: ', formattedPhoneNumber);
+      await auth0Service.sendSms(formattedPhoneNumber);
     } catch (e) {
       console.error(e);
     }

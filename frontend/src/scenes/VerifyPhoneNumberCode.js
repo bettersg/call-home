@@ -89,6 +89,7 @@ export default function VerificationPhoneNumberCode({ locale }) {
             <Typography
               variant="h5"
               component="h1"
+              color={hasBadOtpError ? 'error' : null}
               style={{ marginBottom: '12px' }}
             >
               {hasBadOtpError

@@ -14,13 +14,14 @@ import { ErrorButton, PrimaryButton } from '../components/shared/RoundedButton';
 import ContactsDialog from '../components/shared/ContactsDialog';
 import { useUserService, useContactService } from '../contexts';
 import { ApiValidationError } from '../services/apiClient';
+import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
 import PATHS from './paths';
 
 const COUNTRIES = {
   // Unicode flag + country
   // TODO make this localized
-  sg: '🇸🇬Singapore',
-  bd: '🇧🇩Bangladesh',
+  SG: '🇸🇬Singapore',
+  BD: '🇧🇩Bangladesh',
 };
 
 const STRINGS = {
@@ -35,9 +36,11 @@ const STRINGS = {
     CONTACTS_EDIT_CONTACT_HEADER: 'Edit',
     CONTACTS_EDIT_LABEL: 'Edit',
     CONTACTS_DELETE_LABEL: 'Delete',
-    CONTACTS_DUPLICATE_CONTACT_ERROR_MESSAGE:
-      'You already have a loved one with this number',
     CONTACTS_UNKNOWN_ERROR_MESSAGE: 'Unknown error',
+    errors: {
+      DUPLICATE_CONTACT: 'You already have a loved one with this number',
+      INVALID_PHONE_NUMBER: 'You have entered an invalid phone number',
+    },
   },
 };
 
@@ -101,14 +104,10 @@ function AddContactDialog({ open, onClose, locale }) {
     } catch (e) {
       if (e instanceof ApiValidationError) {
         const { code } = e;
-        // TODO standardize this somewhere
-        if (code === 'DUPLICATE_CONTACT') {
-          setErrorMessage(
-            STRINGS[locale].CONTACTS_DUPLICATE_CONTACT_ERROR_MESSAGE
-          );
-        } else {
-          setErrorMessage(STRINGS[locale].CONTACTS_UNKNOWN_ERROR_MESSAGE);
-        }
+        setErrorMessage(
+          STRINGS[locale].errors[code] ||
+            STRINGS[locale].CONTACTS_UNKNOWN_ERROR_MESSAGE
+        );
       }
     }
   };
@@ -134,6 +133,9 @@ function AddContactDialog({ open, onClose, locale }) {
         label="Phone number"
         value={newContactPhoneNumber}
         onChange={(e) => setNewContactPhoneNumber(e.target.value)}
+        InputProps={{
+          inputComponent: PhoneNumberMasks[user.destinationCountry],
+        }}
       />
     </>
   );
@@ -176,14 +178,10 @@ function EditContactDialog({ contact, open, onClose, locale }) {
     } catch (e) {
       if (e instanceof ApiValidationError) {
         const { code } = e;
-        // TODO standardize this somewhere
-        if (code === 'DUPLICATE_CONTACT') {
-          setErrorMessage(
-            STRINGS[locale].CONTACTS_DUPLICATE_CONTACT_ERROR_MESSAGE
-          );
-        } else {
-          setErrorMessage(STRINGS[locale].CONTACTS_UNKNOWN_ERROR_MESSAGE);
-        }
+        setErrorMessage(
+          STRINGS[locale].errors[code] ||
+            STRINGS[locale].CONTACTS_UNKNOWN_ERROR_MESSAGE
+        );
       }
     }
   };
@@ -214,6 +212,9 @@ function EditContactDialog({ contact, open, onClose, locale }) {
         label={STRINGS[locale].CONTACTS_PHONE_NUMBER_LABEL}
         value={newContactPhoneNumber}
         onChange={(e) => setNewContactPhoneNumber(e.target.value)}
+        InputProps={{
+          inputComponent: PhoneNumberMasks[user.destinationCountry],
+        }}
       />
     </>
   );
