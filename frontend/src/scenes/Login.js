@@ -25,6 +25,7 @@ const DataConsumptionCopy = withStyles((theme) => ({
     borderRadius: '10000px',
     background: 'white',
     border: `1px solid ${theme.palette.primary[800]}`,
+    color: theme.palette.primary[800],
     padding: '0 12px',
   },
 }))(Box);
@@ -58,13 +59,21 @@ export default function Login({ locale }) {
   }
 
   return (
-    <Container>
+    <Container
+      style={{
+        background: 'no-repeat url(/images/landing_bg.svg) bottom center',
+        backgroundSize: 'contain',
+      }}
+    >
       <div className="login-content">
         <img alt="" src="/images/landing_splash.svg" />
         <Typography style={{ marginTop: '24px' }} variant="h5" component="h1">
           {STRINGS[locale].DISPLAY_TITLE}
         </Typography>
-        <Typography style={{ marginTop: '12px' }} variant="body1">
+        <Typography
+          style={{ marginTop: '12px', textAlign: 'center' }}
+          variant="body1"
+        >
           {STRINGS[locale].DISPLAY_SUBTITLE}
         </Typography>
         <DataConsumptionCopy>
@@ -79,6 +88,7 @@ export default function Login({ locale }) {
           onClick={() => {
             window.location = '/oauth/login';
           }}
+          style={{ marginTop: '36px' }}
         >
           {STRINGS[locale].FACEBOOK_SIGN_UP}
         </FacebookButton>

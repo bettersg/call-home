@@ -69,6 +69,17 @@ const ContactBox = withStyles((theme) => ({
   },
 }))(Box);
 
+const LogoutLink = withStyles((theme) => ({
+  root: {
+    cursor: 'pointer',
+    position: 'absolute',
+    bottom: '3em',
+    right: '3em',
+    display: 'flex',
+    color: theme.palette.primary[900],
+  },
+}))(Typography);
+
 const withDialogButtonStyles = withStyles(() => ({
   root: {
     padding: '1em 2em',
@@ -275,7 +286,12 @@ export default function ContactsPage({ locale }) {
   };
 
   return (
-    <Container>
+    <Container
+      style={{
+        background: 'no-repeat url(/images/contacts_bg.svg) bottom center',
+        backgroundSize: 'contain',
+      }}
+    >
       <Typography variant="h5" component="h1">
         {STRINGS[locale].CONTACTS_TITLE}
       </Typography>
@@ -358,22 +374,15 @@ export default function ContactsPage({ locale }) {
           </AddContactButton>
         </ListItem>
       </List>
-      <Typography
+      <LogoutLink
         variant="body1"
         color="primary"
         role="button"
-        style={{
-          cursor: 'pointer',
-          position: 'absolute',
-          bottom: '3em',
-          right: '3em',
-          display: 'flex',
-        }}
         onClick={logout}
       >
         <ExitToAppIcon style={{ transform: 'rotate(180deg)' }} />
         Logout
-      </Typography>
+      </LogoutLink>
       <AddContactDialog
         onClose={() => setIsAddDialogOpen(false)}
         open={isAddDialogOpen}

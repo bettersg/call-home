@@ -24,7 +24,7 @@ const CONTAINER_STYLES = {
 export default function Container({ children, style, ...rest }) {
   const containerStyles = style
     ? {
-        CONTAINER_STYLES,
+        ...CONTAINER_STYLES,
         ...style,
       }
     : CONTAINER_STYLES;

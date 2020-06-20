@@ -22,6 +22,11 @@ export default function ContactsDialog({
       maxWidth="sm"
       open={open}
       onClose={onClose}
+      style={{
+        background:
+          'no-repeat url(/images/contacts_dialog_bg.svg) bottom center',
+        backgroundSize: 'contain',
+      }}
     >
       <DialogTitle
         style={{
