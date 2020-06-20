@@ -29,7 +29,7 @@ export default class ContactService extends ObservableService {
 
   async createContact(userId, contact) {
     const result = await apiClient.post(userContactEndpoint(userId), contact);
-    this.refreshContacts(userId);
+    await this.refreshContacts(userId);
     return result;
   }
 
@@ -38,7 +38,7 @@ export default class ContactService extends ObservableService {
       `${userContactEndpoint(userId)}/${contactId}`,
       newContact
     );
-    this.refreshContacts(userId);
+    await this.refreshContacts(userId);
     return result;
   }
 
@@ -46,7 +46,7 @@ export default class ContactService extends ObservableService {
     const result = await apiClient.delete(
       `${userContactEndpoint(userId)}/${contactId}`
     );
-    this.refreshContacts(userId);
+    await this.refreshContacts(userId);
     return result;
   }
 

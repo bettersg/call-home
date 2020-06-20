@@ -51,6 +51,9 @@ const AddContactButton = withStyles((theme) => ({
     border: `1px solid ${theme.palette.grey.light}`,
     color: theme.palette.primary[700],
     fontWeight: 'bold',
+    '&:hover': {
+      backgroundColor: 'white',
+    },
   },
 }))(Button);
 
@@ -99,6 +102,7 @@ function AddContactDialog({ open, onClose, locale }) {
   const [newContactName, setNewContactName] = useState('');
   const [newContactPhoneNumber, setNewContactPhoneNumber] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
+  const [isRequestInFlight, setIsRequestInFlight] = useState(false);
 
   useEffect(() => {
     setNewContactName('');
@@ -108,6 +112,7 @@ function AddContactDialog({ open, onClose, locale }) {
   const createContact = async () => {
     try {
       setErrorMessage(null);
+      setIsRequestInFlight(true);
       await contactService.createContact(user.id, {
         name: newContactName,
         phoneNumber: newContactPhoneNumber,
@@ -121,6 +126,8 @@ function AddContactDialog({ open, onClose, locale }) {
             STRINGS[locale].CONTACTS_UNKNOWN_ERROR_MESSAGE
         );
       }
+    } finally {
+      setIsRequestInFlight(false);
     }
   };
 
@@ -163,6 +170,7 @@ function AddContactDialog({ open, onClose, locale }) {
       onSubmit={createContact}
       titleText={STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}
       formFields={formFields}
+      isInProgress={isRequestInFlight}
       actionButtons={actionButtons}
       errorText={errorMessage}
     />
@@ -178,10 +186,12 @@ function EditContactDialog({ contact, open, onClose, locale }) {
     contact.phoneNumber
   );
   const [errorMessage, setErrorMessage] = useState(null);
+  const [isRequestInFlight, setIsRequestInFlight] = useState(false);
 
   const updateContact = async () => {
     try {
       setErrorMessage(null);
+      setIsRequestInFlight(true);
       await contactService.updateContact(user.id, contact.id, {
         name: newContactName,
         phoneNumber: newContactPhoneNumber,
@@ -195,6 +205,8 @@ function EditContactDialog({ contact, open, onClose, locale }) {
             STRINGS[locale].CONTACTS_UNKNOWN_ERROR_MESSAGE
         );
       }
+    } finally {
+      setIsRequestInFlight(false);
     }
   };
 
@@ -250,6 +262,7 @@ function EditContactDialog({ contact, open, onClose, locale }) {
       formFields={formFields}
       actionButtons={actionButtons}
       errorText={errorMessage}
+      isInProgress={isRequestInFlight}
     />
   );
 }
