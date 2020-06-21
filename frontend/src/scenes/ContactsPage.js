@@ -12,7 +12,11 @@ import AddIcon from '@material-ui/icons/Add';
 import CallIcon from '@material-ui/icons/Call';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import Container from '../components/shared/Container';
-import { ErrorButton, PrimaryButton } from '../components/shared/RoundedButton';
+import {
+  NeutralButton,
+  ErrorButton,
+  PrimaryButton,
+} from '../components/shared/RoundedButton';
 import ContactsDialog from '../components/shared/ContactsDialog';
 import { useUserService, useContactService } from '../contexts';
 import { ApiValidationError } from '../services/apiClient';
@@ -37,7 +41,11 @@ const STRINGS = {
     CONTACTS_PHONE_NUMBER_LABEL: 'Phone number',
     CONTACTS_EDIT_CONTACT_HEADER: 'Edit',
     CONTACTS_EDIT_LABEL: 'Edit',
+    CONTACTS_SAVE_LABEL: 'Save',
+    CONTACTS_CANCEL_LABEL: 'Cancel',
     CONTACTS_DELETE_LABEL: 'Delete',
+    CONTACTS_DELETE_CONTACT_LABEL: 'Delete contact',
+    CONTACTS_CANNOT_UNDO_MESSAGE: 'This action cannot be undone',
     CONTACTS_UNKNOWN_ERROR_MESSAGE: 'Unknown error',
     errors: {
       DUPLICATE_CONTACT: 'You already have a loved one with this number',
@@ -99,8 +107,8 @@ const withDialogButtonStyles = withStyles(() => ({
   },
 }));
 
+const DialogNeutralButton = withDialogButtonStyles(NeutralButton);
 const DialogPrimaryButton = withDialogButtonStyles(PrimaryButton);
-
 const DialogErrorButton = withDialogButtonStyles(ErrorButton);
 
 function AddContactDialog({ open, onClose, locale }) {
@@ -198,6 +206,7 @@ function EditContactDialog({ contact, open, onClose, locale }) {
   const { me: user } = userState;
   const [, contactService] = useContactService();
   const [newContactName, setNewContactName] = useState(contact.name);
+  const [isDeletingContact, setIsDeletingContact] = useState(false);
   const [newContactPhoneNumber, setNewContactPhoneNumber] = useState(
     contact.phoneNumber
   );
@@ -262,17 +271,37 @@ function EditContactDialog({ contact, open, onClose, locale }) {
         }}
         className="contacts-dialog-input"
       />
+      {isDeletingContact ? (
+        <Typography>{STRINGS[locale].CONTACTS_CANNOT_UNDO_MESSAGE}</Typography>
+      ) : (
+        <Typography
+          variant="body2"
+          color="error"
+          onClick={() => {
+            setIsDeletingContact(true);
+          }}
+        >
+          {STRINGS[locale].CONTACTS_DELETE_CONTACT_LABEL}
+        </Typography>
+      )}
     </>
   );
-  const actionButtons = (
+  const actionButtons = isDeletingContact ? (
     <>
+      <DialogNeutralButton
+        type="button"
+        onClick={() => setIsDeletingContact(false)}
+      >
+        {STRINGS[locale].CONTACTS_CANCEL_LABEL}
+      </DialogNeutralButton>
       <DialogErrorButton type="button" onClick={deleteContact}>
         {STRINGS[locale].CONTACTS_DELETE_LABEL}
       </DialogErrorButton>
-      <DialogPrimaryButton type="submit" value="submit">
-        {STRINGS[locale].CONTACTS_EDIT_LABEL}
-      </DialogPrimaryButton>
     </>
+  ) : (
+    <DialogPrimaryButton type="submit" value="submit">
+      {STRINGS[locale].CONTACTS_SAVE_LABEL}
+    </DialogPrimaryButton>
   );
 
   return (

@@ -16,6 +16,7 @@ const CONTAINER_STYLES = {
   // Mad hacks
   height: 'var(--viewport-height)',
   padding: '5% 5%',
+  paddingTop: '3em',
   display: 'flex',
   flexDirection: 'column',
   position: 'relative',

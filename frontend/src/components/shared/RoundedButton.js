@@ -14,6 +14,13 @@ const PrimaryButton = withStyles((theme) => ({
   },
 }))(RoundedButton);
 
+const NeutralButton = withStyles((theme) => ({
+  root: {
+    backgroundColor: 'white',
+    color: theme.palette.primary[700],
+  },
+}))(RoundedButton);
+
 const ErrorButton = withStyles((theme) => ({
   root: {
     backgroundColor: theme.palette.error.main,
@@ -22,4 +29,4 @@ const ErrorButton = withStyles((theme) => ({
 }))(RoundedButton);
 
 export default RoundedButton;
-export { PrimaryButton, ErrorButton };
+export { NeutralButton, PrimaryButton, ErrorButton };
