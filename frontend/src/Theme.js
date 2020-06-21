@@ -32,27 +32,13 @@ const callHomeTheme = createMuiTheme({
     grey: colors.grey,
     error: colors.error,
   },
-  typography: {
-    h1: {
-      color: colors.text.primary,
-    },
-    h2: {
-      color: colors.text.primary,
-    },
-    h3: {
-      color: colors.text.primary,
-    },
-    h4: {
-      color: colors.text.primary,
-    },
-    h5: {
-      color: colors.text.primary,
-    },
-    h6: {
-      color: colors.text.primary,
-    },
-    body1: {
-      color: colors.text.primary,
+  overrides: {
+    MuiTypography: {
+      root: {
+        color: colors.text.primary,
+        fontFamily:
+          '"Hind Siliguri", "Roboto", "Helvetica", "Arial", sans-serif !important',
+      },
     },
   },
 });
