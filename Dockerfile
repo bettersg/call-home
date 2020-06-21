@@ -24,6 +24,10 @@ RUN npm install
 
 COPY backend/src/ src/
 
+# Copy migration files over
+COPY backend/.sequelizerc .
+COPY backend/sequelize sequelize/
+
 # Set the static directory for the backend
 ENV STATIC_DIR=static
 COPY --from=frontend /app/frontend/build $STATIC_DIR

@@ -19,11 +19,7 @@ function ContactService(ContactModel, userService) {
     };
   }
 
-  async function validateContact(user, contact) {
-    if (!contact.name) {
-      throw new Error('Validation Error: CONTACT_NAME_BLANK');
-    }
-
+  async function validateDuplicateContact(user, contact) {
     const phoneNumber = await normalizePhoneNumber(
       contact.phoneNumber,
       user.destinationCountry
@@ -41,6 +37,12 @@ function ContactService(ContactModel, userService) {
     }
   }
 
+  async function validateContactFields(contact) {
+    if (!contact.name) {
+      throw new Error('Validation Error: CONTACT_NAME_BLANK');
+    }
+  }
+
   async function listContactsByUserId(UserId) {
     return ContactModel.findAll({
       order: ['name'],
@@ -52,7 +54,10 @@ function ContactService(ContactModel, userService) {
 
   async function createContact(UserId, contact) {
     const user = await userService.getUser(UserId);
-    await validateContact(user, contact);
+    await Promise.all([
+      validateDuplicateContact(user, contact),
+      validateContactFields(contact),
+    ]);
     const contactToCreate = await normalizeContact(user, contact);
     return sanitizeDbErrors(() => ContactModel.create(contactToCreate));
   }
@@ -69,7 +74,7 @@ function ContactService(ContactModel, userService) {
 
   async function updateContact(UserId, contactId, contact) {
     const user = await userService.getUser(UserId);
-    await validateContact(user, contact);
+    await validateContactFields(contact);
     const contactToUpdate = await normalizeContact(user, contact);
     await ContactModel.update(contactToUpdate, {
       where: {

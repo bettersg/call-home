@@ -14,6 +14,11 @@ function ContactModel(sequelize) {
         // TODO add validation based on country code and whatnot
         // validate: {},
       },
+      avatar: {
+        type: DataTypes.STRING,
+        // TODO validate this
+        // should have the format "{avatar_group}_{avatar_variant}" e.g. male_4, female_2
+      },
     },
     {
       sequelize,

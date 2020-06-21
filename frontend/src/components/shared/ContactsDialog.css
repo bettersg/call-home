@@ -1,10 +1,15 @@
-.MuiDialog-paper {
+.MuiDialog-paper.MuiPaper-root {
   height: calc(0.8 * var(--viewport-height));
-  padding: 24px;
+  padding: 1em;
+  background-color: #F7FBFD; /* primary 300 */
+  background-image: url(/images/contacts_dialog_bg.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position-x: center;
+  background-position-y: bottom;
 }
 
 .contacts-dialog-content {
-  padding: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -23,4 +28,8 @@
   display: flex;
   width: 100%;
   justify-content: space-evenly;
+}
+
+.contacts-dialog-input {
+  background-color: white;
 }

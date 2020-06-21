@@ -21,12 +21,13 @@ function parseUserRequestBody(req, res, next) {
 }
 
 function contactToContactResponse(contact) {
-  const { id, name, phoneNumber } = contact;
+  const { id, name, phoneNumber, avatar } = contact;
 
   const response = {
     id,
     name,
     phoneNumber,
+    avatar,
   };
   return response;
 }
@@ -61,7 +62,7 @@ function userProfileToUserProfileResponse(userProfile) {
 }
 
 function parseContactRequestBody(req, res, next) {
-  const { name, phoneNumber } = req.body;
+  const { name, phoneNumber, avatar } = req.body;
 
   const errorMessages = [];
   if (!name) {
@@ -74,6 +75,7 @@ function parseContactRequestBody(req, res, next) {
   req.body = {
     name,
     phoneNumber,
+    avatar,
   };
 
   return next();

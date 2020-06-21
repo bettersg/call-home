@@ -4,6 +4,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
@@ -28,7 +29,7 @@ const COUNTRIES = {
 const STRINGS = {
   en: {
     CONTACTS_TITLE: 'Your loved ones',
-    CONTACTS_SUBTITLE: 'Call your loved ones back home for free',
+    CONTACTS_SUBTITLE: 'Call your loved ones back home',
     CONTACTS_ADD_CONTACT_LABEL: 'Add a loved one',
     CONTACTS_ADD_LABEL: 'Add',
     CONTACTS_COUNTRY_LABEL: (code) => `Country: ${COUNTRIES[code]}`,
@@ -72,6 +73,13 @@ const ContactBox = withStyles((theme) => ({
   },
 }))(Box);
 
+const ContactCallIcon = withStyles((theme) => ({
+  root: {
+    transform: 'rotate(270deg)',
+    color: theme.palette.primary[900],
+  },
+}))(CallIcon);
+
 const LogoutLink = withStyles((theme) => ({
   root: {
     cursor: 'pointer',
@@ -87,7 +95,7 @@ const withDialogButtonStyles = withStyles(() => ({
   root: {
     padding: '1em 2em',
     flex: '1 0',
-    margin: '0 0.5em',
+    margin: '0 0.5rem',
   },
 }));
 
@@ -101,6 +109,9 @@ function AddContactDialog({ open, onClose, locale }) {
   const [, contactService] = useContactService();
   const [newContactName, setNewContactName] = useState('');
   const [newContactPhoneNumber, setNewContactPhoneNumber] = useState('');
+  const [newContactAvatarChoice, setNewContactAvatarChoice] = useState(
+    'female_1'
+  );
   const [errorMessage, setErrorMessage] = useState(null);
   const [isRequestInFlight, setIsRequestInFlight] = useState(false);
 
@@ -116,6 +127,7 @@ function AddContactDialog({ open, onClose, locale }) {
       await contactService.createContact(user.id, {
         name: newContactName,
         phoneNumber: newContactPhoneNumber,
+        avatar: newContactAvatarChoice,
       });
       onClose();
     } catch (e) {
@@ -142,6 +154,7 @@ function AddContactDialog({ open, onClose, locale }) {
         label={STRINGS[locale].CONTACTS_NAME_LABEL}
         value={newContactName}
         onChange={(e) => setNewContactName(e.target.value)}
+        className="contacts-dialog-input"
       />
       <TextField
         style={{
@@ -155,6 +168,7 @@ function AddContactDialog({ open, onClose, locale }) {
         InputProps={{
           inputComponent: PhoneNumberMasks[user.destinationCountry],
         }}
+        className="contacts-dialog-input"
       />
     </>
   );
@@ -173,6 +187,8 @@ function AddContactDialog({ open, onClose, locale }) {
       isInProgress={isRequestInFlight}
       actionButtons={actionButtons}
       errorText={errorMessage}
+      avatarChoice={newContactAvatarChoice}
+      setAvatarChoice={setNewContactAvatarChoice}
     />
   );
 }
@@ -185,6 +201,9 @@ function EditContactDialog({ contact, open, onClose, locale }) {
   const [newContactPhoneNumber, setNewContactPhoneNumber] = useState(
     contact.phoneNumber
   );
+  const [newContactAvatarChoice, setNewContactAvatarChoice] = useState(
+    contact.avatar || 'female_1'
+  );
   const [errorMessage, setErrorMessage] = useState(null);
   const [isRequestInFlight, setIsRequestInFlight] = useState(false);
 
@@ -195,6 +214,7 @@ function EditContactDialog({ contact, open, onClose, locale }) {
       await contactService.updateContact(user.id, contact.id, {
         name: newContactName,
         phoneNumber: newContactPhoneNumber,
+        avatar: newContactAvatarChoice,
       });
       onClose();
     } catch (e) {
@@ -226,6 +246,7 @@ function EditContactDialog({ contact, open, onClose, locale }) {
         label={STRINGS[locale].CONTACTS_NAME_LABEL}
         value={newContactName}
         onChange={(e) => setNewContactName(e.target.value)}
+        className="contacts-dialog-input"
       />
       <TextField
         style={{
@@ -239,12 +260,13 @@ function EditContactDialog({ contact, open, onClose, locale }) {
         InputProps={{
           inputComponent: PhoneNumberMasks[user.destinationCountry],
         }}
+        className="contacts-dialog-input"
       />
     </>
   );
   const actionButtons = (
     <>
-      <DialogErrorButton onClick={deleteContact}>
+      <DialogErrorButton type="button" onClick={deleteContact}>
         {STRINGS[locale].CONTACTS_DELETE_LABEL}
       </DialogErrorButton>
       <DialogPrimaryButton type="submit" value="submit">
@@ -263,6 +285,8 @@ function EditContactDialog({ contact, open, onClose, locale }) {
       actionButtons={actionButtons}
       errorText={errorMessage}
       isInProgress={isRequestInFlight}
+      avatarChoice={newContactAvatarChoice}
+      setAvatarChoice={setNewContactAvatarChoice}
     />
   );
 }
@@ -319,7 +343,7 @@ export default function ContactsPage({ locale }) {
       <Typography
         variant="body1"
         style={{
-          marginBottom: '24px',
+          marginBottom: '1rem',
         }}
       >
         {STRINGS[locale].CONTACTS_COUNTRY_LABEL(user.destinationCountry)}
@@ -331,37 +355,74 @@ export default function ContactsPage({ locale }) {
         }}
       >
         {contacts.map((contact) => (
-          <ListItem key={contact.id}>
+          <ListItem
+            key={contact.id}
+            style={{
+              marginBottom: '0.5rem',
+              paddingBottom: '0',
+              paddingTop: '0',
+            }}
+          >
             <ContactBox
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-around',
+                justifyContent: 'space-between',
                 width: '100%',
                 height: '4em',
-                marginBottom: '8px',
+                padding: '4px 8px',
               }}
               variant="outlined"
             >
-              <div>
-                <Typography variant="body1">{contact.name}</Typography>
-                <Typography
-                  style={{ cursor: 'pointer' }}
-                  color="primary"
-                  role="button"
-                  onClick={() => setContactToEdit(contact)}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  flex: '1 0',
+                  marginRight: '1rem',
+                }}
+              >
+                <img
+                  style={{
+                    height: '2.5rem',
+                    width: '2.5rem',
+                    marginRight: '8px',
+                  }}
+                  alt=""
+                  src={`/images/avatars/${contact.avatar || 'placeholder'}.svg`}
+                />
+                <div
+                  style={{
+                    flex: '1 0',
+                  }}
                 >
-                  {STRINGS[locale].CONTACTS_EDIT_LABEL}
-                </Typography>
+                  <Typography variant="body1">{contact.name}</Typography>
+                  <div style={{ display: 'flex' }}>
+                    <Typography
+                      style={{ fontSize: '0.675rem', marginRight: '0.5rem' }}
+                      variant="body2"
+                    >
+                      {contact.phoneNumber}
+                    </Typography>
+                    <Typography
+                      style={{ cursor: 'pointer', fontSize: '0.675rem' }}
+                      color="primary"
+                      role="button"
+                      onClick={() => setContactToEdit(contact)}
+                    >
+                      {STRINGS[locale].CONTACTS_EDIT_LABEL}
+                    </Typography>
+                  </div>
+                </div>
               </div>
-              <Typography variant="body2">{contact.phoneNumber}</Typography>
-              <Button
+              <IconButton
+                style={{ padding: '0' }}
                 onClick={() => {
                   contactService.setActiveContact(contact);
                 }}
               >
-                <CallIcon />
-              </Button>
+                <ContactCallIcon />
+              </IconButton>
             </ContactBox>
           </ListItem>
         ))}
@@ -379,8 +440,8 @@ export default function ContactsPage({ locale }) {
             <AddContactIcon
               style={{
                 marginRight: '1em',
-                height: '1.5em',
-                width: '1.5em',
+                height: '1.5rem',
+                width: '1.5rem',
               }}
             />
             <div>{STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}</div>
