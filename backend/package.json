@@ -1,7 +1,7 @@
 {
-  "name": "ring-a-senior-backend",
+  "name": "call-home-backend",
   "version": "1.0.0",
-  "description": "Helping seniors feel less lonely",
+  "description": "A more friendly way to call home",
   "main": "index.js",
   "scripts": {
     "start": "npm run migration:migrate && node src/index.js",

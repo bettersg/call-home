@@ -11,8 +11,8 @@ This app is built and run with docker.
 
 ```sh
 # build the image
-docker build . -t ring-a-senior
+docker build . -t call-home
 
 # run the image
-docker run -it ring-a-senior
+docker run -it call-home
 ```
