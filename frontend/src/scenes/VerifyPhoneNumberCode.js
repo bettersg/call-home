@@ -68,7 +68,6 @@ export default function VerificationPhoneNumberCode({ locale }) {
       }
     }
   };
-
   let content;
   if (hasWhitelistError) {
     content = (
@@ -89,7 +88,7 @@ export default function VerificationPhoneNumberCode({ locale }) {
             <Typography
               variant="h5"
               component="h1"
-              color={hasBadOtpError ? 'error' : null}
+              color={hasBadOtpError ? 'error' : 'inherit'}
               style={{ marginBottom: '12px' }}
             >
               {hasBadOtpError

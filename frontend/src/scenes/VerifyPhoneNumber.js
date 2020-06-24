@@ -5,6 +5,7 @@ import { Redirect } from 'react-router-dom';
 import Container from '../components/shared/Container';
 import { useUserService } from '../contexts';
 import { PrimaryButton } from '../components/shared/RoundedButton';
+import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
 import PATHS from './paths';
 
 // TODO figure out where to put these later
@@ -42,7 +43,7 @@ export default function PhoneNumberForm({ locale }) {
     if (!phoneNumber) {
       return false;
     }
-    return phoneNumber.match(/\d{8}/) || phoneNumber.match(/\+65\d{8}/);
+    return phoneNumber.match(/\d{8}/);
   };
   const onSubmit = () => {
     setIsTouched(true);
@@ -77,6 +78,9 @@ export default function PhoneNumberForm({ locale }) {
               label={STRINGS[locale].VERIFY_PHONE_NUMBER_PHONE_NUMBER_LABEL}
               value={phoneNumber}
               variant="outlined"
+              InputProps={{
+                inputComponent: PhoneNumberMasks.SG,
+              }}
               onChange={(e) => {
                 setIsTouched(true);
                 setPhoneNumber(e.target.value);
