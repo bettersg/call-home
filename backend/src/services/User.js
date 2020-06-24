@@ -1,28 +1,10 @@
 const { sanitizeDbErrors } = require('./lib');
 
-async function injectCallees(userOrUsers) {
-  return userOrUsers;
-  // if (!userOrUsers) {
-  //   return userOrUsers;
-  // }
-  // const isSingular = !Array.isArray(userOrUsers);
-  // const users = isSingular ? [userOrUsers] : userOrUsers;
-  // const callees = await Promise.all(users.map((user) => user.getCallees()));
-  // const injectedUsers = users.map((user, idx) => {
-  //   // this needs to be the actual model instance
-  //   user.callees = callees[idx]; // eslint-disable-line no-param-reassign
-  //   return user;
-  // });
-  // return isSingular ? injectedUsers[0] : injectedUsers;
-}
-
-function UserService(UserModel, whitelistEntryService) {
+function UserService(UserModel, allowlistEntryService) {
   async function listUsers() {
-    return injectCallees(
-      await UserModel.findAll({
-        order: ['email'],
-      })
-    );
+    return UserModel.findAll({
+      order: ['email'],
+    });
   }
 
   async function createUser(user) {
@@ -36,27 +18,23 @@ function UserService(UserModel, whitelistEntryService) {
     // await createdUser.setCallees(callees.map((callee) => callee.id));
     await createdUser.save();
     await createdUser.reload();
-    return injectCallees(createdUser);
+    return createdUser;
   }
 
   async function getUser(userId) {
-    return injectCallees(
-      await UserModel.findOne({
-        where: {
-          id: userId,
-        },
-      })
-    );
+    return UserModel.findOne({
+      where: {
+        id: userId,
+      },
+    });
   }
 
   async function getUserByEmail(userEmail) {
-    return injectCallees(
-      await UserModel.findOne({
-        where: {
-          email: userEmail,
-        },
-      })
-    );
+    return UserModel.findOne({
+      where: {
+        email: userEmail,
+      },
+    });
   }
 
   async function updateUser(userId, user) {
@@ -75,15 +53,16 @@ function UserService(UserModel, whitelistEntryService) {
   }
 
   async function verifyUserPhoneNumber(userId, phoneNumber) {
-    const [user, whitelistEntry] = await Promise.all([
+    const [user, allowlistEntry] = await Promise.all([
       getUser(userId),
-      whitelistEntryService.getWhitelistEntryByPhoneNumber(phoneNumber),
+      allowlistEntryService.getAllowlistEntryByPhoneNumber(phoneNumber),
     ]);
-    if (!whitelistEntry) {
+    if (!allowlistEntry) {
       return user;
     }
     user.isPhoneNumberValidated = true;
-    user.destinationCountry = whitelistEntry.destinationCountry;
+    user.destinationCountry = allowlistEntry.destinationCountry;
+    user.role = allowlistEntry.role;
     await user.save();
     await user.reload();
     return user;

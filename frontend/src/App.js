@@ -1,6 +1,7 @@
 import React from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {
+  AllowlistServiceProvider,
   UserServiceProvider,
   ContactServiceProvider,
   ThemeProvider,
@@ -16,14 +17,16 @@ if (isProd) {
 
 function App() {
   return (
-    <UserServiceProvider>
-      <ContactServiceProvider>
-        <ThemeProvider>
-          <SceneRouter />
-          <CssBaseline />
-        </ThemeProvider>
-      </ContactServiceProvider>
-    </UserServiceProvider>
+    <AllowlistServiceProvider>
+      <UserServiceProvider>
+        <ContactServiceProvider>
+          <ThemeProvider>
+            <SceneRouter />
+            <CssBaseline />
+          </ThemeProvider>
+        </ContactServiceProvider>
+      </UserServiceProvider>
+    </AllowlistServiceProvider>
   );
 }
 

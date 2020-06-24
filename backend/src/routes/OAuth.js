@@ -64,7 +64,7 @@ function OAuthRoutes() {
     });
     logoutURL.search = searchString;
 
-    res.redirect(logoutURL);
+    return res.redirect(logoutURL);
   });
 
   return router;

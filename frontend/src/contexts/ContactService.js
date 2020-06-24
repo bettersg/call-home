@@ -1,31 +1,9 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Contact as ContactService } from '../services';
+import createServiceProvider from './createServiceProvider';
+import { Contact } from '../services';
 
-const ContactServiceContext = createContext(null);
-const ContactStateContext = createContext(null);
+const {
+  Provider: ContactServiceProvider,
+  hook: useContactService,
+} = createServiceProvider(Contact);
 
-const contactService = new ContactService();
-
-export function ContactServiceProvider({ children }) {
-  const [contactState, setContactState] = useState({});
-
-  useEffect(() => {
-    if (contactService) {
-      contactService.subscribe(setContactState);
-    }
-  }, []);
-
-  return (
-    <ContactServiceContext.Provider value={contactService}>
-      <ContactStateContext.Provider value={contactState}>
-        {children}
-      </ContactStateContext.Provider>
-    </ContactServiceContext.Provider>
-  );
-}
-
-export function useContactService() {
-  const innerContactService = useContext(ContactServiceContext);
-  const contactState = useContext(ContactStateContext);
-  return [contactState, innerContactService];
-}
+export { ContactServiceProvider, useContactService };

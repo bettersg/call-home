@@ -30,7 +30,7 @@ export default function VerificationPhoneNumberCode({ locale }) {
   const { verificationPhoneNumber: phoneNumber } = userState;
   const [code, setCode] = useState('');
   const [hasBadOtpError, setHasBadOtpError] = useState(false);
-  const [hasWhitelistError, setHasWhitelistError] = useState(false);
+  const [hasAllowlistError, setHasAllowlistError] = useState(false);
 
   useEffect(() => {
     if (userService) {
@@ -63,14 +63,14 @@ export default function VerificationPhoneNumberCode({ locale }) {
       }
       const { message } = error.data;
       if (message === 'NOT_WHITELISTED') {
-        setHasWhitelistError(true);
+        setHasAllowlistError(true);
       } else if (message === 'BAD_OTP') {
         setHasBadOtpError(true);
       }
     }
   };
   let content;
-  if (hasWhitelistError) {
+  if (hasAllowlistError) {
     content = (
       <div>{STRINGS[locale].VERIFY_PHONE_NUMBER_WHITELIST_ERROR_MESSAGE}</div>
     );

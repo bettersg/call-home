@@ -4,8 +4,7 @@ const { sequelize } = require('../models');
 
 module.exports = function PassportConfig(app) {
   const { APP_SECRET } = process.env;
-  const IS_PROD = process.env.NODE_ENV === 'prod';
-
+  const IS_PROD = process.env.NODE_ENV === 'production';
   const sessionConfig = {
     cookie: {},
     secret: APP_SECRET,

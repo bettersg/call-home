@@ -5,6 +5,7 @@ require('dotenv').config();
 const morgan = require('morgan');
 const helmet = require('helmet');
 const {
+  AllowlistEntry: allowlistRoutes,
   User: userRoutes,
   Contact: contactRoutes,
   Twilio: twilioRoutes,
@@ -45,6 +46,7 @@ app.use('/users', secureRoutes, userRoutes);
 // TODO P1!!! add some kind of auth to allow only modification to self
 app.use('/users', secureRoutes, contactRoutes);
 app.use('/calls', secureRoutes, callRoutes);
+app.use('/allowlistEntries', secureRoutes, allowlistRoutes);
 // STATIC_DIR gets populated in a docker build
 // expose manifest.json
 app.use('/manifest.json', express.static(STATIC_DIR));

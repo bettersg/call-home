@@ -2,6 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import PATHS from './paths';
 import {
+  AdminPage,
   Login,
   CallingPage,
   ContactsPage,
@@ -15,6 +16,9 @@ export default function SceneRouter() {
 
   return (
     <Switch>
+      <Route path={PATHS.ADMIN}>
+        <AdminPage locale={locale} />
+      </Route>
       <Route path={PATHS.VERIFY_PHONE_NUMBER_CODE}>
         <VerifyPhoneNumberCode locale={locale} />
       </Route>

@@ -1,13 +1,13 @@
 const sequelize = require('./sequelize');
-const { model: UserModel } = require('./User');
+const { model: UserModel, UserTypes } = require('./User');
 const ContactModel = require('./Contact');
 const CallModel = require('./Call');
-const WhitelistEntryModel = require('./WhitelistEntry');
+const AllowlistEntryModel = require('./AllowlistEntry');
 
 const User = UserModel(sequelize);
 const Contact = ContactModel(sequelize);
 const Call = CallModel(sequelize);
-const WhitelistEntry = WhitelistEntryModel(sequelize);
+const AllowlistEntry = AllowlistEntryModel(sequelize);
 
 // User <-> Contact
 User.hasMany(Contact, {
@@ -28,7 +28,8 @@ User.belongsToMany(Call, { through: 'callUsers' });
 module.exports = {
   sequelize,
   User,
+  UserTypes,
   Contact,
   Call,
-  WhitelistEntry,
+  AllowlistEntry,
 };

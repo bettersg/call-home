@@ -4,13 +4,14 @@
   "description": "A more friendly way to call home",
   "main": "index.js",
   "scripts": {
-    "start": "npm run migration:migrate && node src/index.js",
+    "start": "npm run migration:migrate && npm run migration:seed && node src/index.js",
     "start:dev": "nodemon  --inspect src/index.js",
     "lint": "eslint",
     "lint:js": "npm run lint -- . --ext .js",
     "lint:js:fix": "npm run lint:js -- --fix",
     "lint:fix": "npm run lint -- --fix",
     "migration:migrate": "sequelize-cli db:migrate",
+    "migration:seed": "sequelize-cli db:seed:all",
     "migration:generate": "sequelize-cli migration:generate",
     "precommit": "lint-staged"
   },

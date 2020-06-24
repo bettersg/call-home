@@ -20,8 +20,8 @@ async function normalizePhoneNumber(phoneNumber, countryCodeIso) {
     if (e.status === 404) {
       throw new Error('Validation Error: INVALID_PHONE_NUMBER');
     }
+    throw e;
   }
-  return null;
 }
 
 module.exports = {

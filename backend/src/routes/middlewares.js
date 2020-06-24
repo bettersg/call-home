@@ -1,5 +1,6 @@
 // TODO don't hardcode this
 const { User: UserService } = require('../services');
+const { UserTypes } = require('../models');
 const {
   userToUserResponse,
   userProfileToUserProfileResponse,
@@ -21,7 +22,6 @@ async function injectDbUser(req) {
   // This returns the OAuth user info
   const { _raw, _json, ...userProfile } = req.user;
   const userProfileResponse = userProfileToUserProfileResponse(userProfile);
-  console.log('Getting info for user profile', userProfile);
   const user = await UserService.getUserByEmails(
     req.user.emails.map((emailValue) => emailValue.value)
   );
@@ -39,9 +39,17 @@ async function injectDbUser(req) {
   };
 }
 
+async function requireAdmin(req, res, next) {
+  if (!req.user) {
+    return res.status(401).send('Unauthenticated');
+  }
+  if (req.user.role !== UserTypes.ADMIN) {
+    return res.status(403).send('Need to be admin');
+  }
+  return next();
+}
+
 async function secureRoutes(req, res, next) {
-  console.log('Securing route: ', req.originalUrl);
-  console.log('Sessions', req.session);
   if (req.user) {
     await injectDbUser(req);
     return next();
@@ -71,4 +79,5 @@ async function secureRoutes(req, res, next) {
 module.exports = {
   httpsRedirect,
   secureRoutes,
+  requireAdmin,
 };

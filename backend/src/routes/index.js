@@ -5,6 +5,7 @@ const Contact = require('./Contact');
 const Call = require('./Call');
 const Twilio = require('./Twilio');
 const OAuth = require('./OAuth');
+const AllowlistEntry = require('./AllowlistEntry');
 const Passwordless = require('./Passwordless');
 const middlewares = require('./middlewares');
 
@@ -15,5 +16,6 @@ module.exports = {
   Passwordless: Passwordless(services.User, services.Auth0),
   User: User(services.User),
   Contact: Contact(services.Contact),
+  AllowlistEntry: AllowlistEntry(services.AllowlistEntry),
   middlewares,
 };

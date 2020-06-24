@@ -38,6 +38,8 @@ function userToUserResponse(user) {
     name,
     email,
     destinationCountry,
+    phoneNumber,
+    role,
     isPhoneNumberValidated: isVerified,
   } = user;
 
@@ -46,6 +48,8 @@ function userToUserResponse(user) {
     name,
     email,
     destinationCountry,
+    phoneNumber,
+    role,
     isVerified,
   };
 }
