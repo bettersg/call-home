@@ -277,6 +277,9 @@ function EditContactDialog({ contact, open, onClose, locale }) {
         <Typography
           variant="body2"
           color="error"
+          style={{
+            cursor: 'pointer',
+          }}
           onClick={() => {
             setIsDeletingContact(true);
           }}

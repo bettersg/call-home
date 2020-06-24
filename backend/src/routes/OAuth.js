@@ -55,12 +55,7 @@ function OAuthRoutes() {
   router.get('/logout', (req, res) => {
     req.logout();
 
-    let returnTo = `${req.protocol}://${req.hostname}`;
-    const port = req.connection.localPort;
-    // Nice
-    if (port !== undefined && port !== 80 && port !== 443) {
-      returnTo += `:${port}`;
-    }
+    const returnTo = `https://${req.hostname}`;
     const logoutURL = new url.URL(`https://${AUTH0_DOMAIN}/v2/logout`);
 
     const searchString = querystring.stringify({
