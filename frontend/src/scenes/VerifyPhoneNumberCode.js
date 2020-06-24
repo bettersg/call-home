@@ -52,15 +52,16 @@ export default function VerificationPhoneNumberCode({ locale }) {
     return <Redirect to={PATHS.VERIFY_PHONE_NUMBER} />;
   }
 
-  const onSubmit = async () => {
+  const onSubmit = async (event) => {
+    event.preventDefault();
     try {
       await login(phoneNumber, code);
       await userService.refreshSelf();
-    } catch (e) {
-      if (!e.data || !e.data.message) {
-        throw e;
+    } catch (error) {
+      if (!error.data || !error.data.message) {
+        throw error;
       }
-      const { message } = e.data;
+      const { message } = error.data;
       if (message === 'NOT_WHITELISTED') {
         setHasWhitelistError(true);
       } else if (message === 'BAD_OTP') {
@@ -106,7 +107,7 @@ export default function VerificationPhoneNumberCode({ locale }) {
                 STRINGS[locale].VERIFY_PHONE_NUMBER_VERIFICATION_CODE_LABEL
               }
               value={code}
-              onChange={(e) => setCode(e.target.value)}
+              onChange={(error) => setCode(error.target.value)}
             />
           </div>
           <div

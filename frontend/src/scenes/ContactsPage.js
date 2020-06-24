@@ -128,7 +128,8 @@ function AddContactDialog({ open, onClose, locale }) {
     setNewContactPhoneNumber('');
   }, [open]);
 
-  const createContact = async () => {
+  const createContact = async (event) => {
+    event.preventDefault();
     try {
       setErrorMessage(null);
       setIsRequestInFlight(true);
@@ -138,9 +139,9 @@ function AddContactDialog({ open, onClose, locale }) {
         avatar: newContactAvatarChoice,
       });
       onClose();
-    } catch (e) {
-      if (e instanceof ApiValidationError) {
-        const { code } = e;
+    } catch (error) {
+      if (error instanceof ApiValidationError) {
+        const { code } = error;
         setErrorMessage(
           STRINGS[locale].errors[code] ||
             STRINGS[locale].CONTACTS_UNKNOWN_ERROR_MESSAGE
@@ -161,7 +162,7 @@ function AddContactDialog({ open, onClose, locale }) {
         variant="outlined"
         label={STRINGS[locale].CONTACTS_NAME_LABEL}
         value={newContactName}
-        onChange={(e) => setNewContactName(e.target.value)}
+        onChange={(event) => setNewContactName(event.target.value)}
         className="contacts-dialog-input"
       />
       <TextField
@@ -172,7 +173,7 @@ function AddContactDialog({ open, onClose, locale }) {
         variant="outlined"
         label="Phone number"
         value={newContactPhoneNumber}
-        onChange={(e) => setNewContactPhoneNumber(e.target.value)}
+        onChange={(event) => setNewContactPhoneNumber(event.target.value)}
         InputProps={{
           inputComponent: PhoneNumberMasks[user.destinationCountry],
         }}
@@ -216,7 +217,8 @@ function EditContactDialog({ contact, open, onClose, locale }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [isRequestInFlight, setIsRequestInFlight] = useState(false);
 
-  const updateContact = async () => {
+  const updateContact = async (event) => {
+    event.preventDefault();
     try {
       setErrorMessage(null);
       setIsRequestInFlight(true);
@@ -226,9 +228,9 @@ function EditContactDialog({ contact, open, onClose, locale }) {
         avatar: newContactAvatarChoice,
       });
       onClose();
-    } catch (e) {
-      if (e instanceof ApiValidationError) {
-        const { code } = e;
+    } catch (error) {
+      if (error instanceof ApiValidationError) {
+        const { code } = error;
         setErrorMessage(
           STRINGS[locale].errors[code] ||
             STRINGS[locale].CONTACTS_UNKNOWN_ERROR_MESSAGE
@@ -254,7 +256,7 @@ function EditContactDialog({ contact, open, onClose, locale }) {
         variant="outlined"
         label={STRINGS[locale].CONTACTS_NAME_LABEL}
         value={newContactName}
-        onChange={(e) => setNewContactName(e.target.value)}
+        onChange={(event) => setNewContactName(event.target.value)}
         className="contacts-dialog-input"
       />
       <TextField
@@ -265,7 +267,7 @@ function EditContactDialog({ contact, open, onClose, locale }) {
         variant="outlined"
         label={STRINGS[locale].CONTACTS_PHONE_NUMBER_LABEL}
         value={newContactPhoneNumber}
-        onChange={(e) => setNewContactPhoneNumber(e.target.value)}
+        onChange={(event) => setNewContactPhoneNumber(event.target.value)}
         InputProps={{
           inputComponent: PhoneNumberMasks[user.destinationCountry],
         }}

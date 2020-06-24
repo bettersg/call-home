@@ -45,7 +45,8 @@ export default function PhoneNumberForm({ locale }) {
     }
     return phoneNumber.match(/\d{8}/);
   };
-  const onSubmit = () => {
+  const onSubmit = (event) => {
+    event.preventDefault();
     setIsTouched(true);
     if (validatePhoneNumber()) {
       userService.setPhoneNumber(phoneNumber);
@@ -81,9 +82,9 @@ export default function PhoneNumberForm({ locale }) {
               InputProps={{
                 inputComponent: PhoneNumberMasks.SG,
               }}
-              onChange={(e) => {
+              onChange={(event) => {
                 setIsTouched(true);
-                setPhoneNumber(e.target.value);
+                setPhoneNumber(event.target.value);
               }}
             />
           </div>
