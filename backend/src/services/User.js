@@ -60,7 +60,9 @@ function UserService(UserModel, allowlistEntryService) {
     if (!allowlistEntry) {
       return user;
     }
+
     user.isPhoneNumberValidated = true;
+    user.phoneNumber = phoneNumber;
     user.destinationCountry = allowlistEntry.destinationCountry;
     user.role = allowlistEntry.role;
     await user.save();
