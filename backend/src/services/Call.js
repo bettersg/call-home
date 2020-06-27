@@ -13,20 +13,14 @@ function CallService(CallModel, userService, contactService) {
     return true;
   }
 
-  async function createCall({
-    userId,
-    contactId,
-    twilioCallId,
-    twilioCallStatus,
-  }) {
+  async function createCall({ userId, contactId, incomingTwilioCallSid }) {
     validateCall(userId, contactId);
     const contact = await contactService.getContact(userId, contactId);
     const call = {
       phoneNumber: contact.phoneNumber,
       contactId,
       userId,
-      twilioCallId,
-      twilioCallStatus,
+      incomingTwilioCallSid,
     };
     return sanitizeDbErrors(() => CallModel.create(call));
   }

@@ -1,5 +1,6 @@
 const { DataTypes, Model } = require('sequelize');
 
+// This contains the parameters used to create the call and the resulting twilio information.
 function CallModel(sequelize) {
   class Call extends Model {}
   Call.init(
@@ -16,10 +17,12 @@ function CallModel(sequelize) {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      twilioCallId: {
+      incomingTwilioCallSid: {
         type: DataTypes.STRING,
+        allowNull: false,
       },
-      twilioCallStatus: {
+      // This needs to be determined later
+      outgoingTwilioCallSid: {
         type: DataTypes.STRING,
       },
     },

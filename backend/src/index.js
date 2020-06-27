@@ -19,6 +19,7 @@ const {
   Passport: PassportConfig,
   Session: SessionConfig,
 } = require('./config');
+require('./jobs');
 
 const app = express();
 

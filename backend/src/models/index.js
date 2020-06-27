@@ -2,12 +2,14 @@ const sequelize = require('./sequelize');
 const { model: UserModel, UserTypes } = require('./User');
 const ContactModel = require('./Contact');
 const CallModel = require('./Call');
+const TwilioCallModel = require('./TwilioCall');
 const AllowlistEntryModel = require('./AllowlistEntry');
 
 const User = UserModel(sequelize);
 const Contact = ContactModel(sequelize);
 const Call = CallModel(sequelize);
 const AllowlistEntry = AllowlistEntryModel(sequelize);
+const TwilioCall = TwilioCallModel(sequelize);
 
 // User <-> Contact
 User.hasMany(Contact, {
@@ -32,4 +34,5 @@ module.exports = {
   Contact,
   Call,
   AllowlistEntry,
+  TwilioCall,
 };

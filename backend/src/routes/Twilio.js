@@ -11,11 +11,10 @@ const webhookOptions = isProd
   ? { validate: true, url: TWILIO_WEBHOOK_URL }
   : { validate: false };
 
-function TwilioRoutes(callService) {
+function TwilioRoutes(callService, twilioCallService) {
   const router = express.Router();
 
   // This is strictly for the twilio webhook
-  // TODO set validate field based on NODE_ENV
   router.all(
     '/',
     (req, res, next) => {
@@ -24,20 +23,17 @@ function TwilioRoutes(callService) {
     },
     twilio.webhook(webhookOptions),
     async (req, res) => {
-      const {
-        userId,
-        contactId,
-        CallSid: twilioCallId,
-        CallStatus: twilioCallStatus,
-      } = req.body;
+      const { userId, contactId, CallSid: incomingTwilioCallSid } = req.body;
       console.log('creating call for', userId, contactId);
 
       try {
         const { phoneNumber } = await callService.createCall({
           userId: Number(userId),
           contactId: Number(contactId),
-          twilioCallId,
-          twilioCallStatus,
+          incomingTwilioCallSid,
+        });
+        await twilioCallService.createTwilioCall({
+          parentCallSid: incomingTwilioCallSid,
         });
         const response = new VoiceResponse()
           .dial({ callerId: TWILIO_PHONE_NUMBER })

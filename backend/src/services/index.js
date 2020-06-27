@@ -4,6 +4,8 @@ const User = require('./User');
 const Contact = require('./Contact');
 const Call = require('./Call');
 const AllowlistEntry = require('./AllowlistEntry');
+const TwilioCall = require('./TwilioCall');
+const TwilioClient = require('./TwilioClient');
 const Auth0 = require('./Auth0');
 
 const whitelistEntryService = AllowlistEntry(models.AllowlistEntry);
@@ -16,4 +18,6 @@ module.exports = {
   Call: Call(models.Call, userService, contactService),
   AllowlistEntry: whitelistEntryService,
   Auth0: Auth0(),
+  TwilioCall: TwilioCall(models.TwilioCall),
+  TwilioClient,
 };

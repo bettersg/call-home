@@ -11,7 +11,7 @@ const middlewares = require('./middlewares');
 
 module.exports = {
   Call: Call(),
-  Twilio: Twilio(services.Call),
+  Twilio: Twilio(services.Call, services.TwilioCall),
   OAuth: OAuth(),
   Passwordless: Passwordless(services.User, services.Auth0),
   User: User(services.User),
