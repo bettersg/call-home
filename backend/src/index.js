@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 require('express-async-errors');
 const proxy = require('express-http-proxy');
@@ -59,6 +60,11 @@ if (!isProd) {
 } else {
   app.use(express.static(STATIC_DIR));
 }
+
+// Redirect everything else to index.html
+app.use((req, res) => {
+  res.sendfile(path.join(STATIC_DIR, 'index.html'));
+});
 
 try {
   app.listen(PORT, () => {
