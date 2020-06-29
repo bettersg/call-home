@@ -13,7 +13,7 @@ const {
   Call: callRoutes,
   OAuth: oauthRoutes,
   Passwordless: passwordlessRoutes,
-  middlewares: { secureRoutes, httpsRedirect },
+  middlewares: { secureRoutes, httpsRedirect, requireVerified },
 } = require('./routes');
 const {
   Passport: PassportConfig,
@@ -46,8 +46,8 @@ app.use('/passwordless', secureRoutes, passwordlessRoutes);
 app.use('/twilio', twilioRoutes);
 app.use('/users', secureRoutes, userRoutes);
 // TODO P1!!! add some kind of auth to allow only modification to self
-app.use('/users', secureRoutes, contactRoutes);
-app.use('/calls', secureRoutes, callRoutes);
+app.use('/users', secureRoutes, requireVerified, contactRoutes);
+app.use('/calls', secureRoutes, requireVerified, callRoutes);
 app.use('/allowlistEntries', secureRoutes, allowlistRoutes);
 // STATIC_DIR gets populated in a docker build
 // expose manifest.json

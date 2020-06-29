@@ -3,10 +3,13 @@ const { sanitizeDbErrors } = require('./lib');
 // TODO The DI is a mess
 function CallService(CallModel, userService, contactService) {
   async function validateCall(userId, contactId) {
+    console.log('validating call for', userId, contactId);
+    const user = await userService.getUser(userId);
+    if (!user.isPhoneNumberValidated) {
+      throw new Error(`Authorization error for user ${userId}`);
+    }
     const userContacts = await contactService.listContactsByUserId(userId);
 
-    console.log('validating call for', userId, contactId);
-    console.log(userContacts);
     if (userContacts.findIndex((contact) => contact.id === contactId) < 0) {
       throw new Error(`Authorization error for user ${userId}`);
     }

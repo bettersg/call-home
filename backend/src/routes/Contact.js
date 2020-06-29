@@ -3,6 +3,7 @@ const {
   parseContactRequestBody,
   contactToContactResponse,
 } = require('./transformers');
+const { requireSelf } = require('./middlewares');
 
 function handleServiceError(e, res) {
   // TODO do this smarter
@@ -18,7 +19,7 @@ function handleServiceError(e, res) {
 function ContactRoutes(contactService) {
   const router = express.Router();
 
-  router.get('/:userId/contacts/', async (req, res) => {
+  router.get('/:userId/contacts/', requireSelf, async (req, res) => {
     const { userId } = req.params;
     const contacts = await contactService.listContactsByUserId(Number(userId));
     return res.status(200).json(contacts.map(contactToContactResponse));
@@ -26,6 +27,7 @@ function ContactRoutes(contactService) {
 
   router.post(
     '/:userId/contacts/',
+    requireSelf,
     parseContactRequestBody,
     async (req, res) => {
       const { userId } = req.params;
@@ -45,6 +47,7 @@ function ContactRoutes(contactService) {
 
   router.put(
     '/:userId/contacts/:contactId',
+    requireSelf,
     parseContactRequestBody,
     async (req, res) => {
       const { userId, contactId } = req.params;
@@ -62,11 +65,15 @@ function ContactRoutes(contactService) {
     }
   );
 
-  router.delete('/:userId/contacts/:contactId', async (req, res) => {
-    const { userId, contactId } = req.params;
-    await contactService.deleteContact(Number(userId), contactId);
-    res.status(200).send();
-  });
+  router.delete(
+    '/:userId/contacts/:contactId',
+    requireSelf,
+    async (req, res) => {
+      const { userId, contactId } = req.params;
+      await contactService.deleteContact(Number(userId), contactId);
+      res.status(200).send();
+    }
+  );
   return router;
 }
 

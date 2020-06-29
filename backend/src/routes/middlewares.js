@@ -8,6 +8,24 @@ const {
 
 const LOGIN_ROUTE = '/';
 
+function sendForbiddenResponse(req, res) {
+  res.format({
+    json: () => {
+      console.log('Encountered api call, sending 401');
+      return res.status(401).json({ location: LOGIN_ROUTE });
+    },
+    html: () => {
+      console.log('Encountered browser request, redirecting to ', LOGIN_ROUTE);
+      req.session.returnTo = req.originalUrl;
+      return res.redirect(LOGIN_ROUTE);
+    },
+    default: () => {
+      req.session.returnTo = req.originalUrl;
+      return res.redirect(LOGIN_ROUTE);
+    },
+  });
+}
+
 async function httpsRedirect(req, res, next) {
   // Detect the protocol of the user's request. Reading req.protocol does not work.
   // https://devcenter.heroku.com/articles/http-routing#heroku-headers
@@ -49,6 +67,24 @@ async function requireAdmin(req, res, next) {
   return next();
 }
 
+async function requireVerified(req, res, next) {
+  if (!req.user || !req.user.isVerified) {
+    sendForbiddenResponse(req, res);
+    return;
+  }
+  next();
+}
+
+async function requireSelf(req, res, next) {
+  const { userId: userIdString } = req.params;
+  const userId = Number(userIdString);
+  if (!req.user || !userId || req.user.id !== userId) {
+    sendForbiddenResponse(req, res);
+    return;
+  }
+  next();
+}
+
 async function secureRoutes(req, res, next) {
   if (req.user) {
     await injectDbUser(req);
@@ -59,25 +95,13 @@ async function secureRoutes(req, res, next) {
   // We return a different result based on the Accept header of the request.
   // We redirect html requests to the login route
   // However, if the request is an xhr, a redirection does not work because the browser hides the intermediate HTTP redirects. Instead, we return a 403 and hint the caller to go to another location
-  return res.format({
-    json: () => {
-      console.log('Encountered api call, sending 401');
-      return res.status(401).json({ location: LOGIN_ROUTE });
-    },
-    html: () => {
-      console.log('Encountered browser request, redirecting to ', LOGIN_ROUTE);
-      req.session.returnTo = req.originalUrl;
-      return res.redirect(LOGIN_ROUTE);
-    },
-    default: () => {
-      req.session.returnTo = req.originalUrl;
-      return res.redirect(LOGIN_ROUTE);
-    },
-  });
+  return sendForbiddenResponse(req, res);
 }
 
 module.exports = {
   httpsRedirect,
   secureRoutes,
   requireAdmin,
+  requireVerified,
+  requireSelf,
 };
