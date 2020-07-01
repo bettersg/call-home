@@ -14,7 +14,7 @@ window.addEventListener('resize', () => {
 
 const CONTAINER_STYLES = {
   // Mad hacks
-  height: 'var(--viewport-height)',
+  minHeight: 'var(--viewport-height)',
   padding: '5% 5%',
   paddingTop: '3em',
   display: 'flex',

@@ -10,6 +10,7 @@ function TwilioCallModel(sequelize) {
       // The twilio sid of the parent aka incoming TwiML call.
       // This will be the first column populated because it is the only information we have when the call is first made.
       // This will be used to respond to events or in the catch up jobs
+      // This can be joined with Calls.incomingTwilioCallSid
       parentCallSid: {
         type: DataTypes.STRING,
         // We're going to assume that we only get one outgoing call per parent call.
