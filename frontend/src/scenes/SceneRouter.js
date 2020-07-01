@@ -11,8 +11,15 @@ import {
 } from './index';
 
 export default function SceneRouter() {
-  // TODO make this switchable and also en is not a locale
-  const locale = 'en';
+  // TODO replace this with a proper switching logic
+  const queryLang = window.location.search.startsWith('?lang=')
+    ? window.location.search.substr(6, 2)
+    : null;
+  const localStorageLang = localStorage.getItem('lang');
+  if (queryLang) {
+    localStorage.setItem('lang', queryLang);
+  }
+  const locale = queryLang || localStorageLang || 'en';
 
   return (
     <Switch>

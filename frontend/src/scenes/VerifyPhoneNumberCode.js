@@ -11,16 +11,28 @@ import { beginPasswordless, login } from '../services/Auth';
 import PATHS from './paths';
 
 // TODO figure out where to put these later
+const EN_STRINGS = {
+  VERIFY_PHONE_NUMBER_VERIFICATION_TITLE:
+    'Enter the verification code sent to {phoneNumber}',
+  VERIFY_PHONE_NUMBER_WRONG_CODE_TITLE: 'Wrong code',
+  VERIFY_PHONE_NUMBER_VERIFICATION_CODE_LABEL: 'Verfication code',
+  VERIFY_PHONE_NUMBER_RESEND_CODE_LABEL: 'Resend code',
+  VERIFY_PHONE_NUMBER_SUBMIT_LABEL: 'Submit',
+  VERIFY_PHONE_NUMBER_WHITELIST_ERROR_MESSAGE:
+    ' Sorry, your phone number is not part of this programme. If you believe this is an error, reach out to an administrator.',
+};
 const STRINGS = {
-  en: {
+  en: EN_STRINGS,
+  bn: {
+    ...EN_STRINGS,
     VERIFY_PHONE_NUMBER_VERIFICATION_TITLE:
-      'Enter the verification code sent to {phoneNumber}',
-    VERIFY_PHONE_NUMBER_WRONG_CODE_TITLE: 'Wrong code',
-    VERIFY_PHONE_NUMBER_VERIFICATION_CODE_LABEL: 'Verfication code',
-    VERIFY_PHONE_NUMBER_RESEND_CODE_LABEL: 'Resend code',
-    VERIFY_PHONE_NUMBER_SUBMIT_LABEL: 'Submit',
-    VERIFY_PHONE_NUMBER_WHITELIST_ERROR_MESSAGE:
-      ' Sorry, your phone number is not part of this programme. If you believe this is an error, reach out to an administrator.',
+      'আপনার মোবাইল নাম্বারে প্রেরিত কোডটি প্রবেশ করান ({phoneNumber})',
+    VERIFY_PHONE_NUMBER_WRONG_CODE_TITLE: 'ভুল কোড',
+    VERIFY_PHONE_NUMBER_VERIFICATION_CODE_LABEL: 'যাচাইকরণ কোড', // Google translate
+    VERIFY_PHONE_NUMBER_RESEND_CODE_LABEL: 'পুনরায় পাঠানো কোড', // Google translate
+    VERIFY_PHONE_NUMBER_SUBMIT_LABEL: 'জমা দিন', // Google translate
+    /* VERIFY_PHONE_NUMBER_WHITELIST_ERROR_MESSAGE:
+     *   ' Sorry, your phone number is not part of this programme. If you believe this is an error, reach out to an administrator.', */
   },
 };
 

@@ -13,11 +13,18 @@ import getToken from '../services/Calls';
 // TODO handle production environments better
 const isProd = process.env.NODE_ENV === 'production';
 
+const EN_STRINGS = {
+  CALLING_CONNECTING: 'Connecting...',
+  CALLING_CONNECTED: 'Connected!',
+  CALLING_CALL_FAILED: 'Call failed',
+};
 const STRINGS = {
-  en: {
-    CALLING_CONNECTING: 'Connecting...',
-    CALLING_CONNECTED: 'Connected!',
-    CALLING_CALL_FAILED: 'Call failed',
+  en: EN_STRINGS,
+  bn: {
+    ...EN_STRINGS,
+    CALLING_CONNECTING: 'সংযোজক',
+    CALLING_CONNECTED: 'সংযুক্ত', // TODO Google translate
+    CALLING_CALL_FAILED: 'কল ব্যর্থ হয়েছে',
   },
 };
 

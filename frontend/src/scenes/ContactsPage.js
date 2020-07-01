@@ -24,33 +24,66 @@ import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
 import PATHS from './paths';
 
 const COUNTRIES = {
-  // Unicode flag + country
-  // TODO make this localized
-  SG: '🇸🇬Singapore',
-  BD: '🇧🇩Bangladesh',
+  en: {
+    // Unicode flag + country
+    // TODO emoji does not work on windows
+    SG: '🇸🇬Singapore',
+    BD: '🇧🇩Bangladesh',
+  },
+  bn: {
+    SG: '🇸🇬সিঙ্গাপুর',
+    BD: '🇧🇩বাংলাদেশ',
+  },
+};
+
+const EN_STRINGS = {
+  CONTACTS_TITLE: 'Your loved ones',
+  CONTACTS_SUBTITLE: 'Call your loved ones back home',
+  CONTACTS_ADD_CONTACT_LABEL: 'Add a loved one',
+  CONTACTS_ADD_LABEL: 'Add',
+  CONTACTS_COUNTRY_LABEL: (code) => `Country: ${COUNTRIES.en[code]}`,
+  CONTACTS_NAME_LABEL: 'Name',
+  CONTACTS_PHONE_NUMBER_LABEL: 'Phone number',
+  CONTACTS_EDIT_CONTACT_HEADER: 'Edit',
+  CONTACTS_EDIT_LABEL: 'Edit',
+  CONTACTS_SAVE_LABEL: 'Save',
+  CONTACTS_LOGOUT_LABEL: 'Logout',
+  CONTACTS_CANCEL_LABEL: 'Cancel',
+  CONTACTS_DELETE_LABEL: 'Delete',
+  CONTACTS_DELETE_CONTACT_LABEL: 'Delete contact',
+  CONTACTS_CANNOT_UNDO_MESSAGE: 'This action cannot be undone',
+  CONTACTS_UNKNOWN_ERROR_MESSAGE: 'Unknown error',
+  errors: {
+    DUPLICATE_CONTACT: 'You already have a loved one with this number',
+    INVALID_PHONE_NUMBER: 'You have entered an invalid phone number',
+  },
 };
 
 const STRINGS = {
-  en: {
-    CONTACTS_TITLE: 'Your loved ones',
-    CONTACTS_SUBTITLE: 'Call your loved ones back home',
-    CONTACTS_ADD_CONTACT_LABEL: 'Add a loved one',
-    CONTACTS_ADD_LABEL: 'Add',
-    CONTACTS_COUNTRY_LABEL: (code) => `Country: ${COUNTRIES[code]}`,
-    CONTACTS_NAME_LABEL: 'Name',
-    CONTACTS_PHONE_NUMBER_LABEL: 'Phone number',
-    CONTACTS_EDIT_CONTACT_HEADER: 'Edit',
-    CONTACTS_EDIT_LABEL: 'Edit',
-    CONTACTS_SAVE_LABEL: 'Save',
-    CONTACTS_CANCEL_LABEL: 'Cancel',
-    CONTACTS_DELETE_LABEL: 'Delete',
-    CONTACTS_DELETE_CONTACT_LABEL: 'Delete contact',
-    CONTACTS_CANNOT_UNDO_MESSAGE: 'This action cannot be undone',
-    CONTACTS_UNKNOWN_ERROR_MESSAGE: 'Unknown error',
-    errors: {
-      DUPLICATE_CONTACT: 'You already have a loved one with this number',
-      INVALID_PHONE_NUMBER: 'You have entered an invalid phone number',
-    },
+  en: EN_STRINGS,
+  bn: {
+    ...EN_STRINGS,
+    CONTACTS_TITLE: 'আপনার প্রিয়জন',
+    CONTACTS_SUBTITLE: 'আপনার প্রিয়জনকে বিনামূল্যে বাড়ি ফিরে কল করুন',
+    CONTACTS_ADD_CONTACT_LABEL: 'প্রিয়জনকে যুক্ত করুন',
+    CONTACTS_ADD_LABEL: 'যোগ',
+    CONTACTS_COUNTRY_LABEL: (code) => `দেশ: ${COUNTRIES.bn[code]}`, // Google translate
+    CONTACTS_NAME_LABEL: 'নাম', // Google translate
+    // TODO this says mobile number
+    CONTACTS_PHONE_NUMBER_LABEL: 'মোবাইল নম্বর',
+    CONTACTS_EDIT_CONTACT_HEADER: 'সম্পাদন করা',
+    CONTACTS_EDIT_LABEL: 'সম্পাদন করা',
+    CONTACTS_SAVE_LABEL: 'সংরক্ষণ',
+    CONTACTS_LOGOUT_LABEL: 'প্রস্থান',
+    CONTACTS_CANCEL_LABEL: 'বাতিল',
+    CONTACTS_DELETE_LABEL: 'মুছে ফেলা',
+    CONTACTS_DELETE_CONTACT_LABEL: 'যোগাযোগ মুছুন',
+    CONTACTS_CANNOT_UNDO_MESSAGE: 'এই ক্রিয়াটি পূর্বাবস্থায় ফেরানো যাবে না',
+    CONTACTS_UNKNOWN_ERROR_MESSAGE: 'অজানা ত্রুটি', // Google translate
+    /* errors: {
+     *   DUPLICATE_CONTACT: 'You already have a loved one with this number',
+     *   INVALID_PHONE_NUMBER: 'You have entered an invalid phone number',
+     * }, */
   },
 };
 
@@ -489,7 +522,7 @@ export default function ContactsPage({ locale }) {
         onClick={logout}
       >
         <ExitToAppIcon style={{ transform: 'rotate(180deg)' }} />
-        Logout
+        {STRINGS[locale].CONTACTS_LOGOUT_LABEL}
       </LogoutLink>
       <AddContactDialog
         onClose={() => setIsAddDialogOpen(false)}

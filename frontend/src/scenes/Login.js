@@ -11,12 +11,21 @@ import PATHS from './paths';
 import './Login.css';
 
 // TODO figure out where to put these later
+const EN_STRINGS = {
+  DISPLAY_TITLE: 'Call Home',
+  DISPLAY_SUBTITLE: 'Make free calls to loved ones back home in Bangladesh',
+  DATA_CONSUMPTION_COPY: '100MB = 40 min talk',
+  FACEBOOK_SIGN_UP: 'Sign up with Facebook',
+};
 const STRINGS = {
-  en: {
-    DISPLAY_TITLE: 'Call Home',
-    DISPLAY_SUBTITLE: 'Make free calls to loved ones back home in Bangladesh',
-    DATA_CONSUMPTION_COPY: '100MB = 40 min talk',
-    FACEBOOK_SIGN_UP: 'Sign up with Facebook',
+  en: EN_STRINGS,
+  bn: {
+    ...EN_STRINGS,
+    DISPLAY_TITLE: 'বাড়ীতে ফোন',
+    // TODO this also includes India in the list of countries
+    DISPLAY_SUBTITLE: 'ভারতে ফিরে বাংলাদেশে প্রিয়জনকে বিনামূল্যে কল করুন',
+    /* DATA_CONSUMPTION_COPY: '100MB = 40 min talk', */
+    FACEBOOK_SIGN_UP: 'ফেসবুক দিয়ে সাইন আপ',
   },
 };
 

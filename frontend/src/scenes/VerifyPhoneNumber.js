@@ -9,11 +9,18 @@ import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
 import PATHS from './paths';
 
 // TODO figure out where to put these later
+const EN_STRINGS = {
+  VERIFY_PHONE_NUMBER_TITLE: "What's your mobile number?",
+  VERIFY_PHONE_NUMBER_NEXT: 'Next',
+  VERIFY_PHONE_NUMBER_PHONE_NUMBER_LABEL: 'Phone number',
+};
 const STRINGS = {
-  en: {
-    VERIFY_PHONE_NUMBER_TITLE: "What's your mobile number?",
-    VERIFY_PHONE_NUMBER_NEXT: 'Next',
-    VERIFY_PHONE_NUMBER_PHONE_NUMBER_LABEL: 'Phone number',
+  en: EN_STRINGS,
+  bn: {
+    ...EN_STRINGS,
+    VERIFY_PHONE_NUMBER_TITLE: 'আপনার মোবাইল নম্বরটি কী?',
+    VERIFY_PHONE_NUMBER_NEXT: 'পরবর্তী',
+    VERIFY_PHONE_NUMBER_PHONE_NUMBER_LABEL: 'আপনার মোবাইল নাম্বার',
   },
 };
 
