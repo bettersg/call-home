@@ -386,7 +386,7 @@ export default function ContactsPage({ locale }) {
         style={{
           overflowY: 'scroll',
           width: '100%',
-          // 12em to accomodate logout
+          // 12em to accomodate logout and add contact button
           height: 'calc(100% - 16em)',
           padding: '0.5rem',
         }}
@@ -473,7 +473,6 @@ export default function ContactsPage({ locale }) {
           ))}
         </List>
       </div>
-      {/* <ListItem> */}
       <AddContactButton
         style={{
           width: '100%',
@@ -494,7 +493,6 @@ export default function ContactsPage({ locale }) {
         />
         <div>{STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}</div>
       </AddContactButton>
-      {/* </ListItem> */}
       <LogoutLink
         variant="body1"
         color="primary"
