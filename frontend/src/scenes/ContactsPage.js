@@ -382,106 +382,118 @@ export default function ContactsPage({ locale }) {
       >
         {STRINGS[locale].CONTACTS_COUNTRY_LABEL(user.destinationCountry)}
       </Typography>
-      <List
+      <div
         style={{
-          display: 'flex',
-          flexDirection: 'column',
+          overflowY: 'scroll',
+          width: '100%',
+          // 12em to accomodate logout
+          height: 'calc(100% - 12em)',
+          padding: '0.5rem',
         }}
       >
-        {contacts.map((contact) => (
-          <ListItem
-            key={contact.id}
-            style={{
-              marginBottom: '0.5rem',
-              paddingBottom: '0',
-              paddingTop: '0',
-            }}
-          >
-            <ContactBox
+        <List
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          {contacts.map((contact) => (
+            <ListItem
+              key={contact.id}
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                width: '100%',
-                height: '4em',
-                padding: '4px 8px',
+                marginBottom: '0.5rem',
+                paddingBottom: '0',
+                paddingTop: '0',
               }}
-              variant="outlined"
             >
-              <div
+              <ContactBox
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  flex: '1 0',
-                  marginRight: '1rem',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                  height: '4em',
+                  padding: '4px 8px',
                 }}
+                variant="outlined"
               >
-                <img
-                  style={{
-                    height: '2.5rem',
-                    width: '2.5rem',
-                    marginRight: '8px',
-                  }}
-                  alt=""
-                  src={`/images/avatars/${contact.avatar || 'placeholder'}.svg`}
-                />
                 <div
                   style={{
+                    display: 'flex',
+                    alignItems: 'center',
                     flex: '1 0',
+                    marginRight: '1rem',
                   }}
                 >
-                  <Typography variant="body1">{contact.name}</Typography>
-                  <div style={{ display: 'flex' }}>
-                    <Typography
-                      style={{ fontSize: '0.675rem', marginRight: '0.5rem' }}
-                      variant="body2"
-                    >
-                      {contact.phoneNumber}
-                    </Typography>
-                    <Typography
-                      style={{ cursor: 'pointer', fontSize: '0.675rem' }}
-                      color="primary"
-                      role="button"
-                      onClick={() => setContactToEdit(contact)}
-                    >
-                      {STRINGS[locale].CONTACTS_EDIT_LABEL}
-                    </Typography>
+                  <img
+                    style={{
+                      height: '2.5rem',
+                      width: '2.5rem',
+                      marginRight: '8px',
+                    }}
+                    alt=""
+                    src={`/images/avatars/${
+                      contact.avatar || 'placeholder'
+                    }.svg`}
+                  />
+                  <div
+                    style={{
+                      flex: '1 0',
+                    }}
+                  >
+                    <Typography variant="body1">{contact.name}</Typography>
+                    <div style={{ display: 'flex' }}>
+                      <Typography
+                        style={{ fontSize: '0.675rem', marginRight: '0.5rem' }}
+                        variant="body2"
+                      >
+                        {contact.phoneNumber}
+                      </Typography>
+                      <Typography
+                        style={{ cursor: 'pointer', fontSize: '0.675rem' }}
+                        color="primary"
+                        role="button"
+                        onClick={() => setContactToEdit(contact)}
+                      >
+                        {STRINGS[locale].CONTACTS_EDIT_LABEL}
+                      </Typography>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <IconButton
-                style={{ padding: '0' }}
-                onClick={() => {
-                  contactService.setActiveContact(contact);
-                }}
-              >
-                <ContactCallIcon />
-              </IconButton>
-            </ContactBox>
-          </ListItem>
-        ))}
-        <ListItem>
-          <AddContactButton
-            style={{
-              width: '100%',
-              height: '4em',
-            }}
-            variant="outlined"
-            onClick={() => {
-              setIsAddDialogOpen(true);
-            }}
-          >
-            <AddContactIcon
+                <IconButton
+                  style={{ padding: '0' }}
+                  onClick={() => {
+                    contactService.setActiveContact(contact);
+                  }}
+                >
+                  <ContactCallIcon />
+                </IconButton>
+              </ContactBox>
+            </ListItem>
+          ))}
+          <ListItem>
+            <AddContactButton
               style={{
-                marginRight: '1em',
-                height: '1.5rem',
-                width: '1.5rem',
+                width: '100%',
+                height: '4em',
               }}
-            />
-            <div>{STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}</div>
-          </AddContactButton>
-        </ListItem>
-      </List>
+              variant="outlined"
+              onClick={() => {
+                setIsAddDialogOpen(true);
+              }}
+            >
+              <AddContactIcon
+                style={{
+                  marginRight: '1em',
+                  height: '1.5rem',
+                  width: '1.5rem',
+                }}
+              />
+              <div>{STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}</div>
+            </AddContactButton>
+          </ListItem>
+        </List>
+      </div>
       <LogoutLink
         variant="body1"
         color="primary"
