@@ -419,8 +419,8 @@ export default function ContactsPage({ locale }) {
         style={{
           overflowY: 'scroll',
           width: '100%',
-          // 12em to accomodate logout and add contact button
-          height: 'calc(100% - 16em)',
+          // 20em to accomodate logout and add contact button
+          maxHeight: 'calc(var(--viewport-height) - 20rem)',
           padding: '0.5rem',
         }}
       >
