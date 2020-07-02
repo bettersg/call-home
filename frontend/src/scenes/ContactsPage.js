@@ -387,7 +387,7 @@ export default function ContactsPage({ locale }) {
           overflowY: 'scroll',
           width: '100%',
           // 12em to accomodate logout
-          height: 'calc(100% - 12em)',
+          height: 'calc(100% - 16em)',
           padding: '0.5rem',
         }}
       >
@@ -471,29 +471,30 @@ export default function ContactsPage({ locale }) {
               </ContactBox>
             </ListItem>
           ))}
-          <ListItem>
-            <AddContactButton
-              style={{
-                width: '100%',
-                height: '4em',
-              }}
-              variant="outlined"
-              onClick={() => {
-                setIsAddDialogOpen(true);
-              }}
-            >
-              <AddContactIcon
-                style={{
-                  marginRight: '1em',
-                  height: '1.5rem',
-                  width: '1.5rem',
-                }}
-              />
-              <div>{STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}</div>
-            </AddContactButton>
-          </ListItem>
         </List>
       </div>
+      {/* <ListItem> */}
+      <AddContactButton
+        style={{
+          width: '100%',
+          height: '4em',
+          marginTop: '1em',
+        }}
+        variant="outlined"
+        onClick={() => {
+          setIsAddDialogOpen(true);
+        }}
+      >
+        <AddContactIcon
+          style={{
+            marginRight: '1em',
+            height: '1.5rem',
+            width: '1.5rem',
+          }}
+        />
+        <div>{STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}</div>
+      </AddContactButton>
+      {/* </ListItem> */}
       <LogoutLink
         variant="body1"
         color="primary"
