@@ -11,56 +11,58 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 import './ContactsDialog.css';
 
-const AVATAR_OPTIONS = {
-  male: {
-    numOptions: 5,
+const AVATAR_INDICES = [
+  {
+    group: 'male',
+    // exclusive
+    min: 0,
+    // inclusive
+    max: 5,
   },
-  female: {
-    numOptions: 5,
+  {
+    group: 'female',
+    // exclusive
+    min: 5,
+    // inclusive
+    max: 10,
   },
-};
+];
+const MAX_OPTIONS = AVATAR_INDICES.reduce(
+  (acc, { max: maxIndex }) => Math.max(acc, maxIndex),
+  0
+);
 
-function parseAvatarChoice(avatarChoice) {
-  const [group, variantString] = avatarChoice.split('_');
-  return {
-    group,
-    variant: Number(variantString),
+function choiceToAvatarIndex(avatarChoice) {
+  const [group, variantIndexString] = avatarChoice.split('_');
+  const variantIndex = Number(variantIndexString);
+  const groupInfo = AVATAR_INDICES.find(
+    (avatarGroupInfo) => avatarGroupInfo.group === group
+  );
+  return groupInfo.min + variantIndex;
+}
+
+function avatarIndexToChoice(avatarIndex) {
+  const groupInfo = AVATAR_INDICES.find(
+    (avatarGroupInfo) =>
+      avatarIndex >= avatarGroupInfo.min && avatarIndex <= avatarGroupInfo.max
+  );
+
+  return `${groupInfo.group}_${avatarIndex - groupInfo.min}`;
+}
+
+function roundAvatarIndex(avatarIndex) {
+  return (avatarIndex + MAX_OPTIONS) % MAX_OPTIONS || MAX_OPTIONS;
+}
+
+function AvatarPicker({ avatarChoice, setAvatarChoice }) {
+  const avatarUrl = `/images/avatars/${avatarChoice}.svg`;
+  const avatarIndex = choiceToAvatarIndex(avatarChoice);
+  const chooseNextVariant = () => {
+    setAvatarChoice(avatarIndexToChoice(roundAvatarIndex(avatarIndex + 1)));
   };
-}
-
-function toAvatarChoice({ group, variant }) {
-  return `${group}_${variant}`;
-}
-
-function AvatarPicker({ avatarChoice: avatarChoiceString, setAvatarChoice }) {
-  const avatarChoice = parseAvatarChoice(avatarChoiceString);
-  const { variant, group } = avatarChoice;
-  const numAvatarOptions = AVATAR_OPTIONS[group].numOptions;
-  const avatarUrl = `/images/avatars/${group}_${variant}.svg`;
-  const chooseNextVariant = () =>
-    setAvatarChoice(
-      toAvatarChoice({
-        ...avatarChoice,
-        variant: (variant + 1) % numAvatarOptions || numAvatarOptions,
-      })
-    );
-  const choosePrevVariant = () =>
-    setAvatarChoice(
-      toAvatarChoice({
-        ...avatarChoice,
-        variant:
-          (variant - 1 + numAvatarOptions) % numAvatarOptions ||
-          numAvatarOptions,
-      })
-    );
-
-  const cycleGroup = () =>
-    setAvatarChoice(
-      toAvatarChoice({
-        ...avatarChoice,
-        group: group === 'male' ? 'female' : 'male',
-      })
-    );
+  const choosePrevVariant = () => {
+    setAvatarChoice(avatarIndexToChoice(roundAvatarIndex(avatarIndex - 1)));
+  };
 
   return (
     <div
@@ -73,7 +75,7 @@ function AvatarPicker({ avatarChoice: avatarChoiceString, setAvatarChoice }) {
       <IconButton type="button" value="" onClick={choosePrevVariant}>
         <ArrowBackIosIcon style={{ height: '0.5em', width: '0.5em' }} />
       </IconButton>
-      <ButtonBase onClick={cycleGroup} onKeyDown={cycleGroup}>
+      <ButtonBase>
         <img style={{ height: '4em', width: '4em' }} alt="" src={avatarUrl} />
       </ButtonBase>
       <IconButton type="button" value="" onClick={chooseNextVariant}>
