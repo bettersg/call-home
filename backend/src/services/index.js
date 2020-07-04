@@ -7,10 +7,14 @@ const AllowlistEntry = require('./AllowlistEntry');
 const TwilioCall = require('./TwilioCall');
 const TwilioClient = require('./TwilioClient');
 const Auth0 = require('./Auth0');
+const PasswordlessRequest = require('./PasswordlessRequest');
 
 const whitelistEntryService = AllowlistEntry(models.AllowlistEntry);
 const userService = User(models.User, whitelistEntryService);
 const contactService = Contact(models.Contact, userService);
+const passwordlessRequestService = PasswordlessRequest(
+  models.PasswordlessRequest
+);
 
 module.exports = {
   User: userService,
@@ -20,4 +24,5 @@ module.exports = {
   Auth0: Auth0(),
   TwilioCall: TwilioCall(models.TwilioCall),
   TwilioClient,
+  PasswordlessRequest: passwordlessRequestService,
 };

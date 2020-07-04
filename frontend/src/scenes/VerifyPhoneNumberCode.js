@@ -36,6 +36,14 @@ const STRINGS = {
   },
 };
 
+// TODO replace with better parsing like moment.js
+function formatRateLimitExpiry(rateLimitExpiryMillis) {
+  const totalSeconds = Math.round(rateLimitExpiryMillis / 1000);
+  const seconds = totalSeconds % 60;
+  const minutes = (totalSeconds - seconds) / 60;
+  return `${minutes}:${seconds}`;
+}
+
 export default function VerificationPhoneNumberCode({ locale }) {
   const [userState, userService] = useUserService();
   const { me: user } = userState;
@@ -43,6 +51,8 @@ export default function VerificationPhoneNumberCode({ locale }) {
   const [code, setCode] = useState('');
   const [hasBadOtpError, setHasBadOtpError] = useState(false);
   const [hasAllowlistError, setHasAllowlistError] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [rateLimitExpiry, setRateLimitExpiry] = useState(new Date());
 
   useEffect(() => {
     if (userService) {
@@ -51,7 +61,24 @@ export default function VerificationPhoneNumberCode({ locale }) {
   }, [userService]);
 
   useEffect(() => {
-    beginPasswordless(phoneNumber);
+    setInterval(() => setCurrentTime(new Date()), 1000);
+  }, []);
+
+  const handlePasswordlessRequest = async () => {
+    try {
+      await beginPasswordless(phoneNumber);
+    } catch (error) {
+      const { data } = error;
+      if (data && data.message === 'PASSWORDLESS_RATE_LIMITED' && data.body) {
+        setRateLimitExpiry(new Date(data.body));
+      } else {
+        throw error;
+      }
+    }
+  };
+
+  useEffect(() => {
+    handlePasswordlessRequest();
   }, [phoneNumber]);
 
   if (!user) {
@@ -133,12 +160,15 @@ export default function VerificationPhoneNumberCode({ locale }) {
                 width: '30%',
               }}
               variant="contained"
+              disabled={rateLimitExpiry - currentTime > 0}
               disableElevation
               onClick={() => {
-                beginPasswordless(phoneNumber);
+                handlePasswordlessRequest(phoneNumber);
               }}
             >
-              {STRINGS[locale].VERIFY_PHONE_NUMBER_RESEND_CODE_LABEL}
+              {rateLimitExpiry - currentTime > 0
+                ? formatRateLimitExpiry(rateLimitExpiry - currentTime)
+                : STRINGS[locale].VERIFY_PHONE_NUMBER_RESEND_CODE_LABEL}
             </RoundedButton>
             <PrimaryButton
               style={{

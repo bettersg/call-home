@@ -1,10 +1,38 @@
 const express = require('express');
 const { normalizePhoneNumber } = require('../util/country');
 
-function PasswordlessRoutes(userService, auth0Service) {
+const PASSWORDLESS_REQUEST_INTERVAL_MILLIS = 1000 * 60 * 2;
+function PasswordlessRoutes(
+  userService,
+  auth0Service,
+  passwordlessRequestService
+) {
   const router = express.Router();
 
   router.post('/begin', async (req, res) => {
+    const { id } = req.user;
+    if (!id) {
+      // TODO remove
+      console.error('wtf something is going wrong');
+    }
+    const passwordlessRequests = await passwordlessRequestService.getPasswordlessRequestsByUserId(
+      id
+    );
+    const lastRequest = passwordlessRequests[passwordlessRequests.length - 1];
+    if (
+      lastRequest &&
+      new Date() - lastRequest.requestTime <=
+        PASSWORDLESS_REQUEST_INTERVAL_MILLIS
+    ) {
+      return res.status(403).json({
+        message: 'PASSWORDLESS_RATE_LIMITED',
+        body: new Date(
+          lastRequest.requestTime.getTime() +
+            PASSWORDLESS_REQUEST_INTERVAL_MILLIS
+        ),
+      });
+    }
+
     const { phoneNumber } = req.body;
     console.log('Beginning passwordless for', phoneNumber);
     try {
@@ -14,6 +42,7 @@ function PasswordlessRoutes(userService, auth0Service) {
       );
       console.log('Phone number is: ', formattedPhoneNumber);
       await auth0Service.sendSms(formattedPhoneNumber);
+      await passwordlessRequestService.createPasswordlessRequest(id);
     } catch (e) {
       console.error(e);
     }
@@ -26,7 +55,7 @@ function PasswordlessRoutes(userService, auth0Service) {
 
     const { id: userId } = req.user;
     if (!phoneNumber || !code) {
-      return res.status(400).send();
+      return res.status(400).send;
     }
     try {
       console.log('Received login attempt');

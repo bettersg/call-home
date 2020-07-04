@@ -4,12 +4,14 @@ const ContactModel = require('./Contact');
 const CallModel = require('./Call');
 const TwilioCallModel = require('./TwilioCall');
 const AllowlistEntryModel = require('./AllowlistEntry');
+const PasswordlessRequestModel = require('./PasswordlessRequest');
 
 const User = UserModel(sequelize);
 const Contact = ContactModel(sequelize);
 const Call = CallModel(sequelize);
 const AllowlistEntry = AllowlistEntryModel(sequelize);
 const TwilioCall = TwilioCallModel(sequelize);
+const PasswordlessRequest = PasswordlessRequestModel(sequelize);
 
 // User <-> Contact
 User.hasMany(Contact, {
@@ -27,6 +29,14 @@ Contact.belongsToMany(Call, { through: 'callContacts' });
 Call.belongsToMany(User, { through: 'callUsers' });
 User.belongsToMany(Call, { through: 'callUsers' });
 
+// PasswordlessRequest <-> User
+User.hasMany(PasswordlessRequest, {
+  foreignKey: {
+    name: 'UserId',
+  },
+});
+PasswordlessRequest.belongsTo(User);
+
 module.exports = {
   sequelize,
   User,
@@ -35,4 +45,5 @@ module.exports = {
   Call,
   AllowlistEntry,
   TwilioCall,
+  PasswordlessRequest,
 };

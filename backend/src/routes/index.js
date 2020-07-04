@@ -13,7 +13,11 @@ module.exports = {
   Call: Call(),
   Twilio: Twilio(services.Call, services.TwilioCall),
   OAuth: OAuth(),
-  Passwordless: Passwordless(services.User, services.Auth0),
+  Passwordless: Passwordless(
+    services.User,
+    services.Auth0,
+    services.PasswordlessRequest
+  ),
   User: User(services.User),
   Contact: Contact(services.Contact),
   AllowlistEntry: AllowlistEntry(services.AllowlistEntry),
