@@ -97,7 +97,7 @@ export default function CallingPage({ locale }) {
       setIsConnected(false);
       contactService.setActiveContact(null);
     });
-  }, [device, user.id, twilioToken, contactService]);
+  }, [device, user, twilioToken, contactService]);
 
   useEffect(() => {
     if (isReady && !isConnected && activeContact && isProd) {
@@ -106,7 +106,7 @@ export default function CallingPage({ locale }) {
         contactId: activeContact.id,
       });
     }
-  }, [device, user.id, isReady, isConnected, activeContact]);
+  }, [device, user, isReady, isConnected, activeContact]);
 
   if (!user) {
     return <Redirect to={PATHS.LOGIN} />;
@@ -114,6 +114,8 @@ export default function CallingPage({ locale }) {
   if (!activeContact) {
     return <Redirect to={PATHS.CONTACTS} />;
   }
+
+  const avatarUrl = `/images/avatars/${activeContact.avatar}.svg`;
 
   return (
     <Container>
@@ -126,8 +128,20 @@ export default function CallingPage({ locale }) {
           justifyContent: 'space-between',
         }}
       >
-        <div>
-          <Typography variant="h5" component="h2">
+        <div
+          style={{
+            marginTop: '20%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <img
+            style={{ height: '16rem', width: '16rem' }}
+            alt=""
+            src={avatarUrl}
+          />
+          <Typography style={{ marginTop: '4rem' }} variant="h5" component="h2">
             {activeContact.name}
           </Typography>
           <Typography variant="body1">
