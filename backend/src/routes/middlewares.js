@@ -39,10 +39,28 @@ async function httpsRedirect(req, res, next) {
 async function injectDbUser(req) {
   // This returns the OAuth user info
   const { _raw, _json, ...userProfile } = req.user;
+  const { emails } = userProfile;
+  console.log('Injecting for profile', userProfile);
   const userProfileResponse = userProfileToUserProfileResponse(userProfile);
-  const user = await UserService.getUserByEmails(
-    req.user.emails.map((emailValue) => emailValue.value)
-  );
+  let user;
+  if (emails) {
+    user = await UserService.getUserByEmails(
+      emails.map((emailValue) => emailValue.value)
+    );
+  } else {
+    const auth0Id = userProfile.userId || userProfile.id;
+    if (auth0Id) {
+      await UserService.registerUserWithAuth0Id(
+        auth0Id,
+        userProfile.displayName
+      );
+      user = await UserService.getUserByAuth0Id(auth0Id);
+    } else {
+      req.user = userProfile;
+      return;
+    }
+  }
+
   if (!user) {
     // TODO think about this more carefully
     console.error(

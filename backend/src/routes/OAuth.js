@@ -21,34 +21,50 @@ function OAuthRoutes() {
     }
   );
 
-  router.get('/callback', async (req, res, next) => {
+  router.get('/callback', async (req, res) => {
     // eslint-disable-next-line
     passport.authenticate('auth0', async (err, user, info) => {
+      console.log('Received auth0 user', user);
       if (err) {
         return req.session.destroy(() => {
-          return next(err);
+          console.error('Error when logging in user, redirecting to root', err);
+          return res.redirect('/');
         });
       }
       if (!user) {
         return res.redirect('/login');
       }
 
-      await UserService.registerUser(
-        user.emails.map((email) => email.value),
-        user.displayName
-      );
-
-      req.logIn(user, (reqErr) => {
+      req.logIn(user, async (reqErr) => {
         if (reqErr) {
-          return next(reqErr);
+          console.error('Error when logging in user, redirecting to root', err);
+          return res.redirect('/');
         }
+
+        if (user.emails) {
+          await UserService.registerUser(
+            user.emails.map((email) => email.value),
+            user.displayName
+          );
+        } else {
+          const auth0Id = user.user_id || user.id;
+          if (!auth0Id) {
+            console.error('User did not give email, cannot save');
+          } else {
+            await UserService.registerUserWithAuth0Id(
+              auth0Id,
+              user.displayName
+            );
+          }
+        }
+
         const { returnTo } = req.session;
         delete req.session.returnTo;
         console.log('Successfully logged in');
         res.redirect(returnTo || '/');
         return null;
       });
-    })(req, res, next);
+    })(req, res);
   });
 
   // Perform session logout and redirect to homepage

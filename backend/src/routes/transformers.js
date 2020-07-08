@@ -55,13 +55,15 @@ function userToUserResponse(user) {
 }
 
 function userProfileToUserProfileResponse(userProfile) {
-  const { displayName, name, emails, picture } = userProfile;
+  const { displayName, name, emails, picture, user_id: userId } = userProfile;
 
+  console.log('UserProfile', userProfile);
   return {
     displayName,
     name,
     emails,
     picture,
+    userId,
   };
 }
 

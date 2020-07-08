@@ -11,11 +11,9 @@ function UserService(UserModel, allowlistEntryService) {
     const createdUser = await sanitizeDbErrors(() =>
       UserModel.create({
         ...user,
-        email: user.email.toLowerCase(),
         isPhoneNumberValidated: false,
       })
     );
-    // await createdUser.setCallees(callees.map((callee) => callee.id));
     await createdUser.save();
     await createdUser.reload();
     return createdUser;
@@ -33,6 +31,14 @@ function UserService(UserModel, allowlistEntryService) {
     return UserModel.findOne({
       where: {
         email: userEmail,
+      },
+    });
+  }
+
+  async function getUserByAuth0Id(auth0Id) {
+    return UserModel.findOne({
+      where: {
+        auth0Id,
       },
     });
   }
@@ -94,6 +100,18 @@ function UserService(UserModel, allowlistEntryService) {
       email: userEmails[0],
     });
   }
+
+  async function registerUserWithAuth0Id(auth0Id, name) {
+    const foundUser = await getUserByAuth0Id(auth0Id);
+    if (foundUser) {
+      return foundUser;
+    }
+    return createUser({
+      name,
+      auth0Id,
+    });
+  }
+
   return {
     listUsers,
     createUser,
@@ -104,6 +122,8 @@ function UserService(UserModel, allowlistEntryService) {
     registerUser,
     verifyUserPhoneNumber,
     getUserByEmails,
+    getUserByAuth0Id,
+    registerUserWithAuth0Id,
   };
 }
 

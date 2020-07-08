@@ -26,13 +26,18 @@ function UserModel(sequelize) {
       },
       email: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         unique: true,
         validate: {
           isEmail: {
             msg: 'Email field must have email format',
           },
         },
+      },
+      auth0Id: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true,
       },
       phoneNumber: {
         type: DataTypes.STRING,
