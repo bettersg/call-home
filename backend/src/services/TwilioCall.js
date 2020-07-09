@@ -41,7 +41,7 @@ function TwilioCallService(TwilioCallModel) {
       where: {
         status: {
           [Op.or]: {
-            [Op.in]: ['', 'in-progress', 'ringing'],
+            [Op.in]: ['', 'in-progress', 'ringing', 'queued'],
             [Op.is]: null,
           },
         },
