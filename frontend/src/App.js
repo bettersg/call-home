@@ -9,7 +9,8 @@ import {
 import { initSentry } from './services/Sentry';
 import SceneRouter from './scenes/SceneRouter';
 
-const isProd = window.NODE_ENV === 'production';
+const isProd = process.env.NODE_ENV === 'production';
+
 if (isProd) {
   initSentry();
   console.log('sentry initted');

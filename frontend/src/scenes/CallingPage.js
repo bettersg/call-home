@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as Twilio from 'twilio-client';
+import * as Sentry from '@sentry/browser';
 import CallEndIcon from '@material-ui/icons/CallEnd';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -18,6 +19,7 @@ const EN_STRINGS = {
   CALLING_CONNECTED: 'Connected!',
   CALLING_CALL_FAILED: 'Call failed',
 };
+
 const STRINGS = {
   en: EN_STRINGS,
   bn: {
@@ -43,6 +45,7 @@ export default function CallingPage({ locale }) {
   const [device] = useState(new Twilio.Device());
   const [isReady, setIsReady] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
   const [userState] = useUserService();
   const { me: user } = userState;
   const [contactState, contactService] = useContactService();
@@ -54,8 +57,10 @@ export default function CallingPage({ locale }) {
         // TODO the token endpoint needs authz on the application side
         // the client should pass the intended contact, the backend verifies and then returns the twilio token and our own token
         // the client can then use the twilio token to init the device and then exchange our token for the call
+        Sentry.captureMessage('fetching token');
         const newToken = await getToken();
         setTwilioToken(newToken);
+        Sentry.captureMessage('acquired token');
       }
     })();
   }, []);
@@ -78,8 +83,22 @@ export default function CallingPage({ locale }) {
     }
 
     device.on('error', (e) => {
-      setIsReady(false);
       console.error('EROOORR', e);
+      setIsConnected(false);
+      setIsReady(false);
+      setErrorMessage(`${e.message}, (${e.code})`);
+      Sentry.captureException(e);
+    });
+
+    device.on('cancel', () => {
+      console.log('canceled');
+      setIsConnected(false);
+    });
+
+    device.on('offline', () => {
+      console.log('offline');
+      setIsConnected(false);
+      setIsReady(false);
     });
 
     device.on('ready', () => {
@@ -101,10 +120,14 @@ export default function CallingPage({ locale }) {
 
   useEffect(() => {
     if (isReady && !isConnected && activeContact && isProd) {
-      device.connect({
-        userId: user.id,
-        contactId: activeContact.id,
-      });
+      try {
+        device.connect({
+          userId: user.id,
+          contactId: activeContact.id,
+        });
+      } catch (e) {
+        Sentry.captureException(e);
+      }
     }
   }, [device, user, isReady, isConnected, activeContact]);
 
@@ -149,6 +172,12 @@ export default function CallingPage({ locale }) {
               ? STRINGS[locale].CALLING_CONNECTED
               : STRINGS[locale].CALLING_CONNECTING}
           </Typography>
+          {errorMessage ? (
+            <Typography variant="body1" color="error">
+              There was an error. Please send a screenshot with this message:{' '}
+              {errorMessage}
+            </Typography>
+          ) : null}
         </div>
         <CallEndButton
           variant="contained"
