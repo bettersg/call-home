@@ -45,24 +45,29 @@ export default function CallingPage({ locale }) {
   const [device] = useState(new Twilio.Device());
   const [isReady, setIsReady] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [tokenRetryCount, setTokenRetryCount] = useState(3);
   const [errorMessage, setErrorMessage] = useState(null);
   const [userState] = useUserService();
   const { me: user } = userState;
   const [contactState, contactService] = useContactService();
   const { activeContact } = contactState;
 
+  const acquireToken = async () => {
+    if (tokenRetryCount <= 0) {
+      return;
+    }
+    if (isProd) {
+      // TODO the token endpoint needs authz on the application side
+      // the client should pass the intended contact, the backend verifies and then returns the twilio token and our own token
+      // the client can then use the twilio token to init the device and then exchange our token for the call
+      setTokenRetryCount(tokenRetryCount - 1);
+      const newToken = await getToken();
+      setTwilioToken(newToken);
+    }
+  };
+
   useEffect(() => {
-    (async () => {
-      if (isProd) {
-        // TODO the token endpoint needs authz on the application side
-        // the client should pass the intended contact, the backend verifies and then returns the twilio token and our own token
-        // the client can then use the twilio token to init the device and then exchange our token for the call
-        Sentry.captureMessage('fetching token');
-        const newToken = await getToken();
-        setTwilioToken(newToken);
-        Sentry.captureMessage('acquired token');
-      }
-    })();
+    acquireToken();
   }, []);
 
   useEffect(() => {
@@ -99,6 +104,7 @@ export default function CallingPage({ locale }) {
       console.log('offline');
       setIsConnected(false);
       setIsReady(false);
+      acquireToken();
     });
 
     device.on('ready', () => {
