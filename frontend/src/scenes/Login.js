@@ -63,6 +63,7 @@ export default function Login({ locale }) {
   if (shouldHideScreen) {
     return null;
   }
+
   if (user) {
     return <Redirect to={PATHS.VERIFY_PHONE_NUMBER} />;
   }

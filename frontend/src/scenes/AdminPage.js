@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Redirect } from 'react-router-dom';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
@@ -9,11 +10,14 @@ import Select from '@material-ui/core/Select';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import Container from '../components/shared/Container';
-import { useAllowlistService } from '../contexts';
+import { useAllowlistService, useUserService } from '../contexts';
 import { NeutralButton } from '../components/shared/RoundedButton';
 import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
+import PATHS from './paths';
 
 export default function AdminPage() {
+  const [userState] = useUserService();
+  const { me: user } = userState;
   const [allowlistState, allowlistService] = useAllowlistService();
   const { allowlistEntries = [] } = allowlistState;
   const [newAllowlistPhoneNumber, setNewAllowlistPhoneNumber] = useState('');
@@ -24,6 +28,10 @@ export default function AdminPage() {
       allowlistService.refreshAllowlistEntries();
     }
   }, [allowlistService]);
+
+  if (!user) {
+    return <Redirect to={PATHS.LOGIN} />;
+  }
 
   const onSubmit = async (event) => {
     event.preventDefault();
