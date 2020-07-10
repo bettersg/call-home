@@ -16,12 +16,19 @@ import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
 import PATHS from './paths';
 
 export default function AdminPage() {
-  const [userState] = useUserService();
+  const [userRequestInFlight, setUserRequestInFlight] = useState(true);
+  const [userState, userService] = useUserService();
   const { me: user } = userState;
   const [allowlistState, allowlistService] = useAllowlistService();
   const { allowlistEntries = [] } = allowlistState;
   const [newAllowlistPhoneNumber, setNewAllowlistPhoneNumber] = useState('');
   const [newAllowlistCountry, setNewAllowlistCountry] = useState('');
+
+  useEffect(() => {
+    if (userService) {
+      userService.refreshSelf().finally(() => setUserRequestInFlight(false));
+    }
+  }, [userService]);
 
   useEffect(() => {
     if (allowlistService) {
@@ -30,6 +37,9 @@ export default function AdminPage() {
   }, [allowlistService]);
 
   if (!user) {
+    if (userRequestInFlight) {
+      return null;
+    }
     return <Redirect to={PATHS.LOGIN} />;
   }
 

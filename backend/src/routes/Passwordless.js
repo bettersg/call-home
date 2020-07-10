@@ -68,6 +68,7 @@ function PasswordlessRoutes(
       return res.redirect('/');
     } catch (e) {
       console.error(e);
+      console.dir(e);
       const { response } = e;
       if (response && response.data && response.data.error) {
         if (response.data.error === 'invalid_grant') {
