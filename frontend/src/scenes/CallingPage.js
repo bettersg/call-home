@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getLogger } from 'loglevel';
 import * as Twilio from 'twilio-client';
 import * as Sentry from '@sentry/browser';
 import CallEndIcon from '@material-ui/icons/CallEnd';
@@ -13,6 +14,8 @@ import getToken from '../services/Calls';
 
 // TODO handle production environments better
 const isProd = process.env.NODE_ENV === 'production';
+const twilioLogger = getLogger(Twilio.Device.packageName);
+twilioLogger.setLevel('trace');
 
 const EN_STRINGS = {
   CALLING_CONNECTING: 'Connecting...',
@@ -39,6 +42,15 @@ const CallEndButton = withStyles((theme) => ({
     color: 'white',
   },
 }))(Button);
+
+function timeConnectionAttempt(device) {
+  setTimeout(() => {
+    if (!device.status() === 'busy') {
+      console.log('Twilio connection has failed');
+      Sentry.captureException({ device });
+    }
+  }, 5000);
+}
 
 export default function CallingPage({ locale }) {
   const [twilioToken, setTwilioToken] = useState(null);
@@ -125,16 +137,19 @@ export default function CallingPage({ locale }) {
   }, [device, user, twilioToken, contactService]);
 
   useEffect(() => {
-    if (isReady && !isConnected && activeContact && isProd) {
-      try {
-        device.connect({
-          userId: user.id,
-          contactId: activeContact.id,
-        });
-      } catch (e) {
-        Sentry.captureException(e);
+    (async () => {
+      if (isReady && !isConnected && activeContact && isProd) {
+        try {
+          timeConnectionAttempt(device);
+          await device.connect({
+            userId: user.id,
+            contactId: activeContact.id,
+          });
+        } catch (e) {
+          Sentry.captureException(e);
+        }
       }
-    }
+    })();
   }, [device, user, isReady, isConnected, activeContact]);
 
   if (!user) {
