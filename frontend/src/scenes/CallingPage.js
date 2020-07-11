@@ -21,6 +21,8 @@ const EN_STRINGS = {
   CALLING_CONNECTING: 'Connecting...',
   CALLING_CONNECTED: 'Connected!',
   CALLING_CALL_FAILED: 'Call failed',
+  CALLING_NEED_MICROPHONE_ACCESS_MESSAGE:
+    'Unable to make the call because the app does not have permissions to use your microphone. Please change your browser settings to allow us to use your microphone.',
 };
 
 const STRINGS = {
@@ -51,6 +53,10 @@ function timeConnectionAttempt(device) {
     }
   }, 5000);
 }
+
+const USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE = {
+  31208: 'CALLING_NEED_MICROPHONE_ACCESS_MESSAGE',
+};
 
 export default function CallingPage({ locale }) {
   const [twilioToken, setTwilioToken] = useState(null);
@@ -103,8 +109,16 @@ export default function CallingPage({ locale }) {
       console.error('EROOORR', e);
       setIsConnected(false);
       setIsReady(false);
-      setErrorMessage(`${e.message}, (${e.code})`);
-      Sentry.captureException(e);
+      if (e.code in USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE) {
+        setErrorMessage(
+          STRINGS[locale][
+            USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE[e.code]
+          ]
+        );
+      } else {
+        setErrorMessage(`${e.message}, (${e.code})`);
+        Sentry.captureException(e);
+      }
     });
 
     device.on('cancel', () => {
