@@ -11,6 +11,7 @@ import { withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import CallIcon from '@material-ui/icons/Call';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import FeedbackIcon from '@material-ui/icons/Feedback';
 import Container from '../components/shared/Container';
 import {
   NeutralButton,
@@ -18,6 +19,7 @@ import {
   PrimaryButton,
 } from '../components/shared/RoundedButton';
 import ContactsDialog from '../components/shared/ContactsDialog';
+import ReportIssueDialog from '../components/shared/ReportIssueDialog';
 import { useUserService, useContactService } from '../contexts';
 import { ApiValidationError } from '../services/apiClient';
 import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
@@ -48,6 +50,7 @@ const EN_STRINGS = {
   CONTACTS_EDIT_LABEL: 'Edit',
   CONTACTS_SAVE_LABEL: 'Save',
   CONTACTS_LOGOUT_LABEL: 'Logout',
+  CONTACTS_REPORT_PROBLEM_LABEL: 'Report problem',
   CONTACTS_CANCEL_LABEL: 'Cancel',
   CONTACTS_DELETE_LABEL: 'Delete',
   CONTACTS_DELETE_CONTACT_LABEL: 'Delete contact',
@@ -121,12 +124,9 @@ const ContactCallIcon = withStyles((theme) => ({
   },
 }))(CallIcon);
 
-const LogoutLink = withStyles((theme) => ({
+const ActionLink = withStyles((theme) => ({
   root: {
     cursor: 'pointer',
-    position: 'absolute',
-    bottom: '3em',
-    right: '3em',
     display: 'flex',
     color: theme.palette.primary[900],
   },
@@ -364,6 +364,7 @@ export default function ContactsPage({ locale }) {
   const [contactState, contactService] = useContactService();
   const { contacts = [], activeContact } = contactState;
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
   const [contactToEdit, setContactToEdit] = useState(null);
 
   useEffect(() => {
@@ -388,6 +389,8 @@ export default function ContactsPage({ locale }) {
   const logout = async () => {
     window.location = '/oauth/logout';
   };
+
+  const openFeedbackDialog = () => setIsFeedbackDialogOpen(true);
 
   return (
     <Container
@@ -417,137 +420,160 @@ export default function ContactsPage({ locale }) {
       </Typography>
       <div
         style={{
-          overflowY: 'scroll',
-          width: '100%',
-          // 20em to accomodate logout and add contact button
-          maxHeight: 'calc(var(--viewport-height) - 20rem)',
-          padding: '0.5rem',
+          // Make this the right height so that the action links are positioned correctly
+          height: 'calc(var(--viewport-height) - 15rem)',
         }}
       >
-        <List
+        <div
           style={{
-            display: 'flex',
-            flexDirection: 'column',
+            overflowY: 'scroll',
+            width: '100%',
+            // 20em to accomodate logout and add contact button
+            maxHeight: 'calc(var(--viewport-height) - 20rem)',
+            padding: '0.5rem',
           }}
         >
-          {contacts.map((contact) => (
-            <ListItem
-              key={contact.id}
-              style={{
-                marginBottom: '0.5rem',
-                paddingBottom: '0',
-                paddingTop: '0',
-              }}
-            >
-              <ContactBox
+          <List
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            {contacts.map((contact) => (
+              <ListItem
+                key={contact.id}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  width: '100%',
-                  height: '4em',
-                  padding: '4px 8px',
+                  marginBottom: '0.5rem',
+                  paddingBottom: '0',
+                  paddingTop: '0',
                 }}
-                variant="outlined"
               >
-                <div
+                <ContactBox
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    flex: '1 0',
-                    marginRight: '1rem',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    height: '4em',
+                    padding: '4px 8px',
                   }}
+                  variant="outlined"
                 >
-                  <img
-                    style={{
-                      height: '2.5rem',
-                      width: '2.5rem',
-                      marginRight: '8px',
-                    }}
-                    alt=""
-                    src={`/images/avatars/${
-                      contact.avatar || 'placeholder'
-                    }.svg`}
-                  />
                   <div
                     style={{
+                      display: 'flex',
+                      alignItems: 'center',
                       flex: '1 0',
+                      marginRight: '1rem',
                     }}
                   >
-                    <Typography variant="body1">{contact.name}</Typography>
-                    <div style={{ display: 'flex' }}>
-                      <Typography
-                        style={{ fontSize: '0.675rem', marginRight: '0.5rem' }}
-                        variant="body2"
-                      >
-                        {contact.phoneNumber}
-                      </Typography>
-                      <Typography
-                        style={{ cursor: 'pointer', fontSize: '0.675rem' }}
-                        color="primary"
-                        role="button"
-                        onClick={() => setContactToEdit(contact)}
-                      >
-                        {STRINGS[locale].CONTACTS_EDIT_LABEL}
-                      </Typography>
+                    <img
+                      style={{
+                        height: '2.5rem',
+                        width: '2.5rem',
+                        marginRight: '8px',
+                      }}
+                      alt=""
+                      src={`/images/avatars/${
+                        contact.avatar || 'placeholder'
+                      }.svg`}
+                    />
+                    <div
+                      style={{
+                        flex: '1 0',
+                      }}
+                    >
+                      <Typography variant="body1">{contact.name}</Typography>
+                      <div style={{ display: 'flex' }}>
+                        <Typography
+                          style={{
+                            fontSize: '0.675rem',
+                            marginRight: '0.5rem',
+                          }}
+                          variant="body2"
+                        >
+                          {contact.phoneNumber}
+                        </Typography>
+                        <Typography
+                          style={{ cursor: 'pointer', fontSize: '0.675rem' }}
+                          color="primary"
+                          role="button"
+                          onClick={() => setContactToEdit(contact)}
+                        >
+                          {STRINGS[locale].CONTACTS_EDIT_LABEL}
+                        </Typography>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <IconButton
-                  style={{ padding: '0' }}
-                  onClick={() => {
-                    contactService.setActiveContact(contact);
-                  }}
-                >
-                  <ContactCallIcon />
-                </IconButton>
-              </ContactBox>
-            </ListItem>
-          ))}
-        </List>
+                  <IconButton
+                    style={{ padding: '0' }}
+                    onClick={() => {
+                      contactService.setActiveContact(contact);
+                    }}
+                  >
+                    <ContactCallIcon />
+                  </IconButton>
+                </ContactBox>
+              </ListItem>
+            ))}
+          </List>
+        </div>
+        <AddContactButton
+          style={{
+            width: '100%',
+            height: '4em',
+            marginTop: '1em',
+          }}
+          variant="outlined"
+          onClick={() => {
+            setIsAddDialogOpen(true);
+          }}
+        >
+          <AddContactIcon
+            style={{
+              marginRight: '1em',
+              height: '1.5rem',
+              width: '1.5rem',
+            }}
+          />
+          <div>{STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}</div>
+        </AddContactButton>
       </div>
-      <AddContactButton
+      <div
         style={{
           width: '100%',
-          height: '4em',
-          marginTop: '1em',
-        }}
-        variant="outlined"
-        onClick={() => {
-          setIsAddDialogOpen(true);
+          display: 'flex',
+          justifyContent: 'space-between',
         }}
       >
-        <AddContactIcon
-          style={{
-            marginRight: '1em',
-            height: '1.5rem',
-            width: '1.5rem',
-          }}
-        />
-        <div>{STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}</div>
-      </AddContactButton>
-      <LogoutLink
-        variant="body1"
-        color="primary"
-        role="button"
-        onClick={logout}
-      >
-        <ExitToAppIcon style={{ transform: 'rotate(180deg)' }} />
-        {STRINGS[locale].CONTACTS_LOGOUT_LABEL}
-      </LogoutLink>
-      <AddContactDialog
-        onClose={() => setIsAddDialogOpen(false)}
-        open={isAddDialogOpen}
-        locale={locale}
-      />
-      {contactToEdit ? (
-        <EditContactDialog
-          contact={contactToEdit}
-          onClose={() => setContactToEdit(null)}
-          open
+        <ActionLink variant="body1" role="button" onClick={openFeedbackDialog}>
+          <FeedbackIcon />
+          {STRINGS[locale].CONTACTS_REPORT_PROBLEM_LABEL}
+        </ActionLink>
+        <ActionLink variant="body1" role="button" onClick={logout}>
+          <ExitToAppIcon style={{ transform: 'rotate(180deg)' }} />
+          {STRINGS[locale].CONTACTS_LOGOUT_LABEL}
+        </ActionLink>
+        <AddContactDialog
+          onClose={() => setIsAddDialogOpen(false)}
+          open={isAddDialogOpen}
           locale={locale}
         />
-      ) : null}
+        <ReportIssueDialog
+          user={user}
+          onClose={() => setIsFeedbackDialogOpen(false)}
+          open={isFeedbackDialogOpen}
+          locale={locale}
+        />
+        {contactToEdit ? (
+          <EditContactDialog
+            contact={contactToEdit}
+            onClose={() => setContactToEdit(null)}
+            open
+            locale={locale}
+          />
+        ) : null}
+      </div>
     </Container>
   );
 }

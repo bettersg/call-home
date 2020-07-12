@@ -30,16 +30,17 @@ export function configureUser(user) {
   });
 }
 
-export async function reportUserIssue({ userName, userEmail, userComments }) {
+export async function reportUserIssue(user, issue) {
   const eventId = Sentry.captureMessage('User feedback');
-  const result = await SENTRY_API_CLIENT.post(
+  await SENTRY_API_CLIENT.post(
     `https://sentry.io/api/0/projects/${SENTRY_ORG_NAME}/${SENTRY_PROJECT_NAME}/user-feedback/`,
     {
       event_id: eventId,
-      name: userName,
-      email: userEmail,
-      comments: userComments,
+      comments: JSON.stringify(issue, null, 2),
+      name: user.name,
+      email:
+        (user.emails[0] && user.emails[0].value) ||
+        `phoneNumber${user.phoneNumber}@unknown.com`,
     }
   );
-  console.log(result);
 }
