@@ -118,6 +118,7 @@ export default function CallingPage({ locale }) {
       } else {
         setErrorMessage(`${e.message}, (${e.code})`);
         Sentry.captureException(e);
+        Sentry.captureException(e.twilioError);
       }
     });
 
