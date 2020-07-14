@@ -14,7 +14,10 @@ const SENTRY_API_CLIENT = axios.create({
 });
 
 export function initSentry() {
-  Sentry.init({ dsn: SENTRY_DSN });
+  Sentry.init({
+    dsn: SENTRY_DSN,
+    ignoreErrors: ['Request failed with status code 403'],
+  });
 }
 
 export function configureUser(user) {
