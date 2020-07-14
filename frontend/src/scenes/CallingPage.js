@@ -56,11 +56,12 @@ function timeConnectionAttempt(device) {
   }, 5000);
 }
 
-const TRANSIENT_ISSUE_ERROR_CODES = new Set([31005]);
+const TRANSIENT_ISSUE_ERROR_CODES = new Set([31005, 31009]);
 
 const USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE = {
   31208: 'CALLING_NEED_MICROPHONE_ACCESS_MESSAGE',
   31005: 'CALLING_TRANSIENT_ISSUE_MESSAGE',
+  31009: 'CALLING_TRANSIENT_ISSUE_MESSAGE',
 };
 
 export default function CallingPage({ locale }) {
