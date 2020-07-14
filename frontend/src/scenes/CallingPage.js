@@ -56,6 +56,8 @@ function timeConnectionAttempt(device) {
   }, 5000);
 }
 
+const TRANSIENT_ISSUE_ERROR_CODES = new Set([31005]);
+
 const USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE = {
   31208: 'CALLING_NEED_MICROPHONE_ACCESS_MESSAGE',
   31005: 'CALLING_TRANSIENT_ISSUE_MESSAGE',
@@ -88,8 +90,10 @@ export default function CallingPage({ locale }) {
   };
 
   useEffect(() => {
-    acquireToken();
-  }, []);
+    if (!twilioToken) {
+      acquireToken();
+    }
+  }, [twilioToken]);
 
   useEffect(() => {
     if (!twilioToken) {
@@ -98,7 +102,7 @@ export default function CallingPage({ locale }) {
       }
       return;
     }
-    console.log('setting up device');
+    console.log('Setting up device. Token retry count: ', tokenRetryCount);
     try {
       device.setup(twilioToken);
     } catch (error) {
@@ -111,6 +115,9 @@ export default function CallingPage({ locale }) {
       console.error('EROOORR', error);
       setIsConnected(false);
       setIsReady(false);
+      if (TRANSIENT_ISSUE_ERROR_CODES.has(error.code)) {
+        acquireToken();
+      }
       if (error.code in USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE) {
         setErrorMessage(
           STRINGS[locale][
