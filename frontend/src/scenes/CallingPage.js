@@ -23,6 +23,8 @@ const EN_STRINGS = {
   CALLING_CALL_FAILED: 'Call failed',
   CALLING_NEED_MICROPHONE_ACCESS_MESSAGE:
     'Unable to make the call because the app does not have permissions to use your microphone. Please change your browser settings to allow us to use your microphone.',
+  CALLING_TRANSIENT_ISSUE_MESSAGE:
+    "We've experienced a temporary issue, please try again.",
 };
 
 const STRINGS = {
@@ -56,6 +58,7 @@ function timeConnectionAttempt(device) {
 
 const USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE = {
   31208: 'CALLING_NEED_MICROPHONE_ACCESS_MESSAGE',
+  31005: 'CALLING_TRANSIENT_ISSUE_MESSAGE',
 };
 
 export default function CallingPage({ locale }) {
@@ -210,7 +213,7 @@ export default function CallingPage({ locale }) {
           {errorMessage ? (
             <Typography variant="body1" color="error">
               There was an error. Please send a screenshot with this message:
-              {errorMessage}
+              <p>{errorMessage}</p>
             </Typography>
           ) : null}
         </div>
