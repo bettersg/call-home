@@ -98,27 +98,26 @@ export default function CallingPage({ locale }) {
     console.log('setting up device');
     try {
       device.setup(twilioToken);
-    } catch (e) {
+    } catch (error) {
+      Sentry.captureException(error);
       setIsConnected(false);
-      throw new Error(
-        'We were unable to set up the phone connection. Make sure that the website starts with https. If the problem persists, contact an admin'
-      );
+      setErrorMessage(`${error.message}, (${error.code})`);
     }
 
-    device.on('error', (e) => {
-      console.error('EROOORR', e);
+    device.on('error', (error) => {
+      console.error('EROOORR', error);
       setIsConnected(false);
       setIsReady(false);
-      if (e.code in USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE) {
+      if (error.code in USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE) {
         setErrorMessage(
           STRINGS[locale][
-            USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE[e.code]
+            USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE[error.code]
           ]
         );
       } else {
-        setErrorMessage(`${e.message}, (${e.code})`);
-        Sentry.captureException(e);
-        Sentry.captureException(e.twilioError);
+        setErrorMessage(`${error.message}, (${error.code})`);
+        Sentry.captureException(error);
+        Sentry.captureException(error.twilioError);
       }
     });
 
@@ -160,8 +159,8 @@ export default function CallingPage({ locale }) {
             userId: user.id,
             contactId: activeContact.id,
           });
-        } catch (e) {
-          Sentry.captureException(e);
+        } catch (error) {
+          Sentry.captureException(error);
         }
       }
     })();
@@ -210,7 +209,7 @@ export default function CallingPage({ locale }) {
           </Typography>
           {errorMessage ? (
             <Typography variant="body1" color="error">
-              There was an error. Please send a screenshot with this message:{' '}
+              There was an error. Please send a screenshot with this message:
               {errorMessage}
             </Typography>
           ) : null}
