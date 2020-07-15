@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getLogger } from 'loglevel';
-import * as Twilio from 'twilio-client';
+import { Device } from 'twilio-client';
 import * as Sentry from '@sentry/browser';
 import CallEndIcon from '@material-ui/icons/CallEnd';
 import { withStyles } from '@material-ui/core/styles';
@@ -14,7 +14,7 @@ import getToken from '../services/Calls';
 
 // TODO handle production environments better
 const isProd = process.env.NODE_ENV === 'production';
-const twilioLogger = getLogger(Twilio.Device.packageName);
+const twilioLogger = getLogger(Device.packageName);
 twilioLogger.setLevel('trace');
 
 const EN_STRINGS = {
@@ -56,7 +56,11 @@ function timeConnectionAttempt(device) {
   }, 5000);
 }
 
-const TRANSIENT_ISSUE_ERROR_CODES = new Set([31003, 31005, 31009]);
+const TRANSIENT_ISSUE_ERROR_CODES = new Set([
+  31003, // This happens when the connection is canceled e.g. by navigation
+  31005, // Appears to be a transient issue when connecting to Twilio
+  31009, // 'Transport not available -> the device seems to randomly error out'
+]);
 
 const USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE = {
   31003: 'CALLING_TRANSIENT_ISSUE_MESSAGE',
@@ -67,7 +71,7 @@ const USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE = {
 
 export default function CallingPage({ locale }) {
   const [twilioToken, setTwilioToken] = useState(null);
-  const [device] = useState(new Twilio.Device());
+  const [device] = useState(new Device());
   const [isReady, setIsReady] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [tokenRetryCount, setTokenRetryCount] = useState(3);
@@ -104,7 +108,9 @@ export default function CallingPage({ locale }) {
       }
       return;
     }
+
     console.log('Setting up device. Token retry count: ', tokenRetryCount);
+
     try {
       device.setup(twilioToken);
     } catch (error) {

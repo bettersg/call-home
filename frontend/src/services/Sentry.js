@@ -42,7 +42,7 @@ export async function reportUserIssue(user, issue) {
       comments: JSON.stringify(issue, null, 2),
       name: user.name,
       email:
-        (user.emails[0] && user.emails[0].value) ||
+        (user.emails && user.emails[0] && user.emails[0].value) ||
         `phoneNumber${user.phoneNumber}@unknown.com`,
     }
   );
