@@ -42,18 +42,23 @@ async function injectDbUser(req) {
   const { emails } = userProfile;
   console.log('Injecting for profile', userProfile);
   const userProfileResponse = userProfileToUserProfileResponse(userProfile);
+  const auth0Id = userProfile.userId || userProfile.id;
+
   let user;
   if (emails) {
     user = await UserService.getUserByEmails(
       emails.map((emailValue) => emailValue.value)
     );
-  } else {
-    const auth0Id = userProfile.userId || userProfile.id;
-    if (auth0Id) {
-      await UserService.registerUserWithAuth0Id(
+    if (user && !user.auth0Id) {
+      user = await UserService.updateUser(user.id, {
+        ...user,
         auth0Id,
-        userProfile.displayName
-      );
+      });
+    }
+  }
+
+  if (!user) {
+    if (auth0Id) {
       user = await UserService.getUserByAuth0Id(auth0Id);
     } else {
       req.user = userProfile;

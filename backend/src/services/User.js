@@ -46,8 +46,11 @@ function UserService(UserModel, allowlistEntryService) {
   async function updateUser(userId, user) {
     const userPayload = {
       ...user,
-      email: user.email.toLowerCase(),
     };
+
+    if (userPayload.email) {
+      userPayload.email = userPayload.email.toLowerCase();
+    }
 
     await UserModel.update(userPayload, {
       where: {
@@ -89,25 +92,14 @@ function UserService(UserModel, allowlistEntryService) {
     return foundUser;
   }
 
-  // TODO this exists only for adding users via oauth. This may not belong here
-  async function registerUser(userEmails, name) {
-    const foundUser = await getUserByEmails(userEmails);
-    if (foundUser) {
-      return foundUser;
-    }
-    return createUser({
-      name,
-      email: userEmails[0],
-    });
-  }
-
-  async function registerUserWithAuth0Id(auth0Id, name) {
+  async function registerUserWithAuth0Id(auth0Id, user) {
     const foundUser = await getUserByAuth0Id(auth0Id);
     if (foundUser) {
       return foundUser;
     }
     return createUser({
-      name,
+      name: user.name,
+      email: user.email,
       auth0Id,
     });
   }
@@ -119,7 +111,6 @@ function UserService(UserModel, allowlistEntryService) {
     getUserByEmail,
     updateUser,
     deleteUser,
-    registerUser,
     verifyUserPhoneNumber,
     getUserByEmails,
     getUserByAuth0Id,

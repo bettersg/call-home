@@ -41,25 +41,31 @@ function OAuthRoutes() {
           return res.redirect('/');
         }
 
-        if (user.emails) {
-          await UserService.registerUser(
-            user.emails.map((email) => email.value),
-            user.displayName
-          );
-        } else {
-          const auth0Id = user.user_id || user.id;
-          if (!auth0Id) {
-            console.error('User did not give email, cannot save');
-          } else {
-            await UserService.registerUserWithAuth0Id(
-              auth0Id,
-              user.displayName
-            );
-          }
-        }
-
         const { returnTo } = req.session;
         delete req.session.returnTo;
+
+        const auth0Id = user.user_id || user.id;
+        if (!auth0Id) {
+          console.error('Auth0Id was missing, cannot save');
+          res.redirect(returnTo || '/');
+          return null;
+        }
+
+        const emails = (user.emails || []).map((email) => email.value);
+        const dbUser = await UserService.getUserByEmails(emails);
+
+        if (dbUser) {
+          await UserService.updateUser(dbUser.id, {
+            ...dbUser,
+            auth0Id,
+          });
+        } else {
+          await UserService.registerUserWithAuth0Id(auth0Id, {
+            name: user.displayName,
+            email: emails[0], // this is intentionally undefined sometimes
+          });
+        }
+
         console.log('Successfully logged in');
         res.redirect(returnTo || '/');
         return null;
