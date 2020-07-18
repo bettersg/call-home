@@ -24,58 +24,85 @@ export class ApiValidationError extends Error {
   }
 }
 
-function handleApiError(wrappedFn, { preventRedirect } = {}) {
-  return async (...args) => {
-    try {
-      const response = await wrappedFn(...args);
-      return response.data;
-    } catch (e) {
-      // We figure out what class of error this is.
-      const { response } = e;
-      // Worst case, there isn't even a response. Perhaps blocked by CORS. This is unactionable, we just alert and stop.
-      if (!response) {
-        Sentry.captureException(e);
-        throw new Error('An unknown error has occurred.');
-      }
-      // 401 Means that the user is unauthenticated. This should always be accompanied with a location to redirect to.
-      if (response.status === 401 && response.data.location) {
-        if (preventRedirect) {
-          throw new UnauthenticatedError('Unauthenticated');
-        } else {
-          window.location = response.data.location;
-          return undefined;
-        }
-      }
-
-      // 400 is a bad request, we alert the users somehow but do not report to Sentry.
-      if (response.status === 400) {
-        // TODO improve the API request handling
-        if (
-          typeof response.data === 'string' &&
-          ApiValidationError.isValidationErrorMessage(response.data)
-        ) {
-          throw new ApiValidationError(response.data);
-        }
-        throw new ApiDataError(response.data);
-      }
-      // Alert users and Sentry by default
-      Sentry.captureException(e);
-      throw new ApiDataError(response.data);
-    }
-  };
+function unwrapResponseInterceptor(response) {
+  return response.data;
 }
 
-export default Object.freeze({
-  get: handleApiError(axios.get),
-  put: handleApiError(axios.put),
-  delete: handleApiError(axios.delete),
-  post: handleApiError(axios.post),
-});
+async function unauthenticatedRedirectInterceptor(error) {
+  const { response } = error;
+  if (!response || response.status !== 401) {
+    throw error;
+  }
+  // There is a response, it is 401 and there is a redirect location
+  window.location = response.data.location;
+  return null;
+}
+
+async function unauthenticatedThrowInterceptor(error) {
+  const { response } = error;
+  if (!response || response.status !== 401 || !response.data.location) {
+    throw error;
+  }
+  // Error has a response and it is a 401.
+  throw new UnauthenticatedError('Unauthenticated');
+}
+
+async function badRequestInterceptor(error) {
+  const { response } = error;
+  if (!response || response.status !== 400) {
+    return Promise.reject(error);
+  }
+  // 400 is a bad request, we alert the users somehow but do not report to Sentry.
+  if (
+    typeof response.data === 'string' &&
+    ApiValidationError.isValidationErrorMessage(response.data)
+  ) {
+    throw new ApiValidationError(response.data);
+  }
+  throw new ApiDataError(response.data);
+}
+
+async function apiDataErrorInterceptor(error) {
+  // this should be next to last because it will swallow every error that has data attached to it
+  const { response } = error;
+  if (!response || response.data) {
+    throw error;
+  }
+  Sentry.captureException(error);
+  throw new ApiDataError(response.data);
+}
+
+async function defaultErrorInterceptor(error) {
+  // Absolutely last interceptor. Capture the exception and throw.
+  // This means that the request never reached the backend, could be due to CORS, bad gateway, etc.
+  // TODO handle this error with error boundaries
+  Sentry.captureException(error);
+  throw error;
+}
+
+const apiClient = axios.create();
+
+apiClient.interceptors.response.use(unwrapResponseInterceptor);
+[
+  unauthenticatedRedirectInterceptor,
+  badRequestInterceptor,
+  apiDataErrorInterceptor,
+  defaultErrorInterceptor,
+].forEach((errorInterceptor) =>
+  apiClient.interceptors.response.use(undefined, errorInterceptor)
+);
+
+export default apiClient;
 
 // Expose a version that doesn't automatically redirect in case the caller needs to make use of the unauthenticated status.
-export const noRedirectClient = Object.freeze({
-  get: handleApiError(axios.get, { preventRedirect: true }),
-  put: handleApiError(axios.put, { preventRedirect: true }),
-  delete: handleApiError(axios.delete, { preventRedirect: true }),
-  post: handleApiError(axios.post, { preventRedirect: true }),
-});
+export const noRedirectClient = axios.create();
+
+noRedirectClient.interceptors.response.use(unwrapResponseInterceptor);
+[
+  unauthenticatedThrowInterceptor,
+  badRequestInterceptor,
+  apiDataErrorInterceptor,
+  defaultErrorInterceptor,
+].forEach((errorInterceptor) =>
+  noRedirectClient.interceptors.response.use(undefined, errorInterceptor)
+);
