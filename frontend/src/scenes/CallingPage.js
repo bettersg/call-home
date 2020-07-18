@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { Device } from 'twilio-client';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '@sentry/react';
 import CallEndIcon from '@material-ui/icons/CallEnd';
 import CloseIcon from '@material-ui/icons/Close';
 import { withStyles } from '@material-ui/core/styles';

@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import axios from 'axios';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '@sentry/react';
 
 export class UnauthenticatedError extends Error {}
 

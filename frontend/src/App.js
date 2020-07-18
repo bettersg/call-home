@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '@sentry/react';
 import {
   AllowlistServiceProvider,
   UserServiceProvider,
