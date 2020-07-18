@@ -12,6 +12,7 @@ const TransientIssueErrorCodes = new Set([
   31003, // This happens when the connection is canceled e.g. by navigation
   31005, // Appears to be a transient issue when connecting to Twilio
   31009, // 'Transport not available -> the device seems to randomly error out'
+  31205, // JWT expires. Not an issue, we will refresh it anyway.
 ]);
 
 // Helper functions for performing Twilio calls. The goal of this is to abstract over some of the minor details of interacting with the Twilio device.
