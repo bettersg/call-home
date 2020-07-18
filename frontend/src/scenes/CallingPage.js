@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { getLogger } from 'loglevel';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Device } from 'twilio-client';
 import * as Sentry from '@sentry/browser';
 import CallEndIcon from '@material-ui/icons/CallEnd';
+import CloseIcon from '@material-ui/icons/Close';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
@@ -10,21 +10,19 @@ import { Redirect } from 'react-router-dom';
 import { useUserService, useContactService } from '../contexts';
 import PATHS from './paths';
 import Container from '../components/shared/Container';
-import getToken from '../services/Calls';
-
-// TODO handle production environments better
-const isProd = process.env.NODE_ENV === 'production';
-const twilioLogger = getLogger(Device.packageName);
-twilioLogger.setLevel('trace');
+import { makeCall, TransientIssueErrorCodes } from '../services/TwilioCall';
 
 const EN_STRINGS = {
   CALLING_CONNECTING: 'Connecting...',
   CALLING_CONNECTED: 'Connected!',
   CALLING_CALL_FAILED: 'Call failed',
+  CALLING_CALL_FINISHED: 'Call complete!',
   CALLING_NEED_MICROPHONE_ACCESS_MESSAGE:
     'Unable to make the call because the app does not have permissions to use your microphone. Please change your browser settings to allow us to use your microphone.',
   CALLING_TRANSIENT_ISSUE_MESSAGE:
     "We've experienced a temporary issue, please try again.",
+  CALLING_UNSUPPORTED_BROWSER_MESSAGE:
+    'Your browser is not supported. Try using Chrome or Safari',
 };
 
 const STRINGS = {
@@ -47,21 +45,6 @@ const CallEndButton = withStyles((theme) => ({
   },
 }))(Button);
 
-function timeConnectionAttempt(device) {
-  setTimeout(() => {
-    if (!device.status() === 'busy') {
-      console.log('Twilio connection has failed');
-      Sentry.captureException({ device });
-    }
-  }, 5000);
-}
-
-const TRANSIENT_ISSUE_ERROR_CODES = new Set([
-  31003, // This happens when the connection is canceled e.g. by navigation
-  31005, // Appears to be a transient issue when connecting to Twilio
-  31009, // 'Transport not available -> the device seems to randomly error out'
-]);
-
 const USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE = {
   31003: 'CALLING_TRANSIENT_ISSUE_MESSAGE',
   31005: 'CALLING_TRANSIENT_ISSUE_MESSAGE',
@@ -70,119 +53,112 @@ const USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE = {
 };
 
 export default function CallingPage({ locale }) {
-  const [twilioToken, setTwilioToken] = useState(null);
-  const [device] = useState(new Device());
-  const [isReady, setIsReady] = useState(false);
+  const [hasAttemptedConnection, setHasAttemptedConnection] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-  const [tokenRetryCount, setTokenRetryCount] = useState(3);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [wasCallSuccessful, setWasCallSuccessful] = useState(false);
+  const [hasUserDisconnected, setHasUserDisconnected] = useState(false);
+  const [activeConnection, setActiveConnection] = useState(null);
+  const [lastErrorMessage, setLastErrorMessage] = useState(null);
   const [userState] = useUserService();
   const { me: user } = userState;
   const [contactState, contactService] = useContactService();
   const { activeContact } = contactState;
 
-  const acquireToken = async () => {
-    if (tokenRetryCount <= 0) {
-      return;
-    }
-    if (isProd) {
-      // TODO the token endpoint needs authz on the application side
-      // the client should pass the intended contact, the backend verifies and then returns the twilio token and our own token
-      // the client can then use the twilio token to init the device and then exchange our token for the call
-      setTokenRetryCount(tokenRetryCount - 1);
-      const newToken = await getToken();
-      setTwilioToken(newToken);
-    }
-  };
-
-  useEffect(() => {
-    if (!twilioToken) {
-      acquireToken();
-    }
-  }, [twilioToken]);
-
-  useEffect(() => {
-    if (!twilioToken) {
-      if (!isProd) {
-        setIsReady(true);
-      }
-      return;
-    }
-
-    console.log('Setting up device. Token retry count: ', tokenRetryCount);
-
-    try {
-      device.setup(twilioToken);
-    } catch (error) {
-      Sentry.captureException(error);
-      setIsConnected(false);
-      setErrorMessage(`${error.message}, (${error.code})`);
-    }
-
-    device.on('error', (error) => {
-      console.error('EROOORR', error);
-      setIsConnected(false);
-      setIsReady(false);
-      if (TRANSIENT_ISSUE_ERROR_CODES.has(error.code)) {
-        acquireToken();
-      }
-      if (error.code in USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE) {
-        setErrorMessage(
-          STRINGS[locale][
-            USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE[error.code]
-          ]
-        );
-      } else {
-        setErrorMessage(`${error.message}, (${error.code})`);
-        Sentry.captureException(error);
-        Sentry.captureException(error.twilioError);
-      }
-    });
-
-    device.on('cancel', () => {
-      console.log('canceled');
-      setIsConnected(false);
-    });
-
-    device.on('offline', () => {
-      console.log('offline');
-      setIsConnected(false);
-      setIsReady(false);
-      acquireToken();
-    });
-
-    device.on('ready', () => {
-      setIsReady(true);
-      console.log('set up device');
-    });
-
-    device.on('connect', () => {
-      console.log('connected');
+  const handleStatusChange = useCallback(() => {
+    const status = Device.status();
+    if (status === 'busy') {
       setIsConnected(true);
-    });
-
-    device.on('disconnect', () => {
-      console.log('disconnected');
+      setWasCallSuccessful(true);
+    } else {
       setIsConnected(false);
-      contactService.setActiveContact(null);
-    });
-  }, [device, user, twilioToken, contactService]);
+    }
+  }, [setIsConnected]);
+
+  const subscribeToDeviceEvent = useCallback(
+    (eventName) => {
+      const listener = () => {
+        console.log(eventName);
+        handleStatusChange();
+      };
+      Device.on(eventName, listener);
+      return () => {
+        Device.removeListener(eventName, listener);
+      };
+    },
+    [handleStatusChange]
+  );
+
+  useEffect(() => {
+    return subscribeToDeviceEvent('connect');
+  }, [subscribeToDeviceEvent]);
+
+  useEffect(() => {
+    return subscribeToDeviceEvent('disconnect');
+  }, [subscribeToDeviceEvent]);
+
+  useEffect(() => {
+    return subscribeToDeviceEvent('offline');
+  }, [subscribeToDeviceEvent]);
+
+  // Errors don't seem to always correspond to status changes. We can capture these and if the calls 'fail' (however we detect that), we present messages to the user.
+  useEffect(() => {
+    const listener = (error) => {
+      console.error('EROOORR', error);
+      if (error.code && TransientIssueErrorCodes.has(error.code)) {
+        return;
+      }
+      setLastErrorMessage(`${error.message}, (${error.code})`);
+      Sentry.captureException(error);
+      Sentry.captureException(error.twilioError);
+    };
+    Device.on('error', listener);
+    return () => Device.removeListener('error', listener);
+  }, [setLastErrorMessage]);
 
   useEffect(() => {
     (async () => {
-      if (isReady && !isConnected && activeContact && isProd) {
-        try {
-          timeConnectionAttempt(device);
-          await device.connect({
-            userId: user.id,
-            contactId: activeContact.id,
-          });
-        } catch (error) {
+      if (!activeContact) {
+        return;
+      }
+      try {
+        setHasAttemptedConnection(true);
+        // TODO we can perform more sophisticated things with this connection like subscribe to updates
+        const connection = await makeCall({
+          userId: user.id,
+          contactId: activeContact.id,
+        });
+        setActiveConnection(connection);
+      } catch (error) {
+        if (!Device.isSupported) {
+          setLastErrorMessage(
+            STRINGS[locale].CALLING_UNSUPPORTED_BROWSER_MESSAGE
+          );
+        } else if (
+          error.code &&
+          error.code in USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE
+        ) {
+          setLastErrorMessage(
+            STRINGS[locale].CALLING_UNSUPPORTED_BROWSER_MESSAGE
+          );
+        } else {
           Sentry.captureException(error);
+          setLastErrorMessage(`${error.message}, (${error.code})`);
         }
       }
     })();
-  }, [device, user, isReady, isConnected, activeContact]);
+  }, [user, activeContact]);
+
+  const disconnectCall = useCallback(() => {
+    if (activeConnection) {
+      activeConnection.disconnect();
+    }
+    setHasUserDisconnected(true);
+  }, [activeConnection]);
+
+  const exitCallingPage = useCallback(() => {
+    disconnectCall();
+    contactService.setActiveContact(null);
+  }, [contactService, disconnectCall]);
 
   if (!user) {
     return <Redirect to={PATHS.LOGIN} />;
@@ -192,6 +168,27 @@ export default function CallingPage({ locale }) {
   }
 
   const avatarUrl = `/images/avatars/${activeContact.avatar}.svg`;
+
+  let connectionMessage;
+  if (isConnected) {
+    connectionMessage = STRINGS[locale].CALLING_CONNECTED;
+  } else if (hasUserDisconnected) {
+    connectionMessage = STRINGS[locale].CALLING_CALL_FINISHED;
+  } else {
+    connectionMessage = STRINGS[locale].CALLING_CONNECTING;
+  }
+
+  const DisconnectCallButton = (
+    <CallEndButton variant="contained" onClick={disconnectCall}>
+      <CallEndIcon />
+    </CallEndButton>
+  );
+
+  const ExitPageButton = (
+    <CallEndButton variant="contained" onClick={exitCallingPage}>
+      <CloseIcon />
+    </CallEndButton>
+  );
 
   return (
     <Container>
@@ -220,26 +217,15 @@ export default function CallingPage({ locale }) {
           <Typography style={{ marginTop: '4rem' }} variant="h5" component="h2">
             {activeContact.name}
           </Typography>
-          <Typography variant="body1">
-            {isConnected
-              ? STRINGS[locale].CALLING_CONNECTED
-              : STRINGS[locale].CALLING_CONNECTING}
-          </Typography>
-          {errorMessage ? (
+          <Typography variant="body1">{connectionMessage}</Typography>
+          {hasAttemptedConnection && lastErrorMessage && !wasCallSuccessful ? (
             <Typography variant="body1" color="error">
               There was an error. Please send a screenshot with this message:
-              <p>{errorMessage}</p>
+              {lastErrorMessage}
             </Typography>
           ) : null}
         </div>
-        <CallEndButton
-          variant="contained"
-          onClick={() => {
-            device.disconnectAll();
-          }}
-        >
-          <CallEndIcon />
-        </CallEndButton>
+        {isConnected ? DisconnectCallButton : ExitPageButton}
       </div>
     </Container>
   );
