@@ -39,6 +39,7 @@ if (isProd) {
   app.use(httpsRedirect);
   app.use(helmet());
 }
+
 // Make sure oauth is first and NOT secured
 app.use('/oauth', oauthRoutes);
 app.use('/passwordless', secureRoutes, passwordlessRoutes);
@@ -49,9 +50,6 @@ app.use('/users', secureRoutes, userRoutes);
 app.use('/users', secureRoutes, requireVerified, contactRoutes);
 app.use('/calls', secureRoutes, requireVerified, callRoutes);
 app.use('/allowlistEntries', secureRoutes, allowlistRoutes);
-// STATIC_DIR gets populated in a docker build
-// expose manifest.json
-app.use('/manifest.json', express.static(STATIC_DIR));
 
 if (!isProd) {
   // proxy requests to development frontend
@@ -59,6 +57,7 @@ if (!isProd) {
   // This is just for setting things up
   // require('../setupDemo')().catch(console.error); // eslint-disable-line global-require
 } else {
+  // STATIC_DIR gets populated in a docker build
   app.use(express.static(STATIC_DIR));
 }
 
