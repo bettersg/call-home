@@ -35,7 +35,7 @@ async function unauthenticatedRedirectInterceptor(error) {
   }
   // There is a response, it is 401 and there is a redirect location
   window.location = response.data.location;
-  return null;
+  throw error;
 }
 
 async function unauthenticatedThrowInterceptor(error) {
