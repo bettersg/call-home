@@ -103,13 +103,30 @@ export default function CallingPage({ locale }) {
   // Errors don't seem to always correspond to status changes. We can capture these and if the calls 'fail' (however we detect that), we present messages to the user.
   useEffect(() => {
     const listener = (error) => {
-      console.error('EROOORR', error);
+      console.log('ERRRORRRR');
+      console.log(error);
       if (error.code && TransientIssueErrorCodes.has(error.code)) {
         return;
       }
+      if (
+        error.code &&
+        error.code in USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE
+      ) {
+        setLastErrorMessage(
+          STRINGS[locale][
+            USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE[error.code]
+          ]
+        );
+        return;
+      }
       setLastErrorMessage(`${error.message}, (${error.code})`);
-      Sentry.captureException(error);
-      Sentry.captureException(error.twilioError);
+      Sentry.withScope((scope) => {
+        try {
+          scope.setExtra('errorBody', JSON.stringify(error), null, 2);
+        } finally {
+          Sentry.captureMessage(error);
+        }
+      });
     };
     Device.on('error', listener);
     return () => Device.removeListener('error', listener);
@@ -138,10 +155,18 @@ export default function CallingPage({ locale }) {
           error.code in USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE
         ) {
           setLastErrorMessage(
-            STRINGS[locale].CALLING_UNSUPPORTED_BROWSER_MESSAGE
+            STRINGS[locale][
+              USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE[error.code]
+            ]
           );
         } else {
-          Sentry.captureException(error);
+          Sentry.withScope((scope) => {
+            try {
+              scope.setExtra('errorBody', JSON.stringify(error), null, 2);
+            } finally {
+              Sentry.captureMessage(error);
+            }
+          });
           setLastErrorMessage(`${error.message}, (${error.code})`);
         }
       }
