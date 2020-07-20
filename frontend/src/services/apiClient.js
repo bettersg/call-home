@@ -25,7 +25,10 @@ export class ApiValidationError extends Error {
 }
 
 function unwrapResponseInterceptor(response) {
-  return response.data;
+  if (response && response.data) {
+    return response.data;
+  }
+  return response;
 }
 
 async function unauthenticatedRedirectInterceptor(error) {
@@ -65,7 +68,7 @@ async function badRequestInterceptor(error) {
 async function apiDataErrorInterceptor(error) {
   // this should be next to last because it will swallow every error that has data attached to it
   const { response } = error;
-  if (!response || response.data) {
+  if (!response || !response.data) {
     throw error;
   }
   Sentry.captureException(error);
