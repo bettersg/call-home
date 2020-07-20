@@ -18,6 +18,10 @@ const TransientIssueErrorCodes = new Set([
 // Helper functions for performing Twilio calls. The goal of this is to abstract over some of the minor details of interacting with the Twilio device.
 // This assumes that there is only one global device.
 
+const SETUP_OPTIONS = {
+  enableIceRestart: true,
+  enableRingingState: true,
+};
 async function makeCallOnce(call) {
   if (!isProd) {
     return null;
@@ -26,7 +30,7 @@ async function makeCallOnce(call) {
   // This has to be first because for some insane reason, you can't check the status before setting up the device.
   if (!Device.token) {
     const token = await getToken();
-    Device.setup(token);
+    Device.setup(token, SETUP_OPTIONS);
   }
 
   // If it is busy, assume we are in a call
@@ -46,14 +50,16 @@ async function makeCallOnce(call) {
       return;
     }
 
+    // I thought I was free from callback hell.
     const callWhenReady = () => {
-      resolve(Device.connect(call));
+      const connection = Device.connect(call);
+      connection.on('ringing', () => resolve(connection));
     };
 
     // Could it be that the device is ready before the listener is attached?
     // Is this insane??
     Device.once('ready', callWhenReady);
-    Device.on('error', reject);
+    Device.once('error', reject);
   });
 }
 
@@ -62,6 +68,7 @@ async function makeCall(call) {
 
   for (let i = 0; i < CALL_RETRY_COUNT; i += 1) {
     try {
+      console.log('attempting call', i + 1);
       // eslint-disable-next-line
       return await makeCallOnce(call);
     } catch (error) {
@@ -74,6 +81,5 @@ async function makeCall(call) {
 
   throw lastError;
 }
-// TODO handle token retry, helper methods for Twilio connections
 
 export { makeCall, TransientIssueErrorCodes };
