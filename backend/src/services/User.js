@@ -1,4 +1,5 @@
 const { sanitizeDbErrors } = require('./lib');
+const { UserTypes } = require('../models');
 
 function UserService(UserModel, allowlistEntryService) {
   async function listUsers() {
@@ -35,6 +36,14 @@ function UserService(UserModel, allowlistEntryService) {
     });
   }
 
+  async function getUserByPhoneNumber(phoneNumber) {
+    return UserModel.findOne({
+      where: {
+        phoneNumber,
+      },
+    });
+  }
+
   async function getUserByAuth0Id(auth0Id) {
     return UserModel.findOne({
       where: {
@@ -61,13 +70,30 @@ function UserService(UserModel, allowlistEntryService) {
     return updatedUser;
   }
 
+  // This function handles a request to assign a phone number to a given user.
   async function verifyUserPhoneNumber(userId, phoneNumber) {
+    // We check the allowlist to ensure that the phone number is allowed in the first place.
     const [user, allowlistEntry] = await Promise.all([
       getUser(userId),
       allowlistEntryService.getAllowlistEntryByPhoneNumber(phoneNumber),
     ]);
+
+    // If the user is not allow, we can just stop here
     if (!allowlistEntry) {
       return user;
+    }
+
+    // Otherwise, we need to consider the case where the phone number is already registered with another user.
+    // Phone numbers must be unique, so before we can do anything, we must invalidate the other user
+    const conflictingUserForPhoneNumber = await getUserByPhoneNumber(
+      phoneNumber
+    );
+    if (conflictingUserForPhoneNumber) {
+      conflictingUserForPhoneNumber.phoneNumber = null;
+      conflictingUserForPhoneNumber.isPhoneNumberValidated = false;
+      conflictingUserForPhoneNumber.destinationCountry = null;
+      conflictingUserForPhoneNumber.role = UserTypes.USER;
+      await conflictingUserForPhoneNumber.save();
     }
 
     user.isPhoneNumberValidated = true;
