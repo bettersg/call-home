@@ -122,9 +122,9 @@ export default function CallingPage({ locale }) {
       setLastErrorMessage(`${error.message}, (${error.code})`);
       Sentry.withScope((scope) => {
         try {
-          scope.setExtra('errorBody', JSON.stringify(error), null, 2);
+          scope.setExtra('errorBody', JSON.stringify(error, null, 2));
         } finally {
-          Sentry.captureMessage(error);
+          Sentry.captureEvent(error);
         }
       });
     };
@@ -162,9 +162,9 @@ export default function CallingPage({ locale }) {
         } else {
           Sentry.withScope((scope) => {
             try {
-              scope.setExtra('errorBody', JSON.stringify(error), null, 2);
+              scope.setExtra('errorBody', JSON.stringify(error, null, 2));
             } finally {
-              Sentry.captureMessage(error);
+              Sentry.captureEvent(error);
             }
           });
           setLastErrorMessage(`${error.message}, (${error.code})`);

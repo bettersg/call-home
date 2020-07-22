@@ -17,6 +17,15 @@ export function initSentry() {
   Sentry.init({
     dsn: SENTRY_DSN,
     ignoreErrors: ['Request failed with status code 403', 'Unauthenticated'],
+    sendDefaultPii: true,
+    integrations: [
+      // Disable the default handlers because they are noisy.
+      // We capture the information we want via the React error boundary and Twilio event handler
+      new Sentry.Integrations.GlobalHandlers({
+        onerror: false,
+        onunhandledrejection: false,
+      }),
+    ],
   });
 }
 
