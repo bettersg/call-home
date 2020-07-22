@@ -1,5 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import axios from 'axios';
+import axiosRetry from 'axios-retry';
 import * as Sentry from '@sentry/react';
 
 export class UnauthenticatedError extends Error {}
@@ -84,7 +85,7 @@ async function defaultErrorInterceptor(error) {
 }
 
 const apiClient = axios.create();
-
+axiosRetry(apiClient);
 apiClient.interceptors.response.use(unwrapResponseInterceptor);
 [
   unauthenticatedRedirectInterceptor,
@@ -99,7 +100,7 @@ export default apiClient;
 
 // Expose a version that doesn't automatically redirect in case the caller needs to make use of the unauthenticated status.
 export const noRedirectClient = axios.create();
-
+axiosRetry(noRedirectClient);
 noRedirectClient.interceptors.response.use(unwrapResponseInterceptor);
 [
   unauthenticatedThrowInterceptor,
