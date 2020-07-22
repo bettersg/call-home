@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { Device } from 'twilio-client';
 import { getLogger } from 'loglevel';
 import getToken from './Calls';
@@ -9,9 +10,14 @@ twilioLogger.setLevel('trace');
 
 const CALL_RETRY_COUNT = 3;
 const TransientIssueErrorCodes = new Set([
+  // These have been confirmed by Twilio support to be caused by network issues.
   31003, // This happens when the connection is canceled e.g. by navigation
   31005, // Appears to be a transient issue when connecting to Twilio
   31009, // 'Transport not available -> the device seems to randomly error out'
+
+  // These are from our own observation.
+  31002, // Authentication in progress
+  31204, // Unable to validate token -> is the token invalid? dk if this is a problem or not
   31205, // JWT expires. Not an issue, we will refresh it anyway.
 ]);
 
@@ -22,6 +28,7 @@ const SETUP_OPTIONS = {
   enableIceRestart: true,
   enableRingingState: true,
 };
+
 async function makeCallOnce(call) {
   if (!isProd) {
     return null;
@@ -53,6 +60,9 @@ async function makeCallOnce(call) {
     // I thought I was free from callback hell.
     const callWhenReady = () => {
       const connection = Device.connect(call);
+      Sentry.addBreadCrumb({
+        twilioConnection: connection,
+      });
       connection.on('ringing', () => resolve(connection));
     };
 
