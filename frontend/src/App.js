@@ -64,7 +64,6 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     Sentry.withScope((scope) => {
-      Sentry.captureMessage('Error ui displayed');
       try {
         scope.setExtra('error', error);
         scope.setExtra('errorBody', JSON.stringify(error, null, 2));
