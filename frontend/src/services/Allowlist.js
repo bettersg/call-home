@@ -1,4 +1,4 @@
-import { noRedirectClient } from './apiClient';
+import apiClient from './apiClient';
 import ObservableService from './observableService';
 
 const allowlistEntryEndpoint = '/allowlistEntries';
@@ -12,7 +12,7 @@ export default class AllowlistService extends ObservableService {
   }
 
   async refreshAllowlistEntries() {
-    const allowlistEntries = await noRedirectClient.get(allowlistEntryEndpoint);
+    const allowlistEntries = await apiClient.get(allowlistEntryEndpoint);
     this.state = {
       ...this.state,
       allowlistEntries,
@@ -21,7 +21,7 @@ export default class AllowlistService extends ObservableService {
   }
 
   async createAllowlistEntry({ phoneNumber, destinationCountry }) {
-    await noRedirectClient.post(allowlistEntryEndpoint, {
+    await apiClient.post(allowlistEntryEndpoint, {
       phoneNumber,
       destinationCountry,
     });
@@ -29,7 +29,7 @@ export default class AllowlistService extends ObservableService {
   }
 
   async deleteAllowlistEntry(id) {
-    await noRedirectClient.delete(`${allowlistEntryEndpoint}/${id}`);
+    await apiClient.delete(`${allowlistEntryEndpoint}/${id}`);
     return this.refreshAllowlistEntries();
   }
 }
