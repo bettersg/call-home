@@ -10,7 +10,7 @@ import { Redirect } from 'react-router-dom';
 import { useUserService, useContactService } from '../contexts';
 import PATHS from './paths';
 import Container from '../components/shared/Container';
-import { makeCall, TransientIssueErrorCodes } from '../services/TwilioCall';
+import { makeCall, isTransientIssue } from '../services/TwilioCall';
 
 const EN_STRINGS = {
   CALLING_CONNECTING: 'Connecting...',
@@ -108,7 +108,7 @@ export default function CallingPage({ locale }) {
     const listener = (error) => {
       console.log('ERRRORRRR');
       console.log(error);
-      if (error.code && TransientIssueErrorCodes.has(error.code)) {
+      if (isTransientIssue(error)) {
         return;
       }
       if (

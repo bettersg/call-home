@@ -29,6 +29,17 @@ const SETUP_OPTIONS = {
   enableRingingState: true,
 };
 
+function isTransientIssue(error) {
+  const { code } = error;
+  if (TransientIssueErrorCodes.has(code)) {
+    return true;
+  }
+  if (code === 31000 && error.message === 'Call is no longer valid') {
+    return true;
+  }
+  return false;
+}
+
 async function makeCallOnce(call) {
   if (!isProd) {
     return null;
@@ -95,4 +106,4 @@ async function makeCall(call) {
   throw lastError;
 }
 
-export { makeCall, TransientIssueErrorCodes };
+export { makeCall, isTransientIssue };
