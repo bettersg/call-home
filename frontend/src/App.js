@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import * as Sentry from '@sentry/react';
 import {
@@ -20,17 +20,23 @@ if (isProd) {
 
 function InitApp() {
   const [userState, userService] = useUserService();
-  const [error, setError] = useState();
   const { me: user } = userState;
 
   useEffect(() => {
     const listener = (event) => {
-      setError(event.reason);
+      Sentry.withScope((scope) => {
+        try {
+          const error = event.reason;
+          scope.setExtra('error', error);
+          scope.setExtra('errorBody', JSON.stringify(error, null, 2));
+        } finally {
+          Sentry.captureMessage('Unhandled promise rejection');
+        }
+      });
     };
-    // lmao if this works
     window.addEventListener('unhandledrejection', listener);
     return () => window.removeEventListener('unhandledrejection', listener);
-  }, [setError]);
+  }, []);
 
   useEffect(() => {
     if (userService && isProd) {
@@ -43,10 +49,6 @@ function InitApp() {
       configureUser(user);
     }
   }, [user]);
-
-  if (error) {
-    throw error;
-  }
 
   return <SceneRouter />;
 }
@@ -68,7 +70,7 @@ class ErrorBoundary extends React.Component {
         scope.setExtra('errorBody', JSON.stringify(error, null, 2));
         scope.setExtra('errorInfo', JSON.stringify(errorInfo, null, 2));
       } finally {
-        Sentry.captureMessage('Error ui displayed finally');
+        Sentry.captureMessage('Error ui displayed');
       }
     });
   }
