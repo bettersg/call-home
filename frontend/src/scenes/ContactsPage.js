@@ -12,6 +12,7 @@ import AddIcon from '@material-ui/icons/Add';
 import CallIcon from '@material-ui/icons/Call';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import FeedbackIcon from '@material-ui/icons/Feedback';
+import DetectBrowserSnackbar from '../components/shared/DetectBrowserSnackbar';
 import Container from '../components/shared/Container';
 import {
   NeutralButton,
@@ -399,6 +400,7 @@ export default function ContactsPage({ locale }) {
         backgroundSize: 'contain',
       }}
     >
+      <DetectBrowserSnackbar />
       <Typography variant="h5" component="h1">
         {STRINGS[locale].CONTACTS_TITLE}
       </Typography>

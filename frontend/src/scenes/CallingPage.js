@@ -10,6 +10,7 @@ import { Redirect } from 'react-router-dom';
 import { useUserService, useContactService } from '../contexts';
 import PATHS from './paths';
 import Container from '../components/shared/Container';
+import DetectBrowserSnackbar from '../components/shared/DetectBrowserSnackbar';
 import { makeCall, isTransientIssue } from '../services/TwilioCall';
 
 const EN_STRINGS = {
@@ -220,6 +221,7 @@ export default function CallingPage({ locale }) {
 
   return (
     <Container>
+      <DetectBrowserSnackbar />
       <div
         style={{
           display: 'flex',

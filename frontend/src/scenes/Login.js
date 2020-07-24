@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import { useUserService } from '../contexts';
 import Container from '../components/shared/Container';
+import DetectBrowserSnackbar from '../components/shared/DetectBrowserSnackbar';
 import PATHS from './paths';
 
 import './Login.css';
@@ -75,6 +76,7 @@ export default function Login({ locale }) {
         backgroundSize: 'contain',
       }}
     >
+      <DetectBrowserSnackbar />
       <div className="login-content">
         <img alt="" src="/images/landing_splash.svg" />
         <Typography style={{ marginTop: '24px' }} variant="h5" component="h1">
