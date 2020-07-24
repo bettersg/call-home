@@ -11,11 +11,11 @@ const LOGIN_ROUTE = '/';
 function sendForbiddenResponse(req, res) {
   res.format({
     json: () => {
-      console.log('Encountered api call, sending 401');
+      req.log.info('Encountered api call, sending 401');
       return res.status(401).json({ location: LOGIN_ROUTE });
     },
     html: () => {
-      console.log('Encountered browser request, redirecting to ', LOGIN_ROUTE);
+      req.log.info('Encountered browser request, redirecting to ', LOGIN_ROUTE);
       req.session.returnTo = req.originalUrl;
       return res.redirect(LOGIN_ROUTE);
     },
@@ -30,7 +30,7 @@ async function httpsRedirect(req, res, next) {
   // Detect the protocol of the user's request. Reading req.protocol does not work.
   // https://devcenter.heroku.com/articles/http-routing#heroku-headers
   if (req.headers['x-forwarded-proto'] !== 'https') {
-    console.log('Detected http, redirecting');
+    req.log.info('Detected http, redirecting');
     return res.redirect(`https://${req.host}${req.originalUrl}`);
   }
   return next();
@@ -40,7 +40,7 @@ async function injectDbUser(req) {
   // This returns the OAuth user info
   const { _raw, _json, ...userProfile } = req.user;
   const { emails } = userProfile;
-  console.log('Injecting for profile', userProfile);
+  req.log.info('Injecting for profile', userProfile);
   const userProfileResponse = userProfileToUserProfileResponse(userProfile);
   const auth0Id = userProfile.userId || userProfile.id;
 
@@ -68,7 +68,7 @@ async function injectDbUser(req) {
 
   if (!user) {
     // TODO think about this more carefully
-    console.error(
+    req.log.error(
       '===================================no user found, what do i do???'
     );
     return;
@@ -113,7 +113,7 @@ async function secureRoutes(req, res, next) {
     await injectDbUser(req);
     return next();
   }
-  console.log('No user found');
+  req.log.info('No user found');
 
   // We return a different result based on the Accept header of the request.
   // We redirect html requests to the login route

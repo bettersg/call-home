@@ -12,8 +12,7 @@ function PasswordlessRoutes(
   router.post('/begin', async (req, res) => {
     const { id } = req.user;
     if (!id) {
-      // TODO remove
-      console.error('wtf something is going wrong');
+      req.log.error('wtf something is going wrong');
     }
     const passwordlessRequests = await passwordlessRequestService.getPasswordlessRequestsByUserId(
       id
@@ -34,17 +33,17 @@ function PasswordlessRoutes(
     }
 
     const { phoneNumber } = req.body;
-    console.log('Beginning passwordless for', phoneNumber);
+    req.log.info('Beginning passwordless for', phoneNumber);
     try {
       const formattedPhoneNumber = await normalizePhoneNumber(
         phoneNumber,
         'SG'
       );
-      console.log('Phone number is: ', formattedPhoneNumber);
+      req.log.info('Phone number is: ', formattedPhoneNumber);
       await auth0Service.sendSms(formattedPhoneNumber);
       await passwordlessRequestService.createPasswordlessRequest(id);
     } catch (e) {
-      console.error(e);
+      req.log.error(e);
     }
     return res.redirect('/');
   });
@@ -58,17 +57,16 @@ function PasswordlessRoutes(
       return res.status(400).send();
     }
     try {
-      console.log('Received login attempt');
+      req.log.info('Received login attempt');
       const token = await auth0Service.signIn(phoneNumber, code);
-      console.log('Received a token', token);
+      req.log.info('Received a token', token);
       const user = await userService.verifyUserPhoneNumber(userId, phoneNumber);
       if (!user.isPhoneNumberValidated) {
         return res.status(403).json({ message: 'NOT_WHITELISTED' });
       }
       return res.redirect('/');
     } catch (e) {
-      console.error(e);
-      console.dir(e);
+      req.log.error(e);
       const { response } = e;
       if (response && response.data && response.data.error) {
         if (response.data.error === 'invalid_grant') {

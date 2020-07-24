@@ -16,7 +16,7 @@ function OAuthRoutes() {
       connection: 'facebook',
     }),
     (req, res) => {
-      console.log('Received login');
+      req.log.info('Received login');
       return res.redirect('/');
     }
   );
@@ -24,10 +24,10 @@ function OAuthRoutes() {
   router.get('/callback', async (req, res) => {
     // eslint-disable-next-line
     passport.authenticate('auth0', async (err, user, info) => {
-      console.log('Received auth0 user', user);
+      req.log.info('Received auth0 user', user);
       if (err) {
         return req.session.destroy(() => {
-          console.error('Error when logging in user, redirecting to root', err);
+          req.log.error('Error when logging in user, redirecting to root', err);
           return res.redirect('/');
         });
       }
@@ -37,7 +37,7 @@ function OAuthRoutes() {
 
       req.logIn(user, async (reqErr) => {
         if (reqErr) {
-          console.error('Error when logging in user, redirecting to root', err);
+          req.log.error('Error when logging in user, redirecting to root', err);
           return res.redirect('/');
         }
 
@@ -46,7 +46,7 @@ function OAuthRoutes() {
 
         const auth0Id = user.user_id || user.id;
         if (!auth0Id) {
-          console.error('Auth0Id was missing, cannot save');
+          req.log.error('Auth0Id was missing, cannot save');
           res.redirect(returnTo || '/');
           return null;
         }
@@ -66,7 +66,7 @@ function OAuthRoutes() {
           });
         }
 
-        console.log('Successfully logged in');
+        req.log.info('Successfully logged in');
         res.redirect(returnTo || '/');
         return null;
       });

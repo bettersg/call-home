@@ -5,6 +5,8 @@ const proxy = require('express-http-proxy');
 require('dotenv').config();
 const morgan = require('morgan');
 const helmet = require('helmet');
+const logger = require('pino')();
+const pinoHttp = require('pino-http');
 const {
   AllowlistEntry: allowlistRoutes,
   User: userRoutes,
@@ -28,6 +30,7 @@ const { PORT = 4000, STATIC_DIR = 'static', NODE_ENV } = process.env;
 const isProd = NODE_ENV !== 'development';
 
 app.use(morgan('dev'));
+app.use(pinoHttp());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false }));
 
@@ -54,8 +57,6 @@ app.use('/allowlistEntries', secureRoutes, allowlistRoutes);
 if (!isProd) {
   // proxy requests to development frontend
   app.use('/', proxy('http://localhost:3000'));
-  // This is just for setting things up
-  // require('../setupDemo')().catch(console.error); // eslint-disable-line global-require
 } else {
   // STATIC_DIR gets populated in a docker build
   app.use(express.static(STATIC_DIR));
@@ -68,9 +69,9 @@ app.use((req, res) => {
 
 try {
   app.listen(PORT, () => {
-    console.log(`Example app listening on port ${PORT}!`);
+    logger.info(`Example app listening on port ${PORT}!`);
   });
 } catch (err) {
-  console.error(err);
+  logger.error(err);
   throw err;
 }

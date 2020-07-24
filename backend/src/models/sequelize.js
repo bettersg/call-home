@@ -1,16 +1,19 @@
+const logger = require('pino')();
 const { Sequelize } = require('sequelize');
 
 const { DATABASE_URL } = process.env;
 
-const sequelize = new Sequelize(DATABASE_URL, { logging: true });
+const sequelize = new Sequelize(DATABASE_URL, {
+  logging: logger.info.bind(logger),
+});
 
 sequelize
   .authenticate()
   .then(() => {
-    console.log('Success!');
+    logger.info('Success!');
   })
   .catch((err) => {
-    console.error('Failure', err);
+    logger.error('Failure', err);
   });
 
 sequelize.sync();

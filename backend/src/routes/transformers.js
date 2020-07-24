@@ -1,3 +1,5 @@
+const logger = require('pino')();
+
 function parseUserRequestBody(req, res, next) {
   const { name, email } = req.body;
 
@@ -57,7 +59,7 @@ function userToUserResponse(user) {
 function userProfileToUserProfileResponse(userProfile) {
   const { displayName, name, emails, picture, user_id: userId } = userProfile;
 
-  console.log('UserProfile', userProfile);
+  logger.info('UserProfile', userProfile);
   return {
     displayName,
     name,

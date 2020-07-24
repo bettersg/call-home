@@ -1,4 +1,5 @@
 const twilio = require('twilio');
+const logger = require('pino')();
 
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN } = process.env;
 const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
@@ -14,7 +15,7 @@ async function normalizePhoneNumber(phoneNumber, countryCodeIso) {
     const twilioPhoneNumber = await twilioClient.lookups
       .phoneNumbers(phoneNumber)
       .fetch({ countryCode: countryCodeIso });
-    console.log('Got twilio response', twilioPhoneNumber);
+    logger.info('Got twilio response', twilioPhoneNumber);
     return twilioPhoneNumber.phoneNumber;
   } catch (e) {
     if (e.status === 404) {

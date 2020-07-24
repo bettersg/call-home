@@ -33,7 +33,7 @@ function ContactRoutes(contactService) {
       const { userId } = req.params;
       const contact = req.body;
       try {
-        console.log('CREATING', userId, contact);
+        req.log.info('CREATING', userId, contact);
         const savedContact = await contactService.createContact(
           Number(userId),
           contact

@@ -1,4 +1,5 @@
 const axios = require('axios');
+const logger = require('pino')();
 
 const { AUTH0_DOMAIN, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET } = process.env;
 
@@ -12,7 +13,7 @@ function Auth0Service() {
   };
 
   async function sendSms(phoneNumber) {
-    console.log('Sending passwordless sms', phoneNumber);
+    logger.info('Sending passwordless sms', phoneNumber);
     const response = await axios.post(`${AUTH0_HOST}/passwordless/start`, {
       ...auth0Args,
       phone_number: phoneNumber,

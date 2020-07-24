@@ -1,13 +1,15 @@
+const logger = require('pino')();
+
 module.exports = function refreshConnectedCalls(
   twilioCallService,
   twilioClient
 ) {
   async function job() {
     try {
-      console.log('refreshConnectedCalls==========');
+      logger.info('refreshConnectedCalls==========');
       const twilioCalls = await twilioCallService.getPendingCallsOrderByLastUpdated();
       const handleCall = async (twilioCall) => {
-        console.log('refreshConnectedCalls -> Updating call', twilioCall.id);
+        logger.info('refreshConnectedCalls -> Updating call', twilioCall.id);
         const { parentCallSid } = twilioCall;
         const [twilioResponseCalls, twilioParentCall] = await Promise.all([
           twilioClient.getCallsByIncomingSid(parentCallSid),
@@ -46,7 +48,7 @@ module.exports = function refreshConnectedCalls(
             priceUnit,
           });
         } else {
-          console.error(
+          logger.error(
             'Expected exactly one child call for parent SID. This is a potential error. SID: ',
             twilioCall.parentCallSid
           );
@@ -54,7 +56,7 @@ module.exports = function refreshConnectedCalls(
       };
       twilioCalls.forEach(handleCall);
     } catch (error) {
-      console.error(error);
+      logger.error(error);
     } finally {
       setTimeout(job, 20000);
     }

@@ -1,3 +1,4 @@
+const logger = require('pino')();
 const express = require('express');
 const twilio = require('twilio');
 
@@ -5,7 +6,7 @@ const { VoiceResponse } = twilio.twiml;
 
 const { TWILIO_PHONE_NUMBER, NODE_ENV, TWILIO_WEBHOOK_URL } = process.env;
 const isProd = NODE_ENV !== 'development';
-console.log('Running twilio webhook in production mode?', isProd);
+logger.info('Running twilio webhook in production mode?', isProd);
 
 const webhookOptions = isProd
   ? { validate: true, url: TWILIO_WEBHOOK_URL }
@@ -18,13 +19,13 @@ function TwilioRoutes(callService, twilioCallService) {
   router.all(
     '/',
     (req, res, next) => {
-      console.log('recevied twilio request', req.body);
+      req.log.info('recevied twilio request', req.body);
       next();
     },
     twilio.webhook(webhookOptions),
     async (req, res) => {
       const { userId, contactId, CallSid: incomingTwilioCallSid } = req.body;
-      console.log('creating call for', userId, contactId);
+      req.log.info('creating call for', userId, contactId);
 
       try {
         const { phoneNumber } = await callService.createCall({
