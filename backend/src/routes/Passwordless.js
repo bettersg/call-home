@@ -55,7 +55,7 @@ function PasswordlessRoutes(
 
     const { id: userId } = req.user;
     if (!phoneNumber || !code) {
-      return res.status(400).send;
+      return res.status(400).send();
     }
     try {
       console.log('Received login attempt');
@@ -72,7 +72,7 @@ function PasswordlessRoutes(
       const { response } = e;
       if (response && response.data && response.data.error) {
         if (response.data.error === 'invalid_grant') {
-          res.status(403).send({ message: 'BAD_OTP' });
+          res.status(403).json({ message: 'BAD_OTP' });
         }
       }
       return res.status(403).send();

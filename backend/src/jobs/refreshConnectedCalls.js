@@ -19,6 +19,14 @@ module.exports = function refreshConnectedCalls(
           });
           return;
         }
+        if (twilioParentCall.status === 'completed') {
+          // It is possible for the parent call to complete without the child call happening
+          // e.g. an error occurs.
+          await twilioCallService.updateTwilioCall(twilioCall.id, {
+            status: 'x-parent-completed',
+          });
+          return;
+        }
         if (twilioResponseCalls.length === 1) {
           const [twilioResponseCall] = twilioResponseCalls;
           const {
@@ -39,7 +47,7 @@ module.exports = function refreshConnectedCalls(
           });
         } else {
           console.error(
-            'Expected at most one child call for parent SID. This is a potential error. SID: ',
+            'Expected exactly one child call for parent SID. This is a potential error. SID: ',
             twilioCall.parentCallSid
           );
         }
