@@ -48,7 +48,7 @@ async function makeCallOnce(call) {
   // If it is offline, we attempt to reconnect.
   if (Device.status() === 'offline') {
     const token = await getToken();
-    Device.setup(token);
+    Device.setup(token, SETUP_OPTIONS);
   }
 
   return new Promise((resolve, reject) => {
@@ -61,7 +61,10 @@ async function makeCallOnce(call) {
     const callWhenReady = () => {
       const connection = Device.connect(call);
       Sentry.addBreadcrumb({
-        twilioConnection: connection,
+        category: 'twilio',
+        data: {
+          twilioConnection: connection,
+        },
       });
       connection.on('ringing', () => resolve(connection));
     };

@@ -16,7 +16,6 @@ const isProd = process.env.NODE_ENV === 'production';
 
 if (isProd) {
   initSentry();
-  console.log('sentry initted');
 }
 
 function InitApp() {

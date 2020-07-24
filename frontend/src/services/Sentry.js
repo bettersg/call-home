@@ -27,6 +27,10 @@ export function initSentry() {
       }),
     ],
   });
+  Sentry.addBreadcrumb({
+    category: 'deployTime',
+    message: 'Fri Jul 24 08:29:41 +08 2020',
+  });
 }
 
 export function configureUser(user) {
