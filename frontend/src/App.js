@@ -56,30 +56,29 @@ function InitApp() {
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { error: null };
   }
 
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    Sentry.withScope((scope) => {
-      try {
-        scope.setExtra('error', error);
-        scope.setExtra('errorBody', JSON.stringify(error, null, 2));
-        scope.setExtra('errorInfo', JSON.stringify(errorInfo, null, 2));
-      } finally {
-        Sentry.captureMessage('Error ui displayed');
-      }
-    });
+  static getDerivedStateFromError(error) {
+    return { error };
   }
 
   render() {
-    const { hasError } = this.state;
+    const { error } = this.state;
     const { children } = this.props;
-    if (hasError) {
-      return <ErrorScene />;
+    if (error) {
+      // Pass this down so that the scene can decide whether or not the error needs to be reported
+      const reportError = () => {
+        Sentry.withScope((scope) => {
+          try {
+            scope.setExtra('error', error);
+            scope.setExtra('errorBody', JSON.stringify(error, null, 2));
+          } finally {
+            Sentry.captureMessage('Error ui displayed');
+          }
+        });
+      };
+      return <ErrorScene reportError={reportError} error={error} />;
     }
 
     return children;
