@@ -1,5 +1,8 @@
 # frontend
 FROM node:12 AS frontend
+
+ARG RELEASE_DATE
+
 WORKDIR /app/frontend
 
 COPY frontend/package.json .
@@ -11,6 +14,8 @@ COPY frontend/src/ src/
 COPY frontend/public/ public/
 
 ENV NODE_ENV=production
+ENV REACT_APP_RELEASE_DATE=${RELEASE_DATE}
+
 RUN npm run build
 
 # backend

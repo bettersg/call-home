@@ -4,7 +4,7 @@
   "description": "This is very much in the MVP stage.",
   "scripts": {
     "build": "docker build . -t call-home",
-    "deploy": "docker tag call-home registry.heroku.com/call-home/web && docker push registry.heroku.com/call-home/web && heroku container:release web",
+    "deploy": "./buildAndDeploy.sh",
     "precommit:frontend": "cd frontend && npm run precommit",
     "precommit:backend": "cd backend && npm run precommit",
     "precommit": "npm run precommit:frontend && npm run precommit:backend"

@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/react';
 import axios from 'axios';
 
+const SENTRY_RELEASE = process.env.REACT_APP_RELEASE_DATE;
 const SENTRY_DSN =
   'https://311e61bcb9f24ab7b601e085cce9eb6d@o386666.ingest.sentry.io/5221206';
 
@@ -26,11 +27,9 @@ export function initSentry() {
         onunhandledrejection: false,
       }),
     ],
+    release: SENTRY_RELEASE,
   });
-  Sentry.addBreadcrumb({
-    category: 'deployTime',
-    message: 'Fri Jul 24 21:43:22 +08 2020',
-  });
+  console.log('Initialized Sentry Release', SENTRY_RELEASE);
 }
 
 export function configureUser(user) {
