@@ -25,12 +25,13 @@ function InitApp() {
   useEffect(() => {
     const listener = (event) => {
       Sentry.withScope((scope) => {
+        const error = event.reason;
         try {
-          const error = event.reason;
           scope.setExtra('error', error);
           scope.setExtra('errorBody', JSON.stringify(error, null, 2));
         } finally {
           Sentry.captureMessage('Unhandled promise rejection');
+          Sentry.captureException(error);
         }
       });
     };
