@@ -1,7 +1,6 @@
 const express = require('express');
 
 // Reads a req and parses the body into a user that can be saved.
-// TODO transformers should probably be in another module.
 
 function UserRoutes() {
   const router = express.Router();

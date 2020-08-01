@@ -1,7 +1,6 @@
 const logger = require('pino')();
 const { sanitizeDbErrors } = require('./lib');
 
-// TODO The DI is a mess
 function CallService(CallModel, userService, contactService) {
   async function validateCall(userId, contactId) {
     logger.info('validating call for', userId, contactId);

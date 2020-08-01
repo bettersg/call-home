@@ -62,7 +62,6 @@ function ContactService(ContactModel, userService) {
     return sanitizeDbErrors(() => ContactModel.create(contactToCreate));
   }
 
-  // TODO revisit the assumption of using the user id
   async function getContact(UserId, contactId) {
     return ContactModel.findOne({
       where: {

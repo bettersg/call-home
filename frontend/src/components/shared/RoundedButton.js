@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 const RoundedButton = withStyles(() => ({
   root: {
-    borderRadius: '1000px', // TODO This just needs to be >50% of the button's height
+    borderRadius: '1000px', // This just needs to be >50% of the button's height
   },
 }))(Button);
 

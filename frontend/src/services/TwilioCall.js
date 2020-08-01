@@ -16,7 +16,7 @@ const TransientIssueErrorCodes = new Set([
   31009, // 'Transport not available -> the device seems to randomly error out'
 
   // These are from our own observation.
-  31002, // Authentication in progress
+  // 31002, // Authentication in progress. Twilio support says that this may be due to errors in the backend, we should investigate this further.
   31204, // Unable to validate token -> is the token invalid? dk if this is a problem or not
   31205, // JWT expires. Not an issue, we will refresh it anyway.
 ]);

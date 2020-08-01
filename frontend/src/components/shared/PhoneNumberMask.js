@@ -28,7 +28,6 @@ const masks = {
       NNNN: { mask: '0000' },
     },
   }),
-  // TODO test BD
   BD: makeMask({
     callingCode: '+880',
     mask: '+88\\0 NNNNN NNNNNN',

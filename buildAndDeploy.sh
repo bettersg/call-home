@@ -21,7 +21,7 @@ docker tag call-home registry.heroku.com/call-home/web
 docker push registry.heroku.com/call-home/web && heroku container:release web
 
 # Sentry stuff
-# TODO This seems unnecessary because source maps seem to already work
+# This seems unnecessary because source maps seem to already work
 # =================================================================
 
 # Clean up the previous stuff if needed

@@ -79,7 +79,6 @@ async function apiDataErrorInterceptor(error) {
 async function defaultErrorInterceptor(error) {
   // Absolutely last interceptor. Capture the exception and throw.
   // This means that the request never reached the backend, could be due to CORS, bad gateway, etc.
-  // TODO handle this error with error boundaries
   Sentry.captureException(error);
   throw error;
 }
