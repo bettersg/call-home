@@ -1,27 +1,28 @@
-const path = require('path');
-const express = require('express');
-require('express-async-errors');
-const proxy = require('express-http-proxy');
 require('dotenv').config();
-const morgan = require('morgan');
-const helmet = require('helmet');
+import path from 'path';
+import express, { Request, Response } from 'express';
+import proxy from 'express-http-proxy';
+import morgan from 'morgan';
+import helmet from 'helmet';
+import pinoHttp from 'pino-http';
+import routes = require( './routes');
+import config = require('./config');
+const {
+  AllowlistEntry : allowlistRoutes,
+  User : userRoutes,
+  Contact : contactRoutes,
+  Twilio : twilioRoutes,
+  Call : callRoutes,
+  OAuth : oauthRoutes,
+  Passwordless : passwordlessRoutes,
+  middlewares,
+} = routes;
+const { Passport: PassportConfig, Session: SessionConfig } = config;
 const logger = require('pino')();
-const pinoHttp = require('pino-http');
-const {
-  AllowlistEntry: allowlistRoutes,
-  User: userRoutes,
-  Contact: contactRoutes,
-  Twilio: twilioRoutes,
-  Call: callRoutes,
-  OAuth: oauthRoutes,
-  Passwordless: passwordlessRoutes,
-  middlewares: { secureRoutes, httpsRedirect, requireVerified },
-} = require('./routes');
-const {
-  Passport: PassportConfig,
-  Session: SessionConfig,
-} = require('./config');
+require('express-async-errors');
 require('./jobs');
+
+const { secureRoutes, httpsRedirect, requireVerified } = middlewares;
 
 const app = express();
 
@@ -63,7 +64,7 @@ if (!isProd) {
 }
 
 // Redirect everything else to index.html
-app.use((req, res) => {
+app.use((_req: Request, res: Response) => {
   res.sendfile(path.join(STATIC_DIR, 'index.html'));
 });
 

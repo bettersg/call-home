@@ -19,7 +19,7 @@ ENV REACT_APP_RELEASE_DATE=${RELEASE_DATE}
 RUN npm run build
 
 # backend
-FROM node:12
+FROM node:12 AS backend
 WORKDIR /app/backend
 
 COPY backend/package.json .
@@ -27,15 +27,17 @@ COPY backend/package-lock.json .
 
 RUN npm install
 
+COPY backend/tsconfig.json .
 COPY backend/src/ src/
 
 # Copy migration files over
 COPY backend/.sequelizerc .
 COPY backend/sequelize sequelize/
 
+RUN npm run build
+
 # Set the static directory for the backend
 ENV STATIC_DIR=static
 COPY --from=frontend /app/frontend/build $STATIC_DIR
 
-WORKDIR /app/backend
 CMD npm start

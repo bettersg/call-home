@@ -10,15 +10,16 @@ set -euox pipefail
 # Associate the current time with the release.
 # This gets injected into the frontend and is used by Sentry
 VERSION=$(date +%Y-%m-%dT%H:%M:%S%z)
+HEROKU_APP=call-home-staging
 
 # Populate the version in the build steps
 docker build --build-arg RELEASE_DATE=${VERSION} . -t call-home
 
 # Push the container and start the heroku release
-docker tag call-home registry.heroku.com/call-home/web
+docker tag call-home registry.heroku.com/${HEROKU_APP}/web
 
 # We prefer this method of building because ain't nobody got time for Heroku to build cleanly from our commits
-docker push registry.heroku.com/call-home/web && heroku container:release web
+docker push registry.heroku.com/${HEROKU_APP}/web && heroku container:release web
 
 # Sentry stuff
 # This seems unnecessary because source maps seem to already work
