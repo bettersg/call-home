@@ -1,7 +1,6 @@
 import * as Sentry from '@sentry/react';
 import axios from 'axios';
 
-const SENTRY_RELEASE = process.env.REACT_APP_RELEASE_DATE;
 const SENTRY_DSN =
   'https://311e61bcb9f24ab7b601e085cce9eb6d@o386666.ingest.sentry.io/5221206';
 
@@ -15,6 +14,7 @@ const SENTRY_API_CLIENT = axios.create({
 });
 
 export function initSentry() {
+  const sentryRelease = window.CALL_HOME.RELEASE_DATE;
   Sentry.init({
     dsn: SENTRY_DSN,
     ignoreErrors: ['Request failed with status code 403', 'Unauthenticated'],
@@ -27,9 +27,9 @@ export function initSentry() {
         onunhandledrejection: false,
       }),
     ],
-    release: SENTRY_RELEASE,
+    release: sentryRelease,
   });
-  console.log('Initialized Sentry Release', SENTRY_RELEASE);
+  console.log('Initialized Sentry Release', sentryRelease);
 }
 
 export function configureUser(user) {

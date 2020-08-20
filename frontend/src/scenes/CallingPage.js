@@ -1,5 +1,4 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { Device } from 'twilio-client';
 import * as Sentry from '@sentry/react';
 import CallEndIcon from '@material-ui/icons/CallEnd';
 import CloseIcon from '@material-ui/icons/Close';
@@ -56,12 +55,30 @@ const USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE = {
   31208: 'CALLING_NEED_MICROPHONE_ACCESS_MESSAGE',
 };
 
+function subscribeToOptionalDevice(device, eventName, listener) {
+  if (device) {
+    device.on(eventName, listener);
+  }
+  return () => {
+    if (!device) {
+      return;
+    }
+
+    try {
+      device.removeListener(eventName, listener);
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  };
+}
+
 export default function CallingPage({ locale }) {
   const [hasAttemptedConnection, setHasAttemptedConnection] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [wasCallSuccessful, setWasCallSuccessful] = useState(false);
   const [hasUserDisconnected, setHasUserDisconnected] = useState(false);
   const [activeConnection, setActiveConnection] = useState(null);
+  const [device, setDevice] = useState(null);
   const [lastErrorMessage, setLastErrorMessage] = useState(null);
   const [userState] = useUserService();
   const { me: user } = userState;
@@ -69,40 +86,40 @@ export default function CallingPage({ locale }) {
   const { activeContact } = contactState;
 
   const handleStatusChange = useCallback(() => {
-    const status = Device.status();
+    if (!device) {
+      return;
+    }
+    const status = device.status();
     if (status === 'busy') {
       setIsConnected(true);
       setWasCallSuccessful(true);
     } else {
       setIsConnected(false);
     }
-  }, [setIsConnected]);
+  }, [device, setIsConnected]);
 
-  const subscribeToDeviceEvent = useCallback(
+  const subscribeToDeviceStatusEvent = useCallback(
     (eventName) => {
       const listener = () => {
         console.log(eventName);
         handleStatusChange();
       };
-      Device.on(eventName, listener);
-      return () => {
-        Device.removeListener(eventName, listener);
-      };
+      return subscribeToOptionalDevice(device, eventName, listener);
     },
-    [handleStatusChange]
+    [device, handleStatusChange]
   );
 
   useEffect(() => {
-    return subscribeToDeviceEvent('connect');
-  }, [subscribeToDeviceEvent]);
+    return subscribeToDeviceStatusEvent('connect');
+  }, [subscribeToDeviceStatusEvent]);
 
   useEffect(() => {
-    return subscribeToDeviceEvent('disconnect');
-  }, [subscribeToDeviceEvent]);
+    return subscribeToDeviceStatusEvent('disconnect');
+  }, [subscribeToDeviceStatusEvent]);
 
   useEffect(() => {
-    return subscribeToDeviceEvent('offline');
-  }, [subscribeToDeviceEvent]);
+    return subscribeToDeviceStatusEvent('offline');
+  }, [subscribeToDeviceStatusEvent]);
 
   // Errors don't seem to always correspond to status changes. We can capture these and if the calls 'fail' (however we detect that), we present messages to the user.
   useEffect(() => {
@@ -132,9 +149,8 @@ export default function CallingPage({ locale }) {
         }
       });
     };
-    Device.on('error', listener);
-    return () => Device.removeListener('error', listener);
-  }, [setLastErrorMessage]);
+    return subscribeToOptionalDevice(device, 'error', listener);
+  }, [setLastErrorMessage, device]);
 
   useEffect(() => {
     (async () => {
@@ -144,13 +160,14 @@ export default function CallingPage({ locale }) {
       try {
         setHasAttemptedConnection(true);
         // TODO we can perform more sophisticated things with this connection like subscribe to updates
-        const connection = await makeCall({
+        const { device: newDevice, connection } = await makeCall({
           userId: user.id,
           contactId: activeContact.id,
         });
         setActiveConnection(connection);
+        setDevice(newDevice);
       } catch (error) {
-        if (!Device.isSupported) {
+        if (!device.isSupported) {
           setLastErrorMessage(
             STRINGS[locale].CALLING_UNSUPPORTED_BROWSER_MESSAGE
           );

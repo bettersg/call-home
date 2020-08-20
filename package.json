@@ -4,7 +4,8 @@
   "description": "This is very much in the MVP stage.",
   "scripts": {
     "build": "docker build . -t call-home",
-    "deploy": "./buildAndDeploy.sh",
+    "deploy:staging": "./buildAndDeploy.sh staging",
+    "deploy:prod": "./buildAndDeploy.sh prod",
     "precommit:frontend": "cd frontend && npm run precommit",
     "precommit:backend": "cd backend && npm run precommit",
     "precommit": "npm run precommit:frontend && npm run precommit:backend"

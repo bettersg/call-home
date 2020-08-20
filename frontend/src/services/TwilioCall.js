@@ -17,7 +17,7 @@ const TransientIssueErrorCodes = new Set([
 
   // These are from our own observation.
   // 31002, // Authentication in progress. Twilio support says that this may be due to errors in the backend, we should investigate this further.
-  31204, // Unable to validate token -> is the token invalid? dk if this is a problem or not
+  31204, // Unable to validate token -> is the token invalid? dk if this is a problem or not. Probably only solved by destroying the device
   31205, // JWT expires. Not an issue, we will refresh it anyway.
 ]);
 
@@ -45,45 +45,33 @@ async function makeCallOnce(call) {
     return null;
   }
 
-  // This has to be first because for some insane reason, you can't check the status before setting up the device.
-  if (!Device.token) {
-    const token = await getToken();
-    Device.setup(token, SETUP_OPTIONS);
-  }
-
-  // If it is busy, assume we are in a call
-  if (Device.status() === 'busy') {
-    return Device.activeConnection();
-  }
-
-  // If it is offline, we attempt to reconnect.
-  if (Device.status() === 'offline') {
-    const token = await getToken();
-    Device.setup(token, SETUP_OPTIONS);
-  }
+  const device = new Device();
+  const token = await getToken();
+  device.setup(token, SETUP_OPTIONS);
 
   return new Promise((resolve, reject) => {
-    if (Device.status() === 'ready') {
-      resolve(Device.connect(call));
+    if (device.status() === 'ready') {
+      const connection = device.connect(call);
+      resolve({ device, connection });
       return;
     }
 
     // I thought I was free from callback hell.
     const callWhenReady = () => {
-      const connection = Device.connect(call);
+      const connection = device.connect(call);
       Sentry.addBreadcrumb({
         category: 'twilio',
         data: {
           twilioConnection: connection,
         },
       });
-      connection.on('ringing', () => resolve(connection));
+      connection.on('ringing', () => resolve({ device, connection }));
     };
 
     // Could it be that the device is ready before the listener is attached?
     // Is this insane??
-    Device.once('ready', callWhenReady);
-    Device.once('error', reject);
+    device.once('ready', callWhenReady);
+    device.once('error', reject);
   });
 }
 
