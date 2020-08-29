@@ -1,12 +1,17 @@
-const twilio = require('twilio');
-const logger = require('pino')();
+import twilio from 'twilio';
+import pino from 'pino';
+
+const logger = pino();
 
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN } = process.env;
 const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
 const supportedCountries = new Set(['SG', 'BD']);
 
-async function normalizePhoneNumber(phoneNumber, countryCodeIso) {
+async function normalizePhoneNumber(
+  phoneNumber: string,
+  countryCodeIso: string
+) {
   if (!supportedCountries.has(countryCodeIso)) {
     throw new Error('Validation Error: COUNTRY_NOT_SUPOPRTED');
   }
@@ -25,6 +30,4 @@ async function normalizePhoneNumber(phoneNumber, countryCodeIso) {
   }
 }
 
-module.exports = {
-  normalizePhoneNumber,
-};
+export { normalizePhoneNumber };
