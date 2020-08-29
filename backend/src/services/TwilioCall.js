@@ -38,13 +38,33 @@ function TwilioCallService(TwilioCallModel) {
 
   async function getPendingCallsOrderByLastUpdated() {
     return TwilioCallModel.findAll({
+      // Add an arbitrary limit just in case
+      limit: 100,
       where: {
         status: {
           [Op.or]: {
-            [Op.in]: ['', 'in-progress', 'ringing', 'queued'],
+            [Op.in]: [
+              '',
+              'in-progress',
+              'ringing',
+              'queued',
+              'x-parent-completed',
+            ],
             [Op.is]: null,
           },
         },
+      },
+      order: [['lastUpdated', 'ASC']],
+    });
+  }
+
+  async function getCallsMissingDuration() {
+    return TwilioCallModel.findAll({
+      // Add an arbitrary limit just in case
+      limit: 100,
+      where: {
+        status: 'completed',
+        duration: null,
       },
       order: [['lastUpdated', 'ASC']],
     });
@@ -56,6 +76,7 @@ function TwilioCallService(TwilioCallModel) {
     getTwilioCallBySid,
     getTwilioCallByParentSid,
     getPendingCallsOrderByLastUpdated,
+    getCallsMissingDuration,
   };
 }
 

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "npm run migration:migrate && node dist/index.js",
     "lint": "eslint",
     "lint:js": "npm run lint -- . --ext .js,.ts",
     "lint:js:fix": "npm run lint:js -- --fix",

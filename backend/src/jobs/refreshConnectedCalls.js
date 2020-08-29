@@ -21,20 +21,13 @@ module.exports = function refreshConnectedCalls(
           });
           return;
         }
-        if (twilioParentCall.status === 'completed') {
-          // It is possible for the parent call to complete without the child call happening
-          // e.g. an error occurs.
-          await twilioCallService.updateTwilioCall(twilioCall.id, {
-            status: 'x-parent-completed',
-          });
-          return;
-        }
         if (twilioResponseCalls.length === 1) {
           const [twilioResponseCall] = twilioResponseCalls;
           const {
             sid: twilioSid,
             from: fromPhoneNumber,
             to: toPhoneNumber,
+            duration,
             status,
             price,
             priceUnit,
@@ -46,8 +39,17 @@ module.exports = function refreshConnectedCalls(
             status,
             price,
             priceUnit,
+            duration: Number(duration),
           });
         } else {
+          if (twilioParentCall.status === 'completed') {
+            // It is possible for the parent call to complete without the child call happening
+            // e.g. an error occurs.
+            await twilioCallService.updateTwilioCall(twilioCall.id, {
+              status: 'x-not-initiated',
+            });
+            return;
+          }
           logger.error(
             'Expected exactly one child call for parent SID. This is a potential error. SID: ',
             twilioCall.parentCallSid

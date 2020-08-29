@@ -35,6 +35,9 @@ function TwilioCallModel(sequelize) {
       priceUnit: {
         type: DataTypes.STRING,
       },
+      duration: {
+        type: DataTypes.INTEGER,
+      },
       // This is our own field to determine the freshness of the data from the API
       lastUpdated: {
         type: DataTypes.DATE,
