@@ -126,6 +126,7 @@ export default function CallingPage({ locale }) {
     const listener = (error) => {
       console.log('ERRRORRRR');
       console.log(error);
+      Sentry.captureMessage(`Error smoke test`);
       if (isTransientIssue(error)) {
         return;
       }
@@ -167,7 +168,7 @@ export default function CallingPage({ locale }) {
         setActiveConnection(connection);
         setDevice(newDevice);
       } catch (error) {
-        if (!device.isSupported) {
+        if (device && !device.isSupported) {
           setLastErrorMessage(
             STRINGS[locale].CALLING_UNSUPPORTED_BROWSER_MESSAGE
           );
