@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/react';
 import { Device } from 'twilio-client';
 import { getLogger } from 'loglevel';
-import getToken from './Calls';
+import getToken from './CallToken';
 
 // TODO handle production environments better
 const isProd = process.env.NODE_ENV === 'production';

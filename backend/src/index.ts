@@ -8,21 +8,21 @@ import dotenv from 'dotenv';
 import 'express-async-errors';
 import pino from 'pino';
 
-import routes = require('./routes');
+import {
+  AllowlistEntry as allowlistRoutes,
+  Call as callRoutes,
+  CallToken as callTokenRoutes,
+  User as userRoutes,
+  Contact as contactRoutes,
+  Twilio as twilioRoutes,
+  OAuth as oauthRoutes,
+  Passwordless as passwordlessRoutes,
+  middlewares,
+} from './routes';
 import config = require('./config');
 
 require('./jobs');
 
-const {
-  AllowlistEntry: allowlistRoutes,
-  User: userRoutes,
-  Contact: contactRoutes,
-  Twilio: twilioRoutes,
-  Call: callRoutes,
-  OAuth: oauthRoutes,
-  Passwordless: passwordlessRoutes,
-  middlewares,
-} = routes;
 const { Passport: PassportConfig, Session: SessionConfig } = config;
 const logger = pino();
 
@@ -55,10 +55,10 @@ app.use('/oauth', oauthRoutes);
 app.use('/passwordless', secureRoutes, passwordlessRoutes);
 // Also ensure that twilio is NOT secured by oauth, just twilio auth
 app.use('/twilio', twilioRoutes);
+app.use('/call-token', secureRoutes, requireVerified, callTokenRoutes);
 app.use('/users', secureRoutes, userRoutes);
-// TODO P1!!! add some kind of auth to allow only modification to self
 app.use('/users', secureRoutes, requireVerified, contactRoutes);
-app.use('/calls', secureRoutes, requireVerified, callRoutes);
+app.use('/users', secureRoutes, requireVerified, callRoutes);
 app.use('/allowlistEntries', secureRoutes, allowlistRoutes);
 
 if (!isProd) {

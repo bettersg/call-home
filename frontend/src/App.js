@@ -12,6 +12,9 @@ import { initSentry, configureUser } from './services/Sentry';
 import SceneRouter from './scenes/SceneRouter';
 import ErrorScene from './scenes/Error';
 
+// WIP
+import getCallSummary from './services/Call';
+
 const isProd = process.env.NODE_ENV === 'production';
 
 if (isProd) {
@@ -48,6 +51,7 @@ function InitApp() {
   useEffect(() => {
     if (user) {
       configureUser(user);
+      getCallSummary(user.id).then(console.log);
     }
   }, [user]);
 

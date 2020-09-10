@@ -1,19 +1,20 @@
-const express = require('express');
-const twilio = require('twilio');
+import express from 'express';
+import twilio from 'twilio';
+import { ClientCapabilityOptions } from 'twilio/lib/jwt/ClientCapability';
 
 const { ClientCapability } = twilio.jwt;
 
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_APP_SID } = process.env;
 
 // TODO This should only grant tokens for the amount of time needed to establish a connection (~20s)
-function CallRoutes() {
+function CallTokenRoutes() {
   const router = express.Router();
 
-  router.get('/token', (req, res) => {
+  router.get('/call-token', (req, res) => {
     const capability = new ClientCapability({
       accountSid: TWILIO_ACCOUNT_SID,
       authToken: TWILIO_AUTH_TOKEN,
-    });
+    } as ClientCapabilityOptions);
 
     // Add scope to allow Twilio Device to make outgoing calls
     capability.addScope(
@@ -30,4 +31,4 @@ function CallRoutes() {
   return router;
 }
 
-module.exports = CallRoutes;
+export default CallTokenRoutes;

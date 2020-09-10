@@ -39,10 +39,10 @@ User.hasMany(PasswordlessRequest, {
 });
 PasswordlessRequest.belongsTo(User);
 
-module.exports = {
+export {
   sequelize,
   User,
-  UserTypes: UserType,
+  UserType as UserTypes,
   Contact,
   Call,
   AllowlistEntry,

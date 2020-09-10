@@ -1,12 +1,32 @@
-const { Op } = require('sequelize');
-const { sanitizeDbErrors } = require('./lib');
+import { Op } from 'sequelize';
+import { sanitizeDbErrors } from './lib';
+import { TwilioCall as TwilioCallEntity } from '../models';
 
-function TwilioCallService(TwilioCallModel) {
-  async function createTwilioCall(twilioCall) {
+interface TwilioCallService {
+  createTwilioCall: (twilioCall: TwilioCallEntity) => Promise<TwilioCallEntity>;
+  updateTwilioCall: (
+    twilioCallId: number,
+    twilioCall: TwilioCallEntity
+  ) => Promise<[number, TwilioCallEntity[]]>;
+  getTwilioCallBySid: (twilioSid: string) => Promise<TwilioCallEntity>;
+  getTwilioCallByParentSid: (
+    parentCallSid: string
+  ) => Promise<TwilioCallEntity>;
+  getPendingCallsOrderByLastUpdated: () => Promise<TwilioCallEntity[]>;
+  getCallsMissingDuration: () => Promise<TwilioCallEntity[]>;
+}
+
+function TwilioCallService(
+  TwilioCallModel: typeof TwilioCallEntity
+): TwilioCallService {
+  async function createTwilioCall(twilioCall: TwilioCallEntity) {
     return sanitizeDbErrors(() => TwilioCallModel.create(twilioCall));
   }
 
-  async function updateTwilioCall(twilioCallId, twilioCall) {
+  async function updateTwilioCall(
+    twilioCallId: number,
+    twilioCall: TwilioCallEntity
+  ) {
     return TwilioCallModel.update(
       {
         ...twilioCall,
@@ -20,7 +40,7 @@ function TwilioCallService(TwilioCallModel) {
     );
   }
 
-  async function getTwilioCallBySid(twilioSid) {
+  async function getTwilioCallBySid(twilioSid: string) {
     return TwilioCallModel.findOne({
       where: {
         twilioSid,
@@ -28,7 +48,7 @@ function TwilioCallService(TwilioCallModel) {
     });
   }
 
-  async function getTwilioCallByParentSid(parentCallSid) {
+  async function getTwilioCallByParentSid(parentCallSid: string) {
     return TwilioCallModel.findOne({
       where: {
         parentCallSid,
@@ -80,4 +100,5 @@ function TwilioCallService(TwilioCallModel) {
   };
 }
 
-module.exports = TwilioCallService;
+export { TwilioCallService };
+export default TwilioCallService;

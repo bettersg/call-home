@@ -34,6 +34,7 @@ class TwilioCall extends Model<TwilioCall> {
   priceUnit: string;
 
   @Column
+  // Duration in seconds.
   duration: number;
 
   @Column
