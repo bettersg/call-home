@@ -1,26 +1,32 @@
-require('dotenv').config();
 import path from 'path';
 import express, { Request, Response } from 'express';
 import proxy from 'express-http-proxy';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import pinoHttp from 'pino-http';
-import routes = require( './routes');
+import dotenv from 'dotenv';
+import 'express-async-errors';
+import pino from 'pino';
+
+import routes = require('./routes');
 import config = require('./config');
+
+require('./jobs');
+
 const {
-  AllowlistEntry : allowlistRoutes,
-  User : userRoutes,
-  Contact : contactRoutes,
-  Twilio : twilioRoutes,
-  Call : callRoutes,
-  OAuth : oauthRoutes,
-  Passwordless : passwordlessRoutes,
+  AllowlistEntry: allowlistRoutes,
+  User: userRoutes,
+  Contact: contactRoutes,
+  Twilio: twilioRoutes,
+  Call: callRoutes,
+  OAuth: oauthRoutes,
+  Passwordless: passwordlessRoutes,
   middlewares,
 } = routes;
 const { Passport: PassportConfig, Session: SessionConfig } = config;
-const logger = require('pino')();
-require('express-async-errors');
-require('./jobs');
+const logger = pino();
+
+dotenv.config();
 
 const { secureRoutes, httpsRedirect, requireVerified } = middlewares;
 

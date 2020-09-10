@@ -1,5 +1,7 @@
-const logger = require('pino')();
-const { Sequelize } = require('sequelize');
+import { Sequelize } from 'sequelize-typescript';
+import pino from 'pino';
+
+const logger = pino();
 
 const { DATABASE_URL } = process.env;
 
@@ -18,4 +20,4 @@ sequelize
 
 sequelize.sync();
 
-module.exports = sequelize;
+export default sequelize;
