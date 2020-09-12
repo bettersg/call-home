@@ -10,7 +10,7 @@ const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_APP_SID } = process.env;
 function CallTokenRoutes() {
   const router = express.Router();
 
-  router.get('/call-token', (req, res) => {
+  router.get('/', (req, res) => {
     const capability = new ClientCapability({
       accountSid: TWILIO_ACCOUNT_SID,
       authToken: TWILIO_AUTH_TOKEN,

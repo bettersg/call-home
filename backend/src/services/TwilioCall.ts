@@ -6,7 +6,7 @@ interface TwilioCallService {
   createTwilioCall: (twilioCall: TwilioCallEntity) => Promise<TwilioCallEntity>;
   updateTwilioCall: (
     twilioCallId: number,
-    twilioCall: TwilioCallEntity
+    twilioCall: Partial<TwilioCallEntity>
   ) => Promise<[number, TwilioCallEntity[]]>;
   getTwilioCallBySid: (twilioSid: string) => Promise<TwilioCallEntity>;
   getTwilioCallByParentSid: (
@@ -25,7 +25,7 @@ function TwilioCallService(
 
   async function updateTwilioCall(
     twilioCallId: number,
-    twilioCall: TwilioCallEntity
+    twilioCall: Partial<TwilioCallEntity>
   ) {
     return TwilioCallModel.update(
       {

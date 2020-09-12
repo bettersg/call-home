@@ -1,14 +1,20 @@
-const logger = require('pino')();
+import { logger } from '../config';
+import type { TwilioCall as TwilioCallEntity } from '../models';
+import type { TwilioCall, TwilioClient } from '../services';
 
-module.exports = function refreshConnectedCalls(
-  twilioCallService,
-  twilioClient
+const jobIntervalMillis = 20000;
+
+// call duration only seems to update at the END of the call. This means that we need some other way of tracking in-progress calls?
+
+function refreshConnectedCalls(
+  twilioCallService: typeof TwilioCall,
+  twilioClient: typeof TwilioClient
 ) {
   async function job() {
     try {
       logger.info('refreshConnectedCalls==========');
       const twilioCalls = await twilioCallService.getPendingCallsOrderByLastUpdated();
-      const handleCall = async (twilioCall) => {
+      const handleCall = async (twilioCall: TwilioCallEntity) => {
         logger.info('refreshConnectedCalls -> Updating call', twilioCall.id);
         const { parentCallSid } = twilioCall;
         const [twilioResponseCalls, twilioParentCall] = await Promise.all([
@@ -60,8 +66,10 @@ module.exports = function refreshConnectedCalls(
     } catch (error) {
       logger.error(error);
     } finally {
-      setTimeout(job, 20000);
+      setTimeout(job, jobIntervalMillis);
     }
   }
   job();
-};
+}
+
+export default refreshConnectedCalls;

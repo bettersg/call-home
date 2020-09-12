@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import * as Sentry from '@sentry/react';
 import {
@@ -21,9 +21,23 @@ if (isProd) {
   initSentry();
 }
 
+function useDebugCallSummary(user) {
+  const [hasCalledEndpoint, setHasCalledEndpoint] = useState(false);
+
+  useEffect(() => {
+    if (user && !hasCalledEndpoint) {
+      getCallSummary(user.id).then(console.log);
+      setHasCalledEndpoint(true);
+    }
+  }, [user, hasCalledEndpoint]);
+}
+
 function InitApp() {
   const [userState, userService] = useUserService();
   const { me: user } = userState;
+
+  // TODO this is here just to get some stats on the call summary endpoint. remove this when this isn't needed any more
+  useDebugCallSummary(user);
 
   useEffect(() => {
     const listener = (event) => {
@@ -51,7 +65,6 @@ function InitApp() {
   useEffect(() => {
     if (user) {
       configureUser(user);
-      getCallSummary(user.id).then(console.log);
     }
   }, [user]);
 

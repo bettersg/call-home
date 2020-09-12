@@ -1,13 +1,33 @@
 import express from 'express';
 import { requireSelf } from './middlewares';
+import type {
+  Call as CallService,
+  TwilioCall as TwilioCallService,
+} from '../services';
+import Stopwatch from '../util/stopwatch';
 
-function CallRoutes(callService: any) {
+function CallRoutes(
+  callService: typeof CallService,
+  twilioCallService: typeof TwilioCallService
+) {
   const router = express.Router();
 
-  router.get('/:userId/call-summary', requireSelf, async (req, res) => {
+  router.get('/:userId/calls/call-summary', requireSelf, async (req, res) => {
     const { userId } = req.params;
-    const callSummary = await callService.getUserCallsForPeriod(userId);
-    res.send(callSummary);
+    const stopwatch = new Stopwatch();
+    stopwatch.start();
+    const userCalls = await callService.getUserCallsForPeriod(Number(userId));
+    const twilioCalls = await Promise.all(
+      userCalls.map((call) =>
+        twilioCallService.getTwilioCallByParentSid(call.incomingTwilioCallSid)
+      )
+    );
+    const totalDurationSeconds = twilioCalls
+      .map((twilioCall) => twilioCall.duration)
+      .reduce((acc, curr) => acc + curr, 0);
+    stopwatch.stop();
+    req.log.info('Calculating summary took %s millis', stopwatch.millisTaken);
+    res.send(String(totalDurationSeconds));
   });
 
   return router;

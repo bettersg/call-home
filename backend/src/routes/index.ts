@@ -10,7 +10,7 @@ import AllowlistEntry = require('./AllowlistEntry');
 import Passwordless = require('./Passwordless');
 import middlewares = require('./middlewares');
 
-const callRoute = Call(services.Call);
+const callRoute = Call(services.Call, services.TwilioCall);
 const callTokenRoute = CallToken();
 const twilioRoute = Twilio(services.Call, services.TwilioCall);
 const oAuthRoute = OAuth();

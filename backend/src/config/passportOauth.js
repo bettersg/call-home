@@ -1,9 +1,9 @@
-const passport = require('passport');
-const Auth0Strategy = require('passport-auth0');
+import passport from 'passport';
+import Auth0Strategy from 'passport-auth0';
 
 // TODO probably get rid of Auth0
 // Configure passport after configuring sessions
-module.exports = function PassportConfig(app) {
+function PassportConfig(app) {
   const {
     AUTH0_CALLBACK_URL,
     AUTH0_DOMAIN,
@@ -37,4 +37,6 @@ module.exports = function PassportConfig(app) {
 
   app.use(passport.initialize());
   app.use(passport.session());
-};
+}
+
+export default PassportConfig;
