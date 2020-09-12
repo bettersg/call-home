@@ -1,7 +1,5 @@
-const Passport = require('./passportOauth');
-const Session = require('./session');
+import Passport from './passportOauth';
+import Session from './session';
+import logger, { httpConfig as httpPinoConfig } from './logger';
 
-module.exports = {
-  Passport,
-  Session,
-};
+export { Passport, Session, logger, httpPinoConfig };

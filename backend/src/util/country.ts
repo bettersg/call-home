@@ -1,7 +1,6 @@
 import twilio from 'twilio';
-import pino from 'pino';
 
-const logger = pino();
+import { logger } from '../config';
 
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN } = process.env;
 const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);

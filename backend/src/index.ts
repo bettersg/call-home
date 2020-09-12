@@ -1,12 +1,11 @@
+import dotenv from 'dotenv';
 import path from 'path';
 import express, { Request, Response } from 'express';
 import proxy from 'express-http-proxy';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import pinoHttp from 'pino-http';
-import dotenv from 'dotenv';
 import 'express-async-errors';
-import pino from 'pino';
 
 import {
   AllowlistEntry as allowlistRoutes,
@@ -19,14 +18,16 @@ import {
   Passwordless as passwordlessRoutes,
   middlewares,
 } from './routes';
-import config = require('./config');
-
-require('./jobs');
-
-const { Passport: PassportConfig, Session: SessionConfig } = config;
-const logger = pino();
+import {
+  Passport as PassportConfig,
+  Session as SessionConfig,
+  logger,
+  httpPinoConfig,
+} from './config';
 
 dotenv.config();
+
+require('./jobs');
 
 const { secureRoutes, httpsRedirect, requireVerified } = middlewares;
 
@@ -37,7 +38,7 @@ const { PORT = 4000, STATIC_DIR = 'static', NODE_ENV } = process.env;
 const isProd = NODE_ENV !== 'development';
 
 app.use(morgan('dev'));
-app.use(pinoHttp());
+app.use(pinoHttp(httpPinoConfig));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false }));
 

@@ -1,7 +1,6 @@
 import { Sequelize } from 'sequelize-typescript';
-import pino from 'pino';
 
-const logger = pino();
+import { logger } from '../config';
 
 const { DATABASE_URL } = process.env;
 

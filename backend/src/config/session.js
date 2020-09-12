@@ -1,10 +1,12 @@
-const session = require('express-session');
-const SessionStore = require('express-session-sequelize')(session.Store);
-const { sequelize } = require('../models');
+import session from 'express-session';
+import expressSessionSequelize from 'express-session-sequelize';
+import { sequelize } from '../models';
+
+const SessionStore = expressSessionSequelize(session.Store);
 
 const IS_PROD = process.env.NODE_ENV === 'production';
 
-module.exports = function PassportConfig(app) {
+export default function PassportConfig(app) {
   const { APP_SECRET } = process.env;
   const sessionConfig = {
     cookie: {},
@@ -25,4 +27,4 @@ module.exports = function PassportConfig(app) {
   }
 
   app.use(session(sessionConfig));
-};
+}
