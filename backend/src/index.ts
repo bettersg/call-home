@@ -25,6 +25,9 @@ import {
   httpPinoConfig,
 } from './config';
 
+// TODO hackssssss
+import subdomainRedirect from './hack/subdomainRedirect';
+
 dotenv.config();
 
 require('./jobs');
@@ -66,6 +69,8 @@ if (!isProd) {
   // proxy requests to development frontend
   app.use('/', proxy('http://localhost:3000'));
 } else {
+  // TODO this is a hack
+  app.use(subdomainRedirect);
   // STATIC_DIR gets populated in a docker build
   app.use(express.static(STATIC_DIR));
 }

@@ -26,7 +26,11 @@ function CallRoutes(
       .map((twilioCall) => twilioCall.duration)
       .reduce((acc, curr) => acc + curr, 0);
     stopwatch.stop();
-    req.log.info('Calculating summary took %s millis', stopwatch.millisTaken);
+    req.log.info(
+      'Calculating summary for user %s took %s millis',
+      userId,
+      stopwatch.millisTaken
+    );
     res.send(String(totalDurationSeconds));
   });
 
