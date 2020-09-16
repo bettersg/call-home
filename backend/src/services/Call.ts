@@ -2,7 +2,7 @@ import moment from 'moment';
 import pino from 'pino';
 import { Op } from 'sequelize';
 import { sanitizeDbErrors } from './lib';
-import { Call as CallEntity } from '../models';
+import type { Call as CallEntity } from '../models';
 
 const logger = pino();
 
@@ -33,7 +33,7 @@ function CallService(
     userId,
     contactId,
     incomingTwilioCallSid,
-  }: CallEntity) {
+  }: Partial<CallEntity>) {
     validateCall(userId, contactId);
     const contact = await contactService.getContact(userId, contactId);
     const call = {

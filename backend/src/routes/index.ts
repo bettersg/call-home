@@ -2,9 +2,9 @@ import Call from './Call';
 import CallToken from './CallToken';
 
 import * as services from '../services';
+import Twilio from './Twilio';
 import User = require('./User');
 import Contact = require('./Contact');
-import Twilio = require('./Twilio');
 import OAuth = require('./OAuth');
 import AllowlistEntry = require('./AllowlistEntry');
 import Passwordless = require('./Passwordless');

@@ -3,7 +3,7 @@ import AllowlistEntry from './AllowlistEntry';
 import User, { UserType } from './User';
 import Contact from './Contact';
 import Call from './Call';
-import TwilioCall from './TwilioCall';
+import TwilioCall, { CallStatus } from './TwilioCall';
 import PasswordlessRequest from './PasswordlessRequest';
 
 sequelize.addModels([
@@ -45,6 +45,7 @@ export {
   UserType as UserTypes,
   Contact,
   Call,
+  CallStatus,
   AllowlistEntry,
   TwilioCall,
   PasswordlessRequest,

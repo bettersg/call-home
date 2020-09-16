@@ -1,25 +1,14 @@
 import { Op } from 'sequelize';
 import { sanitizeDbErrors } from './lib';
-import { TwilioCall as TwilioCallEntity } from '../models';
-
-interface TwilioCallService {
-  createTwilioCall: (twilioCall: TwilioCallEntity) => Promise<TwilioCallEntity>;
-  updateTwilioCall: (
-    twilioCallId: number,
-    twilioCall: Partial<TwilioCallEntity>
-  ) => Promise<[number, TwilioCallEntity[]]>;
-  getTwilioCallBySid: (twilioSid: string) => Promise<TwilioCallEntity>;
-  getTwilioCallByParentSid: (
-    parentCallSid: string
-  ) => Promise<TwilioCallEntity>;
-  getPendingCallsOrderByLastUpdated: () => Promise<TwilioCallEntity[]>;
-  getCallsMissingDuration: () => Promise<TwilioCallEntity[]>;
-}
+import { logger } from '../config';
+import type { TwilioCall as TwilioCallEntity } from '../models';
+import type TwilioClient from './TwilioClient';
 
 function TwilioCallService(
-  TwilioCallModel: typeof TwilioCallEntity
-): TwilioCallService {
-  async function createTwilioCall(twilioCall: TwilioCallEntity) {
+  TwilioCallModel: typeof TwilioCallEntity,
+  twilioClient: typeof TwilioClient
+) {
+  async function createTwilioCall(twilioCall: Partial<TwilioCallEntity>) {
     return sanitizeDbErrors(() => TwilioCallModel.create(twilioCall));
   }
 
@@ -90,6 +79,74 @@ function TwilioCallService(
     });
   }
 
+  // Collects the business logic for updating twilio calls by calling the Twilio API.
+  // Used in two places: the status callback and the pending calls poller
+  async function fetchTwilioDataForTwilioCall(twilioCall: TwilioCallEntity) {
+    logger.info('fetchTwilioDataForTwilioCall -> Updating call', twilioCall.id);
+    const { parentCallSid } = twilioCall;
+    const [twilioResponseCalls, twilioParentCall] = await Promise.all([
+      twilioClient.getCallsByIncomingSid(parentCallSid),
+      twilioClient.getCall(parentCallSid),
+    ]);
+    if (twilioParentCall.status === 'canceled') {
+      await updateTwilioCall(twilioCall.id, {
+        status: 'x-parent-canceled',
+      });
+      return;
+    }
+    if (twilioResponseCalls.length === 1) {
+      const [twilioResponseCall] = twilioResponseCalls;
+      const {
+        sid: twilioSid,
+        from: fromPhoneNumber,
+        to: toPhoneNumber,
+        duration,
+        status,
+        price,
+        priceUnit,
+      } = twilioResponseCall;
+      await updateTwilioCall(twilioCall.id, {
+        twilioSid,
+        fromPhoneNumber,
+        toPhoneNumber,
+        status,
+        price,
+        priceUnit,
+        duration: Number(duration),
+      });
+      return;
+    }
+    if (twilioParentCall.status === 'completed') {
+      // It is possible for the parent call to complete without the child call happening
+      // e.g. an error occurs.
+      await updateTwilioCall(twilioCall.id, {
+        status: 'x-not-initiated',
+      });
+      return;
+    }
+    logger.error(
+      'Expected exactly one child call for parent SID. This is a potential error. SID: ',
+      twilioCall.parentCallSid
+    );
+  }
+
+  async function fetchTwilioDataForTwilioParentSid(parentCallSid: string) {
+    logger.info('fetchTwilioDataForTwilioParentSid -> %s', parentCallSid);
+    const twilioCall = await getTwilioCallByParentSid(parentCallSid);
+    await fetchTwilioDataForTwilioCall(twilioCall);
+    logger.info(
+      'fetchTwilioDataForTwilioParentSid completed -> %s',
+      parentCallSid
+    );
+  }
+
+  async function fetchTwilioDataForPendingTwilioCalls() {
+    logger.info('fetchTwilioDataForPendingTwilioCalls');
+    const twilioCalls = await getPendingCallsOrderByLastUpdated();
+    await Promise.all(twilioCalls.map(fetchTwilioDataForTwilioCall));
+    logger.info('fetchTwilioDataForPendingTwilioCalls completed');
+  }
+
   return {
     createTwilioCall,
     updateTwilioCall,
@@ -97,6 +154,8 @@ function TwilioCallService(
     getTwilioCallByParentSid,
     getPendingCallsOrderByLastUpdated,
     getCallsMissingDuration,
+    fetchTwilioDataForTwilioParentSid,
+    fetchTwilioDataForPendingTwilioCalls,
   };
 }
 

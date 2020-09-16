@@ -1,21 +1,22 @@
 import pino from 'pino';
 
 const { NODE_ENV } = process.env;
-const isProd = NODE_ENV !== 'development';
-const config = isProd
-  ? undefined
-  : {
+const isDev = NODE_ENV !== 'production';
+const config = isDev
+  ? {
       prettyPrint: {
         levelFirst: true,
       },
-    };
+    }
+  : undefined;
+
 const httpConfig = {
   ...config,
-  ...(isProd
-    ? {}
-    : {
+  ...(isDev
+    ? {
         autoLogging: false,
-      }),
+      }
+    : {}),
 };
 const logger = pino(config);
 

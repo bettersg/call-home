@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+
 import path from 'path';
 import express, { Request, Response } from 'express';
 import proxy from 'express-http-proxy';
@@ -36,9 +37,11 @@ const { secureRoutes, httpsRedirect, requireVerified } = middlewares;
 
 const app = express();
 
+type env = 'development' | 'production' | 'staging';
+
 // Env vars
-const { PORT = 4000, STATIC_DIR = 'static', NODE_ENV } = process.env;
-const isProd = NODE_ENV !== 'development';
+const { NODE_ENV } = process.env as { NODE_ENV: env };
+const { PORT = 4000, STATIC_DIR = 'static' } = process.env;
 
 app.use(morgan('dev'));
 app.use(pinoHttp(httpPinoConfig));
@@ -49,7 +52,8 @@ app.use(express.urlencoded({ extended: false }));
 SessionConfig(app);
 PassportConfig(app);
 
-if (isProd) {
+// TODO This is not great
+if (NODE_ENV === 'production' || NODE_ENV === 'staging') {
   app.use(httpsRedirect);
   app.use(helmet());
 }
@@ -65,12 +69,14 @@ app.use('/users', secureRoutes, requireVerified, contactRoutes);
 app.use('/users', secureRoutes, requireVerified, callRoutes);
 app.use('/allowlistEntries', secureRoutes, allowlistRoutes);
 
-if (!isProd) {
+if (NODE_ENV === 'development') {
   // proxy requests to development frontend
   app.use('/', proxy('http://localhost:3000'));
 } else {
-  // TODO this is a hack
-  app.use(subdomainRedirect);
+  if (NODE_ENV === 'production') {
+    // TODO this is a hack
+    app.use(subdomainRedirect);
+  }
   // STATIC_DIR gets populated in a docker build
   app.use(express.static(STATIC_DIR));
 }

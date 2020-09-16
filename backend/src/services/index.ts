@@ -12,7 +12,7 @@ import PasswordlessRequest = require('./PasswordlessRequest');
 const whitelistEntryService = AllowlistEntry(models.AllowlistEntry);
 const userService = User(models.User, whitelistEntryService);
 const contactService = Contact(models.Contact, userService);
-const twilioCallService = TwilioCall(models.TwilioCall);
+const twilioCallService = TwilioCall(models.TwilioCall, TwilioClient);
 const passwordlessRequestService = PasswordlessRequest(
   models.PasswordlessRequest
 );

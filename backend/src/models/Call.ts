@@ -1,8 +1,16 @@
 import { AllowNull, Column, Model, Table } from 'sequelize-typescript';
 
+interface PlainCall {
+  userId: number;
+  contactId: number;
+  phoneNumber: string;
+  incomingTwilioCallSid: string;
+  outgoingTwilioCallSid: string;
+}
+
 // This contains the parameters used to create the call and the resulting twilio information.
 @Table
-class Call extends Model<Call> {
+class Call extends Model<PlainCall> {
   @AllowNull(false)
   @Column
   userId: number;

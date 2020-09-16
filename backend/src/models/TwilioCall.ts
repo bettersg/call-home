@@ -1,4 +1,16 @@
-import { Column, Table, Unique, Model } from 'sequelize-typescript';
+import { Column, DataType, Table, Unique, Model } from 'sequelize-typescript';
+
+type TwilioCallStatus =
+  | 'queued'
+  | 'ringing'
+  | 'in-progress'
+  | 'canceled'
+  | 'completed'
+  | 'failed'
+  | 'busy'
+  | 'no-answer';
+type CustomCallStatus = 'x-not-initiated' | 'x-parent-canceled';
+export type CallStatus = TwilioCallStatus | CustomCallStatus;
 
 // Mirrors the Twilio Call REST API resource
 // https://www.twilio.com/docs/voice/tutorials/how-to-modify-calls-in-progress-node-js
@@ -23,9 +35,9 @@ class TwilioCall extends Model<TwilioCall> {
   @Column
   toPhoneNumber: string;
 
-  @Column
+  @Column(DataType.STRING)
   // queued, ringing, in-progress, canceled, completed, failed, busy, no-answer
-  status: string;
+  status: CallStatus;
 
   @Column
   price: string;
