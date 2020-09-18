@@ -1,10 +1,8 @@
-import moment from 'moment';
-import pino from 'pino';
+import { DateTime } from 'luxon';
 import { Op } from 'sequelize';
+import { logger } from '../config';
 import { sanitizeDbErrors } from './lib';
 import type { Call as CallEntity } from '../models';
-
-const logger = pino();
 
 const callAggregationPeriod = 'week';
 
@@ -34,7 +32,7 @@ function CallService(
     contactId,
     incomingTwilioCallSid,
   }: Partial<CallEntity>) {
-    validateCall(userId, contactId);
+    await validateCall(userId, contactId);
     const contact = await contactService.getContact(userId, contactId);
     const call = {
       phoneNumber: contact.phoneNumber,
@@ -46,7 +44,9 @@ function CallService(
   }
 
   async function getUserCallsForPeriod(userId: number): Promise<CallEntity[]> {
-    const startDate: Date = moment().startOf(callAggregationPeriod).toDate();
+    const startDate: Date = DateTime.local()
+      .startOf(callAggregationPeriod)
+      .toJSDate();
     return CallModel.findAll({
       where: {
         [Op.and]: {
@@ -59,9 +59,17 @@ function CallService(
     });
   }
 
+  async function getCallByIncomingSid(incomingTwilioCallSid: string) {
+    return CallModel.findOne({
+      where: {
+        incomingTwilioCallSid,
+      },
+    });
+  }
   return {
     createCall,
     getUserCallsForPeriod,
+    getCallByIncomingSid,
   };
 }
 

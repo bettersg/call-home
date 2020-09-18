@@ -1,14 +1,15 @@
-const { sanitizeDbErrors } = require('./lib');
-const { UserTypes } = require('../models');
+import { sanitizeDbErrors } from './lib';
+import { UserTypes } from '../models';
+import type { User as UserEntity } from '../models';
 
-function UserService(UserModel, allowlistEntryService) {
+function UserService(UserModel: typeof UserEntity, allowlistEntryService: any) {
   async function listUsers() {
     return UserModel.findAll({
       order: ['email'],
     });
   }
 
-  async function createUser(user) {
+  async function createUser(user: Partial<UserEntity>) {
     const createdUser = await sanitizeDbErrors(() =>
       UserModel.create({
         ...user,
@@ -20,7 +21,7 @@ function UserService(UserModel, allowlistEntryService) {
     return createdUser;
   }
 
-  async function getUser(userId) {
+  async function getUser(userId: number) {
     return UserModel.findOne({
       where: {
         id: userId,
@@ -28,7 +29,7 @@ function UserService(UserModel, allowlistEntryService) {
     });
   }
 
-  async function getUserByEmail(userEmail) {
+  async function getUserByEmail(userEmail: string) {
     return UserModel.findOne({
       where: {
         email: userEmail,
@@ -36,7 +37,7 @@ function UserService(UserModel, allowlistEntryService) {
     });
   }
 
-  async function getUserByPhoneNumber(phoneNumber) {
+  async function getUserByPhoneNumber(phoneNumber: string) {
     return UserModel.findOne({
       where: {
         phoneNumber,
@@ -44,7 +45,7 @@ function UserService(UserModel, allowlistEntryService) {
     });
   }
 
-  async function getUserByAuth0Id(auth0Id) {
+  async function getUserByAuth0Id(auth0Id: string) {
     return UserModel.findOne({
       where: {
         auth0Id,
@@ -52,7 +53,7 @@ function UserService(UserModel, allowlistEntryService) {
     });
   }
 
-  async function updateUser(userId, user) {
+  async function updateUser(userId: number, user: Partial<UserEntity>) {
     const userPayload = {
       ...user,
     };
@@ -71,7 +72,7 @@ function UserService(UserModel, allowlistEntryService) {
   }
 
   // This function handles a request to assign a phone number to a given user.
-  async function verifyUserPhoneNumber(userId, phoneNumber) {
+  async function verifyUserPhoneNumber(userId: number, phoneNumber: string) {
     // We check the allowlist to ensure that the phone number is allowed in the first place.
     const [user, allowlistEntry] = await Promise.all([
       getUser(userId),
@@ -105,12 +106,12 @@ function UserService(UserModel, allowlistEntryService) {
     return user;
   }
 
-  async function deleteUser(userId) {
+  async function deleteUser(userId: number) {
     const user = await getUser(userId);
     await user.destroy();
   }
 
-  async function getUserByEmails(userEmails) {
+  async function getUserByEmails(userEmails: string[]) {
     const allUsers = await Promise.all(
       userEmails.map((userEmail) => getUserByEmail(userEmail))
     );
@@ -118,7 +119,10 @@ function UserService(UserModel, allowlistEntryService) {
     return foundUser;
   }
 
-  async function registerUserWithAuth0Id(auth0Id, user) {
+  async function registerUserWithAuth0Id(
+    auth0Id: string,
+    user: { name: string; email: string }
+  ) {
     const foundUser = await getUserByAuth0Id(auth0Id);
     if (foundUser) {
       return foundUser;
@@ -144,4 +148,4 @@ function UserService(UserModel, allowlistEntryService) {
   };
 }
 
-module.exports = UserService;
+export default UserService;

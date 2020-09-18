@@ -3,6 +3,8 @@ import AllowlistEntry from './AllowlistEntry';
 import User, { UserType } from './User';
 import Contact from './Contact';
 import Call from './Call';
+import Transaction from './Transaction';
+import Wallet from './Wallet';
 import TwilioCall, { CallStatus } from './TwilioCall';
 import PasswordlessRequest from './PasswordlessRequest';
 
@@ -13,6 +15,8 @@ sequelize.addModels([
   User,
   TwilioCall,
   PasswordlessRequest,
+  Wallet,
+  Transaction,
 ]);
 
 // User <-> Contact
@@ -39,6 +43,22 @@ User.hasMany(PasswordlessRequest, {
 });
 PasswordlessRequest.belongsTo(User);
 
+// Wallet <-> User
+User.hasOne(Wallet, {
+  foreignKey: 'userId',
+});
+Wallet.belongsTo(User, {
+  foreignKey: 'userId',
+});
+
+// Transaction <-> User
+User.hasMany(Transaction, {
+  foreignKey: 'userId',
+});
+Transaction.belongsTo(User, {
+  foreignKey: 'userId',
+});
+
 export {
   sequelize,
   User,
@@ -49,4 +69,6 @@ export {
   AllowlistEntry,
   TwilioCall,
   PasswordlessRequest,
+  Wallet,
+  Transaction,
 };

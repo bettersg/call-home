@@ -3,12 +3,12 @@ import CallToken from './CallToken';
 
 import * as services from '../services';
 import Twilio from './Twilio';
-import User = require('./User');
+import * as middlewares from './middlewares';
+import User from './User';
 import Contact = require('./Contact');
 import OAuth = require('./OAuth');
 import AllowlistEntry = require('./AllowlistEntry');
 import Passwordless = require('./Passwordless');
-import middlewares = require('./middlewares');
 
 const callRoute = Call(services.Call, services.TwilioCall);
 const callTokenRoute = CallToken();
@@ -19,7 +19,7 @@ const passwordlessRoute = Passwordless(
   services.Auth0,
   services.PasswordlessRequest
 );
-const userRoute = User();
+const userRoute = User(services.Wallet);
 const contactRoute = Contact(services.Contact);
 const allowlistEntryRoute = AllowlistEntry(services.AllowlistEntry);
 

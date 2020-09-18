@@ -1,14 +1,20 @@
-// TODO don't hardcode this
-const { User: UserService } = require('../services');
-const { UserTypes } = require('../models');
-const {
-  userToUserResponse,
-  userProfileToUserProfileResponse,
-} = require('./transformers');
+import type { Request, Response, NextFunction } from 'express';
 
+// TODO don't hardcode this
+import { User as UserService } from '../services';
+import { UserTypes } from '../models';
+import transformers = require('./transformers');
+
+const { userToUserResponse, userProfileToUserProfileResponse } = transformers;
 const LOGIN_ROUTE = '/';
 
-function sendForbiddenResponse(req, res) {
+export interface CallHomeRequest extends Request {
+  // TODO unfortunately, this interface may have multiple shapes depending on the middleswares. This is more of a stopgap measure.
+  user: any;
+  session: any;
+}
+
+function sendForbiddenResponse(req: CallHomeRequest, res: Response) {
   res.format({
     json: () => {
       req.log.info('Encountered api call, sending 401');
@@ -26,7 +32,7 @@ function sendForbiddenResponse(req, res) {
   });
 }
 
-async function httpsRedirect(req, res, next) {
+async function httpsRedirect(req: Request, res: Response, next: NextFunction) {
   // Detect the protocol of the user's request. Reading req.protocol does not work.
   // https://devcenter.heroku.com/articles/http-routing#heroku-headers
   if (req.headers['x-forwarded-proto'] !== 'https') {
@@ -36,7 +42,7 @@ async function httpsRedirect(req, res, next) {
   return next();
 }
 
-async function injectDbUser(req) {
+async function injectDbUser(req: CallHomeRequest) {
   // This returns the OAuth user info
   const { _raw, _json, ...userProfile } = req.user;
   const { emails } = userProfile;
@@ -47,7 +53,7 @@ async function injectDbUser(req) {
   let user;
   if (emails) {
     user = await UserService.getUserByEmails(
-      emails.map((emailValue) => emailValue.value)
+      emails.map((emailValue: any) => emailValue.value)
     );
     if (user && !user.auth0Id) {
       user = await UserService.updateUser(user.id, {
@@ -80,7 +86,11 @@ async function injectDbUser(req) {
   };
 }
 
-async function requireAdmin(req, res, next) {
+async function requireAdmin(
+  req: CallHomeRequest,
+  res: Response,
+  next: NextFunction
+) {
   if (!req.user) {
     return res.status(401).send('Unauthenticated');
   }
@@ -90,7 +100,11 @@ async function requireAdmin(req, res, next) {
   return next();
 }
 
-async function requireVerified(req, res, next) {
+async function requireVerified(
+  req: CallHomeRequest,
+  res: Response,
+  next: NextFunction
+) {
   if (!req.user || !req.user.isVerified) {
     sendForbiddenResponse(req, res);
     return;
@@ -98,7 +112,11 @@ async function requireVerified(req, res, next) {
   next();
 }
 
-async function requireSelf(req, res, next) {
+async function requireSelf(
+  req: CallHomeRequest,
+  res: Response,
+  next: NextFunction
+) {
   const { userId: userIdString } = req.params;
   const userId = Number(userIdString);
   if (!req.user || !userId || req.user.id !== userId) {
@@ -108,7 +126,11 @@ async function requireSelf(req, res, next) {
   next();
 }
 
-async function secureRoutes(req, res, next) {
+async function secureRoutes(
+  req: CallHomeRequest,
+  res: Response,
+  next: NextFunction
+) {
   if (req.user) {
     await injectDbUser(req);
     return next();
@@ -121,7 +143,7 @@ async function secureRoutes(req, res, next) {
   return sendForbiddenResponse(req, res);
 }
 
-module.exports = {
+export {
   httpsRedirect,
   secureRoutes,
   requireAdmin,

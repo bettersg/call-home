@@ -49,13 +49,21 @@ function TwilioRoutes(
       url: `${TWILIO_WEBHOOK_BASE_URL}/twiml`,
     }),
     async (req, res) => {
-      const { userId, contactId, CallSid: incomingTwilioCallSid } = req.body;
+      const {
+        userId,
+        contactId,
+        CallSid: incomingTwilioCallSid,
+      } = req.body as {
+        userId: string;
+        contactId: string;
+        CallSid: string;
+      };
       req.log.info('creating call for', userId, contactId);
 
       try {
         const { phoneNumber } = await callService.createCall({
-          userId,
-          contactId,
+          userId: Number(userId),
+          contactId: Number(contactId),
           incomingTwilioCallSid,
         });
         await twilioCallService.createTwilioCall({
@@ -94,7 +102,10 @@ function TwilioRoutes(
       await twilioCallService.fetchTwilioDataForTwilioParentSid(
         twilioResponse.CallSid
       );
-      res.send('');
+      // TODO this gives TwiML errors. Maybe send a hangup response?
+      const response = new VoiceResponse();
+      response.hangup();
+      res.send(response.toString());
     }
   );
   return router;

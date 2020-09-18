@@ -2,7 +2,9 @@ import * as models from '../models';
 
 import Call from './Call';
 import TwilioCall from './TwilioCall';
-import User = require('./User');
+import Transaction from './Transaction';
+import Wallet from './Wallet';
+import User from './User';
 import Contact = require('./Contact');
 import AllowlistEntry = require('./AllowlistEntry');
 import TwilioClient = require('./TwilioClient');
@@ -12,12 +14,18 @@ import PasswordlessRequest = require('./PasswordlessRequest');
 const whitelistEntryService = AllowlistEntry(models.AllowlistEntry);
 const userService = User(models.User, whitelistEntryService);
 const contactService = Contact(models.Contact, userService);
-const twilioCallService = TwilioCall(models.TwilioCall, TwilioClient);
+const twilioCallService = new TwilioCall(models.TwilioCall, TwilioClient);
 const passwordlessRequestService = PasswordlessRequest(
   models.PasswordlessRequest
 );
 const callService = Call(models.Call, userService, contactService);
 const auth0Service = Auth0();
+const walletService = Wallet(models.Wallet);
+const transactionService = new Transaction(
+  models.Transaction,
+  twilioCallService,
+  callService
+);
 
 export {
   userService as User,
@@ -28,4 +36,6 @@ export {
   twilioCallService as TwilioCall,
   TwilioClient,
   passwordlessRequestService as PasswordlessRequest,
+  walletService as Wallet,
+  transactionService as Transaction,
 };
