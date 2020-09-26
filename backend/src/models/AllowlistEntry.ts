@@ -1,6 +1,7 @@
 import {
   AllowNull,
   Column,
+  Default,
   Model,
   Table,
   Unique,
@@ -21,9 +22,12 @@ class AllowlistEntry extends Model<AllowlistEntry> {
   @Column
   phoneNumber: string;
 
+  @Default(UserType.USER)
   @Validate({
-    args: [Object.values(UserType)],
-    msg: 'Invalid user type specified. Must be ADMIN or USER',
+    isIn: {
+      args: [Object.values(UserType)],
+      msg: 'Invalid user type specified. Must be ADMIN or USER',
+    },
   })
   @AllowNull(false)
   @Column
