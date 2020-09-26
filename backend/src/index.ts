@@ -28,7 +28,7 @@ import {
 
 // TODO hackssssss
 import subdomainRedirect from './hack/subdomainRedirect';
-
+// eslint-disable-next-line
 dotenv.config();
 
 require('./jobs');

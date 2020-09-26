@@ -20,12 +20,12 @@ const passwordlessRequestService = PasswordlessRequest(
 );
 const callService = Call(models.Call, userService, contactService);
 const auth0Service = Auth0();
-const walletService = Wallet(models.Wallet);
 const transactionService = new Transaction(
   models.Transaction,
   twilioCallService,
   callService
 );
+const walletService = new Wallet(models.Wallet, transactionService);
 
 export {
   userService as User,
