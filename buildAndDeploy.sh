@@ -6,7 +6,7 @@ set -euox pipefail
 
 function buildAndDeployDocker {
     # Populate the version in the build steps
-    docker build --build-arg RELEASE_DATE=${VERSION} . -t call-home
+    docker build --build-arg PUBLIC_URL="${PUBLIC_URL}" --build-arg RELEASE_DATE="${VERSION}" . -t call-home
 
     # Push the container and start the heroku release
     docker tag call-home registry.heroku.com/${HEROKU_APP}/web
@@ -38,9 +38,11 @@ HEROKU_APP_PROD=call-home
 
 if [ "$1" = "prod" ]; then
     HEROKU_APP="${HEROKU_APP_PROD}"
+    PUBLIC_URL="https://app.callhome.sg"
     buildAndDeployDocker
     deploySentrySourceMaps
 else
     HEROKU_APP="${HEROKU_APP_STAGING}"
+    PUBLIC_URL="https://call-home-staging.herokuapp.com"
     buildAndDeployDocker
 fi
