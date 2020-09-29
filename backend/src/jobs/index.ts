@@ -1,9 +1,9 @@
 import { logger } from '../config';
 import { TwilioCall } from '../services';
 import refreshConnectedCalls from './refreshConnectedCalls';
-// const backfillDuration = require('./backfillDuration');
+import refreshJoinedCalls from './refreshJoinedCalls';
 
 logger.info('Initializing jobs');
 
 refreshConnectedCalls(TwilioCall);
-// backfillDuration(TwilioCall, TwilioClient);
+refreshJoinedCalls();
