@@ -1,6 +1,8 @@
-const logger = require('pino')();
+import type { Request, Response, NextFunction } from 'express';
+import { Contact, User } from '../models';
+import { logger } from '../config';
 
-function parseUserRequestBody(req, res, next) {
+function parseUserRequestBody(req: Request, res: Response, next: NextFunction) {
   const { name, email } = req.body;
 
   const errorMessages = [];
@@ -22,7 +24,7 @@ function parseUserRequestBody(req, res, next) {
   return next();
 }
 
-function contactToContactResponse(contact) {
+function contactToContactResponse(contact: Contact) {
   const { id, name, phoneNumber, avatar } = contact;
 
   const response = {
@@ -34,7 +36,7 @@ function contactToContactResponse(contact) {
   return response;
 }
 
-function userToUserResponse(user) {
+function userToUserResponse(user: User) {
   const {
     id,
     name,
@@ -56,7 +58,7 @@ function userToUserResponse(user) {
   };
 }
 
-function userProfileToUserProfileResponse(userProfile) {
+function userProfileToUserProfileResponse(userProfile: any) {
   const { displayName, name, emails, picture, user_id: userId } = userProfile;
 
   logger.info('UserProfile', userProfile);
@@ -69,7 +71,11 @@ function userProfileToUserProfileResponse(userProfile) {
   };
 }
 
-function parseContactRequestBody(req, res, next) {
+function parseContactRequestBody(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const { name, phoneNumber, avatar } = req.body;
 
   const errorMessages = [];
@@ -89,7 +95,7 @@ function parseContactRequestBody(req, res, next) {
   return next();
 }
 
-module.exports = {
+export {
   parseUserRequestBody,
   userToUserResponse,
   userProfileToUserProfileResponse,

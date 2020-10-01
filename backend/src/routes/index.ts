@@ -19,7 +19,7 @@ const passwordlessRoute = Passwordless(
   services.Auth0,
   services.PasswordlessRequest
 );
-const userRoute = User(services.Wallet);
+const userRoute = User(services.User, services.Wallet);
 const contactRoute = Contact(services.Contact);
 const allowlistEntryRoute = AllowlistEntry(services.AllowlistEntry);
 
