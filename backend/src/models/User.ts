@@ -45,11 +45,9 @@ class User extends Model<User> {
   auth0Id: string;
 
   @Validate({
-    validate: {
-      is: {
-        args: [/\+65[0-9]{8}$/],
-        msg: 'Phone number should start with +65 and be followed by 8 digits.',
-      },
+    is: {
+      args: [/\+65[0-9]{8}$/],
+      msg: 'Phone number should start with +65 and be followed by 8 digits.',
     },
   })
   @Unique
