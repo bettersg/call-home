@@ -5,6 +5,7 @@ import * as services from '../services';
 import Twilio from './Twilio';
 import * as middlewares from './middlewares';
 import User from './User';
+import Transaction from './Transaction';
 import Contact = require('./Contact');
 import OAuth = require('./OAuth');
 import AllowlistEntry = require('./AllowlistEntry');
@@ -22,6 +23,7 @@ const passwordlessRoute = Passwordless(
 const userRoute = User(services.User, services.Wallet);
 const contactRoute = Contact(services.Contact);
 const allowlistEntryRoute = AllowlistEntry(services.AllowlistEntry);
+const transactionRoute = Transaction(services.Transaction);
 
 export {
   callRoute as Call,
@@ -32,5 +34,6 @@ export {
   userRoute as User,
   contactRoute as Contact,
   allowlistEntryRoute as AllowlistEntry,
+  transactionRoute as Transaction,
   middlewares,
 };

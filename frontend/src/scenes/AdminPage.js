@@ -1,5 +1,4 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Table from '@material-ui/core/Table';
@@ -15,9 +14,12 @@ import Select from '@material-ui/core/Select';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import TextField from '@material-ui/core/TextField';
-import { useAllowlistService, useUserService } from '../contexts';
+import { Duration } from 'luxon';
+import { Link } from 'react-router-dom';
+import { useAllowlistService, useAdminService } from '../contexts';
 import { PrimaryButton } from '../components/shared/RoundedButton';
 import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
+import useAdminRoute from '../util/useAdminRoute';
 import PATHS from './paths';
 
 function AllowlistTabContent() {
@@ -134,23 +136,20 @@ function AllowlistTabContent() {
   );
 }
 
-function UserTabContent({ users }) {
-  const formatSeconds = (callTimeSeconds) => {
-    let remainingSeconds = callTimeSeconds;
-    const seconds = callTimeSeconds % 60;
-    remainingSeconds -= seconds;
-    const minutes = (remainingSeconds / 60) % 60;
-    remainingSeconds -= minutes * 60;
-    const hours = remainingSeconds / 3600;
-    return [
-      [hours, 'hours'],
-      [minutes, 'minutes'],
-      [seconds, 'seconds'],
-    ]
-      .filter(([val]) => val)
-      .map(([val, unit]) => `${val} ${unit}`)
-      .join(' ');
-  };
+function UserTabContent() {
+  const [adminState, adminService] = useAdminService();
+  const { users = [] } = adminState;
+
+  useEffect(() => {
+    if (adminService) {
+      adminService.getUsers();
+    }
+  }, [adminService]);
+
+  const formatSeconds = (seconds) =>
+    Duration.fromObject({ seconds }).toFormat(
+      "hh 'hours' mm 'minutes' ss 'seconds'"
+    );
 
   return (
     <>
@@ -165,6 +164,7 @@ function UserTabContent({ users }) {
               <TableCell>Phone Number</TableCell>
               <TableCell>Country</TableCell>
               <TableCell>Call Time Balance</TableCell>
+              <TableCell>Transaction history</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -174,6 +174,11 @@ function UserTabContent({ users }) {
                 <TableCell>{user.phoneNumber}</TableCell>
                 <TableCell>{user.destinationCountry}</TableCell>
                 <TableCell>{formatSeconds(user.callTime)}</TableCell>
+                <TableCell>
+                  <Link to={`${PATHS.TRANSACTIONS}?user=${user.id}`}>
+                    Transaction history
+                  </Link>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -191,17 +196,8 @@ function TabPanel({ value, index, children }) {
 }
 
 export default function AdminPage() {
-  const [userRequestInFlight, setUserRequestInFlight] = useState(true);
-  const [userState, userService] = useUserService();
-  const { me: user, users } = userState;
   const [tabIndex, setTabIndex] = useState(0);
 
-  useEffect(() => {
-    if (userService) {
-      userService.refreshSelf().finally(() => setUserRequestInFlight(false));
-      userService.getUsers();
-    }
-  }, [userService]);
   const handleTabChange = useCallback(
     (event, newValue) => {
       setTabIndex(newValue);
@@ -209,11 +205,9 @@ export default function AdminPage() {
     [setTabIndex]
   );
 
-  if (!user) {
-    if (userRequestInFlight) {
-      return null;
-    }
-    return <Redirect to={PATHS.LOGIN} />;
+  const adminRedirect = useAdminRoute();
+  if (adminRedirect) {
+    return adminRedirect;
   }
 
   return (
@@ -223,7 +217,7 @@ export default function AdminPage() {
         <Tab label="Allowlist" />
       </Tabs>
       <TabPanel value={tabIndex} index={0}>
-        <UserTabContent users={users} />
+        <UserTabContent />
       </TabPanel>
       <TabPanel value={tabIndex} index={1}>
         <AllowlistTabContent />

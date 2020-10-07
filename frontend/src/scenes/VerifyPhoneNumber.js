@@ -27,6 +27,7 @@ const STRINGS = {
 export default function PhoneNumberForm({ locale }) {
   const [userState, userService] = useUserService();
   const { me: user, verificationPhoneNumber } = userState;
+  console.log(user);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isTouched, setIsTouched] = useState(false);
 

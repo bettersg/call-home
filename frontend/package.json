@@ -16,6 +16,7 @@
     "detect-browser": "^5.1.1",
     "lodash": "^4.17.19",
     "loglevel": "^1.6.8",
+    "luxon": "^1.25.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-imask": "^6.0.5",

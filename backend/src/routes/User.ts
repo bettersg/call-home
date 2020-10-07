@@ -4,7 +4,6 @@ import { userToUserResponse } from './transformers';
 import type { User, Wallet } from '../services';
 
 // Reads a req and parses the body into a user that can be saved.
-
 function UserRoutes(userService: typeof User, walletService: typeof Wallet) {
   const router = express.Router();
 

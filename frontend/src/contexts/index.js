@@ -1,3 +1,4 @@
+export { AdminServiceProvider, useAdminService } from './AdminService';
 export { UserServiceProvider, useUserService } from './UserService';
 export { ContactServiceProvider, useContactService } from './ContactService';
 export {

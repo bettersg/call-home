@@ -25,9 +25,9 @@ export default function createServiceProvider(Service) {
       );
     },
     hook: function useService() {
-      const innerContactService = useContext(ServiceContext);
-      const contactState = useContext(ServiceStateContext);
-      return [contactState, innerContactService];
+      const innerService = useContext(ServiceContext);
+      const serviceState = useContext(ServiceStateContext);
+      return [serviceState, innerService];
     },
   };
 }

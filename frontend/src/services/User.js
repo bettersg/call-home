@@ -10,7 +10,6 @@ export default class UserService extends ObservableService {
     this.state = {
       me: null,
       verificationPhoneNumber: null,
-      users: [],
     };
   }
 
@@ -41,15 +40,6 @@ export default class UserService extends ObservableService {
     this.state = {
       ...this.state,
       verificationPhoneNumber,
-    };
-    this.notify();
-  }
-
-  async getUsers() {
-    const users = await noRedirectClient.get(`${userEndpoint}/`);
-    this.state = {
-      ...this.state,
-      users,
     };
     this.notify();
   }

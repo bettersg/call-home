@@ -6,6 +6,7 @@ import {
   Login,
   CallingPage,
   ContactsPage,
+  TransactionsPage,
   VerifyPhoneNumber,
   VerifyPhoneNumberCode,
 } from './index';
@@ -37,6 +38,9 @@ export default function SceneRouter() {
       </Route>
       <Route path={PATHS.CONTACTS}>
         <ContactsPage locale={locale} />
+      </Route>
+      <Route path={PATHS.TRANSACTIONS}>
+        <TransactionsPage locale={locale} />
       </Route>
       <Route path={PATHS.LOGIN}>
         <Login locale={locale} />

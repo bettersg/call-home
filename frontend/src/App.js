@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import * as Sentry from '@sentry/react';
 import {
+  AdminServiceProvider,
   AllowlistServiceProvider,
   UserServiceProvider,
   ContactServiceProvider,
@@ -88,18 +89,20 @@ class ErrorBoundary extends React.Component {
 
 function App() {
   return (
-    <AllowlistServiceProvider>
-      <UserServiceProvider>
-        <ContactServiceProvider>
-          <ThemeProvider>
-            <ErrorBoundary>
-              <InitApp />
-            </ErrorBoundary>
-            <CssBaseline />
-          </ThemeProvider>
-        </ContactServiceProvider>
-      </UserServiceProvider>
-    </AllowlistServiceProvider>
+    <AdminServiceProvider>
+      <AllowlistServiceProvider>
+        <UserServiceProvider>
+          <ContactServiceProvider>
+            <ThemeProvider>
+              <ErrorBoundary>
+                <InitApp />
+              </ErrorBoundary>
+              <CssBaseline />
+            </ThemeProvider>
+          </ContactServiceProvider>
+        </UserServiceProvider>
+      </AllowlistServiceProvider>
+    </AdminServiceProvider>
   );
 }
 

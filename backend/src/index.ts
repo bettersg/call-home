@@ -17,6 +17,7 @@ import {
   Twilio as twilioRoutes,
   OAuth as oauthRoutes,
   Passwordless as passwordlessRoutes,
+  Transaction as transactionRoutes,
   middlewares,
 } from './routes';
 import {
@@ -25,9 +26,7 @@ import {
   logger,
   httpPinoConfig,
 } from './config';
-
-// TODO hackssssss
-import subdomainRedirect from './hack/subdomainRedirect';
+// TODO This keeps relocating after each precommit, this should be ignored somehow
 // eslint-disable-next-line
 dotenv.config();
 
@@ -67,16 +66,13 @@ app.use('/call-token', secureRoutes, requireVerified, callTokenRoutes);
 app.use('/users', secureRoutes, userRoutes);
 app.use('/users', secureRoutes, requireVerified, contactRoutes);
 app.use('/users', secureRoutes, requireVerified, callRoutes);
+app.use('/users', secureRoutes, requireVerified, transactionRoutes);
 app.use('/allowlistEntries', secureRoutes, allowlistRoutes);
 
 if (NODE_ENV === 'development') {
   // proxy requests to development frontend
   app.use('/', proxy('http://localhost:3000'));
 } else {
-  if (NODE_ENV === 'production') {
-    // TODO this is a hack
-    app.use(subdomainRedirect);
-  }
   // STATIC_DIR gets populated in a docker build
   app.use(express.static(STATIC_DIR));
 }

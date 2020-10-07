@@ -72,6 +72,7 @@ class TransactionService extends TypedEventEmitter<
       where: {
         userId,
       },
+      order: ['createdAt'],
     });
   }
 }
