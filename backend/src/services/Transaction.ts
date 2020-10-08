@@ -42,14 +42,10 @@ class TransactionService extends TypedEventEmitter<
     const callEntity = await this.callService.getCallByIncomingSid(
       twilioCall.parentCallSid
     );
-    const transaction = await this.createTransaction({
+    return this.createTransaction({
       reference: 'call',
       userId: callEntity.userId,
       amount: -twilioCall.duration,
-    });
-    this.emit('transaction-created', {
-      type: 'transaction-created',
-      transaction,
     });
   };
 
@@ -58,13 +54,18 @@ class TransactionService extends TypedEventEmitter<
     userId,
     amount,
   }: Partial<TransactionEntity>) {
-    return sanitizeDbErrors(() =>
+    const transaction = await sanitizeDbErrors(() =>
       this.transactionModel.create({
         reference,
         userId,
         amount,
       })
     );
+    this.emit('transaction-created', {
+      type: 'transaction-created',
+      transaction,
+    });
+    return transaction;
   }
 
   async getTransactionsForUser(userId: number) {
@@ -72,7 +73,7 @@ class TransactionService extends TypedEventEmitter<
       where: {
         userId,
       },
-      order: ['createdAt'],
+      order: [['createdAt', 'DESC']],
     });
   }
 }
