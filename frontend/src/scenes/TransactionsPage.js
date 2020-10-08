@@ -85,7 +85,7 @@ export default function TransactionsPage() {
                 <TableRow key={transaction.id}>
                   <TableCell>
                     {DateTime.fromISO(transaction.createdAt).toLocaleString(
-                      DateTime.DATETIME_FULL
+                      DateTime.DATETIME_FULL_WITH_SECONDS
                     )}
                   </TableCell>
                   <TableCell>{transaction.reference}</TableCell>

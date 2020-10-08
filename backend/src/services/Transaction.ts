@@ -37,6 +37,7 @@ class TransactionService extends TypedEventEmitter<
     );
   }
 
+  // TODO upon further reflection, maybe the twilio call service should just call this service. the event emitter semantics seem a bit unnecessary.
   handleTwilioCallUpdate = async ({ twilioCall }: TwilioCallUpdatedPayload) => {
     logger.info('Creating transaction for twilio call %s', twilioCall);
     const callEntity = await this.callService.getCallByIncomingSid(

@@ -1,6 +1,7 @@
 import * as models from '../models';
 
 import Call from './Call';
+import PeriodicCredit from './PeriodicCredit';
 import TwilioCall from './TwilioCall';
 import Transaction from './Transaction';
 import Wallet from './Wallet';
@@ -25,6 +26,10 @@ const transactionService = new Transaction(
   twilioCallService,
   callService
 );
+const periodicCreditService = PeriodicCredit(
+  models.PeriodicCredit,
+  transactionService
+);
 const walletService = new Wallet(models.Wallet, transactionService);
 
 export {
@@ -38,4 +43,5 @@ export {
   passwordlessRequestService as PasswordlessRequest,
   walletService as Wallet,
   transactionService as Transaction,
+  periodicCreditService as PeriodicCredit,
 };
