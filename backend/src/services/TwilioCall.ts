@@ -3,6 +3,8 @@ import { sanitizeDbErrors, TypedEventEmitter } from './lib';
 import { logger } from '../config';
 import type { TwilioCall as TwilioCallEntity } from '../models';
 import type TwilioClient from './TwilioClient';
+import type CallService from './Call';
+import type TransactionService from './Transaction';
 
 export type TwilioCallServiceEvent = 'twilio-call-updated';
 export interface TwilioCallUpdatedPayload {
@@ -19,13 +21,21 @@ class TwilioCallService extends TypedEventEmitter<
 
   twilioClient: typeof TwilioClient;
 
+  callService: ReturnType<typeof CallService>;
+
+  transactionService: TransactionService;
+
   constructor(
     twilioCallModel: typeof TwilioCallEntity,
-    twilioClient: typeof TwilioClient
+    twilioClient: typeof TwilioClient,
+    callService: ReturnType<typeof CallService>,
+    transactionService: TransactionService
   ) {
     super();
     this.twilioCallModel = twilioCallModel;
     this.twilioClient = twilioClient;
+    this.callService = callService;
+    this.transactionService = transactionService;
   }
 
   createTwilioCall = async (twilioCall: Partial<TwilioCallEntity>) => {
@@ -96,6 +106,18 @@ class TwilioCallService extends TypedEventEmitter<
         duration: null,
       },
       order: [['lastUpdated', 'ASC']],
+    });
+  };
+
+  createTransactionForTwilioCall = async (twilioCall: TwilioCallEntity) => {
+    logger.info('Creating transaction for twilio call %s', twilioCall);
+    const callEntity = await this.callService.getCallByIncomingSid(
+      twilioCall.parentCallSid
+    );
+    return this.transactionService.createTransaction({
+      reference: 'call',
+      userId: callEntity.userId,
+      amount: -twilioCall.duration,
     });
   };
 

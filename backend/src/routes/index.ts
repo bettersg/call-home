@@ -4,6 +4,7 @@ import CallToken from './CallToken';
 import * as services from '../services';
 import Twilio from './Twilio';
 import * as middlewares from './middlewares';
+import Feature from './Feature';
 import User from './User';
 import Transaction from './Transaction';
 import Contact = require('./Contact');
@@ -24,6 +25,7 @@ const userRoute = User(services.User, services.PeriodicCredit, services.Wallet);
 const contactRoute = Contact(services.Contact);
 const allowlistEntryRoute = AllowlistEntry(services.AllowlistEntry);
 const transactionRoute = Transaction(services.Transaction);
+const featureRoute = Feature(services.Feature);
 
 export {
   callRoute as Call,
@@ -35,5 +37,6 @@ export {
   contactRoute as Contact,
   allowlistEntryRoute as AllowlistEntry,
   transactionRoute as Transaction,
+  featureRoute as Feature,
   middlewares,
 };

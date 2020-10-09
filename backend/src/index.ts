@@ -18,6 +18,7 @@ import {
   OAuth as oauthRoutes,
   Passwordless as passwordlessRoutes,
   Transaction as transactionRoutes,
+  Feature as featureRoutes,
   middlewares,
 } from './routes';
 import {
@@ -59,6 +60,8 @@ if (NODE_ENV === 'production' || NODE_ENV === 'staging') {
 
 // Make sure oauth is first and NOT secured
 app.use('/oauth', oauthRoutes);
+// Features aren't protected either, we want to know what to show users.
+app.use('/features', featureRoutes);
 app.use('/passwordless', secureRoutes, passwordlessRoutes);
 // Also ensure that twilio is NOT secured by oauth, just twilio auth
 app.use('/twilio', twilioRoutes);

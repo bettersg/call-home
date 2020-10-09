@@ -3,7 +3,6 @@ import { CallHomeRequest, requireAdmin } from './middlewares';
 import { userToUserResponse } from './transformers';
 import type { User, Wallet, PeriodicCredit } from '../services';
 
-// Reads a req and parses the body into a user that can be saved.
 function UserRoutes(
   userService: typeof User,
   periodicCreditService: typeof PeriodicCredit,
