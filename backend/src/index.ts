@@ -19,6 +19,7 @@ import {
   Passwordless as passwordlessRoutes,
   Transaction as transactionRoutes,
   Feature as featureRoutes,
+  PeriodicCredit as periodicCreditRoutes,
   middlewares,
 } from './routes';
 import {
@@ -60,8 +61,11 @@ if (NODE_ENV === 'production' || NODE_ENV === 'staging') {
 
 // Make sure oauth is first and NOT secured
 app.use('/oauth', oauthRoutes);
-// Features aren't protected either, we want to know what to show users.
-app.use('/features', featureRoutes);
+// We'll also show the periodic credit stuff
+app.use('/periodic-credit', periodicCreditRoutes);
+
+// TODO Features are a bit weird because we have per-user config. We probably want features for non logged in users too. Should probably use a different middleware for this
+app.use('/features', secureRoutes, featureRoutes);
 app.use('/passwordless', secureRoutes, passwordlessRoutes);
 // Also ensure that twilio is NOT secured by oauth, just twilio auth
 app.use('/twilio', twilioRoutes);

@@ -7,6 +7,7 @@ import * as middlewares from './middlewares';
 import Feature from './Feature';
 import User from './User';
 import Transaction from './Transaction';
+import PeriodicCredit from './PeriodicCredit';
 import Contact = require('./Contact');
 import OAuth = require('./OAuth');
 import AllowlistEntry = require('./AllowlistEntry');
@@ -26,6 +27,7 @@ const contactRoute = Contact(services.Contact);
 const allowlistEntryRoute = AllowlistEntry(services.AllowlistEntry);
 const transactionRoute = Transaction(services.Transaction);
 const featureRoute = Feature(services.Feature);
+const periodicCreditRoute = PeriodicCredit(services.PeriodicCredit);
 
 export {
   callRoute as Call,
@@ -38,5 +40,6 @@ export {
   allowlistEntryRoute as AllowlistEntry,
   transactionRoute as Transaction,
   featureRoute as Feature,
+  periodicCreditRoute as PeriodicCredit,
   middlewares,
 };

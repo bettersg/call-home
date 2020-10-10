@@ -12,6 +12,10 @@ import AddIcon from '@material-ui/icons/Add';
 import CallIcon from '@material-ui/icons/Call';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import FeedbackIcon from '@material-ui/icons/Feedback';
+import PhoneInTalkIcon from '@material-ui/icons/PhoneInTalk';
+import AutorenewIcon from '@material-ui/icons/Autorenew';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import { DateTime } from 'luxon';
 import DetectBrowserSnackbar from '../components/shared/DetectBrowserSnackbar';
 import Container from '../components/shared/Container';
 import {
@@ -24,6 +28,12 @@ import ReportIssueDialog from '../components/shared/ReportIssueDialog';
 import { useUserService, useContactService } from '../contexts';
 import { ApiValidationError } from '../services/apiClient';
 import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
+import {
+  formatSecondsInHoursMinutes,
+  formatDurationInDaysHoursMinutes,
+} from '../util/timeFormatters';
+import { getNextRefreshTime } from '../services/PeriodicCredit';
+import { getFeatures } from '../services/Feature';
 import PATHS from './paths';
 
 const COUNTRIES = {
@@ -42,6 +52,7 @@ const COUNTRIES = {
 const EN_STRINGS = {
   CONTACTS_TITLE: 'Your loved ones',
   CONTACTS_SUBTITLE: 'Call your loved ones back home',
+  CONTACTS_LOVED_ONES_LABEL: 'loved ones',
   CONTACTS_ADD_CONTACT_LABEL: 'Add a loved one',
   CONTACTS_ADD_LABEL: 'Add',
   CONTACTS_COUNTRY_LABEL: (code) => `Country: ${COUNTRIES.en[code]}`,
@@ -359,7 +370,44 @@ function EditContactDialog({ contact, open, onClose, locale }) {
   );
 }
 
+function CallLimitInfo({ user, contacts, locale }) {
+  const [nextRefreshDuration, setNextRefreshDuration] = useState(null);
+
+  useEffect(() => {
+    getNextRefreshTime().then((nextRefreshString) => {
+      setNextRefreshDuration(DateTime.fromISO(nextRefreshString).diffNow());
+    });
+  }, []);
+
+  return (
+    <div
+      className="info-container"
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+      }}
+    >
+      <div>
+        <PhoneInTalkIcon />
+        {formatSecondsInHoursMinutes(user.callTime)}
+      </div>
+
+      <div>
+        <AutorenewIcon />
+        {nextRefreshDuration
+          ? `in ${formatDurationInDaysHoursMinutes(nextRefreshDuration)}`
+          : ''}
+      </div>
+      <div>
+        <FavoriteIcon />
+        {contacts.length} {STRINGS[locale].CONTACTS_LOVED_ONES_LABEL}
+      </div>
+    </div>
+  );
+}
+
 export default function ContactsPage({ locale }) {
+  const [features, setFeatures] = useState({});
   const [userState, userService] = useUserService();
   const { me: user } = userState;
   const [contactState, contactService] = useContactService();
@@ -379,6 +427,9 @@ export default function ContactsPage({ locale }) {
       contactService.refreshContacts(user.id);
     }
   }, [contactService, user]);
+  useEffect(() => {
+    getFeatures().then(setFeatures);
+  }, []);
 
   if (!user) {
     return <Redirect to={PATHS.LOGIN} />;
@@ -392,6 +443,7 @@ export default function ContactsPage({ locale }) {
   };
 
   const openFeedbackDialog = () => setIsFeedbackDialogOpen(true);
+  const shouldRenderCallLimits = features.CALL_LIMITS;
 
   return (
     <Container
@@ -540,6 +592,9 @@ export default function ContactsPage({ locale }) {
           />
           <div>{STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}</div>
         </AddContactButton>
+        {shouldRenderCallLimits ? (
+          <CallLimitInfo user={user} contacts={contacts} locale={locale} />
+        ) : null}
       </div>
       <div
         style={{

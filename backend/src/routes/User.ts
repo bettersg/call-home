@@ -10,6 +10,14 @@ function UserRoutes(
 ) {
   const router = express.Router();
 
+  async function injectWallet(user: ReturnType<typeof userToUserResponse>) {
+    const wallet = await walletService.getWalletForUser(user.id);
+    return {
+      ...user,
+      callTime: wallet?.callTime,
+    };
+  }
+
   router.get('/me', async (req: CallHomeRequest, res) => {
     const userId = req.user.id;
     let userTasks: Promise<any>[] = [walletService.createWalletForUser(userId)];
@@ -20,19 +28,15 @@ function UserRoutes(
       ];
     }
     await Promise.all(userTasks);
-    return res.status(200).json(req.user);
+    const userWithWallet = await injectWallet(req.user);
+    return res.status(200).json(userWithWallet);
   });
 
   router.get('/', requireAdmin, async (_req: CallHomeRequest, res) => {
     const users = await userService.listUsers();
     const usersWithWallet = await Promise.all(
-      users.map(async (user) => {
-        const wallet = await walletService.getWalletForUser(user.id);
-        return {
-          ...userToUserResponse(user),
-          callTime: wallet?.callTime,
-        };
-      })
+      // We have to use userToUserResponse because this takes the raw user
+      users.map(userToUserResponse).map(injectWallet)
     );
     return res.json(usersWithWallet);
   });

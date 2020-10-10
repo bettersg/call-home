@@ -15,6 +15,13 @@ function PeriodicCreditService(
     return DateTime.local().startOf(creditInterval).toJSDate();
   }
 
+  function getNextUpdateEpoch() {
+    return DateTime.local()
+      .plus({ [creditInterval]: 1 })
+      .startOf(creditInterval)
+      .toJSDate();
+  }
+
   async function getPeriodicCreditAfterEpoch(userId: number) {
     return PeriodicCreditModel.findOne({
       where: {
@@ -51,6 +58,7 @@ function PeriodicCreditService(
 
   return {
     tryCreatePeriodicCredit,
+    getNextUpdateEpoch,
   };
 }
 

@@ -7,13 +7,14 @@ import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TextField from '@material-ui/core/TextField';
-import { DateTime, Duration } from 'luxon';
+import { DateTime } from 'luxon';
 import React, { useEffect, useState } from 'react';
 import Container from '../components/shared/Container';
 import { useAdminService } from '../contexts';
 import useAdminRoute from '../util/useAdminRoute';
 import useQuery from '../util/useQuery';
 import PATHS from './paths';
+import { formatSecondsWithHours } from '../util/timeFormatters';
 
 // TODO keep this generic so that it can be co-opted to display transactions for users
 export default function TransactionsPage() {
@@ -35,10 +36,6 @@ export default function TransactionsPage() {
     return adminRedirect;
   }
 
-  const formatSeconds = (seconds) =>
-    Duration.fromObject({ seconds }).toFormat(
-      "hh 'hours' mm 'minutes' ss 'seconds'"
-    );
   const userCallTime = users.filter(
     (user) => Number(user.id) === Number(userId)
   )[0]?.callTime;
@@ -59,7 +56,7 @@ export default function TransactionsPage() {
         Transactions
       </Typography>
       <Typography variant="body1">
-        Balance: {formatSeconds(userCallTime)}
+        Balance: {formatSecondsWithHours(userCallTime)}
       </Typography>
       <form onSubmit={onSubmit}>
         <TextField
@@ -89,7 +86,9 @@ export default function TransactionsPage() {
                     )}
                   </TableCell>
                   <TableCell>{transaction.reference}</TableCell>
-                  <TableCell>{formatSeconds(transaction.amount)}</TableCell>
+                  <TableCell>
+                    {formatSecondsWithHours(transaction.amount)}
+                  </TableCell>
                 </TableRow>
               ))}
           </TableBody>

@@ -14,13 +14,13 @@ import Select from '@material-ui/core/Select';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import TextField from '@material-ui/core/TextField';
-import { Duration } from 'luxon';
 import { Link } from 'react-router-dom';
 import { useAllowlistService, useAdminService } from '../contexts';
 import { PrimaryButton } from '../components/shared/RoundedButton';
 import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
 import useAdminRoute from '../util/useAdminRoute';
 import PATHS from './paths';
+import { formatSecondsWithHours } from '../util/timeFormatters';
 
 function AllowlistTabContent() {
   const [allowlistState, allowlistService] = useAllowlistService();
@@ -146,11 +146,6 @@ function UserTabContent() {
     }
   }, [adminService]);
 
-  const formatSeconds = (seconds) =>
-    Duration.fromObject({ seconds }).toFormat(
-      "hh 'hours' mm 'minutes' ss 'seconds'"
-    );
-
   return (
     <>
       <Typography variant="h5" component="h2">
@@ -173,7 +168,7 @@ function UserTabContent() {
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.phoneNumber}</TableCell>
                 <TableCell>{user.destinationCountry}</TableCell>
-                <TableCell>{formatSeconds(user.callTime)}</TableCell>
+                <TableCell>{formatSecondsWithHours(user.callTime)}</TableCell>
                 <TableCell>
                   <Link to={`${PATHS.TRANSACTIONS}?user=${user.id}`}>
                     Transaction history
