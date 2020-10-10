@@ -16,20 +16,21 @@ function CallService(
 ) {
   async function checkWalletBalance(userId: number) {
     const wallet = await walletService.getWalletForUser(userId);
+    logger.info('Wallet call time is %s', wallet.callTime);
     if (wallet.callTime <= 0) {
       throw new Error('Validation Error: INSUFFICIENT_CALL_TIME');
     }
   }
 
+  // TODO This is actually wrong, we should be authorizing the token, not the call
   async function validateCall(userId: number, contactId: number) {
-    logger.info('validating call for', userId, contactId);
     const user = await userService.getUser(userId);
     if (!user.isPhoneNumberValidated) {
       throw new Error(`Authorization error for user ${userId}`);
     }
 
     if (shouldEnableCallLimits(userId)) {
-      checkWalletBalance(userId);
+      await checkWalletBalance(userId);
     }
 
     const userContacts = await contactService.listContactsByUserId(userId);

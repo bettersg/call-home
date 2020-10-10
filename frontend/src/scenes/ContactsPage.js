@@ -10,6 +10,7 @@ import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import CallIcon from '@material-ui/icons/Call';
+import PhoneDisabledIcon from '@material-ui/icons/PhoneDisabled';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import FeedbackIcon from '@material-ui/icons/Feedback';
 import PhoneInTalkIcon from '@material-ui/icons/PhoneInTalk';
@@ -35,6 +36,7 @@ import {
 import { getNextRefreshTime } from '../services/PeriodicCredit';
 import { getFeatures } from '../services/Feature';
 import PATHS from './paths';
+import './ContactsPage.css';
 
 const COUNTRIES = {
   en: {
@@ -151,6 +153,17 @@ const withDialogButtonStyles = withStyles(() => ({
     margin: '0 0.5rem',
   },
 }));
+
+const InfoItem = withStyles((theme) => ({
+  root: {
+    color: theme.palette.primary[900],
+  },
+}))(Typography);
+const ErrorInfoItem = withStyles((theme) => ({
+  root: {
+    color: theme.palette.error.main,
+  },
+}))(Typography);
 
 const DialogNeutralButton = withDialogButtonStyles(NeutralButton);
 const DialogPrimaryButton = withDialogButtonStyles(PrimaryButton);
@@ -379,30 +392,41 @@ function CallLimitInfo({ user, contacts, locale }) {
     });
   }, []);
 
+  const CallTimeInfoItem = user.callTime <= 0 ? ErrorInfoItem : InfoItem;
+
   return (
-    <div
-      className="info-container"
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-      }}
-    >
-      <div>
+    <div className="info-container" style={{ marginTop: '12px' }}>
+      <CallTimeInfoItem className="info-item">
         <PhoneInTalkIcon />
         {formatSecondsInHoursMinutes(user.callTime)}
-      </div>
+      </CallTimeInfoItem>
 
-      <div>
+      <InfoItem className="info-item">
         <AutorenewIcon />
         {nextRefreshDuration
           ? `in ${formatDurationInDaysHoursMinutes(nextRefreshDuration)}`
           : ''}
-      </div>
-      <div>
+      </InfoItem>
+      <InfoItem className="info-item">
         <FavoriteIcon />
         {contacts.length} {STRINGS[locale].CONTACTS_LOVED_ONES_LABEL}
-      </div>
+      </InfoItem>
     </div>
+  );
+}
+
+function CallContactButton({ contactService, contact, disabled }) {
+  const onClick = disabled
+    ? null
+    : () => {
+        contactService.setActiveContact(contact);
+      };
+  const Icon = disabled ? PhoneDisabledIcon : ContactCallIcon;
+
+  return (
+    <IconButton style={{ padding: '0' }} onClick={onClick} disabled={disabled}>
+      <Icon />
+    </IconButton>
   );
 }
 
@@ -443,7 +467,6 @@ export default function ContactsPage({ locale }) {
   };
 
   const openFeedbackDialog = () => setIsFeedbackDialogOpen(true);
-  const shouldRenderCallLimits = features.CALL_LIMITS;
 
   return (
     <Container
@@ -559,14 +582,11 @@ export default function ContactsPage({ locale }) {
                       </div>
                     </div>
                   </div>
-                  <IconButton
-                    style={{ padding: '0' }}
-                    onClick={() => {
-                      contactService.setActiveContact(contact);
-                    }}
-                  >
-                    <ContactCallIcon />
-                  </IconButton>
+                  <CallContactButton
+                    contactService={contactService}
+                    contact={contact}
+                    disabled={features.CALL_LIMITS && user.callTime <= 0}
+                  />
                 </ContactBox>
               </ListItem>
             ))}
@@ -592,7 +612,7 @@ export default function ContactsPage({ locale }) {
           />
           <div>{STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}</div>
         </AddContactButton>
-        {shouldRenderCallLimits ? (
+        {features.CALL_LIMITS ? (
           <CallLimitInfo user={user} contacts={contacts} locale={locale} />
         ) : null}
       </div>

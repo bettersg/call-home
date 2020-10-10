@@ -157,10 +157,8 @@ class TwilioCallService extends TypedEventEmitter<
         duration: Number(duration),
       });
       await twilioCall.reload();
-      this.emit('twilio-call-updated', {
-        type: 'twilio-call-updated',
-        twilioCall,
-      });
+      // TODO seems like it might be possible to create duplicate transactions, there should be a way to protect against this.
+      this.createTransactionForTwilioCall(twilioCall);
       return;
     }
     if (twilioParentCall.status === 'completed') {

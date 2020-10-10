@@ -5,12 +5,14 @@ import CloseIcon from '@material-ui/icons/Close';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import { DateTime } from 'luxon';
 import { Redirect } from 'react-router-dom';
 import { useUserService, useContactService } from '../contexts';
 import PATHS from './paths';
 import Container from '../components/shared/Container';
 import DetectBrowserSnackbar from '../components/shared/DetectBrowserSnackbar';
 import { makeCall, isTransientIssue } from '../services/TwilioCall';
+import { formatCallTime } from '../util/timeFormatters';
 
 const EN_STRINGS = {
   CALLING_CONNECTING: 'Connecting...',
@@ -75,6 +77,8 @@ function subscribeToOptionalDevice(device, eventName, listener) {
 export default function CallingPage({ locale }) {
   const [hasAttemptedConnection, setHasAttemptedConnection] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [connectTime, setConnectTime] = useState(null);
+  const [currentTime, setCurrentTime] = useState(null);
   const [wasCallSuccessful, setWasCallSuccessful] = useState(false);
   const [hasUserDisconnected, setHasUserDisconnected] = useState(false);
   const [activeConnection, setActiveConnection] = useState(null);
@@ -92,6 +96,7 @@ export default function CallingPage({ locale }) {
     const status = device.status();
     if (status === 'busy') {
       setIsConnected(true);
+      setConnectTime(DateTime.local());
       setWasCallSuccessful(true);
     } else {
       setIsConnected(false);
@@ -120,6 +125,14 @@ export default function CallingPage({ locale }) {
   useEffect(() => {
     return subscribeToDeviceStatusEvent('offline');
   }, [subscribeToDeviceStatusEvent]);
+
+  useEffect(() => {
+    if (!isConnected) {
+      return undefined;
+    }
+    const interval = setInterval(() => setCurrentTime(DateTime.local()), 1000);
+    return () => clearInterval(interval);
+  }, [isConnected]);
 
   // Errors don't seem to always correspond to status changes. We can capture these and if the calls 'fail' (however we detect that), we present messages to the user.
   useEffect(() => {
@@ -216,9 +229,14 @@ export default function CallingPage({ locale }) {
 
   const avatarUrl = `/images/avatars/${activeContact.avatar}.svg`;
 
+  let callDuration = null;
+  if (currentTime && connectTime) {
+    callDuration = currentTime.diff(connectTime);
+  }
+
   let connectionMessage;
   if (isConnected) {
-    connectionMessage = STRINGS[locale].CALLING_CONNECTED;
+    connectionMessage = callDuration ? '' : STRINGS[locale].CALLING_CONNECTED;
   } else if (hasUserDisconnected) {
     connectionMessage = STRINGS[locale].CALLING_CALL_FINISHED;
   } else {
@@ -265,6 +283,11 @@ export default function CallingPage({ locale }) {
           <Typography style={{ marginTop: '4rem' }} variant="h5" component="h2">
             {activeContact.name}
           </Typography>
+          {callDuration && (
+            <Typography variant="body1">
+              {formatCallTime(callDuration)}
+            </Typography>
+          )}
           <Typography variant="body1">{connectionMessage}</Typography>
           {hasAttemptedConnection && lastErrorMessage && !wasCallSuccessful ? (
             <Typography variant="body1" color="error">

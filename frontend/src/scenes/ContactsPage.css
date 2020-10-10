@@ -1,0 +1,9 @@
+.info-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+}

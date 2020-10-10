@@ -4,7 +4,7 @@ import { Duration } from 'luxon';
 const durationUnitsDesc = ['days', 'hours', 'minutes', 'seconds'];
 const durationUnitsConfig = {
   days: {
-    formatToken: 'dd',
+    formatToken: 'd',
     singular: 'day',
   },
   hours: {
@@ -12,11 +12,11 @@ const durationUnitsConfig = {
     singular: 'hour',
   },
   minutes: {
-    formatToken: 'mm',
+    formatToken: 'm',
     singular: 'minute',
   },
   seconds: {
-    formatToken: 'ss',
+    formatToken: 's',
     singular: 'second',
   },
 };
@@ -33,9 +33,18 @@ function humanReadableFormatString(duration, minUnit = null) {
     .filter(([, unitAmount]) => unitAmount)
     .map(([unit, unitAmount]) => {
       const { formatToken, singular } = durationUnitsConfig[unit];
-      return `${formatToken} '${Math.floor(unitAmount) > 1 ? unit : singular}'`;
+      return `${formatToken} '${
+        Math.abs(Math.floor(unitAmount)) > 1 ? unit : singular
+      }'`;
     })
     .join(' ');
+}
+
+function formatNegativeDuration(duration, formatString) {
+  const isNegative = duration.as('seconds') < 0;
+  const positiveDuration = isNegative ? duration.negate() : duration;
+  const positiveFormat = positiveDuration.toFormat(formatString);
+  return isNegative ? `- ${positiveFormat}` : positiveFormat;
 }
 
 function formatDurationInDaysHoursMinutes(rawDuration) {
@@ -46,6 +55,12 @@ function formatDurationInDaysHoursMinutes(rawDuration) {
     duration.days > 0
       ? humanReadableFormatString(duration, 'hours')
       : humanReadableFormatString(duration, 'minutes');
+  return formatNegativeDuration(duration, formatString);
+}
+
+function formatCallTime(rawDuration) {
+  const duration = rawDuration.shiftTo('hours', 'minutes', 'seconds');
+  const formatString = duration.hours > 0 ? 'hh:mm:ss' : 'mm:ss';
   return duration.toFormat(formatString);
 }
 
@@ -59,10 +74,11 @@ function formatSecondsWithHours(seconds) {
 function formatSecondsInHoursMinutes(seconds) {
   const duration = Duration.fromObject({ seconds }).shiftTo('hours', 'minutes');
   const formatString = humanReadableFormatString(duration);
-  return duration.toFormat(formatString);
+  return formatNegativeDuration(duration, formatString);
 }
 
 export {
+  formatCallTime,
   formatSecondsInHoursMinutes,
   formatSecondsWithHours,
   formatDurationInDaysHoursMinutes,
