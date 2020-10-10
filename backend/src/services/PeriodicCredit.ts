@@ -5,7 +5,8 @@ import type { PeriodicCredit as PeriodicCreditEntity } from '../models';
 import type { TransactionService } from './Transaction';
 
 const creditInterval = 'week';
-const creditAmountSeconds = Duration.fromObject({ minutes: 75 }).as('seconds');
+const creditAmount = Duration.fromObject({ minutes: 75 });
+const creditAmountSeconds = creditAmount.as('seconds');
 
 function PeriodicCreditService(
   PeriodicCreditModel: typeof PeriodicCreditEntity,
@@ -20,6 +21,10 @@ function PeriodicCreditService(
       .plus({ [creditInterval]: 1 })
       .startOf(creditInterval)
       .toJSDate();
+  }
+
+  function getNextUpdateAmount() {
+    return creditAmount.toFormat(`mm 'minutes'`);
   }
 
   async function getPeriodicCreditAfterEpoch(userId: number) {
@@ -59,6 +64,7 @@ function PeriodicCreditService(
   return {
     tryCreatePeriodicCredit,
     getNextUpdateEpoch,
+    getNextUpdateAmount,
   };
 }
 

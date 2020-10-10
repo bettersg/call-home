@@ -8,7 +8,7 @@ const durationUnitsConfig = {
     singular: 'day',
   },
   hours: {
-    formatToken: 'hh',
+    formatToken: 'h',
     singular: 'hour',
   },
   minutes: {

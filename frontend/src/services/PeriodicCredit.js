@@ -2,11 +2,11 @@ import apiClient from './apiClient';
 
 const periodicCreditEndpoint = '/periodic-credit';
 
-async function getNextRefreshTime() {
-  const { time } = await apiClient.get(
-    `${periodicCreditEndpoint}/refresh-time/next`
+async function getNextRefresh() {
+  const { time, amount } = await apiClient.get(
+    `${periodicCreditEndpoint}/refresh/next`
   );
-  return time;
+  return { time, amount };
 }
 
-export { getNextRefreshTime };
+export { getNextRefresh };

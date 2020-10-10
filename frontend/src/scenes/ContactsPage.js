@@ -33,7 +33,7 @@ import {
   formatDurationInHoursMinutes,
   formatDurationInDaysHoursMinutes,
 } from '../util/timeFormatters';
-import { getNextRefreshTime } from '../services/PeriodicCredit';
+import { getNextRefresh } from '../services/PeriodicCredit';
 import { getFeatures } from '../services/Feature';
 import PATHS from './paths';
 import './ContactsPage.css';
@@ -68,6 +68,19 @@ const EN_STRINGS = {
   CONTACTS_CANCEL_LABEL: 'Cancel',
   CONTACTS_DELETE_LABEL: 'Delete',
   CONTACTS_DELETE_CONTACT_LABEL: 'Delete contact',
+  // TODO This hardcodes the credit interval
+  CONTACTS_REACHED_CALL_LIMIT_MESSAGE:
+    'You have reached your call limit for the week',
+  CONTACTS_TIME_TO_CREDIT_MESSAGE: function CreditMessage(
+    timeAmount,
+    creditAmount
+  ) {
+    return (
+      <>
+        <strong>{timeAmount}</strong> to {creditAmount} top-up!
+      </>
+    );
+  },
   CONTACTS_CANNOT_UNDO_MESSAGE: 'This action cannot be undone',
   CONTACTS_UNKNOWN_ERROR_MESSAGE: 'Unknown error',
   errors: {
@@ -383,18 +396,14 @@ function EditContactDialog({ contact, open, onClose, locale }) {
   );
 }
 
-function CallLimitInfo({ user, contacts, locale }) {
-  const [nextRefreshDuration, setNextRefreshDuration] = useState(null);
-
-  useEffect(() => {
-    getNextRefreshTime().then((nextRefreshString) => {
-      setNextRefreshDuration(DateTime.fromISO(nextRefreshString).diffNow());
-    });
-  }, []);
-
-  const userCallTimeDuration = Duration.fromObject({ seconds: user.callTime });
-  const CallTimeInfoItem =
-    userCallTimeDuration.as('minutes') < 1 ? ErrorInfoItem : InfoItem;
+function CallLimitInfo({
+  userCallTimeDuration,
+  contacts,
+  locale,
+  nextRefreshTimeString,
+  callLimitExceeded,
+}) {
+  const CallTimeInfoItem = callLimitExceeded ? ErrorInfoItem : InfoItem;
 
   return (
     <div className="info-container" style={{ marginTop: '12px' }}>
@@ -405,9 +414,7 @@ function CallLimitInfo({ user, contacts, locale }) {
 
       <InfoItem className="info-item">
         <AutorenewIcon />
-        {nextRefreshDuration
-          ? `in ${formatDurationInDaysHoursMinutes(nextRefreshDuration)}`
-          : ''}
+        {nextRefreshTimeString ? `in ${nextRefreshTimeString}` : ''}
       </InfoItem>
       <InfoItem className="info-item">
         <FavoriteIcon />
@@ -441,6 +448,8 @@ export default function ContactsPage({ locale }) {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
   const [contactToEdit, setContactToEdit] = useState(null);
+  const [nextRefreshTimeString, setNextRefreshTimeString] = useState(null);
+  const [nextRefreshAmount, setNextRefreshAmount] = useState(null);
 
   useEffect(() => {
     if (userService) {
@@ -453,6 +462,17 @@ export default function ContactsPage({ locale }) {
       contactService.refreshContacts(user.id);
     }
   }, [contactService, user]);
+
+  useEffect(() => {
+    getNextRefresh().then(({ time, amount }) => {
+      const nextRefreshDuration = DateTime.fromISO(time).diffNow();
+      setNextRefreshTimeString(
+        formatDurationInDaysHoursMinutes(nextRefreshDuration)
+      );
+      setNextRefreshAmount(amount);
+    });
+  }, []);
+
   useEffect(() => {
     getFeatures().then(setFeatures);
   }, []);
@@ -469,6 +489,37 @@ export default function ContactsPage({ locale }) {
   };
 
   const openFeedbackDialog = () => setIsFeedbackDialogOpen(true);
+  const userCallTimeDuration = Duration.fromObject({ seconds: user.callTime });
+  const callLimitExceeded =
+    features.CALL_LIMITS && userCallTimeDuration.as('minutes') < 1;
+
+  const subtitleContent = callLimitExceeded ? (
+    <>
+      <Typography variant="body1" color="error">
+        {STRINGS[locale].CONTACTS_REACHED_CALL_LIMIT_MESSAGE}
+      </Typography>
+      <Typography
+        variant="body1"
+        style={{
+          marginBottom: '12px',
+        }}
+      >
+        {STRINGS[locale].CONTACTS_TIME_TO_CREDIT_MESSAGE(
+          nextRefreshTimeString,
+          nextRefreshAmount
+        )}
+      </Typography>
+    </>
+  ) : (
+    <Typography
+      variant="body1"
+      style={{
+        marginBottom: '12px',
+      }}
+    >
+      {STRINGS[locale].CONTACTS_SUBTITLE}
+    </Typography>
+  );
 
   return (
     <Container
@@ -478,17 +529,16 @@ export default function ContactsPage({ locale }) {
       }}
     >
       <DetectBrowserSnackbar />
-      <Typography variant="h5" component="h1">
-        {STRINGS[locale].CONTACTS_TITLE}
-      </Typography>
       <Typography
-        variant="body1"
+        variant="h5"
+        component="h1"
         style={{
           marginBottom: '12px',
         }}
       >
-        {STRINGS[locale].CONTACTS_SUBTITLE}
+        {STRINGS[locale].CONTACTS_TITLE}
       </Typography>
+      {subtitleContent}
       <Typography
         variant="body1"
         style={{
@@ -587,7 +637,7 @@ export default function ContactsPage({ locale }) {
                   <CallContactButton
                     contactService={contactService}
                     contact={contact}
-                    disabled={features.CALL_LIMITS && user.callTime <= 0}
+                    disabled={callLimitExceeded}
                   />
                 </ContactBox>
               </ListItem>
@@ -615,7 +665,13 @@ export default function ContactsPage({ locale }) {
           <div>{STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}</div>
         </AddContactButton>
         {features.CALL_LIMITS ? (
-          <CallLimitInfo user={user} contacts={contacts} locale={locale} />
+          <CallLimitInfo
+            userCallTimeDuration={userCallTimeDuration}
+            contacts={contacts}
+            locale={locale}
+            nextRefreshTimeString={nextRefreshTimeString}
+            callLimitExceeded={callLimitExceeded}
+          />
         ) : null}
       </div>
       <div
