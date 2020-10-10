@@ -34,7 +34,7 @@ function humanReadableFormatString(duration, minUnit = null) {
     .map(([unit, unitAmount]) => {
       const { formatToken, singular } = durationUnitsConfig[unit];
       return `${formatToken} '${
-        Math.abs(Math.floor(unitAmount)) > 1 ? unit : singular
+        Math.abs(Math.floor(unitAmount)) === 1 ? singular : unit
       }'`;
     })
     .join(' ');
@@ -64,6 +64,12 @@ function formatCallTime(rawDuration) {
   return duration.toFormat(formatString);
 }
 
+function formatDurationInHoursMinutes(rawDuration) {
+  const duration = rawDuration.shiftTo('hours', 'minutes');
+  const formatString = humanReadableFormatString(duration);
+  return formatNegativeDuration(duration, formatString);
+}
+
 // TODO figure out how to name these consistently
 function formatSecondsWithHours(seconds) {
   return Duration.fromObject({ seconds }).toFormat(
@@ -71,15 +77,9 @@ function formatSecondsWithHours(seconds) {
   );
 }
 
-function formatSecondsInHoursMinutes(seconds) {
-  const duration = Duration.fromObject({ seconds }).shiftTo('hours', 'minutes');
-  const formatString = humanReadableFormatString(duration);
-  return formatNegativeDuration(duration, formatString);
-}
-
 export {
   formatCallTime,
-  formatSecondsInHoursMinutes,
+  formatDurationInHoursMinutes,
   formatSecondsWithHours,
   formatDurationInDaysHoursMinutes,
 };

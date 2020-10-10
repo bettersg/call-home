@@ -16,7 +16,7 @@ import FeedbackIcon from '@material-ui/icons/Feedback';
 import PhoneInTalkIcon from '@material-ui/icons/PhoneInTalk';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import FavoriteIcon from '@material-ui/icons/Favorite';
-import { DateTime } from 'luxon';
+import { DateTime, Duration } from 'luxon';
 import DetectBrowserSnackbar from '../components/shared/DetectBrowserSnackbar';
 import Container from '../components/shared/Container';
 import {
@@ -30,7 +30,7 @@ import { useUserService, useContactService } from '../contexts';
 import { ApiValidationError } from '../services/apiClient';
 import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
 import {
-  formatSecondsInHoursMinutes,
+  formatDurationInHoursMinutes,
   formatDurationInDaysHoursMinutes,
 } from '../util/timeFormatters';
 import { getNextRefreshTime } from '../services/PeriodicCredit';
@@ -392,13 +392,15 @@ function CallLimitInfo({ user, contacts, locale }) {
     });
   }, []);
 
-  const CallTimeInfoItem = user.callTime <= 0 ? ErrorInfoItem : InfoItem;
+  const userCallTimeDuration = Duration.fromObject({ seconds: user.callTime });
+  const CallTimeInfoItem =
+    userCallTimeDuration.as('minutes') < 1 ? ErrorInfoItem : InfoItem;
 
   return (
     <div className="info-container" style={{ marginTop: '12px' }}>
       <CallTimeInfoItem className="info-item">
         <PhoneInTalkIcon />
-        {formatSecondsInHoursMinutes(user.callTime)}
+        {formatDurationInHoursMinutes(userCallTimeDuration)}
       </CallTimeInfoItem>
 
       <InfoItem className="info-item">
