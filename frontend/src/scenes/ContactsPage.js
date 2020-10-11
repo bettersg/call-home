@@ -407,17 +407,17 @@ function CallLimitInfo({
 
   return (
     <div className="info-container" style={{ marginTop: '12px' }}>
-      <CallTimeInfoItem className="info-item">
-        <PhoneInTalkIcon />
+      <CallTimeInfoItem variant="subtitle2" className="info-item">
+        <PhoneInTalkIcon className="info-icon" />
         {formatDurationInHoursMinutes(userCallTimeDuration)}
       </CallTimeInfoItem>
 
-      <InfoItem className="info-item">
-        <AutorenewIcon />
+      <InfoItem variant="subtitle2" className="info-item">
+        <AutorenewIcon className="info-icon" />
         {nextRefreshTimeString ? `in ${nextRefreshTimeString}` : ''}
       </InfoItem>
-      <InfoItem className="info-item">
-        <FavoriteIcon />
+      <InfoItem variant="subtitle2" className="info-item">
+        <FavoriteIcon className="info-icon" />
         {contacts.length} {STRINGS[locale].CONTACTS_LOVED_ONES_LABEL}
       </InfoItem>
     </div>

@@ -4,6 +4,7 @@ import PATHS from './paths';
 import {
   AdminPage,
   Login,
+  CallLimitOnboardPage,
   CallingPage,
   ContactsPage,
   TransactionsPage,
@@ -35,6 +36,9 @@ export default function SceneRouter() {
       </Route>
       <Route path={PATHS.CALLING}>
         <CallingPage locale={locale} />
+      </Route>
+      <Route path={PATHS.CALL_LIMIT_ONBOARD}>
+        <CallLimitOnboardPage locale={locale} />
       </Route>
       <Route path={PATHS.CONTACTS}>
         <ContactsPage locale={locale} />

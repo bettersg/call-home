@@ -11,6 +11,9 @@ const PrimaryButton = withStyles((theme) => ({
   root: {
     backgroundColor: theme.palette.primary[700],
     color: 'white',
+    '&:hover': {
+      backgroundColor: theme.palette.primary[700],
+    },
   },
 }))(RoundedButton);
 

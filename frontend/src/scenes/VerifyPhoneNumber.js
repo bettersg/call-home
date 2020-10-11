@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { Redirect } from 'react-router-dom';
+import { getFeatures } from '../services/Feature';
 import Container from '../components/shared/Container';
 import { useUserService } from '../contexts';
 import { PrimaryButton } from '../components/shared/RoundedButton';
@@ -27,21 +28,36 @@ const STRINGS = {
 export default function PhoneNumberForm({ locale }) {
   const [userState, userService] = useUserService();
   const { me: user, verificationPhoneNumber } = userState;
-  console.log(user);
+  const [userRequestInFlight, setUserRequestInFlight] = useState(true);
+  const [features, setFeatures] = useState({});
+  const [featureRequestInFlight, setFeatureRequestInFlight] = useState(true);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isTouched, setIsTouched] = useState(false);
 
   useEffect(() => {
     if (userService) {
-      userService.refreshSelf();
+      userService.refreshSelf().finally(() => setUserRequestInFlight(false));
     }
   }, [userService]);
 
+  useEffect(() => {
+    getFeatures()
+      .then(setFeatures)
+      .finally(() => setFeatureRequestInFlight(false));
+  }, []);
+
   if (!user) {
-    return <Redirect to={PATHS.LOGIN} />;
+    return userRequestInFlight ? null : <Redirect to={PATHS.LOGIN} />;
   }
   if (user.isVerified) {
-    return <Redirect to={PATHS.CONTACTS} />;
+    if (featureRequestInFlight) {
+      return null;
+    }
+    return (
+      <Redirect
+        to={features.CALL_LIMITS ? PATHS.CALL_LIMIT_ONBOARD : PATHS.CONTACTS}
+      />
+    );
   }
   if (verificationPhoneNumber) {
     return <Redirect to={PATHS.VERIFY_PHONE_NUMBER_CODE} />;
