@@ -534,6 +534,7 @@ export default function ContactsPage({ locale }) {
         component="h1"
         style={{
           marginBottom: '12px',
+          fontWeight: '700',
         }}
       >
         {STRINGS[locale].CONTACTS_TITLE}
@@ -559,7 +560,6 @@ export default function ContactsPage({ locale }) {
             width: '100%',
             // 20em to accomodate logout and add contact button
             maxHeight: 'calc(var(--viewport-height) - 20rem)',
-            padding: '0.5rem',
           }}
         >
           <List
@@ -573,8 +573,7 @@ export default function ContactsPage({ locale }) {
                 key={contact.id}
                 style={{
                   marginBottom: '0.5rem',
-                  paddingBottom: '0',
-                  paddingTop: '0',
+                  padding: '0',
                 }}
               >
                 <ContactBox
