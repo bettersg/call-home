@@ -3,6 +3,7 @@ import { Op } from 'sequelize';
 import { sanitizeDbErrors } from './lib';
 import type { PeriodicCredit as PeriodicCreditEntity } from '../models';
 import type { TransactionService } from './Transaction';
+import { shouldEnableCallLimits } from './Feature';
 
 const creditInterval = 'month';
 const creditAmount = Duration.fromObject({ minutes: 300 });
@@ -38,7 +39,12 @@ function PeriodicCreditService(
     });
   }
 
-  async function tryCreatePeriodicCredit(userId: number) {
+  async function tryCreatePeriodicCredit(
+    userId: number
+  ): Promise<PeriodicCreditEntity | null> {
+    if (!shouldEnableCallLimits(userId)) {
+      return null;
+    }
     // We don't create credits for users by default. We only credit users when they log in/interact with the app in some way. As such, we need to ensure that we only credit users once per period.
     // We do this by determining the start of a top up interval, the "epoch".
     // If the user has a credit that is later than the top up interval, the user does not get a credit.
