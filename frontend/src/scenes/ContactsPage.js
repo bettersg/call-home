@@ -404,7 +404,6 @@ function CallLimitInfo({
   callLimitExceeded,
 }) {
   const CallTimeInfoItem = callLimitExceeded ? ErrorInfoItem : InfoItem;
-
   return (
     <div className="info-container" style={{ marginTop: '12px' }}>
       <CallTimeInfoItem variant="subtitle2" className="info-item">

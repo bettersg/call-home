@@ -28,7 +28,7 @@ function humanReadableFormatString(duration, minUnit = null) {
     unitsToUse = durationUnitsDesc.slice(0, lastIndex + 1);
   }
 
-  return unitsToUse
+  const nonzeroFormatString = unitsToUse
     .map((unit) => [unit, duration[unit]])
     .filter(([, unitAmount]) => unitAmount)
     .map(([unit, unitAmount]) => {
@@ -38,6 +38,12 @@ function humanReadableFormatString(duration, minUnit = null) {
       }'`;
     })
     .join(' ');
+  if (nonzeroFormatString) {
+    return nonzeroFormatString;
+  }
+  const lastUnit = unitsToUse[unitsToUse.length - 1];
+  const { formatToken } = durationUnitsConfig[lastUnit];
+  return `${formatToken} '${lastUnit}'`;
 }
 
 function formatNegativeDuration(duration, formatString) {
@@ -66,7 +72,7 @@ function formatCallTime(rawDuration) {
 
 function formatDurationInHoursMinutes(rawDuration) {
   const duration = rawDuration.shiftTo('hours', 'minutes');
-  const formatString = humanReadableFormatString(duration);
+  const formatString = humanReadableFormatString(duration, 'minutes');
   return formatNegativeDuration(duration, formatString);
 }
 
