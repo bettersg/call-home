@@ -4,8 +4,8 @@ import { sanitizeDbErrors } from './lib';
 import type { PeriodicCredit as PeriodicCreditEntity } from '../models';
 import type { TransactionService } from './Transaction';
 
-const creditInterval = 'week';
-const creditAmount = Duration.fromObject({ minutes: 75 });
+const creditInterval = 'month';
+const creditAmount = Duration.fromObject({ minutes: 300 });
 const creditAmountSeconds = creditAmount.as('seconds');
 
 function PeriodicCreditService(

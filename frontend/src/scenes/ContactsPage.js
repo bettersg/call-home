@@ -70,7 +70,7 @@ const EN_STRINGS = {
   CONTACTS_DELETE_CONTACT_LABEL: 'Delete contact',
   // TODO This hardcodes the credit interval
   CONTACTS_REACHED_CALL_LIMIT_MESSAGE:
-    'You have reached your call limit for the week',
+    'You have reached your call limit for the month',
   CONTACTS_TIME_TO_CREDIT_MESSAGE: function CreditMessage(
     timeAmount,
     creditAmount

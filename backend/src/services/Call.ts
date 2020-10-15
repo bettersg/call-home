@@ -6,7 +6,8 @@ import { shouldEnableCallLimits } from './Feature';
 import type { Call as CallEntity } from '../models';
 import type Wallet from './Wallet';
 
-const callAggregationPeriod = 'week';
+// TODO this isn't really used
+const callAggregationPeriod = 'month';
 
 function CallService(
   CallModel: typeof CallEntity,

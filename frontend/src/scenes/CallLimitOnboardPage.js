@@ -14,15 +14,14 @@ const pageContent = [
   },
   {
     imageUrl: '/images/walkthrough/page_2.svg',
-    title: '100 min per week of talktime',
-    body:
-      'Each week, you can call up to 100 min. Next week, we’ll automatically top up another 100. No need IDD cards!',
+    title: 'Get more talktime every month',
+    body: 'You get more talktime every month. No need for IDD cards!',
   },
   {
     imageUrl: '/images/walkthrough/page_3.svg',
     title: 'Rollover your extra minutes',
     body:
-      'If you have extra minutes at the end of the week, you can use them in the next week. No wasted minutes!',
+      'If you have extra minutes at the end of the month, you can use them in the next month. No wasted minutes!',
   },
   {
     imageUrl: '/images/walkthrough/page_4.svg',
