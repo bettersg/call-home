@@ -1,5 +1,6 @@
 import { logger } from '../config';
 import type { Wallet as WalletEntity } from '../models';
+import { shouldEnableCallLimits } from './Feature';
 import type {
   TransactionService,
   TransactionCreatedPayload,
@@ -53,6 +54,10 @@ class WalletService {
 
   processTransaction = async (userId: number, amount: number) => {
     const wallet = await this.getWalletForUser(userId);
+    // If call limits are not enabled, we don't subtract from the user's balance.
+    if (!shouldEnableCallLimits(userId)) {
+      return wallet;
+    }
     await this.walletModel.update(
       {
         callTime: wallet.callTime + amount,
