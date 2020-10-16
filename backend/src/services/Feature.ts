@@ -1,8 +1,12 @@
-const { CALL_LIMITS_ENABLED_NUMBERS = '' } = process.env;
+const { CALL_LIMITS_ENABLED_NUMBERS = '', CALL_LIMIT_ONBOARDING } = process.env;
 const callLimitNumbers = CALL_LIMITS_ENABLED_NUMBERS.split(',').map(Number);
 
 function shouldEnableCallLimits(userId: number) {
   return callLimitNumbers.includes(Number(userId));
 }
 
-export { shouldEnableCallLimits };
+function shouldShowCallLimitOnboarding() {
+  return Boolean(CALL_LIMIT_ONBOARDING);
+}
+
+export { shouldEnableCallLimits, shouldShowCallLimitOnboarding };

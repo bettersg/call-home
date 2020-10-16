@@ -55,7 +55,11 @@ export default function PhoneNumberForm({ locale }) {
     }
     return (
       <Redirect
-        to={features.CALL_LIMITS ? PATHS.CALL_LIMIT_ONBOARD : PATHS.CONTACTS}
+        to={
+          features.CALL_LIMIT_ONBOARDING
+            ? PATHS.CALL_LIMIT_ONBOARD
+            : PATHS.CONTACTS
+        }
       />
     );
   }
