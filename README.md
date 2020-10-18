@@ -51,6 +51,34 @@ docker-compose up --build
 docker-compose up
 ```
 
+To use postgres as your development database:
+
+```bash
+# backend/.env
+...
+...
+DATABASE_URL=postgresql://postgres:password@db:5432/callhome
+...
+...
+```
+
+If you are already using common ports, you can select the port for access via localhost in `docker-compose.yml`.
+
+There is no need to change the mentioned `DATABASE_URL` as that reference is within the docker network, not on your localhost.
+
+Just change the `ports` configuration.
+
+```bash
+# docker-compose.yml
+...
+...
+    ports:
+      - DESIRED_PORT:DONT_CHANGE_THIS
+...
+...
+```
+
+
 ### Frontend
 
 ```bash
