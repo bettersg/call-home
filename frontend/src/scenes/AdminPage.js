@@ -1,5 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import Tabs from '@material-ui/core/Tabs';
+import Switch from '@material-ui/core/Switch';
 import Tab from '@material-ui/core/Tab';
 import Table from '@material-ui/core/Table';
 import TableContainer from '@material-ui/core/TableContainer';
@@ -26,6 +27,11 @@ function AllowlistTabContent() {
   const [allowlistState, allowlistService] = useAllowlistService();
   const { allowlistEntries = [] } = allowlistState;
   const [newAllowlistPhoneNumber, setNewAllowlistPhoneNumber] = useState('');
+  const [
+    newAllowlistMultiplePhoneNumbers,
+    setNewAllowlistMultiplePhoneNumbers,
+  ] = useState('');
+  const [useMultipleNumbers, setUseMultipleNumbers] = useState(false);
   const [newAllowlistCountry, setNewAllowlistCountry] = useState('');
 
   useEffect(() => {
@@ -36,7 +42,21 @@ function AllowlistTabContent() {
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    await allowlistService.createAllowlistEntry({
+    if (useMultipleNumbers) {
+      const newNumbers = newAllowlistMultiplePhoneNumbers.split('\n');
+      const newAllowListRequests = newNumbers.map(async (newNumber) => {
+        try {
+          await allowlistService.createAllowlistEntry({
+            phoneNumber: `+65${newNumber}`,
+            destinationCountry: newAllowlistCountry,
+          });
+        } catch (error) {
+          console.error(`Failed to create entry for ${newNumber}`);
+        }
+      });
+      return Promise.all(newAllowListRequests);
+    }
+    return allowlistService.createAllowlistEntry({
       phoneNumber: `+65${newAllowlistPhoneNumber}`,
       destinationCountry: newAllowlistCountry,
     });
@@ -44,6 +64,14 @@ function AllowlistTabContent() {
 
   const deleteAllowlistEntry = async (id) => {
     await allowlistService.deleteAllowlistEntry(id);
+  };
+
+  const handlePhoneNumberChange = (event) => {
+    if (useMultipleNumbers) {
+      setNewAllowlistMultiplePhoneNumbers(event.target.value);
+    } else {
+      setNewAllowlistPhoneNumber(event.target.value);
+    }
   };
 
   const newEntryForm = (
@@ -55,19 +83,33 @@ function AllowlistTabContent() {
       }}
       onSubmit={onSubmit}
     >
-      <TextField
-        style={{
-          marginBottom: '12px',
-          background: 'white',
-        }}
-        variant="outlined"
-        label="Phone number"
-        value={newAllowlistPhoneNumber}
-        onChange={(event) => setNewAllowlistPhoneNumber(event.target.value)}
-        InputProps={{
-          inputComponent: PhoneNumberMasks.SG,
-        }}
-      />
+      {useMultipleNumbers ? (
+        <TextField
+          style={{
+            marginBottom: '12px',
+            background: 'white',
+          }}
+          multiline
+          variant="outlined"
+          label="Phone numbers"
+          value={newAllowlistMultiplePhoneNumbers}
+          onChange={handlePhoneNumberChange}
+        />
+      ) : (
+        <TextField
+          style={{
+            marginBottom: '12px',
+            background: 'white',
+          }}
+          variant="outlined"
+          label="Phone number"
+          value={newAllowlistPhoneNumber}
+          onChange={handlePhoneNumberChange}
+          InputProps={{
+            inputComponent: PhoneNumberMasks.SG,
+          }}
+        />
+      )}
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <InputLabel id="allowlist-country-label">Country</InputLabel>
         <Select
@@ -93,6 +135,11 @@ function AllowlistTabContent() {
       <Typography variant="body2" component="h3">
         New entry
       </Typography>
+      <Switch
+        name="useMultipleNumbers"
+        checked={useMultipleNumbers}
+        onChange={() => setUseMultipleNumbers(!useMultipleNumbers)}
+      />
       {newEntryForm}
       <Typography variant="body2" component="h3">
         Current entries
