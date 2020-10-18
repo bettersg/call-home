@@ -9,6 +9,8 @@ services:
       - 4000:4000
     depends_on:
       - db
+    environment:
+      DATABASE_URL: 'postgresql://postgres:password@db:5432/callhome'
   db:
     image: postgres
     restart: always
