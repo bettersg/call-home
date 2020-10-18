@@ -1,35 +1,23 @@
-import { logger } from '../config';
-import { sanitizeDbErrors } from './lib';
+import { sanitizeDbErrors, TypedEventEmitter } from './lib';
 import type { Transaction as TransactionEntity } from '../models';
-import type TwilioCallService from './TwilioCall';
-import type CallService from './Call';
 
-class TransactionService {
+export type TransactionServiceEvent = 'transaction-created';
+export interface TransactionCreatedPayload {
+  type: 'transaction-created';
+  transaction: TransactionEntity;
+}
+export type TransactionServicePayload = TransactionCreatedPayload;
+
+// TODO We're not doing this event emitter thing any more.
+class TransactionService extends TypedEventEmitter<
+  TransactionServiceEvent,
+  TransactionServicePayload
+> {
   transactionModel: typeof TransactionEntity;
 
-  twilioCallService: TwilioCallService;
-
-  callService: ReturnType<typeof CallService>;
-
-  constructor(
-    transactionModel: typeof TransactionEntity,
-    twilioCallService: TwilioCallService,
-    callService: ReturnType<typeof CallService>
-  ) {
+  constructor(transactionModel: typeof TransactionEntity) {
+    super();
     this.transactionModel = transactionModel;
-    this.twilioCallService = twilioCallService;
-    this.callService = callService;
-    this.twilioCallService.on('twilio-call-updated', async ({ twilioCall }) => {
-      logger.info('Creating transaction for twilio call %s', twilioCall);
-      const callEntity = await callService.getCallByIncomingSid(
-        twilioCall.parentCallSid
-      );
-      await this.createTransaction({
-        reference: 'call',
-        userId: callEntity.userId,
-        amount: -twilioCall.duration,
-      });
-    });
   }
 
   async createTransaction({
@@ -37,13 +25,18 @@ class TransactionService {
     userId,
     amount,
   }: Partial<TransactionEntity>) {
-    return sanitizeDbErrors(() =>
+    const transaction = await sanitizeDbErrors(() =>
       this.transactionModel.create({
         reference,
         userId,
         amount,
       })
     );
+    this.emit('transaction-created', {
+      type: 'transaction-created',
+      transaction,
+    });
+    return transaction;
   }
 
   async getTransactionsForUser(userId: number) {
@@ -51,8 +44,10 @@ class TransactionService {
       where: {
         userId,
       },
+      order: [['createdAt', 'DESC']],
     });
   }
 }
 
+export { TransactionService };
 export default TransactionService;

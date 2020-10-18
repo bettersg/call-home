@@ -19,6 +19,9 @@ import {
   Twilio as twilioRoutes,
   OAuth as oauthRoutes,
   Passwordless as passwordlessRoutes,
+  Transaction as transactionRoutes,
+  Feature as featureRoutes,
+  PeriodicCredit as periodicCreditRoutes,
   middlewares,
 } from './routes';
 import {
@@ -60,6 +63,11 @@ if (NODE_ENV === 'production' || NODE_ENV === 'staging') {
 
 // Make sure oauth is first and NOT secured
 app.use('/oauth', oauthRoutes);
+// We'll also show the periodic credit stuff
+app.use('/periodic-credit', periodicCreditRoutes);
+
+// TODO Features are a bit weird because we have per-user config. We probably want features for non logged in users too. Should probably use a different middleware for this
+app.use('/features', secureRoutes, featureRoutes);
 app.use('/passwordless', secureRoutes, passwordlessRoutes);
 // Also ensure that twilio is NOT secured by oauth, just twilio auth
 app.use('/twilio', twilioRoutes);
@@ -67,16 +75,13 @@ app.use('/call-token', secureRoutes, requireVerified, callTokenRoutes);
 app.use('/users', secureRoutes, userRoutes);
 app.use('/users', secureRoutes, requireVerified, contactRoutes);
 app.use('/users', secureRoutes, requireVerified, callRoutes);
+app.use('/users', secureRoutes, requireVerified, transactionRoutes);
 app.use('/allowlistEntries', secureRoutes, allowlistRoutes);
 
 if (NODE_ENV === 'development') {
   // proxy requests to development frontend
   app.use('/', proxy('http://localhost:3000'));
 } else {
-  if (NODE_ENV === 'production') {
-    // TODO this is a hack
-    app.use(subdomainRedirect);
-  }
   // STATIC_DIR gets populated in a docker build
   app.use(express.static(STATIC_DIR));
 }

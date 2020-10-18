@@ -12,6 +12,8 @@ COPY frontend/src/ src/
 COPY frontend/public/ public/
 
 ENV NODE_ENV=production
+ARG PUBLIC_URL
+ENV PUBLIC_URL=${PUBLIC_URL}
 RUN npm run build
 
 # backend

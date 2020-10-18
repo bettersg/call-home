@@ -2,21 +2,38 @@ import { DateTime } from 'luxon';
 import { Op } from 'sequelize';
 import { logger } from '../config';
 import { sanitizeDbErrors } from './lib';
+import { shouldEnableCallLimits } from './Feature';
 import type { Call as CallEntity } from '../models';
+import type Wallet from './Wallet';
 
-const callAggregationPeriod = 'week';
+// TODO this isn't really used
+const callAggregationPeriod = 'month';
 
 function CallService(
   CallModel: typeof CallEntity,
   userService: any,
-  contactService: any
+  contactService: any,
+  walletService: Wallet
 ) {
+  async function checkWalletBalance(userId: number) {
+    const wallet = await walletService.getWalletForUser(userId);
+    logger.info('Wallet call time is %s', wallet.callTime);
+    if (wallet.callTime <= 0) {
+      throw new Error('Validation Error: INSUFFICIENT_CALL_TIME');
+    }
+  }
+
+  // TODO This is actually wrong, we should be authorizing the token, not the call
   async function validateCall(userId: number, contactId: number) {
-    logger.info('validating call for', userId, contactId);
     const user = await userService.getUser(userId);
     if (!user.isPhoneNumberValidated) {
       throw new Error(`Authorization error for user ${userId}`);
     }
+
+    if (shouldEnableCallLimits(userId)) {
+      await checkWalletBalance(userId);
+    }
+
     const userContacts = await contactService.listContactsByUserId(userId);
 
     if (

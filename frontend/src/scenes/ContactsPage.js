@@ -10,8 +10,13 @@ import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import CallIcon from '@material-ui/icons/Call';
+import PhoneDisabledIcon from '@material-ui/icons/PhoneDisabled';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import FeedbackIcon from '@material-ui/icons/Feedback';
+import PhoneInTalkIcon from '@material-ui/icons/PhoneInTalk';
+import AutorenewIcon from '@material-ui/icons/Autorenew';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import { DateTime, Duration } from 'luxon';
 import DetectBrowserSnackbar from '../components/shared/DetectBrowserSnackbar';
 import Container from '../components/shared/Container';
 import {
@@ -24,7 +29,14 @@ import ReportIssueDialog from '../components/shared/ReportIssueDialog';
 import { useUserService, useContactService } from '../contexts';
 import { ApiValidationError } from '../services/apiClient';
 import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
+import {
+  formatDurationInHoursMinutes,
+  formatDurationInDaysHoursMinutes,
+} from '../util/timeFormatters';
+import { getNextRefresh } from '../services/PeriodicCredit';
+import { getFeatures } from '../services/Feature';
 import PATHS from './paths';
+import './ContactsPage.css';
 
 const COUNTRIES = {
   en: {
@@ -42,6 +54,7 @@ const COUNTRIES = {
 const EN_STRINGS = {
   CONTACTS_TITLE: 'Your loved ones',
   CONTACTS_SUBTITLE: 'Call your loved ones back home',
+  CONTACTS_LOVED_ONES_LABEL: 'loved ones',
   CONTACTS_ADD_CONTACT_LABEL: 'Add a loved one',
   CONTACTS_ADD_LABEL: 'Add',
   CONTACTS_COUNTRY_LABEL: (code) => `Country: ${COUNTRIES.en[code]}`,
@@ -55,6 +68,19 @@ const EN_STRINGS = {
   CONTACTS_CANCEL_LABEL: 'Cancel',
   CONTACTS_DELETE_LABEL: 'Delete',
   CONTACTS_DELETE_CONTACT_LABEL: 'Delete contact',
+  // TODO This hardcodes the credit interval
+  CONTACTS_REACHED_CALL_LIMIT_MESSAGE:
+    'You have reached your call limit for the month',
+  CONTACTS_TIME_TO_CREDIT_MESSAGE: function CreditMessage(
+    timeAmount,
+    creditAmount
+  ) {
+    return (
+      <>
+        <strong>{timeAmount}</strong> to {creditAmount} top-up!
+      </>
+    );
+  },
   CONTACTS_CANNOT_UNDO_MESSAGE: 'This action cannot be undone',
   CONTACTS_UNKNOWN_ERROR_MESSAGE: 'Unknown error',
   errors: {
@@ -140,6 +166,17 @@ const withDialogButtonStyles = withStyles(() => ({
     margin: '0 0.5rem',
   },
 }));
+
+const InfoItem = withStyles((theme) => ({
+  root: {
+    color: theme.palette.primary[900],
+  },
+}))(Typography);
+const ErrorInfoItem = withStyles((theme) => ({
+  root: {
+    color: theme.palette.error.main,
+  },
+}))(Typography);
 
 const DialogNeutralButton = withDialogButtonStyles(NeutralButton);
 const DialogPrimaryButton = withDialogButtonStyles(PrimaryButton);
@@ -359,7 +396,50 @@ function EditContactDialog({ contact, open, onClose, locale }) {
   );
 }
 
+function CallLimitInfo({
+  userCallTimeDuration,
+  contacts,
+  locale,
+  nextRefreshTimeString,
+  callLimitExceeded,
+}) {
+  const CallTimeInfoItem = callLimitExceeded ? ErrorInfoItem : InfoItem;
+  return (
+    <div className="info-container" style={{ marginTop: '12px' }}>
+      <CallTimeInfoItem variant="subtitle2" className="info-item">
+        <PhoneInTalkIcon className="info-icon" />
+        {formatDurationInHoursMinutes(userCallTimeDuration)}
+      </CallTimeInfoItem>
+
+      <InfoItem variant="subtitle2" className="info-item">
+        <AutorenewIcon className="info-icon" />
+        {nextRefreshTimeString ? `in ${nextRefreshTimeString}` : ''}
+      </InfoItem>
+      <InfoItem variant="subtitle2" className="info-item">
+        <FavoriteIcon className="info-icon" />
+        {contacts.length} {STRINGS[locale].CONTACTS_LOVED_ONES_LABEL}
+      </InfoItem>
+    </div>
+  );
+}
+
+function CallContactButton({ contactService, contact, disabled }) {
+  const onClick = disabled
+    ? null
+    : () => {
+        contactService.setActiveContact(contact);
+      };
+  const Icon = disabled ? PhoneDisabledIcon : ContactCallIcon;
+
+  return (
+    <IconButton style={{ padding: '0' }} onClick={onClick} disabled={disabled}>
+      <Icon />
+    </IconButton>
+  );
+}
+
 export default function ContactsPage({ locale }) {
+  const [features, setFeatures] = useState({});
   const [userState, userService] = useUserService();
   const { me: user } = userState;
   const [contactState, contactService] = useContactService();
@@ -367,6 +447,8 @@ export default function ContactsPage({ locale }) {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
   const [contactToEdit, setContactToEdit] = useState(null);
+  const [nextRefreshTimeString, setNextRefreshTimeString] = useState(null);
+  const [nextRefreshAmount, setNextRefreshAmount] = useState(null);
 
   useEffect(() => {
     if (userService) {
@@ -380,6 +462,20 @@ export default function ContactsPage({ locale }) {
     }
   }, [contactService, user]);
 
+  useEffect(() => {
+    getNextRefresh().then(({ time, amount }) => {
+      const nextRefreshDuration = DateTime.fromISO(time).diffNow();
+      setNextRefreshTimeString(
+        formatDurationInDaysHoursMinutes(nextRefreshDuration)
+      );
+      setNextRefreshAmount(amount);
+    });
+  }, []);
+
+  useEffect(() => {
+    getFeatures().then(setFeatures);
+  }, []);
+
   if (!user) {
     return <Redirect to={PATHS.LOGIN} />;
   }
@@ -392,6 +488,37 @@ export default function ContactsPage({ locale }) {
   };
 
   const openFeedbackDialog = () => setIsFeedbackDialogOpen(true);
+  const userCallTimeDuration = Duration.fromObject({ seconds: user.callTime });
+  const callLimitExceeded =
+    features.CALL_LIMITS && userCallTimeDuration.as('minutes') < 1;
+
+  const subtitleContent = callLimitExceeded ? (
+    <>
+      <Typography variant="body1" color="error">
+        {STRINGS[locale].CONTACTS_REACHED_CALL_LIMIT_MESSAGE}
+      </Typography>
+      <Typography
+        variant="body1"
+        style={{
+          marginBottom: '12px',
+        }}
+      >
+        {STRINGS[locale].CONTACTS_TIME_TO_CREDIT_MESSAGE(
+          nextRefreshTimeString,
+          nextRefreshAmount
+        )}
+      </Typography>
+    </>
+  ) : (
+    <Typography
+      variant="body1"
+      style={{
+        marginBottom: '12px',
+      }}
+    >
+      {STRINGS[locale].CONTACTS_SUBTITLE}
+    </Typography>
+  );
 
   return (
     <Container
@@ -401,17 +528,17 @@ export default function ContactsPage({ locale }) {
       }}
     >
       <DetectBrowserSnackbar />
-      <Typography variant="h5" component="h1">
-        {STRINGS[locale].CONTACTS_TITLE}
-      </Typography>
       <Typography
-        variant="body1"
+        variant="h5"
+        component="h1"
         style={{
           marginBottom: '12px',
+          fontWeight: '700',
         }}
       >
-        {STRINGS[locale].CONTACTS_SUBTITLE}
+        {STRINGS[locale].CONTACTS_TITLE}
       </Typography>
+      {subtitleContent}
       <Typography
         variant="body1"
         style={{
@@ -432,7 +559,6 @@ export default function ContactsPage({ locale }) {
             width: '100%',
             // 20em to accomodate logout and add contact button
             maxHeight: 'calc(var(--viewport-height) - 20rem)',
-            padding: '0.5rem',
           }}
         >
           <List
@@ -446,8 +572,7 @@ export default function ContactsPage({ locale }) {
                 key={contact.id}
                 style={{
                   marginBottom: '0.5rem',
-                  paddingBottom: '0',
-                  paddingTop: '0',
+                  padding: '0',
                 }}
               >
                 <ContactBox
@@ -507,14 +632,11 @@ export default function ContactsPage({ locale }) {
                       </div>
                     </div>
                   </div>
-                  <IconButton
-                    style={{ padding: '0' }}
-                    onClick={() => {
-                      contactService.setActiveContact(contact);
-                    }}
-                  >
-                    <ContactCallIcon />
-                  </IconButton>
+                  <CallContactButton
+                    contactService={contactService}
+                    contact={contact}
+                    disabled={callLimitExceeded}
+                  />
                 </ContactBox>
               </ListItem>
             ))}
@@ -540,6 +662,15 @@ export default function ContactsPage({ locale }) {
           />
           <div>{STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}</div>
         </AddContactButton>
+        {features.CALL_LIMITS ? (
+          <CallLimitInfo
+            userCallTimeDuration={userCallTimeDuration}
+            contacts={contacts}
+            locale={locale}
+            nextRefreshTimeString={nextRefreshTimeString}
+            callLimitExceeded={callLimitExceeded}
+          />
+        ) : null}
       </div>
       <div
         style={{
