@@ -1,5 +1,3 @@
-import dotenv from 'dotenv';
-
 import path from 'path';
 import express, { Request, Response } from 'express';
 import proxy from 'express-http-proxy';
@@ -7,6 +5,10 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import pinoHttp from 'pino-http';
 import 'express-async-errors';
+
+// Separated to individual module so that .env values can be loaded and be available
+// for other modules to use.
+import './dotenv';
 
 import {
   AllowlistEntry as allowlistRoutes,
@@ -28,9 +30,6 @@ import {
   logger,
   httpPinoConfig,
 } from './config';
-// TODO This keeps relocating after each precommit, this should be ignored somehow
-// eslint-disable-next-line
-dotenv.config();
 
 require('./jobs');
 
