@@ -31,9 +31,6 @@ import {
   httpPinoConfig,
 } from './config';
 
-// TODO hackssssss
-import subdomainRedirect from './hack/subdomainRedirect';
-
 require('./jobs');
 
 const { secureRoutes, httpsRedirect, requireVerified } = middlewares;

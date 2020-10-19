@@ -22,7 +22,6 @@ WORKDIR /app/backend
 
 COPY backend/package.json .
 COPY backend/package-lock.json .
-COPY backend/config/ config/
 
 RUN npm install
 
