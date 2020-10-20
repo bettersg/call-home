@@ -98,6 +98,11 @@ export default function Login({ locale }) {
           variant="contained"
           disableElevation
           onClick={() => {
+            // When files are served via Heroku (i.e. staging and production), the base URL and ports are the same
+            // for the backend and frontend. In these cases, the redirect to /auth/login triggers a backend endpoint
+            // and executes the oauth strategy.
+            // In development, frontend and backend use different ports (3000 and 4000), and backend endpoint is not
+            // called.
             window.location = '/oauth/login';
           }}
           style={{ marginTop: '36px' }}

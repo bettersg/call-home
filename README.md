@@ -70,3 +70,22 @@ Just change the `ports` configuration.
 cd frontend
 npm start
 ```
+## Bypass Auth0 Login
+
+Authentication is dependent on auth0's SMS verification which does not work easily on localhost.
+
+Set environment variables below in `.env` file to enable instant admin login access.
+
+```bash
+BYPASS_AUTH0_LOGIN=yes
+DEV_USER_PHONE_NUMBER=+6588888888
+```
+
+## Development using Twilio Voice
+
+Twilio requires a public URL to confirm calls via webhook. The webhook URL can be set up with https://ngrok.com/ for now.
+
+In Twilio's console, update the REQUEST URL with your ngrok `https` url.
+`Voice / TwiML / TwiML Apps / Dev backend > REQUEST URL`
+
+Note that this method only works for one developer at a time.

@@ -1,4 +1,4 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 // TODO don't hardcode this
 import { User as UserService } from '../services';
@@ -8,10 +8,14 @@ import transformers = require('./transformers');
 const { userToUserResponse, userProfileToUserProfileResponse } = transformers;
 const LOGIN_ROUTE = '/';
 
+const AUTH0_ID_FOR_DEVELOPMENT = 'development|user';
+const AUTH0_EMAIL_FOR_DEVELOPMENT = 'user@example.com';
+
 export interface CallHomeRequest extends Request {
   // TODO unfortunately, this interface may have multiple shapes depending on the middleswares. This is more of a stopgap measure.
   user: any;
   session: any;
+  logIn: { (user: any, callback: { (err: any): any }): any };
 }
 
 function sendForbiddenResponse(req: CallHomeRequest, res: Response) {
@@ -48,8 +52,10 @@ async function injectDbUser(req: CallHomeRequest) {
   const { emails } = userProfile;
   req.log.info('Injecting for profile', userProfile);
   const userProfileResponse = userProfileToUserProfileResponse(userProfile);
-  const auth0Id = userProfile.userId || userProfile.id;
-
+  let auth0Id = userProfile.userId || userProfile.id;
+  if (process.env.BYPASS_AUTH0_LOGIN === 'yes') {
+    auth0Id = AUTH0_ID_FOR_DEVELOPMENT;
+  }
   let user;
   if (emails) {
     user = await UserService.getUserByEmails(
@@ -126,11 +132,44 @@ async function requireSelf(
   next();
 }
 
+function upsertUserForDevelopment(req: CallHomeRequest, res: Response) {
+  const auth0Id = AUTH0_ID_FOR_DEVELOPMENT;
+  const email = AUTH0_EMAIL_FOR_DEVELOPMENT;
+  return new Promise((resolve) => {
+    UserService.registerUserWithAuth0Id(auth0Id, {
+      name: AUTH0_ID_FOR_DEVELOPMENT,
+      email,
+    })
+      .then(() => {
+        return UserService.getUserByAuth0Id(auth0Id);
+      })
+      .then(async (_user) => {
+        const user = _user;
+        if (user) {
+          user.isPhoneNumberValidated = true;
+          user.phoneNumber = process.env.DEV_USER_PHONE_NUMBER;
+          user.destinationCountry = 'SG';
+          user.role = UserTypes.ADMIN;
+          await user.save();
+          await user.reload();
+        }
+        const userResponse = userToUserResponse(user);
+        req.logIn({ ...userResponse, emails: [{ value: email }] }, function () {
+          res.redirect('/');
+          resolve();
+        });
+      });
+  });
+}
+
 async function secureRoutes(
   req: CallHomeRequest,
   res: Response,
   next: NextFunction
 ) {
+  if (!req.user && process.env.BYPASS_AUTH0_LOGIN === 'yes') {
+    await upsertUserForDevelopment(req, res);
+  }
   if (req.user) {
     await injectDbUser(req);
     return next();
