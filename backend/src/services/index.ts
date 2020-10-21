@@ -3,13 +3,13 @@ import * as models from '../models';
 import Call from './Call';
 import PeriodicCredit from './PeriodicCredit';
 import TwilioCall from './TwilioCall';
+import * as TwilioClient from './TwilioClient';
 import Transaction from './Transaction';
 import Wallet from './Wallet';
 import User from './User';
 import * as Feature from './Feature';
+import AllowlistEntry from './AllowlistEntry';
 import Contact = require('./Contact');
-import AllowlistEntry = require('./AllowlistEntry');
-import TwilioClient = require('./TwilioClient');
 import Auth0 = require('./Auth0');
 import PasswordlessRequest = require('./PasswordlessRequest');
 
@@ -18,7 +18,10 @@ const transactionService = new Transaction(models.Transaction);
 const passwordlessRequestService = PasswordlessRequest(
   models.PasswordlessRequest
 );
-const AllowlistEntryService = AllowlistEntry(models.AllowlistEntry);
+const AllowlistEntryService = AllowlistEntry(
+  models.AllowlistEntry,
+  TwilioClient
+);
 const auth0Service = Auth0();
 
 const userService = User(models.User, AllowlistEntryService);

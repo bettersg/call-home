@@ -10,7 +10,11 @@ import type { CallStatus } from '../models';
 
 const { VoiceResponse } = twilio.twiml;
 
-const { TWILIO_PHONE_NUMBER, NODE_ENV, TWILIO_WEBHOOK_BASE_URL } = process.env;
+const {
+  TWILIO_CALL_PHONE_NUMBER,
+  NODE_ENV,
+  TWILIO_WEBHOOK_BASE_URL,
+} = process.env;
 const isDev = NODE_ENV === 'development';
 logger.info('Running twilio webhook in development mode?', isDev);
 
@@ -71,7 +75,7 @@ function TwilioRoutes(
         });
         const response = new VoiceResponse().dial(
           {
-            callerId: TWILIO_PHONE_NUMBER,
+            callerId: TWILIO_CALL_PHONE_NUMBER,
             // TODO this is hardcoded
             action: '/twilio/voice-status',
           },
