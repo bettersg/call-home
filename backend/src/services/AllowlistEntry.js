@@ -1,3 +1,4 @@
+const { sendSms } = require('./TwilioClient');
 const { UserTypes } = require('../models');
 const { sanitizeDbErrors } = require('./lib');
 
@@ -15,13 +16,15 @@ function AllowlistEntryService(AllowlistEntryModel) {
   }
 
   async function createAllowlistEntry({ phoneNumber, destinationCountry }) {
-    return sanitizeDbErrors(() =>
+    const dbResponse = await sanitizeDbErrors(() =>
       AllowlistEntryModel.create({
         role: UserTypes.USER,
         phoneNumber,
         destinationCountry,
       })
     );
+    await sendSms('Welcome to Call Home. Your account is ready!', phoneNumber);
+    return dbResponse;
   }
 
   async function deleteAllowlistEntry(id) {

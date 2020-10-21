@@ -5,6 +5,7 @@ const {
   TWILIO_ACCOUNT_SID,
   TWILIO_AUTH_TOKEN,
   TWILIO_PHONE_NUMBER,
+  TWILIO_SMS_PHONE_NUMBER,
 } = process.env;
 const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
@@ -26,8 +27,17 @@ async function listOutgoingCalls(options = { limit: 20 }) {
   });
 }
 
+async function sendSms(body, to) {
+  return twilioClient.messages.create({
+    body,
+    from: TWILIO_SMS_PHONE_NUMBER,
+    to,
+  });
+}
+
 module.exports = {
   getCall,
   listOutgoingCalls,
   getCallsByIncomingSid,
+  sendSms,
 };

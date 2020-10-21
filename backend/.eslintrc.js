@@ -22,4 +22,12 @@ module.exports = {
     'import/extensions': 'off',
     'prettier/prettier': ['error'],
   },
+  overrides: [
+    {
+      files: ["*.js"],
+      rules: {
+        "@typescript-eslint/no-var-requires": "off"
+      }
+    }
+  ]
 };
