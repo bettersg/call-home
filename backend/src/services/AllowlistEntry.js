@@ -1,5 +1,5 @@
-// const { sendSms } = require('./TwilioClient');
-const { UserTypes } = require('../models');
+const { sendSms } = require('./TwilioClient');
+const { UserTypes, FeatureFlag } = require('../models');
 const { sanitizeDbErrors } = require('./lib');
 
 function AllowlistEntryService(AllowlistEntryModel) {
@@ -23,7 +23,15 @@ function AllowlistEntryService(AllowlistEntryModel) {
         destinationCountry,
       })
     );
-    // await sendSms('Welcome to Call Home. Your account is ready!', phoneNumber);
+    const { smsUserWhenAddedToAllowedList } = await FeatureFlag.findOne({
+      attributes: ['smsUserWhenAddedToAllowedList'],
+    });
+    if (smsUserWhenAddedToAllowedList) {
+      await sendSms(
+        'Welcome to Call Home. Your account is ready!',
+        phoneNumber
+      );
+    }
     return dbResponse;
   }
 
