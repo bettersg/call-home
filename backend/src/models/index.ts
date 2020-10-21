@@ -8,8 +8,6 @@ import Transaction from './Transaction';
 import Wallet from './Wallet';
 import TwilioCall, { CallStatus } from './TwilioCall';
 import PasswordlessRequest from './PasswordlessRequest';
-import FeatureFlag from './FeatureFlag';
-import { logger } from '../config';
 
 sequelize.addModels([
   AllowlistEntry,
@@ -21,7 +19,6 @@ sequelize.addModels([
   PeriodicCredit,
   Wallet,
   Transaction,
-  FeatureFlag,
 ]);
 
 // User <-> Contact
@@ -72,16 +69,6 @@ PeriodicCredit.belongsTo(User, {
   foreignKey: 'userId',
 });
 
-async function initializeFeatureFlags() {
-  const featureFlags = await FeatureFlag.findOne();
-  if (!featureFlags) {
-    await FeatureFlag.create();
-  }
-}
-initializeFeatureFlags().catch((err) =>
-  logger.error('Feature Flags initialization was unsuccessful', err)
-);
-
 export {
   sequelize,
   User,
@@ -95,5 +82,4 @@ export {
   PeriodicCredit,
   Wallet,
   Transaction,
-  FeatureFlag,
 };

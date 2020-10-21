@@ -1,5 +1,5 @@
 const { sendSms } = require('./TwilioClient');
-const { UserTypes, FeatureFlag } = require('../models');
+const { UserTypes } = require('../models');
 const { sanitizeDbErrors } = require('./lib');
 
 function AllowlistEntryService(AllowlistEntryModel) {
@@ -23,10 +23,8 @@ function AllowlistEntryService(AllowlistEntryModel) {
         destinationCountry,
       })
     );
-    const { smsUserWhenAddedToAllowedList } = await FeatureFlag.findOne({
-      attributes: ['smsUserWhenAddedToAllowedList'],
-    });
-    if (smsUserWhenAddedToAllowedList) {
+
+    if (process.env.SEND_SMS_TO_USER_WHEN_ADDED_TO_ALLOW_LIST === 'yes') {
       await sendSms(
         'Welcome to Call Home. Your account is ready!',
         phoneNumber
