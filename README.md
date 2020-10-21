@@ -18,6 +18,39 @@ This is very much in the MVP stage.
 
 Backend runs on port `4000` while Frontend runs on port `3000` and can be run using the instructions below.
 
+### Quick Start
+
+- Get a working copy of `.env`
+- Start Backend:
+
+```bash
+cd backend
+npm i
+npm run start:dev
+```
+
+- Seed database with your phone number (must be real number as SMS is used for logging in)
+
+```
+-- For SQLITE
+INSERT INTO AllowlistEntries("phoneNumber", "role", "destinationCountry","createdAt", "updatedAt")
+VALUES ('+65YOURNUMBER', 'ADMIN', 'SG', date('now'), date('now'));
+
+-- For POSTGRES
+INSERT INTO AllowlistEntries("phoneNumber", "role", "destinationCountry","createdAt", "updatedAt")
+VALUES ('+65YOURNUMBER', 'ADMIN', 'SG', NOW(), NOW());
+```
+
+- Start Frontend:
+
+```bash
+cd frontend
+npm i
+npm start
+```
+
+- On your browser, go to http://localhost:4000.
+
 ### Server
 
 #### npm script
@@ -70,16 +103,14 @@ Just change the `ports` configuration.
 cd frontend
 npm start
 ```
-## Bypass Auth0 Login
 
-Authentication is dependent on auth0's SMS verification which does not work easily on localhost.
+### Note about backend-frontend proxy
 
-Set environment variables below in `.env` file to enable instant admin login access.
+Take note that even though the frontend React server is available via http://localhost:3000, you should be entering the React app via http://localhost:4000 instead.
 
-```bash
-BYPASS_AUTH0_LOGIN=yes
-DEV_USER_PHONE_NUMBER=+6588888888
-```
+This is because the backend (:4000) proxies to the frontend server (:3000) and is required for Facebook login to work.
+
+Specifically, the request to GET '/oauth/login' does not work when using React server (:3000)
 
 ## Development using Twilio Voice
 
