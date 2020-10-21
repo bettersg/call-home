@@ -1,4 +1,4 @@
-const { sendSms } = require('./TwilioClient');
+// const { sendSms } = require('./TwilioClient');
 const { UserTypes } = require('../models');
 const { sanitizeDbErrors } = require('./lib');
 
@@ -23,7 +23,7 @@ function AllowlistEntryService(AllowlistEntryModel) {
         destinationCountry,
       })
     );
-    await sendSms('Welcome to Call Home. Your account is ready!', phoneNumber);
+    // await sendSms('Welcome to Call Home. Your account is ready!', phoneNumber);
     return dbResponse;
   }
 
