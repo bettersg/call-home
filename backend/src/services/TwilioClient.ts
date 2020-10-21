@@ -37,4 +37,3 @@ async function listOutgoingCalls(options = { limit: 20 }) {
 }
 
 export { getCall, listOutgoingCalls, getCallsByIncomingSid, sendSms };
-export default { getCall, listOutgoingCalls, getCallsByIncomingSid, sendSms };

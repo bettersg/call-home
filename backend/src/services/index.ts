@@ -3,7 +3,7 @@ import * as models from '../models';
 import Call from './Call';
 import PeriodicCredit from './PeriodicCredit';
 import TwilioCall from './TwilioCall';
-import TwilioClient from './TwilioClient';
+import * as TwilioClient from './TwilioClient';
 import Transaction from './Transaction';
 import Wallet from './Wallet';
 import User from './User';
