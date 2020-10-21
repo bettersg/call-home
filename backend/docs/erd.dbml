@@ -1,0 +1,73 @@
+// https://dbdiagram.io/d/5f8d1b8c3a78976d7b782697
+table AllowListEntry {
+  id integer
+  phoneNumber text
+  role text
+  destinationCountry text
+}
+table Calls {
+  id integer
+  userId integer [ref: > Users.id]
+  contactId integer [ref: > Contacts.id]
+  phoneNumber text
+  incomingTwilioCallSid text
+  outgoingTwilioCallSid text
+}
+table Contacts {
+  id integer
+  name text
+  phoneNumber text
+  avatar text
+  UserId integer [ref: > Users.id]
+}
+table PasswordlessRequests {
+  id integer
+  requestTime datetime
+  UserId integer [ref: > Users.id]
+}
+table Sessions {
+  session_id text
+  expires datetime
+  data text
+}
+table Transactions {
+  id integer
+  userId integer [ref: > Users.id]
+  reference text
+  amount integer
+}
+table TwilioCalls {
+  id integer
+  parentCallSid text
+  twilioSid text
+  fromPhoneNumber text
+  toPhoneNumber text
+  status text
+  price text
+  priceUnit text
+  duration integer
+  lastUpdated datetime
+}
+table Users {
+  id integer
+  name text
+  email text
+  role text
+  auth0Id text
+  phoneNumber text
+  isPhoneNumberValidated boolean
+  destinationCountry text
+}
+table Wallets {
+  id integer
+  userId integer [ref: > Users.id]
+  callTime integer
+}
+table callContacts {
+  CallId integer [ref: > Calls.id]
+  ContactId integer [ref: > Contacts.id]
+}
+table callUsers {
+  CallId integer [ref: > Calls.id]
+  UserId integer [ref: > Users.id]
+}
