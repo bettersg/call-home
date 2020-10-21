@@ -1,20 +1,29 @@
 // TODO move the API clients somewhere else
-const twilio = require('twilio');
+import twilio from 'twilio';
 
 const {
   TWILIO_ACCOUNT_SID,
   TWILIO_AUTH_TOKEN,
-  TWILIO_PHONE_NUMBER,
+  TWILIO_CALL_PHONE_NUMBER,
   TWILIO_SMS_PHONE_NUMBER,
 } = process.env;
+
 const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
-async function getCall(twilioCallSid) {
+async function getCall(twilioCallSid: string) {
   return twilioClient.calls(twilioCallSid).fetch();
 }
 
-async function getCallsByIncomingSid(twilioCallSid) {
+async function getCallsByIncomingSid(twilioCallSid: string) {
   return twilioClient.calls.list({ parentCallSid: twilioCallSid });
+}
+
+async function sendSms(toPhoneNumber: string, body: string) {
+  return twilioClient.messages.create({
+    body,
+    to: toPhoneNumber,
+    from: TWILIO_SMS_PHONE_NUMBER,
+  });
 }
 
 // It's important to specify this is outgoing because TwiML from the browser is treated as an 'incoming call'
@@ -22,22 +31,10 @@ async function getCallsByIncomingSid(twilioCallSid) {
 // OMG KILL ME
 async function listOutgoingCalls(options = { limit: 20 }) {
   return twilioClient.calls.list({
-    from: TWILIO_PHONE_NUMBER,
+    from: TWILIO_CALL_PHONE_NUMBER,
     ...options,
   });
 }
 
-async function sendSms(body, to) {
-  return twilioClient.messages.create({
-    body,
-    from: TWILIO_SMS_PHONE_NUMBER,
-    to,
-  });
-}
-
-module.exports = {
-  getCall,
-  listOutgoingCalls,
-  getCallsByIncomingSid,
-  sendSms,
-};
+export { getCall, listOutgoingCalls, getCallsByIncomingSid, sendSms };
+export default { getCall, listOutgoingCalls, getCallsByIncomingSid, sendSms };
