@@ -19,7 +19,8 @@ const EN_STRINGS = {
   VERIFY_PHONE_NUMBER_RESEND_CODE_LABEL: 'Resend code',
   VERIFY_PHONE_NUMBER_SUBMIT_LABEL: 'Submit',
   VERIFY_PHONE_NUMBER_WHITELIST_ERROR_MESSAGE:
-    ' Sorry, your phone number is not part of this programme. If you believe this is an error, reach out to an administrator.',
+    // TODO park this here while we figure out localization
+    'দুঃখিত, আপনার ফোন নম্বরটি এখনও এই অ্যাপটিতে যুক্ত করা হয়নি। যোগদানের জন্য, নিজেকে এই ওয়েটলিস্টে যুক্ত করুন: https://callhome.sg/join-our-waitlist/', // Sorry, your phone number has not yet been added to this app. To join, add yourself to this waitlist: https://callhome.sg/join-our-waitlist/
 };
 const STRINGS = {
   en: EN_STRINGS,
