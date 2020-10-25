@@ -3,8 +3,10 @@ import { shouldEnableAllowlistSms } from './Feature';
 import { sanitizeDbErrors } from './lib';
 import type { TwilioClient as TwilioClientService } from './index';
 
-const NEW_ALLOWLIST_SMS_MESSAGE =
-  'Welcome to Call Home. Your account is ready!';
+const NEW_ALLOWLIST_SMS_MESSAGE = `
+আপনি এখন আপনার প্রিয় মানুষকে বিনামূল্যে কল করতে পারেন!
+এই সুবিধাটি পেতে হলে তে সাইন আপ করতে হবে।: https://app.callhome.sg/
+`;
 
 function AllowlistEntryService(
   AllowlistEntryModel: typeof AllowlistEntryEntity,
@@ -35,7 +37,7 @@ function AllowlistEntryService(
     );
 
     if (shouldEnableAllowlistSms()) {
-      await TwilioClient.sendSms(NEW_ALLOWLIST_SMS_MESSAGE, phoneNumber);
+      await TwilioClient.sendSms(phoneNumber, NEW_ALLOWLIST_SMS_MESSAGE);
     }
     return newAllowlistEntry;
   }

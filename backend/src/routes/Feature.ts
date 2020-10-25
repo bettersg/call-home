@@ -9,7 +9,6 @@ function FeaturesRoutes(featureService: typeof Feature) {
     const userId = req.user.id;
     const features = {
       CALL_LIMITS: featureService.shouldEnableCallLimits(userId),
-      CALL_LIMIT_ONBOARDING: featureService.shouldShowCallLimitOnboarding(),
     };
     return res.status(200).json(features);
   });
