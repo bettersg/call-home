@@ -18,6 +18,39 @@ This is very much in the MVP stage.
 
 Backend runs on port `4000` while Frontend runs on port `3000` and can be run using the instructions below.
 
+### Quick Start
+
+- Get a working copy of `.env`
+- Start Backend:
+
+```bash
+cd backend
+npm i
+npm run start:dev
+```
+
+- Seed database with your phone number (must be real number as SMS is used for logging in)
+
+```
+-- For SQLITE
+INSERT INTO AllowlistEntries("phoneNumber", "role", "destinationCountry","createdAt", "updatedAt")
+VALUES ('+65YOURNUMBER', 'ADMIN', 'SG', date('now'), date('now'));
+
+-- For POSTGRES
+INSERT INTO AllowlistEntries("phoneNumber", "role", "destinationCountry","createdAt", "updatedAt")
+VALUES ('+65YOURNUMBER', 'ADMIN', 'SG', NOW(), NOW());
+```
+
+- Start Frontend:
+
+```bash
+cd frontend
+npm i
+npm start
+```
+
+- On your browser, go to http://localhost:4000.
+
 ### Server
 
 #### npm script
@@ -70,3 +103,20 @@ Just change the `ports` configuration.
 cd frontend
 npm start
 ```
+
+### Note about backend-frontend proxy
+
+Take note that even though the frontend React server is available via http://localhost:3000, you should be entering the React app via http://localhost:4000 instead.
+
+This is because the backend (:4000) proxies to the frontend server (:3000) and is required for Facebook login to work.
+
+Specifically, the request to GET '/oauth/login' does not work when using React server (:3000)
+
+## Development using Twilio Voice
+
+Twilio requires a public URL to confirm calls via webhook. The webhook URL can be set up with https://ngrok.com/ for now.
+
+In Twilio's console, update the REQUEST URL with your ngrok `https` url.
+`Voice / TwiML / TwiML Apps / Dev backend > REQUEST URL`
+
+Note that this method only works for one developer at a time.
