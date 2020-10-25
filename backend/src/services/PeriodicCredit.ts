@@ -6,7 +6,7 @@ import type { TransactionService } from './Transaction';
 import { shouldEnableCallLimits } from './Feature';
 
 const creditInterval = 'month';
-const creditAmount = Duration.fromObject({ minutes: 300 });
+const creditAmount = Duration.fromObject({ minutes: 200 });
 const creditAmountSeconds = creditAmount.as('seconds');
 
 function PeriodicCreditService(
