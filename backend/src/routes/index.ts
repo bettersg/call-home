@@ -8,9 +8,9 @@ import Feature from './Feature';
 import User from './User';
 import Transaction from './Transaction';
 import PeriodicCredit from './PeriodicCredit';
-import Contact = require('./Contact');
+import Contact from './Contact';
+import AllowlistEntry from './AllowlistEntry';
 import OAuth = require('./OAuth');
-import AllowlistEntry = require('./AllowlistEntry');
 import Passwordless = require('./Passwordless');
 
 const callRoute = Call(services.Call, services.TwilioCall);

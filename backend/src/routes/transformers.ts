@@ -95,10 +95,22 @@ function parseContactRequestBody(
   return next();
 }
 
+function handleServiceError(error: Error, res: Response) {
+  // TODO do this smarter
+  if (error.message.startsWith('Validation Error:')) {
+    return res.status(400).send(error.message);
+  }
+  if (error.message.startsWith('Invalid country code')) {
+    return res.status(400).send(error.message);
+  }
+  return res.status(500);
+}
+
 export {
   parseUserRequestBody,
   userToUserResponse,
   userProfileToUserProfileResponse,
   parseContactRequestBody,
   contactToContactResponse,
+  handleServiceError,
 };

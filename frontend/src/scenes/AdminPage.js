@@ -19,6 +19,7 @@ import { Link } from 'react-router-dom';
 import { useAllowlistService, useAdminService } from '../contexts';
 import { PrimaryButton } from '../components/shared/RoundedButton';
 import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
+import { ApiValidationError } from '../services/apiClient';
 import useAdminRoute from '../util/useAdminRoute';
 import PATHS from './paths';
 import { formatSecondsWithHours } from '../util/timeFormatters';
@@ -33,6 +34,7 @@ function AllowlistTabContent() {
   ] = useState('');
   const [useMultipleNumbers, setUseMultipleNumbers] = useState(false);
   const [newAllowlistCountry, setNewAllowlistCountry] = useState('');
+  const [errorMessages, setErrorMessages] = useState([]);
 
   useEffect(() => {
     if (allowlistService) {
@@ -40,26 +42,36 @@ function AllowlistTabContent() {
     }
   }, [allowlistService]);
 
+  const createAllowlistEntry = async (newNumber) => {
+    try {
+      await allowlistService.createAllowlistEntry({
+        phoneNumber: `+65${newNumber}`,
+        destinationCountry: newAllowlistCountry,
+      });
+    } catch (error) {
+      let errorMessage;
+      if (error instanceof ApiValidationError) {
+        errorMessage = error.code;
+      } else {
+        errorMessage = error.message;
+      }
+      setErrorMessages([...errorMessages, errorMessage]);
+      console.error(`Failed to create entry for ${newNumber}`);
+    }
+  };
+
   const onSubmit = async (event) => {
     event.preventDefault();
+    // Modify the array in-place because createAllowlistEntry has a closure over the actual errorMessages instance. This can be handled more elegantly by returning the error type, but that's too much effort for now.
+    errorMessages.splice(0, errorMessages.length);
+
     if (useMultipleNumbers) {
       const newNumbers = newAllowlistMultiplePhoneNumbers.split('\n');
-      const newAllowListRequests = newNumbers.map(async (newNumber) => {
-        try {
-          await allowlistService.createAllowlistEntry({
-            phoneNumber: `+65${newNumber}`,
-            destinationCountry: newAllowlistCountry,
-          });
-        } catch (error) {
-          console.error(`Failed to create entry for ${newNumber}`);
-        }
-      });
+      const newAllowListRequests = newNumbers.map(createAllowlistEntry);
       return Promise.all(newAllowListRequests);
     }
-    return allowlistService.createAllowlistEntry({
-      phoneNumber: `+65${newAllowlistPhoneNumber}`,
-      destinationCountry: newAllowlistCountry,
-    });
+
+    return createAllowlistEntry(newAllowlistPhoneNumber);
   };
 
   const deleteAllowlistEntry = async (id) => {
@@ -140,6 +152,11 @@ function AllowlistTabContent() {
         checked={useMultipleNumbers}
         onChange={() => setUseMultipleNumbers(!useMultipleNumbers)}
       />
+      {errorMessages.map((errorMessage) => (
+        <Typography key={errorMessage} variant="body1" color="error">
+          {errorMessage}
+        </Typography>
+      ))}
       {newEntryForm}
       <Typography variant="body2" component="h3">
         Current entries

@@ -6,6 +6,7 @@ import {
   Table,
   Unique,
   Validate,
+  NotEmpty,
 } from 'sequelize-typescript';
 import { UserType } from './User';
 
@@ -19,6 +20,7 @@ class AllowlistEntry extends Model<AllowlistEntry> {
     },
   })
   @Unique
+  @AllowNull(false)
   @Column
   phoneNumber: string;
 
@@ -30,12 +32,15 @@ class AllowlistEntry extends Model<AllowlistEntry> {
     },
   })
   @AllowNull(false)
+  @NotEmpty
   @Column
   role: string;
 
   @Validate({
     isIn: [['SG', 'BD', '']],
   })
+  @AllowNull(false)
+  @NotEmpty
   @Column
   destinationCountry: string;
 }

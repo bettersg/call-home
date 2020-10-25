@@ -1,22 +1,14 @@
-const express = require('express');
-const {
+import express from 'express';
+import {
   parseContactRequestBody,
   contactToContactResponse,
-} = require('./transformers');
-const { requireSelf } = require('./middlewares');
+  handleServiceError,
+} from './transformers';
+import { requireSelf } from './middlewares';
 
-function handleServiceError(e, res) {
-  // TODO do this smarter
-  if (e.message.startsWith('Validation Error:')) {
-    return res.status(400).send(e.message);
-  }
-  if (e.message.startsWith('Invalid country code')) {
-    return res.status(400).send(e.message);
-  }
-  return res.status(500);
-}
+import type { Contact } from '../services';
 
-function ContactRoutes(contactService) {
+function ContactRoutes(contactService: typeof Contact) {
   const router = express.Router();
 
   router.get('/:userId/contacts/', requireSelf, async (req, res) => {
@@ -77,4 +69,4 @@ function ContactRoutes(contactService) {
   return router;
 }
 
-module.exports = ContactRoutes;
+export default ContactRoutes;
