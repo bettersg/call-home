@@ -24,7 +24,9 @@ function CallRoutes(
     );
     const totalDurationSeconds = twilioCalls
       .map((twilioCall) => {
-        if (!twilioCall) return 0;
+        if (!twilioCall) {
+          return 0;
+        }
         return twilioCall.duration;
       })
       .reduce((acc, curr) => acc + curr, 0);
