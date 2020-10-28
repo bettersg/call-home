@@ -1,3 +1,4 @@
+import { logger } from '../config';
 import { AllowlistEntry as AllowlistEntryEntity, UserTypes } from '../models';
 import { shouldEnableAllowlistSms } from './Feature';
 import { sanitizeDbErrors } from './lib';
@@ -27,7 +28,7 @@ function AllowlistEntryService(
   async function createAllowlistEntry({
     phoneNumber,
     destinationCountry,
-  }: Partial<AllowlistEntryEntity>) {
+  }: Pick<AllowlistEntryEntity, 'phoneNumber' | 'destinationCountry'>) {
     const newAllowlistEntry = await sanitizeDbErrors(() =>
       AllowlistEntryModel.create({
         role: UserTypes.USER,
@@ -48,9 +49,13 @@ function AllowlistEntryService(
         id,
       },
     });
+    if (!allowlistEntry) {
+      const msg = `allowlistEntry not found for id ${id}`;
+      logger.error(msg);
+      throw new Error(msg);
+    }
     await allowlistEntry.destroy();
   }
-
   return {
     getAllowlistEntryByPhoneNumber,
     listAllowlistEntries,

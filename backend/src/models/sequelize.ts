@@ -4,6 +4,11 @@ import { logger } from '../config';
 
 const { DATABASE_URL } = process.env;
 
+if (!DATABASE_URL) {
+  logger.error('DATABASE_URL was not found');
+  throw new Error('DATABASE_URL was not found');
+}
+
 const sequelize = new Sequelize(DATABASE_URL, {
   logging: logger.info.bind(logger),
 });

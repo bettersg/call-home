@@ -23,7 +23,12 @@ function CallRoutes(
       )
     );
     const totalDurationSeconds = twilioCalls
-      .map((twilioCall) => twilioCall.duration)
+      .map((twilioCall) => {
+        if (!twilioCall) {
+          return 0;
+        }
+        return twilioCall.duration;
+      })
       .reduce((acc, curr) => acc + curr, 0);
     stopwatch.stop();
     req.log.info(
