@@ -115,14 +115,8 @@ class TwilioCallService extends TypedEventEmitter<
       twilioCall.parentCallSid
     );
     if (!callEntity) {
-      const msg = 'callEntity not found for parentCallSid';
-      logger.error(
-        {
-          parentCallSid: twilioCall.parentCallSid,
-          function: 'createTransactionForTwilioCall',
-        },
-        msg
-      );
+      const msg = `callEntity not found for parentCallSid ${twilioCall.parentCallSid}`;
+      logger.error(msg);
       throw new Error(msg);
     }
     return this.transactionService.createTransaction({
@@ -190,14 +184,8 @@ class TwilioCallService extends TypedEventEmitter<
     logger.info('fetchTwilioDataForTwilioParentSid -> %s', parentCallSid);
     const twilioCall = await this.getTwilioCallByParentSid(parentCallSid);
     if (!twilioCall) {
-      const msg = 'twilioCall not found for parentCallSid';
-      logger.error(
-        {
-          parentCallSid,
-          function: 'fetchTwilioDataForTwilioParentSid',
-        },
-        msg
-      );
+      const msg = `twilioCall not found for parentCallSid ${parentCallSid}`;
+      logger.error(msg);
       throw new Error(msg);
     }
     await this.fetchTwilioDataForTwilioCall(twilioCall);

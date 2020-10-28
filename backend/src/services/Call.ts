@@ -18,8 +18,8 @@ function CallService(
   async function checkWalletBalance(userId: number) {
     const wallet = await walletService.getWalletForUser(userId);
     if (!wallet) {
-      const msg = 'Wallet not found';
-      logger.error({ userId, function: 'checkWalletBalance' }, msg);
+      const msg = `Wallet not found for userId ${userId}`;
+      logger.error(msg);
       throw new Error(msg);
     }
     logger.info('Wallet call time is %s', wallet.callTime);

@@ -50,8 +50,8 @@ function AllowlistEntryService(
       },
     });
     if (!allowlistEntry) {
-      const msg = 'allowlistEntry not found';
-      logger.error({ id, function: 'deleteAllowlistEntry' }, msg);
+      const msg = `allowlistEntry not found for id ${id}`;
+      logger.error(msg);
       throw new Error(msg);
     }
     await allowlistEntry.destroy();

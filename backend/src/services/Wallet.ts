@@ -59,8 +59,8 @@ class WalletService {
       return wallet;
     }
     if (!wallet) {
-      const msg = 'No wallet found for user';
-      logger.error({ userId, function: 'processTransaction' }, msg);
+      const msg = `No wallet found for userId ${userId}`;
+      logger.error(msg);
       throw new Error(msg);
     }
     await this.walletModel.update(

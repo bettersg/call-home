@@ -11,7 +11,7 @@ const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_APP_SID } = process.env;
 function CallTokenRoutes(): express.Router {
   if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_APP_SID) {
     const msg = 'Twilio Credentials missing';
-    logger.error({ function: 'CallTokenRoutes' }, msg);
+    logger.error(msg);
     throw new Error(msg);
   }
   const router = express.Router();

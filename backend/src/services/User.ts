@@ -81,14 +81,8 @@ function UserService(UserModel: typeof UserEntity, allowlistEntryService: any) {
     ]);
 
     if (!user) {
-      const msg = 'User not found';
-      logger.error(
-        {
-          userId,
-          function: 'verifyUserPhoneNumber',
-        },
-        msg
-      );
+      const msg = `User not found for userId ${userId}`;
+      logger.error(msg);
       throw new Error(msg);
     }
 
@@ -122,14 +116,8 @@ function UserService(UserModel: typeof UserEntity, allowlistEntryService: any) {
   async function deleteUser(userId: number) {
     const user = await getUser(userId);
     if (!user) {
-      const msg = 'User not found';
-      logger.error(
-        {
-          userId,
-          function: 'verifyUserPhoneNumber',
-        },
-        msg
-      );
+      const msg = `User not found for userId ${userId}`;
+      logger.error(msg);
       throw new Error(msg);
     }
     await user.destroy();
