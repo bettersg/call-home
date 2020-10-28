@@ -1,13 +1,19 @@
 import express from 'express';
 import twilio from 'twilio';
 import { ClientCapabilityOptions } from 'twilio/lib/jwt/ClientCapability';
+import { logger } from '../config';
 
 const { ClientCapability } = twilio.jwt;
 
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_APP_SID } = process.env;
 
 // TODO This should only grant tokens for the amount of time needed to establish a connection (~20s)
-function CallTokenRoutes() {
+function CallTokenRoutes(): express.Router {
+  if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_APP_SID) {
+    const msg = 'Twilio Credentials missing';
+    logger.error({ function: 'CallTokenRoutes' }, msg);
+    throw new Error(msg);
+  }
   const router = express.Router();
 
   router.get('/', (req, res) => {

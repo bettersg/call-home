@@ -17,6 +17,11 @@ function CallService(
 ) {
   async function checkWalletBalance(userId: number) {
     const wallet = await walletService.getWalletForUser(userId);
+    if (!wallet) {
+      const msg = 'Wallet not found';
+      logger.error({ userId, function: 'checkWalletBalance' }, msg);
+      throw new Error(msg);
+    }
     logger.info('Wallet call time is %s', wallet.callTime);
     if (wallet.callTime <= 0) {
       throw new Error('Validation Error: INSUFFICIENT_CALL_TIME');
@@ -48,7 +53,7 @@ function CallService(
     userId,
     contactId,
     incomingTwilioCallSid,
-  }: Partial<CallEntity>) {
+  }: Pick<CallEntity, 'userId' | 'contactId' | 'incomingTwilioCallSid'>) {
     await validateCall(userId, contactId);
     const contact = await contactService.getContact(userId, contactId);
     const call = {

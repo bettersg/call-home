@@ -1,6 +1,7 @@
 import { sanitizeDbErrors } from './lib';
 import { UserTypes } from '../models';
 import type { User as UserEntity } from '../models';
+import { logger } from '../config';
 
 function UserService(UserModel: typeof UserEntity, allowlistEntryService: any) {
   async function listUsers() {
@@ -79,6 +80,18 @@ function UserService(UserModel: typeof UserEntity, allowlistEntryService: any) {
       allowlistEntryService.getAllowlistEntryByPhoneNumber(phoneNumber),
     ]);
 
+    if (!user) {
+      const msg = 'User not found';
+      logger.error(
+        {
+          userId,
+          function: 'verifyUserPhoneNumber',
+        },
+        msg
+      );
+      throw new Error(msg);
+    }
+
     // If the user is not allow, we can just stop here
     if (!allowlistEntry) {
       return user;
@@ -108,6 +121,17 @@ function UserService(UserModel: typeof UserEntity, allowlistEntryService: any) {
 
   async function deleteUser(userId: number) {
     const user = await getUser(userId);
+    if (!user) {
+      const msg = 'User not found';
+      logger.error(
+        {
+          userId,
+          function: 'verifyUserPhoneNumber',
+        },
+        msg
+      );
+      throw new Error(msg);
+    }
     await user.destroy();
   }
 
