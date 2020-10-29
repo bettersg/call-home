@@ -51,8 +51,8 @@ class User extends Model<User> {
     },
   })
   @Unique
-  @Column
-  phoneNumber: string;
+  @Column(DataType.TEXT)
+  phoneNumber: string | null;
 
   @Default(false)
   @Column
@@ -61,8 +61,8 @@ class User extends Model<User> {
   @Validate({
     isIn: [['SG', 'BD', '']],
   })
-  @Column
-  destinationCountry: string;
+  @Column(DataType.TEXT)
+  destinationCountry: string | null;
 }
 
 export default User;
