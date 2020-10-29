@@ -2,7 +2,7 @@ const checkAlpha = ['X', 'W', 'U', 'T', 'R', 'Q', 'P', 'N', 'M', 'L', 'K'];
 const weightArray = [2, 7, 6, 5, 4, 3, 2];
 
 function validateFIN(fin: string): string {
-  const finUpper = fin.toUpperCase();
+  const finUpper = fin.trim.toUpperCase();
   if (finUpper.length === 9) {
     const sumArray = fin.slice(1, 8).split('').map(Number); // FIN String into array of numbers to multiply by weight
 
@@ -16,11 +16,11 @@ function validateFIN(fin: string): string {
     } // FIN that starts with G has their checkAlpha shifted by 4
 
     if (checkAlpha[sum % 11] === finUpper.slice(-1)) {
-      return `${fin} is a valid FIN.`;
+      return true;
     }
-    return `${fin} is an invalid FIN.`;
+    return false;
   }
-  return 'Wrong Format.';
+  return false;
 }
 
 export default validateFIN;
