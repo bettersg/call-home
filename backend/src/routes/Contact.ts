@@ -1,4 +1,5 @@
-import express from 'express';
+import express, { Router } from 'express';
+import * as z from 'zod';
 import {
   parseContactRequestBody,
   contactToContactResponse,
@@ -7,13 +8,27 @@ import {
 import { requireSelf } from './middlewares';
 
 import type { Contact } from '../services';
+import { logger } from '../config';
+import { stringToNumberTransformer } from './helpers/validation';
 
-function ContactRoutes(contactService: typeof Contact) {
+function ContactRoutes(contactService: typeof Contact): Router {
   const router = express.Router();
 
   router.get('/:userId/contacts/', requireSelf, async (req, res) => {
-    const { userId } = req.params;
-    const contacts = await contactService.listContactsByUserId(Number(userId));
+    let validatedReq;
+    try {
+      const paramsSchema = z.object({
+        userId: stringToNumberTransformer,
+      });
+      const params = paramsSchema.parse(req.params);
+      validatedReq = { params };
+    } catch (error) {
+      logger.error(error);
+      return res.status(400).send(error);
+    }
+
+    const { userId } = validatedReq.params;
+    const contacts = await contactService.listContactsByUserId(userId);
     return res.status(200).json(contacts.map(contactToContactResponse));
   });
 
@@ -22,17 +37,35 @@ function ContactRoutes(contactService: typeof Contact) {
     requireSelf,
     parseContactRequestBody,
     async (req, res) => {
-      const { userId } = req.params;
-      const contact = req.body;
+      let validatedReq;
+      try {
+        const paramsSchema = z.object({
+          userId: stringToNumberTransformer,
+        });
+        const bodySchema = z.object({
+          name: z.string(),
+          phoneNumber: z.string(),
+          avatar: z.string(),
+        });
+        const params = paramsSchema.parse(req.params);
+        const body = bodySchema.parse(req.body);
+        validatedReq = { params, body };
+      } catch (error) {
+        logger.error(error);
+        return res.status(400).send(error);
+      }
+
+      const { userId } = validatedReq.params;
+      const contact = validatedReq.body;
       try {
         req.log.info('CREATING', userId, contact);
         const savedContact = await contactService.createContact(
-          Number(userId),
+          userId,
           contact
         );
-        res.status(200).json(contactToContactResponse(savedContact));
+        return res.status(200).json(contactToContactResponse(savedContact));
       } catch (e) {
-        handleServiceError(e, res);
+        return handleServiceError(e, res);
       }
     }
   );
@@ -42,17 +75,36 @@ function ContactRoutes(contactService: typeof Contact) {
     requireSelf,
     parseContactRequestBody,
     async (req, res) => {
-      const { userId, contactId } = req.params;
-      const contact = req.body;
+      let validatedReq;
+      try {
+        const paramsSchema = z.object({
+          userId: stringToNumberTransformer,
+          contactId: stringToNumberTransformer,
+        });
+        const bodySchema = z.object({
+          name: z.string().optional(),
+          phoneNumber: z.string().optional(),
+          avatar: z.string().optional(),
+        });
+        const params = paramsSchema.parse(req.params);
+        const body = bodySchema.parse(req.body);
+        validatedReq = { params, body };
+      } catch (error) {
+        logger.error(error);
+        return res.status(400).send(error);
+      }
+
+      const { userId, contactId } = validatedReq.params;
+      const contact = validatedReq.body;
       try {
         const savedContact = await contactService.updateContact(
           userId,
           contactId,
           contact
         );
-        res.status(200).json(contactToContactResponse(savedContact));
+        return res.status(200).json(contactToContactResponse(savedContact));
       } catch (e) {
-        handleServiceError(e, res);
+        return handleServiceError(e, res);
       }
     }
   );
@@ -61,9 +113,22 @@ function ContactRoutes(contactService: typeof Contact) {
     '/:userId/contacts/:contactId',
     requireSelf,
     async (req, res) => {
-      const { userId, contactId } = req.params;
-      await contactService.deleteContact(Number(userId), contactId);
-      res.status(200).send();
+      let validatedReq;
+      try {
+        const paramsSchema = z.object({
+          userId: stringToNumberTransformer,
+          contactId: stringToNumberTransformer,
+        });
+        const params = paramsSchema.parse(req.params);
+        validatedReq = { params };
+      } catch (error) {
+        logger.error(error);
+        return res.status(400).send(error);
+      }
+
+      const { userId, contactId } = validatedReq.params;
+      await contactService.deleteContact(userId, contactId);
+      return res.status(200).send();
     }
   );
   return router;

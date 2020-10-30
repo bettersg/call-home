@@ -1,15 +1,31 @@
-const express = require('express');
-const { normalizePhoneNumber } = require('../util/country');
+import * as z from 'zod';
+import express, { Router } from 'express';
+import type { User, Auth0, PasswordlessRequest } from '../services';
+import { normalizePhoneNumber } from '../util/country';
+import { logger } from '../config';
 
 const PASSWORDLESS_REQUEST_INTERVAL_MILLIS = 1000 * 60 * 2;
+
 function PasswordlessRoutes(
-  userService,
-  auth0Service,
-  passwordlessRequestService
-) {
+  userService: typeof User,
+  auth0Service: typeof Auth0,
+  passwordlessRequestService: typeof PasswordlessRequest
+): Router {
   const router = express.Router();
 
   router.post('/begin', async (req, res) => {
+    let validatedReq;
+    try {
+      const bodySchema = z.object({
+        phoneNumber: z.string(),
+      });
+      const body = bodySchema.parse(req.body);
+      validatedReq = { body };
+    } catch (error) {
+      logger.error(error);
+      return res.status(400).send(error);
+    }
+
     const { id } = req.user;
     if (!id) {
       req.log.error('wtf something is going wrong');
@@ -20,7 +36,7 @@ function PasswordlessRoutes(
     const lastRequest = passwordlessRequests[passwordlessRequests.length - 1];
     if (
       lastRequest &&
-      new Date() - lastRequest.requestTime <=
+      +new Date() - lastRequest.requestTime <=
         PASSWORDLESS_REQUEST_INTERVAL_MILLIS
     ) {
       return res.status(403).json({
@@ -32,7 +48,7 @@ function PasswordlessRoutes(
       });
     }
 
-    const { phoneNumber } = req.body;
+    const { phoneNumber } = validatedReq.body;
     req.log.info('Beginning passwordless for', phoneNumber);
     try {
       const formattedPhoneNumber = await normalizePhoneNumber(
@@ -49,13 +65,28 @@ function PasswordlessRoutes(
   });
 
   router.post('/login', async (req, res) => {
-    const { phoneNumber: rawPhoneNumber, code } = req.body;
-    const phoneNumber = await normalizePhoneNumber(rawPhoneNumber, 'SG');
+    let validatedReq;
+    try {
+      const bodySchema = z.object({
+        phoneNumber: z.string(),
+        code: z.string(),
+      });
+      const body = bodySchema.parse(req.body);
+      validatedReq = { body };
+    } catch (error) {
+      logger.error(error);
+      return res.status(400).send(error);
+    }
 
-    const { id: userId } = req.user;
-    if (!phoneNumber || !code) {
+    const { phoneNumber: rawPhoneNumber, code } = validatedReq.body;
+    // Valid phone number is checked using Twilio's API
+    const phoneNumber = await normalizePhoneNumber(rawPhoneNumber, 'SG');
+    if (!phoneNumber) {
       return res.status(400).send();
     }
+
+    const { id: userId } = req.user;
+
     try {
       req.log.info('Received login attempt');
       const token = await auth0Service.signIn(phoneNumber, code);
@@ -80,4 +111,4 @@ function PasswordlessRoutes(
   return router;
 }
 
-module.exports = PasswordlessRoutes;
+export default PasswordlessRoutes;

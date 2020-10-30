@@ -1,12 +1,14 @@
-import express from 'express';
+import express, { Router } from 'express';
 import twilio from 'twilio';
 
+import * as z from 'zod';
 import { logger } from '../config';
 import type {
   Call as CallService,
   TwilioCall as TwilioCallService,
 } from '../services';
 import type { CallStatus } from '../models';
+import { stringToNumberTransformer } from './helpers/validation';
 
 const { VoiceResponse } = twilio.twiml;
 
@@ -38,7 +40,7 @@ interface TwilioActionResponse {
 function TwilioRoutes(
   callService: typeof CallService,
   twilioCallService: typeof TwilioCallService
-) {
+): Router {
   const router = express.Router();
   router.all('/', (req, _res, next) => {
     req.log.info('recevied twilio request', req.body);
@@ -53,21 +55,31 @@ function TwilioRoutes(
       url: `${TWILIO_WEBHOOK_BASE_URL}/twiml`,
     }),
     async (req, res) => {
+      let validatedReq;
+      try {
+        const bodySchema = z.object({
+          userId: stringToNumberTransformer,
+          contactId: stringToNumberTransformer,
+          CallSid: z.string(),
+        });
+        const body = bodySchema.parse(req.body);
+        validatedReq = { body };
+      } catch (error) {
+        logger.error(error);
+        return res.status(400).send(error);
+      }
+
       const {
         userId,
         contactId,
         CallSid: incomingTwilioCallSid,
-      } = req.body as {
-        userId: string;
-        contactId: string;
-        CallSid: string;
-      };
+      } = validatedReq.body;
       req.log.info('creating call for', userId, contactId);
 
       try {
         const { phoneNumber } = await callService.createCall({
-          userId: Number(userId),
-          contactId: Number(contactId),
+          userId,
+          contactId,
           incomingTwilioCallSid,
         });
         await twilioCallService.createTwilioCall({
@@ -98,7 +110,21 @@ function TwilioRoutes(
       url: `${TWILIO_WEBHOOK_BASE_URL}/voice-status`,
     }),
     async (req, res) => {
-      const twilioResponse: TwilioActionResponse = req.body;
+      let validatedReq;
+      try {
+        const bodySchema = z.object({
+          CallSid: z.string(),
+        });
+        const body = bodySchema.parse(req.body);
+        validatedReq = { body };
+      } catch (error) {
+        logger.error(error);
+        return res.status(400).send(error);
+      }
+
+      const twilioResponse: Pick<TwilioActionResponse, 'CallSid'> =
+        validatedReq.body;
+
       req.log.info(
         'Got status callback %s',
         JSON.stringify(twilioResponse, null, 2)
@@ -109,7 +135,7 @@ function TwilioRoutes(
       // TODO this gives TwiML errors. Maybe send a hangup response?
       const response = new VoiceResponse();
       response.hangup();
-      res.send(response.toString());
+      return res.send(response.toString());
     }
   );
   return router;
