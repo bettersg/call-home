@@ -28,6 +28,7 @@ const userService = User(models.User, AllowlistEntryService);
 const contactService = Contact(models.Contact, userService);
 const periodicCreditService = PeriodicCredit(
   models.PeriodicCredit,
+  userService,
   transactionService
 );
 const walletService = new Wallet(models.Wallet, transactionService);

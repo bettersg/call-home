@@ -160,4 +160,5 @@ function UserService(UserModel: typeof UserEntity, allowlistEntryService: any) {
   };
 }
 
+export { UserService };
 export default UserService;
