@@ -19,6 +19,7 @@
       ]
     }
   },
+  "files": ["src/custom.d.ts"],
   "include": [
     "src/**/*"
   ]

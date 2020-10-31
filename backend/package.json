@@ -47,7 +47,8 @@
     "sequelize": "^5.21.6",
     "sequelize-cli": "^5.5.1",
     "sequelize-typescript": "^1.1.0",
-    "twilio": "^3.42.2"
+    "twilio": "^3.42.2",
+    "zod": "2.0.0-beta.16"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.30",
