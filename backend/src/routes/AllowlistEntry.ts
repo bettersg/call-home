@@ -14,7 +14,10 @@ const POST_SCHEMA = z.object({
 
 const DELETE_SCHEMA = z.object({
   params: z.object({
-    id: z.string().transform(z.number(), Number),
+    id: z
+      .string()
+      .transform(z.number(), Number)
+      .refine((num) => !Number.isNaN(num)),
   }),
 });
 
