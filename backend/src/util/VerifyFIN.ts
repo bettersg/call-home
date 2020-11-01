@@ -1,5 +1,5 @@
 /* Sources:
-Public References supporting the algorithm
+References supporting the algorithm
 http://www.ngiam.net/NRIC/ppframe.htmSites
 
 To generate and validate FINs
@@ -10,7 +10,7 @@ https://samliew.com/nric-generator
 const checkAlpha = ['X', 'W', 'U', 'T', 'R', 'Q', 'P', 'N', 'M', 'L', 'K'];
 const weightArray = [2, 7, 6, 5, 4, 3, 2];
 
-function validateFIN(fin: string): boolean {
+function validateFIN(fin) {
   const finUpper = fin.trim().toUpperCase();
   if (finUpper.length !== 9) {
     return false;
