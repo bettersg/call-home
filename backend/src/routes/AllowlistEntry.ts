@@ -3,8 +3,20 @@ import * as z from 'zod';
 import { requireAdmin } from './middlewares';
 import { handleServiceError } from './transformers';
 import type { AllowlistEntry } from '../services';
-import { logger } from '../config';
-import { stringToNumberTransformer } from './helpers/validation';
+import { validateRequest } from './helpers/validation';
+
+const POST_SCHEMA = z.object({
+  body: z.object({
+    phoneNumber: z.string(),
+    destinationCountry: z.string(),
+  }),
+});
+
+const DELETE_SCHEMA = z.object({
+  params: z.object({
+    id: z.string().transform(z.number(), Number),
+  }),
+});
 
 function AllowlistEntryRoutes(allowlistService: typeof AllowlistEntry): Router {
   const router = express.Router();
@@ -18,49 +30,32 @@ function AllowlistEntryRoutes(allowlistService: typeof AllowlistEntry): Router {
     }
   });
 
-  router.post('/', requireAdmin, async (req, res) => {
-    try {
-      let validatedReq;
+  router.post(
+    '/',
+    requireAdmin,
+    validateRequest(POST_SCHEMA, async (req, res) => {
       try {
-        const bodySchema = z.object({
-          phoneNumber: z.string(),
-          destinationCountry: z.string(),
+        const { phoneNumber, destinationCountry } = req.body;
+        const allowlistEntry = await allowlistService.createAllowlistEntry({
+          phoneNumber,
+          destinationCountry,
         });
-        const body = bodySchema.parse(req.body);
-        validatedReq = { body };
-      } catch (error) {
-        logger.error(error);
-        return res.status(400).send(error);
+        return res.status(200).json(allowlistEntry);
+      } catch (e) {
+        return handleServiceError(e, res);
       }
+    })
+  );
 
-      const { phoneNumber, destinationCountry } = validatedReq.body;
-      const allowlistEntry = await allowlistService.createAllowlistEntry({
-        phoneNumber,
-        destinationCountry,
-      });
-      return res.status(200).json(allowlistEntry);
-    } catch (e) {
-      return handleServiceError(e, res);
-    }
-  });
-
-  router.delete('/:id', requireAdmin, async (req, res) => {
-    let validatedReq;
-    try {
-      const paramsSchema = z.object({
-        id: stringToNumberTransformer,
-      });
-      const params = paramsSchema.parse(req.params);
-      validatedReq = { params };
-    } catch (error) {
-      logger.error(error);
-      return res.status(400).send(error);
-    }
-
-    const { id } = validatedReq.params;
-    await allowlistService.deleteAllowlistEntry(id);
-    return res.status(200).send();
-  });
+  router.delete(
+    '/:id',
+    requireAdmin,
+    validateRequest(DELETE_SCHEMA, async (req, res) => {
+      const { id } = req.params;
+      await allowlistService.deleteAllowlistEntry(id);
+      return res.status(200).send();
+    })
+  );
 
   return router;
 }
