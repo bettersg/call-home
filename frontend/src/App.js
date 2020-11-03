@@ -25,16 +25,8 @@ function InitApp() {
 
   useEffect(() => {
     const listener = (event) => {
-      Sentry.withScope((scope) => {
-        const error = event.reason;
-        try {
-          scope.setExtra('error', error);
-          scope.setExtra('errorBody', JSON.stringify(error, null, 2));
-        } finally {
-          Sentry.captureMessage('Unhandled promise rejection');
-          Sentry.captureException(error);
-        }
-      });
+      // We used to report every uncaught exception to Sentry, but that proved too noisy. This should leave breadcrumbs in the event that the event is sent to Sentry.
+      console.error(event);
     };
     window.addEventListener('unhandledrejection', listener);
     return () => window.removeEventListener('unhandledrejection', listener);
