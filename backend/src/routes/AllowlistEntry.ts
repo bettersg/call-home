@@ -36,9 +36,9 @@ function AllowlistEntryRoutes(allowlistService: typeof AllowlistEntry): Router {
   router.post(
     '/',
     requireAdmin,
-    validateRequest(POST_SCHEMA, async (req, res) => {
+    validateRequest(POST_SCHEMA, async (parsedReq, res) => {
       try {
-        const { phoneNumber, destinationCountry } = req.body;
+        const { phoneNumber, destinationCountry } = parsedReq.body;
         const allowlistEntry = await allowlistService.createAllowlistEntry({
           phoneNumber,
           destinationCountry,
@@ -53,8 +53,8 @@ function AllowlistEntryRoutes(allowlistService: typeof AllowlistEntry): Router {
   router.delete(
     '/:id',
     requireAdmin,
-    validateRequest(DELETE_SCHEMA, async (req, res) => {
-      const { id } = req.params;
+    validateRequest(DELETE_SCHEMA, async (parsedReq, res) => {
+      const { id } = parsedReq.params;
       await allowlistService.deleteAllowlistEntry(id);
       return res.status(200).send();
     })
