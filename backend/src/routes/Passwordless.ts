@@ -1,15 +1,18 @@
-const express = require('express');
-const { normalizePhoneNumber } = require('../util/country');
+import express, { Router } from 'express';
+import type { User, Auth0, PasswordlessRequest } from '../services';
+import { normalizePhoneNumber } from '../util/country';
+import { CallHomeRequest } from './middlewares';
 
 const PASSWORDLESS_REQUEST_INTERVAL_MILLIS = 1000 * 60 * 2;
+
 function PasswordlessRoutes(
-  userService,
-  auth0Service,
-  passwordlessRequestService
-) {
+  userService: typeof User,
+  auth0Service: typeof Auth0,
+  passwordlessRequestService: typeof PasswordlessRequest
+): Router {
   const router = express.Router();
 
-  router.post('/begin', async (req, res) => {
+  router.post('/begin', async (req: CallHomeRequest, res) => {
     const { id } = req.user;
     if (!id) {
       req.log.error('wtf something is going wrong');
@@ -20,7 +23,7 @@ function PasswordlessRoutes(
     const lastRequest = passwordlessRequests[passwordlessRequests.length - 1];
     if (
       lastRequest &&
-      new Date() - lastRequest.requestTime <=
+      Number(new Date()) - lastRequest.requestTime <=
         PASSWORDLESS_REQUEST_INTERVAL_MILLIS
     ) {
       return res.status(403).json({
@@ -48,7 +51,7 @@ function PasswordlessRoutes(
     return res.redirect('/');
   });
 
-  router.post('/login', async (req, res) => {
+  router.post('/login', async (req: CallHomeRequest, res) => {
     const { phoneNumber: rawPhoneNumber, code } = req.body;
     const phoneNumber = await normalizePhoneNumber(rawPhoneNumber, 'SG');
 
@@ -80,4 +83,4 @@ function PasswordlessRoutes(
   return router;
 }
 
-module.exports = PasswordlessRoutes;
+export default PasswordlessRoutes;
