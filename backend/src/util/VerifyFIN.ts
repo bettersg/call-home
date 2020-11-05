@@ -1,6 +1,6 @@
 /* Sources:
-Public References supporting the algorithm
-http://www.ngiam.net/NRIC/ppframe.htmSites
+References supporting the algorithm
+http://www.ngiam.net/NRIC/ppframe.htm
 
 To generate and validate FINs
 https://nric.biz
@@ -16,10 +16,10 @@ function validateFIN(fin: string): boolean {
     return false;
   }
 
-  const sumArray = fin.slice(1, 8).split('').map(Number); // FIN String into array of numbers to multiply by weight
+  const numArray = fin.slice(1, 8).split('').map(Number); // FIN String into array of numbers to multiply by weight
   let sum = 0;
-  for (let i = 0; i < sumArray.length; i += 1) {
-    sum += sumArray[i] * weightArray[i];
+  for (let i = 0; i < numArray.length; i += 1) {
+    sum += numArray[i] * weightArray[i];
   } // Cross multiply with weightArray to get sum
 
   if (finUpper[0] === 'G') {
