@@ -39,7 +39,7 @@ function PasswordlessRoutes(
       const lastRequest = passwordlessRequests[passwordlessRequests.length - 1];
       if (
         lastRequest &&
-        Number(new Date()) - lastRequest.requestTime <=
+        Number(new Date()) - Number(lastRequest.requestTime) <=
           PASSWORDLESS_REQUEST_INTERVAL_MILLIS
       ) {
         return res.status(403).json({
