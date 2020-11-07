@@ -24,7 +24,7 @@ function InitApp() {
   const { me: user } = userState;
 
   useEffect(() => {
-    const listener = (event) => {
+    const listener = (event: Event) => {
       // We used to report every uncaught exception to Sentry, but that proved too noisy. This should leave breadcrumbs in the event that the event is sent to Sentry.
       console.error(event);
     };
@@ -48,12 +48,16 @@ function InitApp() {
 }
 
 class ErrorBoundary extends React.Component {
-  constructor(props) {
+  state: {
+    error: Error | null
+  }
+
+  constructor(props: any) {
     super(props);
     this.state = { error: null };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(error: Error) {
     return { error };
   }
 
