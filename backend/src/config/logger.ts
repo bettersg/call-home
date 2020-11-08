@@ -11,12 +11,8 @@ const config = isDev
   : undefined;
 
 const httpConfig = {
+  autoLogging: false,
   ...config,
-  ...(isDev
-    ? {
-        autoLogging: false,
-      }
-    : {}),
 };
 const logger = pino(config);
 
