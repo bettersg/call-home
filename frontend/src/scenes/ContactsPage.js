@@ -401,9 +401,19 @@ function CallLimitInfo({
   contacts,
   locale,
   nextRefreshTimeString,
+  nextRefreshAmount,
   callLimitExceeded,
 }) {
   const CallTimeInfoItem = callLimitExceeded ? ErrorInfoItem : InfoItem;
+  // TODO localization problems here
+  const nextRefreshInfoElement =
+    nextRefreshTimeString && nextRefreshAmount ? (
+      <p>
+        <strong>{nextRefreshAmount}</strong> in {nextRefreshTimeString}
+      </p>
+    ) : (
+      ''
+    );
   return (
     <div className="info-container" style={{ marginTop: '12px' }}>
       <CallTimeInfoItem variant="subtitle2" className="info-item">
@@ -413,7 +423,7 @@ function CallLimitInfo({
 
       <InfoItem variant="subtitle2" className="info-item">
         <AutorenewIcon className="info-icon" />
-        {nextRefreshTimeString ? `in ${nextRefreshTimeString}` : ''}
+        {nextRefreshInfoElement}
       </InfoItem>
       <InfoItem variant="subtitle2" className="info-item">
         <FavoriteIcon className="info-icon" />
@@ -668,6 +678,7 @@ export default function ContactsPage({ locale }) {
             contacts={contacts}
             locale={locale}
             nextRefreshTimeString={nextRefreshTimeString}
+            nextRefreshAmount={nextRefreshAmount}
             callLimitExceeded={callLimitExceeded}
           />
         ) : null}

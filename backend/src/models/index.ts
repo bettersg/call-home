@@ -1,24 +1,26 @@
 import sequelize from './sequelize';
 import AllowlistEntry from './AllowlistEntry';
-import User, { UserType } from './User';
-import Contact from './Contact';
 import Call from './Call';
+import Contact from './Contact';
+import PasswordlessRequest from './PasswordlessRequest';
 import PeriodicCredit from './PeriodicCredit';
 import Transaction from './Transaction';
-import Wallet from './Wallet';
 import TwilioCall, { CallStatus } from './TwilioCall';
-import PasswordlessRequest from './PasswordlessRequest';
+import User, { UserType } from './User';
+import ValidationState from './ValidationState';
+import Wallet from './Wallet';
 
 sequelize.addModels([
   AllowlistEntry,
   Call,
   Contact,
-  User,
-  TwilioCall,
   PasswordlessRequest,
   PeriodicCredit,
-  Wallet,
   Transaction,
+  TwilioCall,
+  User,
+  ValidationState,
+  Wallet,
 ]);
 
 // User <-> Contact
@@ -53,6 +55,14 @@ Wallet.belongsTo(User, {
   foreignKey: 'userId',
 });
 
+// ValidationState <-> User
+User.hasOne(ValidationState, {
+  foreignKey: 'userId',
+});
+ValidationState.belongsTo(User, {
+  foreignKey: 'userId',
+});
+
 // Transaction <-> User
 User.hasMany(Transaction, {
   foreignKey: 'userId',
@@ -71,15 +81,16 @@ PeriodicCredit.belongsTo(User, {
 
 export {
   sequelize,
-  User,
-  UserType as UserTypes,
-  Contact,
+  AllowlistEntry,
   Call,
   CallStatus,
-  AllowlistEntry,
-  TwilioCall,
+  Contact,
   PasswordlessRequest,
   PeriodicCredit,
-  Wallet,
   Transaction,
+  TwilioCall,
+  User,
+  UserType as UserTypes,
+  ValidationState,
+  Wallet,
 };

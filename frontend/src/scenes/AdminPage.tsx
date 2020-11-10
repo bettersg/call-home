@@ -1,5 +1,6 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import Tabs from '@material-ui/core/Tabs';
+import React, { useCallback, useState, useEffect, FormEvent} from 'react';
+import Tabs
+from '@material-ui/core/Tabs';
 import Switch from '@material-ui/core/Switch';
 import Tab from '@material-ui/core/Tab';
 import Table from '@material-ui/core/Table';
@@ -34,7 +35,7 @@ function AllowlistTabContent() {
   ] = useState('');
   const [useMultipleNumbers, setUseMultipleNumbers] = useState(false);
   const [newAllowlistCountry, setNewAllowlistCountry] = useState('');
-  const [errorMessages, setErrorMessages] = useState([]);
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
 
   useEffect(() => {
     if (allowlistService) {
@@ -42,7 +43,7 @@ function AllowlistTabContent() {
     }
   }, [allowlistService]);
 
-  const createAllowlistEntry = async (newNumber) => {
+  const createAllowlistEntry = async (newNumber: string) => {
     try {
       await allowlistService.createAllowlistEntry({
         phoneNumber: `+65${newNumber}`,
@@ -60,7 +61,7 @@ function AllowlistTabContent() {
     }
   };
 
-  const onSubmit = async (event) => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     // Modify the array in-place because createAllowlistEntry has a closure over the actual errorMessages instance. This can be handled more elegantly by returning the error type, but that's too much effort for now.
     errorMessages.splice(0, errorMessages.length);
@@ -74,11 +75,11 @@ function AllowlistTabContent() {
     return createAllowlistEntry(newAllowlistPhoneNumber);
   };
 
-  const deleteAllowlistEntry = async (id) => {
+  const deleteAllowlistEntry = async (id: number) => {
     await allowlistService.deleteAllowlistEntry(id);
   };
 
-  const handlePhoneNumberChange = (event) => {
+  const handlePhoneNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (useMultipleNumbers) {
       setNewAllowlistMultiplePhoneNumbers(event.target.value);
     } else {
@@ -118,7 +119,7 @@ function AllowlistTabContent() {
           value={newAllowlistPhoneNumber}
           onChange={handlePhoneNumberChange}
           InputProps={{
-            inputComponent: PhoneNumberMasks.SG,
+            inputComponent: PhoneNumberMasks.SG as any,
           }}
         />
       )}
@@ -127,7 +128,7 @@ function AllowlistTabContent() {
         <Select
           style={{ background: 'white' }}
           labelId="allowlist-country-label"
-          onChange={(e) => setNewAllowlistCountry(e.target.value)}
+          onChange={(e: React.ChangeEvent<any>) => setNewAllowlistCountry(e.target.value)}
         >
           <MenuItem value="BD">BD</MenuItem>
           <MenuItem value="SG">SG</MenuItem>
@@ -171,7 +172,7 @@ function AllowlistTabContent() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {allowlistEntries.map((allowlistEntry) => (
+            {allowlistEntries.map((allowlistEntry: any) => (
               <TableRow key={allowlistEntry.phoneNumber}>
                 <TableCell>
                   <Typography variant="body2">
@@ -227,7 +228,7 @@ function UserTabContent() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user) => (
+            {users.map((user: any) => (
               <TableRow key={user.phoneNumber}>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.phoneNumber}</TableCell>
@@ -247,7 +248,7 @@ function UserTabContent() {
   );
 }
 
-function TabPanel({ value, index, children }) {
+function TabPanel({ value, index, children } : { value: number, index: number, children: JSX.Element}) {
   if (value !== index) {
     return null;
   }
@@ -258,7 +259,7 @@ export default function AdminPage() {
   const [tabIndex, setTabIndex] = useState(0);
 
   const handleTabChange = useCallback(
-    (event, newValue) => {
+    (_event, newValue) => {
       setTabIndex(newValue);
     },
     [setTabIndex]

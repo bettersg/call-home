@@ -1,9 +1,27 @@
-import express from 'express';
+import express, { Router } from 'express';
+import * as z from 'zod';
 import { requireAdmin } from './middlewares';
 import { handleServiceError } from './transformers';
 import type { AllowlistEntry } from '../services';
+import { validateRequest } from './helpers/validation';
 
-function AllowlistEntryRoutes(allowlistService: typeof AllowlistEntry) {
+const POST_SCHEMA = z.object({
+  body: z.object({
+    phoneNumber: z.string(),
+    destinationCountry: z.string(),
+  }),
+});
+
+const DELETE_SCHEMA = z.object({
+  params: z.object({
+    id: z
+      .string()
+      .transform(z.number(), Number)
+      .refine((num) => !Number.isNaN(num)),
+  }),
+});
+
+function AllowlistEntryRoutes(allowlistService: typeof AllowlistEntry): Router {
   const router = express.Router();
 
   router.get('/', requireAdmin, async (req, res) => {
@@ -15,24 +33,32 @@ function AllowlistEntryRoutes(allowlistService: typeof AllowlistEntry) {
     }
   });
 
-  router.post('/', requireAdmin, async (req, res) => {
-    try {
-      const { phoneNumber, destinationCountry } = req.body;
-      const allowlistEntry = await allowlistService.createAllowlistEntry({
-        phoneNumber,
-        destinationCountry,
-      });
-      res.status(200).json(allowlistEntry);
-    } catch (e) {
-      handleServiceError(e, res);
-    }
-  });
+  router.post(
+    '/',
+    requireAdmin,
+    validateRequest(POST_SCHEMA, async (parsedReq, res) => {
+      try {
+        const { phoneNumber, destinationCountry } = parsedReq.body;
+        const allowlistEntry = await allowlistService.createAllowlistEntry({
+          phoneNumber,
+          destinationCountry,
+        });
+        return res.status(200).json(allowlistEntry);
+      } catch (e) {
+        return handleServiceError(e, res);
+      }
+    })
+  );
 
-  router.delete('/:id', requireAdmin, async (req, res) => {
-    const { id } = req.params;
-    await allowlistService.deleteAllowlistEntry(Number(id));
-    res.status(200).send();
-  });
+  router.delete(
+    '/:id',
+    requireAdmin,
+    validateRequest(DELETE_SCHEMA, async (parsedReq, res) => {
+      const { id } = parsedReq.params;
+      await allowlistService.deleteAllowlistEntry(id);
+      return res.status(200).send();
+    })
+  );
 
   return router;
 }

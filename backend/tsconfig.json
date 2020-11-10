@@ -12,9 +12,10 @@
     "sourceMap": true,
     "outDir": "dist",
     "baseUrl": ".",
+    "strictNullChecks": true,
     "paths": {
       "*": [
-        "node_modules/*",
+        "node_modules/*"
       ]
     }
   },

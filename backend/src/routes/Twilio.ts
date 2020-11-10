@@ -1,12 +1,17 @@
-import express from 'express';
+import express, { Router } from 'express';
 import twilio from 'twilio';
 
+import * as z from 'zod';
 import { logger } from '../config';
 import type {
   Call as CallService,
   TwilioCall as TwilioCallService,
 } from '../services';
 import type { CallStatus } from '../models';
+import {
+  validateRequest,
+  stringToNumberTransformer,
+} from './helpers/validation';
 
 const { VoiceResponse } = twilio.twiml;
 
@@ -35,13 +40,27 @@ interface TwilioActionResponse {
   To: string;
 }
 
+const CREATE_CALL_SCHEMA = z.object({
+  body: z.object({
+    userId: stringToNumberTransformer,
+    contactId: stringToNumberTransformer,
+    CallSid: z.string(),
+  }),
+});
+
+const VOICE_STATUS_SCHEMA = z.object({
+  body: z.object({
+    CallSid: z.string(),
+  }),
+});
+
 function TwilioRoutes(
   callService: typeof CallService,
   twilioCallService: typeof TwilioCallService
-) {
+): Router {
   const router = express.Router();
   router.all('/', (req, _res, next) => {
-    req.log.info('recevied twilio request', req.body);
+    req.log.info('received twilio request', req.body);
     next();
   });
 
@@ -52,22 +71,18 @@ function TwilioRoutes(
       ...webhookOptions,
       url: `${TWILIO_WEBHOOK_BASE_URL}/twiml`,
     }),
-    async (req, res) => {
+    validateRequest(CREATE_CALL_SCHEMA, async (parsedReq, res, req) => {
       const {
         userId,
         contactId,
         CallSid: incomingTwilioCallSid,
-      } = req.body as {
-        userId: string;
-        contactId: string;
-        CallSid: string;
-      };
+      } = parsedReq.body;
       req.log.info('creating call for', userId, contactId);
 
       try {
         const { phoneNumber } = await callService.createCall({
-          userId: Number(userId),
-          contactId: Number(contactId),
+          userId,
+          contactId,
           incomingTwilioCallSid,
         });
         await twilioCallService.createTwilioCall({
@@ -88,7 +103,7 @@ function TwilioRoutes(
         }
         throw e;
       }
-    }
+    })
   );
 
   router.all(
@@ -97,7 +112,8 @@ function TwilioRoutes(
       ...webhookOptions,
       url: `${TWILIO_WEBHOOK_BASE_URL}/voice-status`,
     }),
-    async (req, res) => {
+
+    validateRequest(VOICE_STATUS_SCHEMA, async (parsedReq, res, req) => {
       const twilioResponse: TwilioActionResponse = req.body;
       req.log.info(
         'Got status callback %s',
@@ -110,7 +126,7 @@ function TwilioRoutes(
       const response = new VoiceResponse();
       response.hangup();
       res.send(response.toString());
-    }
+    })
   );
   return router;
 }

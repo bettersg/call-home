@@ -10,8 +10,8 @@ import Transaction from './Transaction';
 import PeriodicCredit from './PeriodicCredit';
 import Contact from './Contact';
 import AllowlistEntry from './AllowlistEntry';
+import Passwordless from './Passwordless';
 import OAuth = require('./OAuth');
-import Passwordless = require('./Passwordless');
 
 const callRoute = Call(services.Call, services.TwilioCall);
 const callTokenRoute = CallToken();
