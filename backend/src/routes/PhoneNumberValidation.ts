@@ -1,10 +1,10 @@
 import express, { Router } from 'express';
 import * as z from 'zod';
-import type { User, Auth0, PasswordlessRequest } from '../services';
+import type { User, Auth0, PhoneNumberValidation } from '../services';
 import { normalizePhoneNumber } from '../util/country';
 import { validateRequest } from './helpers/validation';
 
-const PASSWORDLESS_REQUEST_INTERVAL_MILLIS = 1000 * 60 * 2;
+const PHONE_NUMBER_REQUEST_INTERVAL_MILLIS = 1000 * 60 * 2;
 
 const BEGIN_SCHEMA = z.object({
   body: z.object({
@@ -19,10 +19,10 @@ const LOGIN_SCHEMA = z.object({
   }),
 });
 
-function PasswordlessRoutes(
+function PhoneNumberValidationRoutes(
   userService: typeof User,
   auth0Service: typeof Auth0,
-  passwordlessRequestService: typeof PasswordlessRequest
+  phoneNumberValidationService: typeof PhoneNumberValidation
 ): Router {
   const router = express.Router();
 
@@ -33,26 +33,25 @@ function PasswordlessRoutes(
       if (!id) {
         req.log.error('wtf something is going wrong');
       }
-      const passwordlessRequests = await passwordlessRequestService.getPasswordlessRequestsByUserId(
+      const phoneNumberValidation = await phoneNumberValidationService.getPhoneNumberValidationForUser(
         id
       );
-      const lastRequest = passwordlessRequests[passwordlessRequests.length - 1];
       if (
-        lastRequest &&
-        Number(new Date()) - Number(lastRequest.requestTime) <=
-          PASSWORDLESS_REQUEST_INTERVAL_MILLIS
+        phoneNumberValidation?.lastRequestTime &&
+        Number(new Date()) - Number(phoneNumberValidation.lastRequestTime) <=
+          PHONE_NUMBER_REQUEST_INTERVAL_MILLIS
       ) {
         return res.status(403).json({
-          message: 'PASSWORDLESS_RATE_LIMITED',
+          message: 'PHONE_NUMBER_RATE_LIMITED',
           body: new Date(
-            lastRequest.requestTime.getTime() +
-              PASSWORDLESS_REQUEST_INTERVAL_MILLIS
+            phoneNumberValidation.lastRequestTime.getTime() +
+              PHONE_NUMBER_REQUEST_INTERVAL_MILLIS
           ),
         });
       }
 
       const { phoneNumber } = parsedReq.body;
-      req.log.info('Beginning passwordless for', phoneNumber);
+      req.log.info('Beginning phone number validation for', phoneNumber);
       try {
         const formattedPhoneNumber = await normalizePhoneNumber(
           phoneNumber,
@@ -60,7 +59,9 @@ function PasswordlessRoutes(
         );
         req.log.info('Phone number is: ', formattedPhoneNumber);
         await auth0Service.sendSms(formattedPhoneNumber);
-        await passwordlessRequestService.createPasswordlessRequest(id);
+        await phoneNumberValidationService.updatePhoneNumberValidationRequestTime(
+          id
+        );
       } catch (e) {
         req.log.error(e);
       }
@@ -82,11 +83,11 @@ function PasswordlessRoutes(
         req.log.info('Received login attempt');
         const token = await auth0Service.signIn(phoneNumber, code);
         req.log.info('Received a token', token);
-        const user = await userService.verifyUserPhoneNumber(
-          userId,
-          phoneNumber
+        await userService.verifyUserPhoneNumber(userId, phoneNumber);
+        const phoneNumberValidation = await phoneNumberValidationService.getPhoneNumberValidationForUser(
+          userId
         );
-        if (!user.isPhoneNumberValidated) {
+        if (!phoneNumberValidation?.isPhoneNumberValidated) {
           return res.status(403).json({ message: 'NOT_WHITELISTED' });
         }
         return res.redirect('/');
@@ -106,4 +107,4 @@ function PasswordlessRoutes(
   return router;
 }
 
-export default PasswordlessRoutes;
+export default PhoneNumberValidationRoutes;

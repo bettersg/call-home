@@ -1,20 +1,29 @@
 import type { Request, Response, NextFunction } from 'express';
 
 // TODO don't hardcode this
-import { User as UserService } from '../services';
+import {
+  PhoneNumberValidation as PhoneNumberValidationService,
+  User as UserService,
+} from '../services';
 import { UserTypes } from '../models';
-import transformers = require('./transformers');
+import {
+  userToUserResponse,
+  userProfileToUserProfileResponse,
+  UserResponse,
+} from './transformers';
 
-const { userToUserResponse, userProfileToUserProfileResponse } = transformers;
 const LOGIN_ROUTE = '/';
 
-export interface CallHomeRequest extends Request {
-  // TODO unfortunately, this interface may have multiple shapes depending on the middleswares. This is more of a stopgap measure.
+interface AuthenticatedRequest extends Request {
   user: any;
   session: any;
 }
 
-function sendForbiddenResponse(req: CallHomeRequest, res: Response) {
+export interface UserInjectedRequest extends AuthenticatedRequest {
+  user: UserResponse;
+}
+
+function sendForbiddenResponse(req: UserInjectedRequest, res: Response) {
   res.format({
     json: () => {
       req.log.info('Encountered api call, sending 401');
@@ -42,7 +51,7 @@ async function httpsRedirect(req: Request, res: Response, next: NextFunction) {
   return next();
 }
 
-async function injectDbUser(req: CallHomeRequest) {
+async function injectDbUser(req: AuthenticatedRequest) {
   // This returns the OAuth user info
   const { _raw, _json, ...userProfile } = req.user;
   const { emails } = userProfile;
@@ -79,7 +88,10 @@ async function injectDbUser(req: CallHomeRequest) {
     );
     return;
   }
-  const userResponse = userToUserResponse(user);
+  const phoneNumberValidation = await PhoneNumberValidationService.getPhoneNumberValidationForUser(
+    user.id
+  );
+  const userResponse = userToUserResponse(user, phoneNumberValidation);
   req.user = {
     ...userProfileResponse,
     ...userResponse,
@@ -87,7 +99,7 @@ async function injectDbUser(req: CallHomeRequest) {
 }
 
 async function requireAdmin(
-  req: CallHomeRequest,
+  req: UserInjectedRequest,
   res: Response,
   next: NextFunction
 ) {
@@ -101,7 +113,7 @@ async function requireAdmin(
 }
 
 async function requireVerified(
-  req: CallHomeRequest,
+  req: UserInjectedRequest,
   res: Response,
   next: NextFunction
 ) {
@@ -113,7 +125,7 @@ async function requireVerified(
 }
 
 async function requireSelf(
-  req: CallHomeRequest,
+  req: UserInjectedRequest,
   res: Response,
   next: NextFunction
 ) {
@@ -127,7 +139,7 @@ async function requireSelf(
 }
 
 async function secureRoutes(
-  req: CallHomeRequest,
+  req: UserInjectedRequest,
   res: Response,
   next: NextFunction
 ) {

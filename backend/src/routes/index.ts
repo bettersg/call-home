@@ -10,19 +10,24 @@ import Transaction from './Transaction';
 import PeriodicCredit from './PeriodicCredit';
 import Contact from './Contact';
 import AllowlistEntry from './AllowlistEntry';
-import Passwordless from './Passwordless';
+import PhoneNumberValidation from './PhoneNumberValidation';
 import OAuth = require('./OAuth');
 
 const callRoute = Call(services.Call, services.TwilioCall);
 const callTokenRoute = CallToken();
 const twilioRoute = Twilio(services.Call, services.TwilioCall);
 const oAuthRoute = OAuth();
-const passwordlessRoute = Passwordless(
+const phoneNumberValidationRoute = PhoneNumberValidation(
   services.User,
   services.Auth0,
-  services.PasswordlessRequest
+  services.PhoneNumberValidation
 );
-const userRoute = User(services.User, services.PeriodicCredit, services.Wallet);
+const userRoute = User(
+  services.User,
+  services.PeriodicCredit,
+  services.PhoneNumberValidation,
+  services.Wallet
+);
 const contactRoute = Contact(services.Contact);
 const allowlistEntryRoute = AllowlistEntry(services.AllowlistEntry);
 const transactionRoute = Transaction(services.Transaction);
@@ -34,7 +39,7 @@ export {
   callTokenRoute as CallToken,
   twilioRoute as Twilio,
   oAuthRoute as OAuth,
-  passwordlessRoute as Passwordless,
+  phoneNumberValidationRoute as PhoneNumberValidation,
   userRoute as User,
   contactRoute as Contact,
   allowlistEntryRoute as AllowlistEntry,

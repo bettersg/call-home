@@ -1,11 +1,11 @@
 import express from 'express';
-import { CallHomeRequest } from './middlewares';
+import { UserInjectedRequest } from './middlewares';
 import type { Feature } from '../services';
 
 function FeaturesRoutes(featureService: typeof Feature) {
   const router = express.Router();
 
-  router.get('/', async (req: CallHomeRequest, res) => {
+  router.get('/', async (req: UserInjectedRequest, res) => {
     const userId = req.user.id;
     const features = {
       CALL_LIMITS: featureService.shouldEnableCallLimits(userId),

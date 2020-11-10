@@ -9,32 +9,30 @@ import Wallet from './Wallet';
 import User from './User';
 import * as Feature from './Feature';
 import AllowlistEntry from './AllowlistEntry';
-import ValidationState from './ValidationState';
+import PhoneNumberValidation from './PhoneNumberValidation';
 import Contact = require('./Contact');
 import Auth0 = require('./Auth0');
-import PasswordlessRequest = require('./PasswordlessRequest');
 
 // TOPOLOGICAL SORT LOL
 const transactionService = new Transaction(models.Transaction);
-const passwordlessRequestService = PasswordlessRequest(
-  models.PasswordlessRequest
-);
 const allowlistEntryService = AllowlistEntry(
   models.AllowlistEntry,
   TwilioClient
 );
 const auth0Service = Auth0();
-const validationStateService = ValidationState(models.ValidationState);
+const phoneNumberValidationService = PhoneNumberValidation(
+  models.PhoneNumberValidation
+);
 
 const userService = User(
   models.User,
   allowlistEntryService,
-  validationStateService
+  phoneNumberValidationService
 );
 const contactService = Contact(models.Contact, userService);
 const periodicCreditService = PeriodicCredit(
   models.PeriodicCredit,
-  userService,
+  phoneNumberValidationService,
   transactionService
 );
 const walletService = new Wallet(models.Wallet, transactionService);
@@ -58,11 +56,10 @@ export {
   auth0Service as Auth0,
   callService as Call,
   contactService as Contact,
-  passwordlessRequestService as PasswordlessRequest,
   periodicCreditService as PeriodicCredit,
   transactionService as Transaction,
   twilioCallService as TwilioCall,
   userService as User,
-  validationStateService as ValidationState,
+  phoneNumberValidationService as PhoneNumberValidation,
   walletService as Wallet,
 };
