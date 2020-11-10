@@ -29,7 +29,7 @@ const callHomeTheme = createMuiTheme({
       default: colors.primary[100],
     },
     primary: colors.primary,
-    grey: colors.grey,
+    grey: colors.grey as any,
     error: colors.error,
   },
   overrides: {
