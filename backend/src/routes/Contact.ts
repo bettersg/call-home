@@ -13,6 +13,12 @@ import {
   validateRequest,
 } from './helpers/validation';
 
+const CONTACT_SCHEMA = z.object({
+  name: z.string(),
+  phoneNumber: z.string(),
+  avatar: z.string(),
+});
+
 const GET_SCHEMA = z.object({
   params: z.object({
     userId: stringToNumberTransformer,
@@ -23,11 +29,7 @@ const POST_SCHEMA = z.object({
   params: z.object({
     userId: stringToNumberTransformer,
   }),
-  body: z.object({
-    name: z.string(),
-    phoneNumber: z.string(),
-    avatar: z.string(),
-  }),
+  body: CONTACT_SCHEMA,
 });
 
 const PUT_SCHEMA = z.object({
@@ -35,11 +37,7 @@ const PUT_SCHEMA = z.object({
     userId: stringToNumberTransformer,
     contactId: stringToNumberTransformer,
   }),
-  body: z.object({
-    name: z.string().optional(),
-    phoneNumber: z.string().optional(),
-    avatar: z.string().optional(),
-  }),
+  body: CONTACT_SCHEMA.partial(),
 });
 
 const DELETE_SCHEMA = z.object({
