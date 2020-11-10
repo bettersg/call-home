@@ -29,4 +29,9 @@ function validateRequest<Output, TD extends z.ZodTypeDef, Input>(
   };
 }
 
-export { validateRequest };
+const stringToNumberTransformer = z
+  .string()
+  .transform(z.number(), Number)
+  .refine((num) => !Number.isNaN(num));
+
+export { validateRequest, stringToNumberTransformer };
