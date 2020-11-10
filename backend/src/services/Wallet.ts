@@ -58,6 +58,11 @@ class WalletService {
     if (!shouldEnableCallLimits(userId)) {
       return wallet;
     }
+    if (!wallet) {
+      const msg = `No wallet found for userId ${userId}`;
+      logger.error(msg);
+      throw new Error(msg);
+    }
     await this.walletModel.update(
       {
         callTime: wallet.callTime + amount,

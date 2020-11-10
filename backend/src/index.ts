@@ -60,8 +60,6 @@ if (NODE_ENV === 'production' || NODE_ENV === 'staging') {
 
 // Make sure oauth is first and NOT secured
 app.use('/oauth', oauthRoutes);
-// We'll also show the periodic credit stuff
-app.use('/periodic-credit', periodicCreditRoutes);
 
 // TODO Features are a bit weird because we have per-user config. We probably want features for non logged in users too. Should probably use a different middleware for this
 app.use('/features', secureRoutes, featureRoutes);
@@ -74,6 +72,7 @@ app.use('/users', secureRoutes, requireVerified, contactRoutes);
 app.use('/users', secureRoutes, requireVerified, callRoutes);
 app.use('/users', secureRoutes, requireVerified, transactionRoutes);
 app.use('/allowlistEntries', secureRoutes, allowlistRoutes);
+app.use('/periodic-credit', secureRoutes, periodicCreditRoutes);
 
 if (NODE_ENV === 'development') {
   // proxy requests to development frontend

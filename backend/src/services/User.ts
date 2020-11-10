@@ -1,8 +1,14 @@
 import { sanitizeDbErrors } from './lib';
 import { UserTypes } from '../models';
 import type { User as UserEntity } from '../models';
+import type { AllowlistEntry, ValidationState } from './index';
+import { logger } from '../config';
 
-function UserService(UserModel: typeof UserEntity, allowlistEntryService: any) {
+function UserService(
+  UserModel: typeof UserEntity,
+  allowlistEntryService: typeof AllowlistEntry,
+  validationStateService: typeof ValidationState
+) {
   async function listUsers() {
     return UserModel.findAll({
       order: ['email'],
@@ -18,6 +24,7 @@ function UserService(UserModel: typeof UserEntity, allowlistEntryService: any) {
     );
     await createdUser.save();
     await createdUser.reload();
+    await validationStateService.createValidationStateForUser(createdUser.id);
     return createdUser;
   }
 
@@ -79,6 +86,12 @@ function UserService(UserModel: typeof UserEntity, allowlistEntryService: any) {
       allowlistEntryService.getAllowlistEntryByPhoneNumber(phoneNumber),
     ]);
 
+    if (!user) {
+      const msg = `User not found for userId ${userId}`;
+      logger.error(msg);
+      throw new Error(msg);
+    }
+
     // If the user is not allow, we can just stop here
     if (!allowlistEntry) {
       return user;
@@ -108,6 +121,11 @@ function UserService(UserModel: typeof UserEntity, allowlistEntryService: any) {
 
   async function deleteUser(userId: number) {
     const user = await getUser(userId);
+    if (!user) {
+      const msg = `User not found for userId ${userId}`;
+      logger.error(msg);
+      throw new Error(msg);
+    }
     await user.destroy();
   }
 
@@ -148,4 +166,5 @@ function UserService(UserModel: typeof UserEntity, allowlistEntryService: any) {
   };
 }
 
+export { UserService };
 export default UserService;

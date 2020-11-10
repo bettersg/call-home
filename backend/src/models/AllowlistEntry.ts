@@ -1,6 +1,7 @@
 import {
   AllowNull,
   Column,
+  DataType,
   Default,
   Model,
   Table,
@@ -33,8 +34,8 @@ class AllowlistEntry extends Model<AllowlistEntry> {
   })
   @AllowNull(false)
   @NotEmpty
-  @Column
-  role: string;
+  @Column(DataType.STRING)
+  role: UserType;
 
   @Validate({
     isIn: [['SG', 'BD', '']],

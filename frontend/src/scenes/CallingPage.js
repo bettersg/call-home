@@ -139,7 +139,9 @@ export default function CallingPage({ locale }) {
     const listener = (error) => {
       console.log('ERRRORRRR');
       console.log(error);
-      Sentry.captureMessage(`Error smoke test`);
+
+      // Comment in if there is any doubt about whether events are being surfaced
+      // Sentry.captureMessage(`Error smoke test`);
       if (isTransientIssue(error)) {
         return;
       }
