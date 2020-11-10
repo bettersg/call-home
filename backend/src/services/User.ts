@@ -1,9 +1,14 @@
 import { sanitizeDbErrors } from './lib';
 import { UserTypes } from '../models';
 import type { User as UserEntity } from '../models';
+import type { AllowlistEntry, ValidationState } from './index';
 import { logger } from '../config';
 
-function UserService(UserModel: typeof UserEntity, allowlistEntryService: any) {
+function UserService(
+  UserModel: typeof UserEntity,
+  allowlistEntryService: typeof AllowlistEntry,
+  validationStateService: typeof ValidationState
+) {
   async function listUsers() {
     return UserModel.findAll({
       order: ['email'],
@@ -19,6 +24,7 @@ function UserService(UserModel: typeof UserEntity, allowlistEntryService: any) {
     );
     await createdUser.save();
     await createdUser.reload();
+    await validationStateService.createValidationStateForUser(createdUser.id);
     return createdUser;
   }
 

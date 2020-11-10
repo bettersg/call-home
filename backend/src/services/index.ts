@@ -9,6 +9,7 @@ import Wallet from './Wallet';
 import User from './User';
 import * as Feature from './Feature';
 import AllowlistEntry from './AllowlistEntry';
+import ValidationState from './ValidationState';
 import Contact = require('./Contact');
 import Auth0 = require('./Auth0');
 import PasswordlessRequest = require('./PasswordlessRequest');
@@ -18,13 +19,18 @@ const transactionService = new Transaction(models.Transaction);
 const passwordlessRequestService = PasswordlessRequest(
   models.PasswordlessRequest
 );
-const AllowlistEntryService = AllowlistEntry(
+const allowlistEntryService = AllowlistEntry(
   models.AllowlistEntry,
   TwilioClient
 );
 const auth0Service = Auth0();
+const validationStateService = ValidationState(models.ValidationState);
 
-const userService = User(models.User, AllowlistEntryService);
+const userService = User(
+  models.User,
+  allowlistEntryService,
+  validationStateService
+);
 const contactService = Contact(models.Contact, userService);
 const periodicCreditService = PeriodicCredit(
   models.PeriodicCredit,
@@ -46,16 +52,17 @@ const twilioCallService = new TwilioCall(
 );
 
 export {
-  userService as User,
-  contactService as Contact,
-  callService as Call,
-  AllowlistEntryService as AllowlistEntry,
-  auth0Service as Auth0,
-  twilioCallService as TwilioCall,
-  TwilioClient,
-  passwordlessRequestService as PasswordlessRequest,
-  walletService as Wallet,
-  transactionService as Transaction,
-  periodicCreditService as PeriodicCredit,
   Feature,
+  TwilioClient,
+  allowlistEntryService as AllowlistEntry,
+  auth0Service as Auth0,
+  callService as Call,
+  contactService as Contact,
+  passwordlessRequestService as PasswordlessRequest,
+  periodicCreditService as PeriodicCredit,
+  transactionService as Transaction,
+  twilioCallService as TwilioCall,
+  userService as User,
+  validationStateService as ValidationState,
+  walletService as Wallet,
 };

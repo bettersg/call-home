@@ -64,4 +64,5 @@ function AllowlistEntryService(
   };
 }
 
+export { AllowlistEntryService };
 export default AllowlistEntryService;
