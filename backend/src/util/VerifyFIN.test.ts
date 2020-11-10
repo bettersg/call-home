@@ -1,30 +1,29 @@
-/* eslint-disable */
-import validateFIN from "./VerifyFIN"
+import validateFIN from './VerifyFIN';
 
 test('Valid FIN', () => {
-    expect(validateFIN("F1234567N")).toBeTruthy
-})
+  expect(validateFIN('F1234567N')).toBeTruthy();
+});
 
 test('Lowercase first alphabet', () => {
-    expect(validateFIN("f3725759K")).toBeTruthy
-})
+  expect(validateFIN('f3725759K')).toBeTruthy();
+});
 
 test('Lowercase last alphabet', () => {
-    expect(validateFIN("G897661p")).toBeTruthy
-})
+  expect(validateFIN('G8976611m')).toBeTruthy();
+});
 
 test('Invalid FIN', () => {
-    expect(validateFIN("G1234567A")).toBeFalsy
-})
+  expect(validateFIN('G1234567A')).toBeFalsy();
+});
 
 test('Less than 9 characters', () => {
-    expect(validateFIN("F123456A")).toBeFalsy
-})
+  expect(validateFIN('F123456A')).toBeFalsy();
+});
 
 test('More than 9 characters', () => {
-    expect(validateFIN("G12345678A")).toBeFalsy
-})
+  expect(validateFIN('G12345678A')).toBeFalsy();
+});
 
 test('Numbers only without alphabet', () => {
-    expect(validateFIN("123456789")).toBeFalsy
-})
+  expect(validateFIN('123456789')).toBeFalsy();
+});
