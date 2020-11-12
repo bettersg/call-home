@@ -1,8 +1,11 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
   env: {
+    browser: true,
     commonjs: true,
     es6: true,
+    jest: true
+
   },
   extends: ['plugin:@typescript-eslint/recommended', 'eslint:recommended', 'airbnb', 'prettier'],
   plugins: ['prettier', '@typescript-eslint'],
