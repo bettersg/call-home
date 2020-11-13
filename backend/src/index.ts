@@ -18,7 +18,7 @@ import {
   Contact as contactRoutes,
   Twilio as twilioRoutes,
   OAuth as oauthRoutes,
-  Passwordless as passwordlessRoutes,
+  PhoneNumberValidation as phoneNumberValidationRoutes,
   Transaction as transactionRoutes,
   Feature as featureRoutes,
   PeriodicCredit as periodicCreditRoutes,
@@ -63,7 +63,10 @@ app.use('/oauth', oauthRoutes);
 
 // TODO Features are a bit weird because we have per-user config. We probably want features for non logged in users too. Should probably use a different middleware for this
 app.use('/features', secureRoutes, featureRoutes);
-app.use('/passwordless', secureRoutes, passwordlessRoutes);
+// TODO For backwards-compatibility
+app.use('/passwordless', secureRoutes, phoneNumberValidationRoutes);
+app.use('/phone-number-validation', secureRoutes, phoneNumberValidationRoutes);
+
 // Also ensure that twilio is NOT secured by oauth, just twilio auth
 app.use('/twilio', twilioRoutes);
 app.use('/call-token', secureRoutes, requireVerified, callTokenRoutes);

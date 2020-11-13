@@ -7,7 +7,7 @@ import { useUserService } from '../contexts';
 import RoundedButton, {
   PrimaryButton,
 } from '../components/shared/RoundedButton';
-import { beginPasswordless, login } from '../services/Auth';
+import { beginPhoneNumberValidation, login } from '../services/Auth';
 import PATHS from './paths';
 
 // TODO figure out where to put these later
@@ -65,12 +65,12 @@ export default function VerificationPhoneNumberCode({ locale }) {
     setInterval(() => setCurrentTime(new Date()), 1000);
   }, []);
 
-  const handlePasswordlessRequest = async () => {
+  const handlePhoneNumberValidationRequest = async () => {
     try {
-      await beginPasswordless(phoneNumber);
+      await beginPhoneNumberValidation(phoneNumber);
     } catch (error) {
       const { data } = error;
-      if (data && data.message === 'PASSWORDLESS_RATE_LIMITED' && data.body) {
+      if (data && data.message === 'PHONE_NUMBER_RATE_LIMITED' && data.body) {
         setRateLimitExpiry(new Date(data.body));
       } else {
         throw error;
@@ -79,7 +79,7 @@ export default function VerificationPhoneNumberCode({ locale }) {
   };
 
   useEffect(() => {
-    handlePasswordlessRequest();
+    handlePhoneNumberValidationRequest();
   }, [phoneNumber]);
 
   if (!user) {
@@ -164,7 +164,7 @@ export default function VerificationPhoneNumberCode({ locale }) {
               disabled={rateLimitExpiry - currentTime > 0}
               disableElevation
               onClick={() => {
-                handlePasswordlessRequest(phoneNumber);
+                handlePhoneNumberValidationRequest(phoneNumber);
               }}
             >
               {rateLimitExpiry - currentTime > 0

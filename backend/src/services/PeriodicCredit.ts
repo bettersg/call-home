@@ -2,9 +2,8 @@ import { DateTime, Duration } from 'luxon';
 import { Op } from 'sequelize';
 import { sanitizeDbErrors } from './lib';
 import type { PeriodicCredit as PeriodicCreditEntity } from '../models';
-import type { TransactionService } from './Transaction';
-import type { UserService } from './User';
 import { shouldEnableCallLimits, getPeriodicCreditCohort } from './Feature';
+import type { PhoneNumberValidation, Transaction } from './index';
 
 const cohorts = {
   month: Duration.fromObject({ minutes: 200 }),
@@ -13,12 +12,14 @@ const cohorts = {
 
 function PeriodicCreditService(
   PeriodicCreditModel: typeof PeriodicCreditEntity,
-  userService: ReturnType<typeof UserService>,
-  transactionService: TransactionService
+  phoneNumberValidationService: typeof PhoneNumberValidation,
+  transactionService: typeof Transaction
 ) {
   async function getUserCohort(userId: number) {
-    const user = await userService.getUser(userId);
-    const phoneNumber = user?.phoneNumber;
+    const userPhoneNumberValidation = await phoneNumberValidationService.getPhoneNumberValidationForUser(
+      userId
+    );
+    const phoneNumber = userPhoneNumberValidation?.phoneNumber;
     if (!phoneNumber) {
       // Well, technically the user can also be not found
       throw new Error(

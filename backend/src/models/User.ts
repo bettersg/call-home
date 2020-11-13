@@ -45,6 +45,13 @@ class User extends Model<User> {
   auth0Id: string;
 
   @Validate({
+    isIn: [['SG', 'BD', '']],
+  })
+  @Column
+  destinationCountry: string;
+
+  // TODO these fields exist just for the backfill job
+  @Validate({
     is: {
       args: [/\+65[0-9]{8}$/],
       msg: 'Phone number should start with +65 and be followed by 8 digits.',
@@ -57,12 +64,6 @@ class User extends Model<User> {
   @Default(false)
   @Column
   isPhoneNumberValidated: boolean;
-
-  @Validate({
-    isIn: [['SG', 'BD', '']],
-  })
-  @Column(DataType.TEXT)
-  destinationCountry: string | null;
 }
 
 export default User;

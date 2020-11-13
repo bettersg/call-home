@@ -1,15 +1,15 @@
 import apiClient from './apiClient';
 
-const passwordlessEndpoint = '/passwordless';
+const phoneNumberEndpoint = '/phone-number-validation';
 
-export async function beginPasswordless(phoneNumber) {
-  return apiClient.post(`${passwordlessEndpoint}/begin`, {
+export async function beginPhoneNumberValidation(phoneNumber) {
+  return apiClient.post(`${phoneNumberEndpoint}/begin`, {
     phoneNumber,
   });
 }
 
 export async function login(phoneNumber, code) {
-  return apiClient.post(`${passwordlessEndpoint}/login`, {
+  return apiClient.post(`${phoneNumberEndpoint}/login`, {
     phoneNumber,
     code,
   });

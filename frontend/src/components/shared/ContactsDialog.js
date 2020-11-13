@@ -130,12 +130,10 @@ export default function ContactsDialog({
                 {errorText}
               </Typography>
             ) : null}
-            {
-              <AvatarPicker
-                avatarChoice={avatarChoice}
-                setAvatarChoice={setAvatarChoice}
-              />
-            }
+            <AvatarPicker
+              avatarChoice={avatarChoice}
+              setAvatarChoice={setAvatarChoice}
+            />
             {formFields}
           </div>
           <div className="contacts-dialog-actions">

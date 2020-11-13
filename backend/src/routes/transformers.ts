@@ -1,6 +1,31 @@
 import type { Request, Response, NextFunction } from 'express';
-import { Contact, User } from '../models';
+import type {
+  Contact,
+  PhoneNumberValidation,
+  User,
+  UserTypes,
+} from '../models';
 import { logger } from '../config';
+
+export interface UserResponse {
+  id: number;
+  name: string;
+  email: string | null;
+  destinationCountry: string;
+  role: UserTypes;
+
+  // TODO This is a backwards-compatible change but we want to move towards multi-tiered verification.
+  isVerified: boolean;
+  phoneNumber: string | null;
+}
+
+export interface UserProfileResponse {
+  displayName: string;
+  name: string;
+  emails: string[];
+  picture: string;
+  userId: string;
+}
 
 function parseUserRequestBody(req: Request, res: Response, next: NextFunction) {
   const { name, email } = req.body;
@@ -36,29 +61,26 @@ function contactToContactResponse(contact: Contact) {
   return response;
 }
 
-function userToUserResponse(user: User) {
-  const {
-    id,
-    name,
-    email,
-    destinationCountry,
-    phoneNumber,
-    role,
-    isPhoneNumberValidated: isVerified,
-  } = user;
+function userToUserResponse(
+  user: User,
+  phoneNumberValidation: PhoneNumberValidation | null
+): UserResponse {
+  const { id, name, email, destinationCountry, role } = user;
 
   return {
     id,
     name,
     email,
     destinationCountry,
-    phoneNumber,
     role,
-    isVerified,
+    isVerified: Boolean(phoneNumberValidation?.isPhoneNumberValidated),
+    phoneNumber: phoneNumberValidation && phoneNumberValidation.phoneNumber,
   };
 }
 
-function userProfileToUserProfileResponse(userProfile: any) {
+function userProfileToUserProfileResponse(
+  userProfile: any
+): UserProfileResponse {
   const { displayName, name, emails, picture, user_id: userId } = userProfile;
 
   logger.info('UserProfile', userProfile);
