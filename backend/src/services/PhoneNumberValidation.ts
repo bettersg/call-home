@@ -3,7 +3,7 @@ import type { PhoneNumberValidation as PhoneNumberValidationEntity } from '../mo
 function PhoneNumberValidationService(
   PhoneNumberValidationModel: typeof PhoneNumberValidationEntity
 ) {
-  async function getValidationStateByPhoneNumber(phoneNumber: string) {
+  async function getValidationByPhoneNumber(phoneNumber: string) {
     return PhoneNumberValidationModel.findOne({
       where: {
         phoneNumber,
@@ -53,7 +53,7 @@ function PhoneNumberValidationService(
   }
 
   async function validateUser(userId: number, phoneNumber: string) {
-    const conflictingValidationState = await getValidationStateByPhoneNumber(
+    const conflictingValidationState = await getValidationByPhoneNumber(
       phoneNumber
     );
     if (conflictingValidationState) {

@@ -16,6 +16,7 @@ class WorkpassValidation extends Model<WorkpassValidation> {
   userId: number;
 
   // sha256 of the given serial number. sha256 is considered preimage resistant, which is exactly what we want i.e. we don't want to be able to generate a valid serial number given its hash value.
+  // More specifically, this is the bas64 encoding of the utf8 encoding of the serial number.
   @Unique
   @Column(DataType.TEXT)
   serialNumberSha256: string | null;
