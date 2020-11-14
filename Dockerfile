@@ -28,10 +28,6 @@ RUN npm install
 COPY backend/tsconfig.json .
 COPY backend/src/ src/
 
-# Copy migration files over
-COPY backend/.sequelizerc .
-COPY backend/sequelize sequelize/
-
 RUN npm run build
 
 # Set the static directory for the backend
