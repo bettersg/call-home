@@ -31,7 +31,7 @@ import {
   httpPinoConfig,
 } from './config';
 
-require('./jobs');
+import './jobs';
 
 const { secureRoutes, httpsRedirect, requireVerified } = middlewares;
 

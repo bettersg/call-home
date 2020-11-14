@@ -1,16 +1,27 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
+import { DateTime } from 'luxon';
 import qs from 'querystring';
 
 const workpassWebsite = 'https://checkwpstatus.mom.gov.sg/Pages/home.aspx';
 const inputsSelector = '#aspnetForm input';
 const serialNumberInputName =
   'ctl00$ctl40$g_6970c440_5b2c_4b60_ad5e_3fc670e7fb1f$txtCsn';
+
 const validSelector = '.resultValidHeader';
 const invalidSelector = '.resultInvalidHeader';
 const errorMessageSelector = '.errorMessage';
 
-type ValidationState = 'valid' | 'invalid' | 'error' | 'unknown';
+const expirySelector =
+  '#ctl00_ctl40_g_6970c440_5b2c_4b60_ad5e_3fc670e7fb1f_cellDateValue';
+const expiryDateFormat = 'dd MMM yyyy';
+
+type WorkpassStatus = 'valid' | 'invalid' | 'error' | 'unknown';
+
+interface WorkpassResult {
+  status: WorkpassStatus;
+  expiry: DateTime | null;
+}
 
 interface CheerioAttribs {
   attribs: Record<string, string>;
@@ -29,9 +40,14 @@ async function getFormInputs() {
   return formInputs;
 }
 
-async function checkSerialNumber(
+function getExpiryDate($: cheerio.Root) {
+  const expiryDateString = $(expirySelector).text();
+  return DateTime.fromFormat(expiryDateString, expiryDateFormat);
+}
+
+async function getSerialNumberStatus(
   serialNumber: string
-): Promise<ValidationState> {
+): Promise<WorkpassResult> {
   const sourceFormInputs = await getFormInputs();
   const formInputs = {
     ...sourceFormInputs,
@@ -47,25 +63,35 @@ async function checkSerialNumber(
   // If present, there is an valid result, otherwise the html() method returns null.
   const isValidPresent = Boolean($(validSelector).html());
   if (isValidPresent) {
-    return 'valid';
+    return {
+      status: 'valid',
+      expiry: getExpiryDate($),
+    };
   }
 
   // If present, there is an invalid result, otherwise the html() method returns null.
   const isInvalidPresent = Boolean($(invalidSelector).html());
   if (isInvalidPresent) {
-    return 'invalid';
+    return {
+      status: 'invalid',
+      expiry: getExpiryDate($),
+    };
   }
 
   // This seems to always be present, but we can check whether or not there is an error message based on whether the inner html is empty i.e. ''.
   const isErrored = Boolean($(errorMessageSelector).html());
   if (isErrored) {
-    return 'error';
+    return {
+      status: 'error',
+      expiry: null,
+    };
   }
 
   // Otherwise, we don't know what happened
-  return 'unknown';
+  return {
+    status: 'unknown',
+    expiry: null,
+  };
 }
 
-export default {
-  checkSerialNumber,
-};
+export { getSerialNumberStatus };
