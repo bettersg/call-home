@@ -8,6 +8,14 @@ async function backfillPhoneNumberValidation(
   const allUsers = await userService.listUsers();
   allUsers.forEach(async (user) => {
     try {
+      const phoneNumberValidation = await phoneNumberValidationService.getPhoneNumberValidationForUser(
+        user.id
+      );
+
+      if (phoneNumberValidation) {
+        return;
+      }
+
       await phoneNumberValidationService.createPhoneNumberValidationForUser(
         user.id
       );

@@ -8,4 +8,4 @@ logger.info('Initializing jobs');
 
 refreshConnectedCalls(TwilioCall);
 refreshJoinedCalls();
-backfillPhoneNumberValidation(User, PhoneNumberValidation);
+// backfillPhoneNumberValidation(User, PhoneNumberValidation);

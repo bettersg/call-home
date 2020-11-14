@@ -6,3 +6,4 @@ export {
   useAllowlistService,
 } from './AllowlistService';
 export { default as ThemeProvider } from './ThemeProvider';
+export { FeatureServiceProvider, useFeatureService } from './FeatureService';

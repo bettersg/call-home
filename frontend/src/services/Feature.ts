@@ -1,0 +1,28 @@
+import apiClient from './apiClient';
+import ObservableService from './observableService';
+
+export interface FeatureState {
+  CALL_LIMITS: boolean;
+  WORKPASS_VALIDATION: boolean;
+}
+
+const featureEndpoint = '/features';
+
+export default class FeatureService extends ObservableService<FeatureState> {
+  constructor() {
+    super();
+    this.state = {
+      CALL_LIMITS: true,
+      WORKPASS_VALIDATION: false,
+    };
+  }
+
+  async refreshFeatures(): Promise<FeatureState> {
+    const features = (await apiClient.get(
+      `${featureEndpoint}/`
+    )) as FeatureState;
+    this.state = features;
+    this.notify();
+    return this.state;
+  }
+}

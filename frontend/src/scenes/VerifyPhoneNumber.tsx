@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import TextField from '@material-ui/core/TextField';
+import TextFieldWrong from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { Redirect } from 'react-router-dom';
-import Container from '../components/shared/Container';
-import { useUserService } from '../contexts';
+import ContainerWrong from '../components/shared/Container';
+import { useUserService, useFeatureService } from '../contexts';
 import { PrimaryButton } from '../components/shared/RoundedButton';
 import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
 import PATHS from './paths';
+
+const Container: React.FunctionComponent<any> = ContainerWrong;
+const TextField: React.FunctionComponent<any> = TextFieldWrong;
 
 // TODO figure out where to put these later
 const EN_STRINGS = {
@@ -24,23 +27,47 @@ const STRINGS = {
   },
 };
 
-export default function PhoneNumberForm({ locale }) {
+export default function PhoneNumberForm({ locale }: any) {
   const [userState, userService] = useUserService();
   const { me: user, verificationPhoneNumber } = userState;
+
+  const [featureState, featureService] = useFeatureService();
   const [userRequestInFlight, setUserRequestInFlight] = useState(true);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isTouched, setIsTouched] = useState(false);
 
   useEffect(() => {
     if (userService) {
-      userService.refreshSelf().finally(() => setUserRequestInFlight(false));
+      (userService as any)
+        .refreshSelf()
+        .finally(() => setUserRequestInFlight(false));
     }
   }, [userService]);
+
+  useEffect(() => {
+    if (featureService) {
+      featureService.refreshFeatures();
+    }
+  }, [featureService]);
 
   if (!user) {
     return userRequestInFlight ? null : <Redirect to={PATHS.LOGIN} />;
   }
-  if (user.isVerified) {
+
+  // TODO Feature state is sometimes {} due to compatibility reasons
+  if (!featureState || featureState.WORKPASS_VALIDATION === undefined) {
+    return null;
+  }
+
+  let isUserVerified;
+  if (featureState.WORKPASS_VALIDATION) {
+    isUserVerified =
+      user.verificationState.phoneNumber && user.verificationState.workpass;
+  } else {
+    isUserVerified = user.verificationState.phoneNumber;
+  }
+
+  if (isUserVerified) {
     return <Redirect to={PATHS.CONTACTS} />;
   }
   if (verificationPhoneNumber) {
@@ -53,11 +80,11 @@ export default function PhoneNumberForm({ locale }) {
     }
     return phoneNumber.match(/\d{8}/);
   };
-  const onSubmit = (event) => {
+  const onSubmit = (event: any) => {
     event.preventDefault();
     setIsTouched(true);
     if (validatePhoneNumber()) {
-      userService.setPhoneNumber(phoneNumber);
+      (userService as any).setPhoneNumber(phoneNumber);
     }
   };
 
@@ -78,19 +105,21 @@ export default function PhoneNumberForm({ locale }) {
               component="h1"
               style={{ marginBottom: '12px' }}
             >
-              {STRINGS[locale].VERIFY_PHONE_NUMBER_TITLE}
+              {(STRINGS as any)[locale].VERIFY_PHONE_NUMBER_TITLE}
             </Typography>
             <TextField
               fullWidth
               autoFocus
               error={isTouched && !validatePhoneNumber()}
-              label={STRINGS[locale].VERIFY_PHONE_NUMBER_PHONE_NUMBER_LABEL}
+              label={
+                (STRINGS as any)[locale].VERIFY_PHONE_NUMBER_PHONE_NUMBER_LABEL
+              }
               value={phoneNumber}
               variant="outlined"
               InputProps={{
                 inputComponent: PhoneNumberMasks.SG,
               }}
-              onChange={(event) => {
+              onChange={(event: any) => {
                 setIsTouched(true);
                 setPhoneNumber(event.target.value);
               }}
@@ -102,7 +131,7 @@ export default function PhoneNumberForm({ locale }) {
             type="submit"
             value="submit"
           >
-            {STRINGS[locale].VERIFY_PHONE_NUMBER_NEXT}
+            {(STRINGS as any)[locale].VERIFY_PHONE_NUMBER_NEXT}
           </PrimaryButton>
         </div>
       </form>
