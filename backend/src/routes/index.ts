@@ -11,6 +11,7 @@ import PeriodicCredit from './PeriodicCredit';
 import Contact from './Contact';
 import AllowlistEntry from './AllowlistEntry';
 import PhoneNumberValidation from './PhoneNumberValidation';
+import WorkpassValidation from './WorkpassValidation';
 import OAuth = require('./OAuth');
 
 const callRoute = Call(services.Call, services.TwilioCall);
@@ -26,6 +27,7 @@ const userRoute = User(
   services.User,
   services.PeriodicCredit,
   services.PhoneNumberValidation,
+  services.WorkpassValidation,
   services.Wallet
 );
 const contactRoute = Contact(services.Contact);
@@ -33,18 +35,20 @@ const allowlistEntryRoute = AllowlistEntry(services.AllowlistEntry);
 const transactionRoute = Transaction(services.Transaction);
 const featureRoute = Feature(services.Feature);
 const periodicCreditRoute = PeriodicCredit(services.PeriodicCredit);
+const workpassValidationRoute = WorkpassValidation(services.WorkpassValidation);
 
 export {
+  allowlistEntryRoute as AllowlistEntry,
   callRoute as Call,
   callTokenRoute as CallToken,
-  twilioRoute as Twilio,
-  oAuthRoute as OAuth,
-  phoneNumberValidationRoute as PhoneNumberValidation,
-  userRoute as User,
   contactRoute as Contact,
-  allowlistEntryRoute as AllowlistEntry,
-  transactionRoute as Transaction,
   featureRoute as Feature,
-  periodicCreditRoute as PeriodicCredit,
   middlewares,
+  oAuthRoute as OAuth,
+  periodicCreditRoute as PeriodicCredit,
+  phoneNumberValidationRoute as PhoneNumberValidation,
+  transactionRoute as Transaction,
+  twilioRoute as Twilio,
+  userRoute as User,
+  workpassValidationRoute as WorkpassValidation,
 };

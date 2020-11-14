@@ -2,11 +2,20 @@ const {
   CALL_LIMITS_ENABLED_NUMBERS = '',
   ENABLE_CALL_LIMIT_ALL,
   ENABLE_ALLOWLIST_SMS,
+  WORKPASS_VALIDATION_ENABLED_NUMBERS = '',
 } = process.env;
 const callLimitNumbers = CALL_LIMITS_ENABLED_NUMBERS.split(',').map(Number);
+const workpassValidationNumbers = WORKPASS_VALIDATION_ENABLED_NUMBERS.split(
+  ','
+).map(Number);
 
+// TODO remove this flag
 function shouldEnableCallLimits(userId: number) {
   return ENABLE_CALL_LIMIT_ALL || callLimitNumbers.includes(Number(userId));
+}
+
+function shouldEnableWorkpassValidation(userId: number) {
+  return workpassValidationNumbers.includes(userId);
 }
 
 function shouldEnableAllowlistSms() {
@@ -30,6 +39,7 @@ function getPeriodicCreditCohort(
 
 export {
   shouldEnableCallLimits,
+  shouldEnableWorkpassValidation,
   getPeriodicCreditCohort,
   shouldEnableAllowlistSms,
 };

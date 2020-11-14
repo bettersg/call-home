@@ -79,6 +79,8 @@ function WorkpassValidationService(
     userId: number,
     serialNumber: string
   ): Promise<WorkpassValidationResult> {
+    await createWorkpassValidationForUser(userId);
+
     const [serialNumberValidationResult, requestTime] = await Promise.all([
       workpassClient.getSerialNumberStatus(serialNumber),
       updateWorkpassValidationRequestTime(userId),

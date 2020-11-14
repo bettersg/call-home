@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from 'express';
 import type {
   Contact,
   PhoneNumberValidation,
+  WorkpassValidation,
   User,
   UserTypes,
 } from '../models';
@@ -14,8 +15,11 @@ export interface UserResponse {
   destinationCountry: string;
   role: UserTypes;
 
-  // TODO This is a backwards-compatible change but we want to move towards multi-tiered verification.
-  isVerified: boolean;
+  verificationState: {
+    phoneNumber: boolean;
+    workpass: boolean;
+  };
+
   phoneNumber: string | null;
 }
 
@@ -63,7 +67,8 @@ function contactToContactResponse(contact: Contact) {
 
 function userToUserResponse(
   user: User,
-  phoneNumberValidation: PhoneNumberValidation | null
+  phoneNumberValidation: PhoneNumberValidation | null,
+  workpassValidation: WorkpassValidation | null
 ): UserResponse {
   const { id, name, email, destinationCountry, role } = user;
 
@@ -73,8 +78,11 @@ function userToUserResponse(
     email,
     destinationCountry,
     role,
-    isVerified: Boolean(phoneNumberValidation?.isPhoneNumberValidated),
     phoneNumber: phoneNumberValidation && phoneNumberValidation.phoneNumber,
+    verificationState: {
+      phoneNumber: phoneNumberValidation?.isPhoneNumberValidated || false,
+      workpass: workpassValidation?.isWorkpassValidated || false,
+    },
   };
 }
 
