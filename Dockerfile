@@ -8,6 +8,7 @@ COPY frontend/package-lock.json .
 
 RUN npm install
 
+COPY frontend/tsconfig.json .
 COPY frontend/src/ src/
 COPY frontend/public/ public/
 
