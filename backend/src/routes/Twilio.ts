@@ -77,7 +77,7 @@ function TwilioRoutes(
         contactId,
         CallSid: incomingTwilioCallSid,
       } = parsedReq.body;
-      req.log.info('creating call for', userId, contactId);
+      req.log.info('creating call for %s, %s', userId, contactId);
 
       try {
         const { phoneNumber } = await callService.createCall({

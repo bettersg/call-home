@@ -44,6 +44,11 @@ function CallService(
     if (
       userContacts.findIndex((contact: any) => contact.id === contactId) < 0
     ) {
+      logger.warn(
+        'Authorization failed for userId %s and contactId %s',
+        userId,
+        contactId
+      );
       throw new Error(`Authorization error for user ${userId}`);
     }
     return true;
