@@ -98,6 +98,7 @@ function TwilioRoutes(
         );
         return res.send(response.toString());
       } catch (e) {
+        req.log.warn('Got error while making TwiML call %s', e);
         if (e.message.startsWith('Authorization')) {
           return res.status(403).send(e.message);
         }
