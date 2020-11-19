@@ -4,7 +4,7 @@ import { logger } from '../config';
 import { sanitizeDbErrors } from './lib';
 import { shouldEnableCallLimits } from './Feature';
 import type { Call as CallEntity } from '../models';
-import type { Contact, Wallet, User } from '.';
+import type { Contact, Wallet, User, UserValidation } from '.';
 
 // TODO this isn't really used
 const callAggregationPeriod = 'month';
@@ -13,6 +13,7 @@ function CallService(
   CallModel: typeof CallEntity,
   userService: typeof User,
   contactService: typeof Contact,
+  userValidationService: typeof UserValidation,
   walletService: typeof Wallet
 ) {
   async function checkWalletBalance(userId: number) {
@@ -35,10 +36,11 @@ function CallService(
       throw new Error(`Authorization error for user ${userId}`);
     }
 
-    // TODO disable this temporarily while we fix the problem
-    // if (!user.isPhoneNumberValidated) {
-    //   throw new Error(`Authorization error for user ${userId}`);
-    // }
+    const isUserVerified = await userValidationService.isUserVerified(userId);
+    logger.info('Is user verified? %s', isUserVerified);
+    if (!isUserVerified) {
+      throw new Error(`Authorization error for user ${userId}`);
+    }
 
     if (shouldEnableCallLimits(userId)) {
       await checkWalletBalance(userId);
