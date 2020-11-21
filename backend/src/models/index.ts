@@ -8,6 +8,7 @@ import TwilioCall, { CallStatus } from './TwilioCall';
 import User, { UserType } from './User';
 import PhoneNumberValidation from './PhoneNumberValidation';
 import Wallet from './Wallet';
+import WorkpassValidation from './WorkpassValidation';
 
 sequelize.addModels([
   AllowlistEntry,
@@ -19,6 +20,7 @@ sequelize.addModels([
   User,
   PhoneNumberValidation,
   Wallet,
+  WorkpassValidation,
 ]);
 
 // User <-> Contact
@@ -53,6 +55,14 @@ PhoneNumberValidation.belongsTo(User, {
   foreignKey: 'userId',
 });
 
+// WorkpassValidation <-> User
+User.hasOne(WorkpassValidation, {
+  foreignKey: 'userId',
+});
+WorkpassValidation.belongsTo(User, {
+  foreignKey: 'userId',
+});
+
 // Transaction <-> User
 User.hasMany(Transaction, {
   foreignKey: 'userId',
@@ -82,4 +92,5 @@ export {
   UserType as UserTypes,
   PhoneNumberValidation,
   Wallet,
+  WorkpassValidation,
 };

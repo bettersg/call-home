@@ -2,8 +2,9 @@ import type { Request, Response, NextFunction } from 'express';
 
 // TODO don't hardcode this
 import {
-  PhoneNumberValidation as PhoneNumberValidationService,
+  UserValidation as UserValidationService,
   User as UserService,
+  Feature,
 } from '../services';
 import { UserTypes } from '../models';
 import {
@@ -88,10 +89,15 @@ async function injectDbUser(req: AuthenticatedRequest) {
     );
     return;
   }
-  const phoneNumberValidation = await PhoneNumberValidationService.getPhoneNumberValidationForUser(
-    user.id
+  const {
+    verifications,
+    state,
+  } = await UserValidationService.getVerificationsForUser(user.id);
+  const userResponse = userToUserResponse(
+    user,
+    verifications.phoneNumber,
+    state
   );
-  const userResponse = userToUserResponse(user, phoneNumberValidation);
   req.user = {
     ...userProfileResponse,
     ...userResponse,
@@ -117,7 +123,13 @@ async function requireVerified(
   res: Response,
   next: NextFunction
 ) {
-  if (!req.user || !req.user.isVerified) {
+  if (
+    !req.user ||
+    !UserValidationService.isUserVerified(
+      req.user.id,
+      req.user.verificationState
+    )
+  ) {
     sendForbiddenResponse(req, res);
     return;
   }

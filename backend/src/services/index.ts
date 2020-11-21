@@ -10,6 +10,9 @@ import User from './User';
 import * as Feature from './Feature';
 import AllowlistEntry from './AllowlistEntry';
 import PhoneNumberValidation from './PhoneNumberValidation';
+import WorkpassValidation from './WorkpassValidation';
+import * as WorkpassClient from './WorkpassClient';
+import UserValidation, { VerificationState } from './UserValidation';
 import Contact = require('./Contact');
 import Auth0 = require('./Auth0');
 
@@ -36,10 +39,20 @@ const periodicCreditService = PeriodicCredit(
   transactionService
 );
 const walletService = new Wallet(models.Wallet, transactionService);
+const workpassValidationService = WorkpassValidation(
+  models.WorkpassValidation,
+  WorkpassClient
+);
+const userValidationService = UserValidation(
+  Feature,
+  phoneNumberValidationService,
+  workpassValidationService
+);
 const callService = Call(
   models.Call,
   userService,
   contactService,
+  userValidationService,
   walletService
 );
 const twilioCallService = new TwilioCall(
@@ -52,6 +65,8 @@ const twilioCallService = new TwilioCall(
 export {
   Feature,
   TwilioClient,
+  VerificationState,
+  WorkpassClient,
   allowlistEntryService as AllowlistEntry,
   auth0Service as Auth0,
   callService as Call,
@@ -60,6 +75,8 @@ export {
   transactionService as Transaction,
   twilioCallService as TwilioCall,
   userService as User,
+  userValidationService as UserValidation,
   phoneNumberValidationService as PhoneNumberValidation,
   walletService as Wallet,
+  workpassValidationService as WorkpassValidation,
 };

@@ -20,6 +20,7 @@ module.exports = {
     }
   },
   rules: {
+    'no-unused-vars': 'off',
     'import/prefer-default-export': 'off',
     'import/extensions': 'off',
     'prettier/prettier': ['error'],

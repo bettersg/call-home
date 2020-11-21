@@ -14,14 +14,15 @@ import {
   AllowlistEntry as allowlistRoutes,
   Call as callRoutes,
   CallToken as callTokenRoutes,
-  User as userRoutes,
   Contact as contactRoutes,
-  Twilio as twilioRoutes,
+  Feature as featureRoutes,
   OAuth as oauthRoutes,
+  PeriodicCredit as periodicCreditRoutes,
   PhoneNumberValidation as phoneNumberValidationRoutes,
   Transaction as transactionRoutes,
-  Feature as featureRoutes,
-  PeriodicCredit as periodicCreditRoutes,
+  Twilio as twilioRoutes,
+  User as userRoutes,
+  WorkpassValidation as workpassValidationRoutes,
   middlewares,
 } from './routes';
 import {
@@ -31,7 +32,7 @@ import {
   httpPinoConfig,
 } from './config';
 
-require('./jobs');
+import './jobs';
 
 const { secureRoutes, httpsRedirect, requireVerified } = middlewares;
 
@@ -66,11 +67,18 @@ app.use('/features', secureRoutes, featureRoutes);
 // TODO For backwards-compatibility
 app.use('/passwordless', secureRoutes, phoneNumberValidationRoutes);
 app.use('/phone-number-validation', secureRoutes, phoneNumberValidationRoutes);
+app.use(
+  '/workpass-validation',
+  secureRoutes,
+  requireVerified,
+  workpassValidationRoutes
+);
 
 // Also ensure that twilio is NOT secured by oauth, just twilio auth
 app.use('/twilio', twilioRoutes);
-app.use('/call-token', secureRoutes, requireVerified, callTokenRoutes);
+
 app.use('/users', secureRoutes, userRoutes);
+app.use('/call-token', secureRoutes, requireVerified, callTokenRoutes);
 app.use('/users', secureRoutes, requireVerified, contactRoutes);
 app.use('/users', secureRoutes, requireVerified, callRoutes);
 app.use('/users', secureRoutes, requireVerified, transactionRoutes);

@@ -1,6 +1,5 @@
-import React, { useCallback, useState, useEffect, FormEvent} from 'react';
-import Tabs
-from '@material-ui/core/Tabs';
+import React, { useCallback, useState, useEffect, FormEvent } from 'react';
+import Tabs from '@material-ui/core/Tabs';
 import Switch from '@material-ui/core/Switch';
 import Tab from '@material-ui/core/Tab';
 import Table from '@material-ui/core/Table';
@@ -24,6 +23,7 @@ import { ApiValidationError } from '../services/apiClient';
 import useAdminRoute from '../util/useAdminRoute';
 import PATHS from './paths';
 import { formatSecondsWithHours } from '../util/timeFormatters';
+import { SceneProps } from './types';
 
 function AllowlistTabContent() {
   const [allowlistState, allowlistService] = useAllowlistService();
@@ -39,13 +39,13 @@ function AllowlistTabContent() {
 
   useEffect(() => {
     if (allowlistService) {
-      allowlistService.refreshAllowlistEntries();
+      (allowlistService as any).refreshAllowlistEntries();
     }
   }, [allowlistService]);
 
   const createAllowlistEntry = async (newNumber: string) => {
     try {
-      await allowlistService.createAllowlistEntry({
+      await (allowlistService as any).createAllowlistEntry({
         phoneNumber: `+65${newNumber}`,
         destinationCountry: newAllowlistCountry,
       });
@@ -76,10 +76,12 @@ function AllowlistTabContent() {
   };
 
   const deleteAllowlistEntry = async (id: number) => {
-    await allowlistService.deleteAllowlistEntry(id);
+    await (allowlistService as any).deleteAllowlistEntry(id);
   };
 
-  const handlePhoneNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhoneNumberChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (useMultipleNumbers) {
       setNewAllowlistMultiplePhoneNumbers(event.target.value);
     } else {
@@ -128,7 +130,9 @@ function AllowlistTabContent() {
         <Select
           style={{ background: 'white' }}
           labelId="allowlist-country-label"
-          onChange={(e: React.ChangeEvent<any>) => setNewAllowlistCountry(e.target.value)}
+          onChange={(e: React.ChangeEvent<any>) =>
+            setNewAllowlistCountry(e.target.value)
+          }
         >
           <MenuItem value="BD">BD</MenuItem>
           <MenuItem value="SG">SG</MenuItem>
@@ -207,7 +211,7 @@ function UserTabContent() {
 
   useEffect(() => {
     if (adminService) {
-      adminService.getUsers();
+      (adminService as any).getUsers();
     }
   }, [adminService]);
 
@@ -248,14 +252,22 @@ function UserTabContent() {
   );
 }
 
-function TabPanel({ value, index, children } : { value: number, index: number, children: JSX.Element}) {
+function TabPanel({
+  value,
+  index,
+  children,
+}: {
+  value: number;
+  index: number;
+  children: JSX.Element;
+}) {
   if (value !== index) {
     return null;
   }
   return children;
 }
 
-export default function AdminPage() {
+export default function AdminPage({ locale, routePath }: SceneProps) {
   const [tabIndex, setTabIndex] = useState(0);
 
   const handleTabChange = useCallback(

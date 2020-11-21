@@ -3,18 +3,24 @@
 // The intention is that this observable service can hold any piece of state that must be kept in sync with the backend.
 // When the backend is interacted with, this service updates and notifies the root component appropriately.
 
+type Observer<S> = (state: S) => any;
+
 // TODO This doesn't clean up observers
-export default class ObservableService {
+export default class ObservableService<S> {
+  state: S;
+
+  observers: Observer<S>[];
+
   constructor() {
-    this.state = {};
+    this.state = {} as S;
     this.observers = [];
   }
 
-  subscribe(callback) {
+  subscribe(callback: Observer<S>): void {
     this.observers.push(callback);
   }
 
-  notify() {
+  notify(): void {
     this.observers.forEach((observer) => observer(this.state));
   }
 }

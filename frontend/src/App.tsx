@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/react';
 import {
   AdminServiceProvider,
   AllowlistServiceProvider,
+  FeatureServiceProvider,
   UserServiceProvider,
   ContactServiceProvider,
   ThemeProvider,
@@ -21,7 +22,7 @@ if (isProd) {
 
 function InitApp() {
   const [userState, userService] = useUserService();
-  const { me: user } = userState;
+  const { me: user } = userState || {};
 
   useEffect(() => {
     const listener = (event: Event) => {
@@ -34,7 +35,7 @@ function InitApp() {
 
   useEffect(() => {
     if (userService && isProd) {
-      userService.refreshSelf();
+      (userService as any).refreshSelf();
     }
   }, [userService]);
 
@@ -49,8 +50,8 @@ function InitApp() {
 
 class ErrorBoundary extends React.Component {
   state: {
-    error: Error | null
-  }
+    error: Error | null;
+  };
 
   constructor(props: any) {
     super(props);
@@ -89,12 +90,14 @@ function App() {
       <AllowlistServiceProvider>
         <UserServiceProvider>
           <ContactServiceProvider>
-            <ThemeProvider>
-              <ErrorBoundary>
-                <InitApp />
-              </ErrorBoundary>
-              <CssBaseline />
-            </ThemeProvider>
+            <FeatureServiceProvider>
+              <ThemeProvider>
+                <ErrorBoundary>
+                  <InitApp />
+                </ErrorBoundary>
+                <CssBaseline />
+              </ThemeProvider>
+            </FeatureServiceProvider>
           </ContactServiceProvider>
         </UserServiceProvider>
       </AllowlistServiceProvider>

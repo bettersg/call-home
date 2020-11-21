@@ -7,21 +7,27 @@ import type {
   Wallet,
   PeriodicCredit,
   PhoneNumberValidation,
+  UserValidation,
+  WorkpassValidation,
 } from '../services';
 
 function UserRoutes(
   userService: typeof User,
   periodicCreditService: typeof PeriodicCredit,
-  phoneNumberValidationService: typeof PhoneNumberValidation,
+  userValidationService: typeof UserValidation,
   walletService: typeof Wallet
 ) {
   const router = express.Router();
 
   async function injectPhoneNumberValidation(user: UserModel) {
-    const phoneNumberValidation = await phoneNumberValidationService.getPhoneNumberValidationForUser(
+    const userValidation = await userValidationService.getVerificationsForUser(
       user.id
     );
-    return userToUserResponse(user, phoneNumberValidation);
+    return userToUserResponse(
+      user,
+      userValidation.verifications.phoneNumber,
+      userValidation.state
+    );
   }
 
   async function injectWallet(user: UserResponse) {
@@ -33,17 +39,27 @@ function UserRoutes(
   }
 
   router.get('/me', async (req: UserInjectedRequest, res) => {
-    const userId = req.user.id;
-    let userTasks: Promise<any>[] = [walletService.createWalletForUser(userId)];
-    if (req.user.isVerified) {
+    const { user } = req;
+    const isUserVerified = await userValidationService.isUserVerified(
+      req.user.id,
+      req.user.verificationState
+    );
+
+    let userTasks: Promise<unknown>[] = [
+      walletService.createWalletForUser(user.id),
+    ];
+    if (isUserVerified) {
       userTasks = [
         ...userTasks,
-        periodicCreditService.tryCreatePeriodicCredit(userId),
+        periodicCreditService.tryCreatePeriodicCredit(user.id),
       ];
     }
     await Promise.all(userTasks);
     const userWithWallet = await injectWallet(req.user);
-    return res.status(200).json(userWithWallet);
+    // Return isVerified for old clients
+    return res
+      .status(200)
+      .json({ ...userWithWallet, isVerified: isUserVerified });
   });
 
   router.get('/', requireAdmin, async (_req: UserInjectedRequest, res) => {

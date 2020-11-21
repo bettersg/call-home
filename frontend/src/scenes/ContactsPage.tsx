@@ -26,7 +26,11 @@ import {
 } from '../components/shared/RoundedButton';
 import ContactsDialog from '../components/shared/ContactsDialog';
 import ReportIssueDialog from '../components/shared/ReportIssueDialog';
-import { useUserService, useContactService } from '../contexts';
+import {
+  useUserService,
+  useContactService,
+  useFeatureService,
+} from '../contexts';
 import { ApiValidationError } from '../services/apiClient';
 import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
 import {
@@ -34,9 +38,9 @@ import {
   formatDurationInDaysHoursMinutes,
 } from '../util/timeFormatters';
 import { getNextRefresh } from '../services/PeriodicCredit';
-import { getFeatures } from '../services/Feature';
-import PATHS from './paths';
+import PATHS, { useRouting } from './paths';
 import './ContactsPage.css';
+import { SceneProps } from './types';
 
 const COUNTRIES = {
   en: {
@@ -57,7 +61,8 @@ const EN_STRINGS = {
   CONTACTS_LOVED_ONES_LABEL: 'loved ones',
   CONTACTS_ADD_CONTACT_LABEL: 'Add a loved one',
   CONTACTS_ADD_LABEL: 'Add',
-  CONTACTS_COUNTRY_LABEL: (code) => `Country: ${COUNTRIES.en[code]}`,
+  CONTACTS_COUNTRY_LABEL: (code: 'SG' | 'BD') =>
+    `Country: ${COUNTRIES.en[code]}`,
   CONTACTS_NAME_LABEL: 'Name',
   CONTACTS_PHONE_NUMBER_LABEL: 'Phone number',
   CONTACTS_EDIT_CONTACT_HEADER: 'Edit',
@@ -72,9 +77,12 @@ const EN_STRINGS = {
   CONTACTS_REACHED_CALL_LIMIT_MESSAGE:
     'You have reached your call limit for the month',
   CONTACTS_TIME_TO_CREDIT_MESSAGE: function CreditMessage(
-    timeAmount,
-    creditAmount
+    timeAmount: string | null,
+    creditAmount: string | null
   ) {
+    if (!timeAmount) {
+      return '';
+    }
     return (
       <>
         <strong>{timeAmount}</strong> to {creditAmount} top-up!
@@ -89,7 +97,7 @@ const EN_STRINGS = {
   },
 };
 
-const STRINGS = {
+const STRINGS: Record<string, typeof EN_STRINGS> = {
   en: EN_STRINGS,
   bn: {
     ...EN_STRINGS,
@@ -97,7 +105,7 @@ const STRINGS = {
     CONTACTS_SUBTITLE: 'আপনার প্রিয়জনকে বিনামূল্যে বাড়ি ফিরে কল করুন',
     CONTACTS_ADD_CONTACT_LABEL: 'প্রিয়জনকে যুক্ত করুন',
     CONTACTS_ADD_LABEL: 'যোগ',
-    CONTACTS_COUNTRY_LABEL: (code) => `দেশ: ${COUNTRIES.bn[code]}`, // Google translate
+    CONTACTS_COUNTRY_LABEL: (code: 'SG' | 'BD') => `দেশ: ${COUNTRIES.bn[code]}`, // Google translate
     CONTACTS_NAME_LABEL: 'নাম', // Google translate
     // TODO this says mobile number
     CONTACTS_PHONE_NUMBER_LABEL: 'মোবাইল নম্বর',
@@ -120,8 +128,8 @@ const STRINGS = {
 const AddContactButton = withStyles((theme) => ({
   root: {
     backgroundColor: 'white',
-    border: `1px solid ${theme.palette.grey.light}`,
-    color: theme.palette.primary[700],
+    border: `1px solid ${theme.palette.grey[200]}`,
+    color: (theme as any).palette.primary[700],
     fontWeight: 'bold',
     '&:hover': {
       backgroundColor: 'white',
@@ -132,22 +140,22 @@ const AddContactButton = withStyles((theme) => ({
 const AddContactIcon = withStyles((theme) => ({
   root: {
     color: 'white',
-    backgroundColor: theme.palette.primary[300],
+    backgroundColor: (theme as any).palette.primary[300],
     borderRadius: '1000px',
   },
 }))(AddIcon);
 
-const ContactBox = withStyles((theme) => ({
+const ContactBox: any = withStyles((theme) => ({
   root: {
     backgroundColor: 'white',
-    border: `1px solid ${theme.palette.grey.light}`,
+    border: `1px solid ${theme.palette.grey[200]}`,
   },
 }))(Box);
 
 const ContactCallIcon = withStyles((theme) => ({
   root: {
     transform: 'rotate(270deg)',
-    color: theme.palette.primary[900],
+    color: (theme as any).palette.primary[900],
   },
 }))(CallIcon);
 
@@ -155,7 +163,7 @@ const ActionLink = withStyles((theme) => ({
   root: {
     cursor: 'pointer',
     display: 'flex',
-    color: theme.palette.primary[900],
+    color: (theme as any).palette.primary[900],
   },
 }))(Typography);
 
@@ -169,7 +177,7 @@ const withDialogButtonStyles = withStyles(() => ({
 
 const InfoItem = withStyles((theme) => ({
   root: {
-    color: theme.palette.primary[900],
+    color: (theme as any).palette.primary[900],
   },
 }))(Typography);
 const ErrorInfoItem = withStyles((theme) => ({
@@ -182,9 +190,9 @@ const DialogNeutralButton = withDialogButtonStyles(NeutralButton);
 const DialogPrimaryButton = withDialogButtonStyles(PrimaryButton);
 const DialogErrorButton = withDialogButtonStyles(ErrorButton);
 
-function AddContactDialog({ open, onClose, locale }) {
+function AddContactDialog({ open, onClose, locale }: any) {
   const [userState] = useUserService();
-  const { me: user } = userState;
+  const { me: user } = userState || {};
   const [, contactService] = useContactService();
   const [newContactName, setNewContactName] = useState('');
   const [newContactPhoneNumber, setNewContactPhoneNumber] = useState('');
@@ -199,12 +207,12 @@ function AddContactDialog({ open, onClose, locale }) {
     setNewContactPhoneNumber('');
   }, [open]);
 
-  const createContact = async (event) => {
+  const createContact = async (event: Event) => {
     event.preventDefault();
     try {
       setErrorMessage(null);
       setIsRequestInFlight(true);
-      await contactService.createContact(user.id, {
+      await (contactService as any).createContact((user as any).id, {
         name: newContactName,
         phoneNumber: newContactPhoneNumber,
         avatar: newContactAvatarChoice,
@@ -214,7 +222,7 @@ function AddContactDialog({ open, onClose, locale }) {
       if (error instanceof ApiValidationError) {
         const { code } = error;
         setErrorMessage(
-          STRINGS[locale].errors[code] ||
+          (STRINGS as any)[locale].errors[code] ||
             STRINGS[locale].CONTACTS_UNKNOWN_ERROR_MESSAGE
         );
       }
@@ -246,7 +254,9 @@ function AddContactDialog({ open, onClose, locale }) {
         value={newContactPhoneNumber}
         onChange={(event) => setNewContactPhoneNumber(event.target.value)}
         InputProps={{
-          inputComponent: PhoneNumberMasks[user.destinationCountry],
+          inputComponent: (PhoneNumberMasks as any)[
+            (user as any).destinationCountry
+          ],
         }}
         className="contacts-dialog-input"
       />
@@ -273,9 +283,9 @@ function AddContactDialog({ open, onClose, locale }) {
   );
 }
 
-function EditContactDialog({ contact, open, onClose, locale }) {
+function EditContactDialog({ contact, open, onClose, locale }: any) {
   const [userState] = useUserService();
-  const { me: user } = userState;
+  const { me: user } = userState || {};
   const [, contactService] = useContactService();
   const [newContactName, setNewContactName] = useState(contact.name);
   const [isDeletingContact, setIsDeletingContact] = useState(false);
@@ -288,22 +298,26 @@ function EditContactDialog({ contact, open, onClose, locale }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [isRequestInFlight, setIsRequestInFlight] = useState(false);
 
-  const updateContact = async (event) => {
+  const updateContact = async (event: any) => {
     event.preventDefault();
     try {
       setErrorMessage(null);
       setIsRequestInFlight(true);
-      await contactService.updateContact(user.id, contact.id, {
-        name: newContactName,
-        phoneNumber: newContactPhoneNumber,
-        avatar: newContactAvatarChoice,
-      });
+      await (contactService as any).updateContact(
+        (user as any).id,
+        contact.id,
+        {
+          name: newContactName,
+          phoneNumber: newContactPhoneNumber,
+          avatar: newContactAvatarChoice,
+        }
+      );
       onClose();
     } catch (error) {
       if (error instanceof ApiValidationError) {
         const { code } = error;
         setErrorMessage(
-          STRINGS[locale].errors[code] ||
+          (STRINGS as any)[locale].errors[code] ||
             STRINGS[locale].CONTACTS_UNKNOWN_ERROR_MESSAGE
         );
       }
@@ -313,7 +327,7 @@ function EditContactDialog({ contact, open, onClose, locale }) {
   };
 
   const deleteContact = async () => {
-    await contactService.deleteContact(user.id, contact.id);
+    await (contactService as any).deleteContact((user as any).id, contact.id);
     onClose();
   };
 
@@ -340,7 +354,9 @@ function EditContactDialog({ contact, open, onClose, locale }) {
         value={newContactPhoneNumber}
         onChange={(event) => setNewContactPhoneNumber(event.target.value)}
         InputProps={{
-          inputComponent: PhoneNumberMasks[user.destinationCountry],
+          inputComponent: (PhoneNumberMasks as any)[
+            (user as any).destinationCountry
+          ],
         }}
         className="contacts-dialog-input"
       />
@@ -403,7 +419,7 @@ function CallLimitInfo({
   nextRefreshTimeString,
   nextRefreshAmount,
   callLimitExceeded,
-}) {
+}: any) {
   const CallTimeInfoItem = callLimitExceeded ? ErrorInfoItem : InfoItem;
   // TODO localization problems here
   const nextRefreshInfoElement =
@@ -433,9 +449,9 @@ function CallLimitInfo({
   );
 }
 
-function CallContactButton({ contactService, contact, disabled }) {
+function CallContactButton({ contactService, contact, disabled }: any) {
   const onClick = disabled
-    ? null
+    ? undefined
     : () => {
         contactService.setActiveContact(contact);
       };
@@ -448,17 +464,22 @@ function CallContactButton({ contactService, contact, disabled }) {
   );
 }
 
-export default function ContactsPage({ locale }) {
-  const [features, setFeatures] = useState({});
+export default function ContactsPage({ locale, routePath }: SceneProps) {
+  const routeResult = useRouting(routePath);
+  const [featureState] = useFeatureService();
   const [userState, userService] = useUserService();
-  const { me: user } = userState;
+  const { me: user } = userState || {};
   const [contactState, contactService] = useContactService();
   const { contacts = [], activeContact } = contactState;
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
   const [contactToEdit, setContactToEdit] = useState(null);
-  const [nextRefreshTimeString, setNextRefreshTimeString] = useState(null);
-  const [nextRefreshAmount, setNextRefreshAmount] = useState(null);
+  const [nextRefreshTimeString, setNextRefreshTimeString] = useState<
+    string | null
+  >(null);
+  const [nextRefreshAmount, setNextRefreshAmount] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     if (userService) {
@@ -482,25 +503,26 @@ export default function ContactsPage({ locale }) {
     });
   }, []);
 
-  useEffect(() => {
-    getFeatures().then(setFeatures);
-  }, []);
-
-  if (!user) {
-    return <Redirect to={PATHS.LOGIN} />;
+  if (routeResult.shouldRender) {
+    return routeResult.renderElement;
   }
   if (activeContact) {
     return <Redirect to={PATHS.CALLING} />;
   }
+  if (!featureState) {
+    return null;
+  }
 
   const logout = async () => {
-    window.location = '/oauth/logout';
+    (window as any).location = '/oauth/logout';
   };
 
   const openFeedbackDialog = () => setIsFeedbackDialogOpen(true);
-  const userCallTimeDuration = Duration.fromObject({ seconds: user.callTime });
+  const userCallTimeDuration = Duration.fromObject({
+    seconds: (user as any).callTime,
+  });
   const callLimitExceeded =
-    features.CALL_LIMITS && userCallTimeDuration.as('minutes') < 1;
+    featureState?.CALL_LIMITS && userCallTimeDuration.as('minutes') < 1;
 
   const subtitleContent = callLimitExceeded ? (
     <>
@@ -543,7 +565,7 @@ export default function ContactsPage({ locale }) {
         component="h1"
         style={{
           marginBottom: '12px',
-          fontWeight: '700',
+          fontWeight: 700,
         }}
       >
         {STRINGS[locale].CONTACTS_TITLE}
@@ -555,7 +577,9 @@ export default function ContactsPage({ locale }) {
           marginBottom: '1rem',
         }}
       >
-        {STRINGS[locale].CONTACTS_COUNTRY_LABEL(user.destinationCountry)}
+        {STRINGS[locale].CONTACTS_COUNTRY_LABEL(
+          (user as any).destinationCountry
+        )}
       </Typography>
       <div
         style={{
@@ -577,7 +601,7 @@ export default function ContactsPage({ locale }) {
               flexDirection: 'column',
             }}
           >
-            {contacts.map((contact) => (
+            {contacts.map((contact: any) => (
               <ListItem
                 key={contact.id}
                 style={{
@@ -672,7 +696,7 @@ export default function ContactsPage({ locale }) {
           />
           <div>{STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}</div>
         </AddContactButton>
-        {features.CALL_LIMITS ? (
+        {featureState.CALL_LIMITS ? (
           <CallLimitInfo
             userCallTimeDuration={userCallTimeDuration}
             contacts={contacts}

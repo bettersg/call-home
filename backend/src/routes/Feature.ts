@@ -9,6 +9,9 @@ function FeaturesRoutes(featureService: typeof Feature) {
     const userId = req.user.id;
     const features = {
       CALL_LIMITS: featureService.shouldEnableCallLimits(userId),
+      WORKPASS_VALIDATION: featureService.shouldEnableWorkpassValidation(
+        userId
+      ),
     };
     return res.status(200).json(features);
   });
