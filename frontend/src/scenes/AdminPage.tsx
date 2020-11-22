@@ -1,28 +1,25 @@
-import React, { useCallback, useState, useEffect, FormEvent } from 'react';
+/* eslint-disable */
+import React, { useCallback, useState, useEffect, FormEvent} from 'react';
 import Tabs from '@material-ui/core/Tabs';
 import Switch from '@material-ui/core/Switch';
 import Tab from '@material-ui/core/Tab';
-import Table from '@material-ui/core/Table';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
+import Button from '@material-ui/core/Button'
+import FormControl from '@material-ui/core/FormControl'
 import Typography from '@material-ui/core/Typography';
 import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import TextField from '@material-ui/core/TextField';
+import { DataGrid, ColDef} from '@material-ui/data-grid';
 import { Link } from 'react-router-dom';
 import { useAllowlistService, useAdminService } from '../contexts';
-import { PrimaryButton } from '../components/shared/RoundedButton';
 import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
 import { ApiValidationError } from '../services/apiClient';
 import useAdminRoute from '../util/useAdminRoute';
 import PATHS from './paths';
 import { formatSecondsWithHours } from '../util/timeFormatters';
+import { FormControlLabel, Grid } from '@material-ui/core';
 import { SceneProps } from './types';
 
 function AllowlistTabContent() {
@@ -77,6 +74,7 @@ function AllowlistTabContent() {
 
   const deleteAllowlistEntry = async (id: number) => {
     await (allowlistService as any).deleteAllowlistEntry(id);
+
   };
 
   const handlePhoneNumberChange = (
@@ -91,17 +89,13 @@ function AllowlistTabContent() {
 
   const newEntryForm = (
     <form
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        marginTop: '12px',
-      }}
       onSubmit={onSubmit}
     >
+      <Grid container alignItems="center" spacing={2} style={{margin:'8px 0 0 0'}} > 
       {useMultipleNumbers ? (
+        <Grid item >
         <TextField
           style={{
-            marginBottom: '12px',
             background: 'white',
           }}
           multiline
@@ -110,10 +104,11 @@ function AllowlistTabContent() {
           value={newAllowlistMultiplePhoneNumbers}
           onChange={handlePhoneNumberChange}
         />
+        </Grid>
       ) : (
+        <Grid item>
         <TextField
           style={{
-            marginBottom: '12px',
             background: 'white',
           }}
           variant="outlined"
@@ -124,84 +119,115 @@ function AllowlistTabContent() {
             inputComponent: PhoneNumberMasks.SG as any,
           }}
         />
+        </Grid>
       )}
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <InputLabel id="allowlist-country-label">Country</InputLabel>
+      <Grid item>
+        <FormControl 
+          variant='outlined'
+          style={{
+            background: 'white'
+          }}        
+          >
+        <InputLabel>Country</InputLabel>
         <Select
-          style={{ background: 'white' }}
-          labelId="allowlist-country-label"
-          onChange={(e: React.ChangeEvent<any>) =>
-            setNewAllowlistCountry(e.target.value)
-          }
+          native
+          onChange={(e: React.ChangeEvent<any>) => setNewAllowlistCountry(e.target.value)}
+          label="Country"
         >
-          <MenuItem value="BD">BD</MenuItem>
-          <MenuItem value="SG">SG</MenuItem>
+          <option value={'BD'}>BD</option>
+          <option value={'SG'}>SG</option>
         </Select>
-      </div>
-      <PrimaryButton type="submit" value="submit">
+        </FormControl>
+
+      </Grid>
+      <Grid item>
+      <FormControlLabel
+        control={<Switch
+          name="useMultipleNumbers"
+          checked={useMultipleNumbers}
+          onChange={() => setUseMultipleNumbers(!useMultipleNumbers)}
+        />}
+        label="Multiple Entries"
+      />
+      </Grid>
+      
+      <Button 
+        type="submit" 
+        value="submit" 
+        variant="contained" 
+        color="primary"
+        size="small"
+      >
         Add entry
-      </PrimaryButton>
+      </Button>
+      </Grid>
     </form>
+    
   );
+
+
+  const rows: { id: any; phoneNumber: any; destinationCountry: any; }[] = [];
+
+  allowlistEntries.map((allowlistEntry: any) => (
+    rows.push(
+      {
+      id: allowlistEntry.id,
+      phoneNumber: allowlistEntry.phoneNumber,
+      destinationCountry: allowlistEntry.destinationCountry,
+     }
+     )
+  ))
+
+  const columns: ColDef[] = [
+    { field: "phoneNumber", headerName: "Phone Number",width:150},
+    { field: "destinationCountry", headerName: "Country"},
+    { field: "", headerName:"Delete", hideSortIcons: true,
+      renderCell: (row) => (
+        <IconButton
+          role="button"
+          style={{color:"red"}}
+        >
+          <CloseIcon onClick={()=>{
+            deleteAllowlistEntry(Number(row.data.id))
+          }}/>
+        </IconButton>
+      )
+    }
+  ];
+
 
   return (
     <>
-      <Typography variant="h5" component="h2">
+      <Typography variant="h5" component="h2" style={{ margin: "8px" }}>
         Allowlist
       </Typography>
-      <Typography variant="body2" component="h3">
-        New entry
-      </Typography>
-      <Switch
-        name="useMultipleNumbers"
-        checked={useMultipleNumbers}
-        onChange={() => setUseMultipleNumbers(!useMultipleNumbers)}
-      />
+    
       {errorMessages.map((errorMessage) => (
         <Typography key={errorMessage} variant="body1" color="error">
           {errorMessage}
         </Typography>
       ))}
-      {newEntryForm}
+      {newEntryForm }
+      
+      
+      <div style={{ margin: "8px" }}>
       <Typography variant="body2" component="h3">
-        Current entries
+        Current Entries
       </Typography>
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Phone number</TableCell>
-              <TableCell>Country</TableCell>
-              <TableCell>Delete</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {allowlistEntries.map((allowlistEntry: any) => (
-              <TableRow key={allowlistEntry.phoneNumber}>
-                <TableCell>
-                  <Typography variant="body2">
-                    {allowlistEntry.phoneNumber}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body1">
-                    {allowlistEntry.destinationCountry}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <IconButton
-                    onClick={() => deleteAllowlistEntry(allowlistEntry.id)}
-                    role="button"
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <DataGrid 
+        autoHeight 
+        rows={rows} 
+        columns={columns} 
+        pagination 
+        rowsPerPageOptions={[10,25,100]}  
+        onSelectionChange={(newSelection) => {
+          
+        }} />
+      </div>
+
     </>
+
+    
   );
 }
 
@@ -215,42 +241,53 @@ function UserTabContent() {
     }
   }, [adminService]);
 
+  const columns: ColDef[] = [
+    { field: "id", headerName: "ID", width:80 },
+    { field: "name", headerName: "Name", width:300 },
+    { field: "phoneNumber", headerName: "Phone Number",width:150},
+    { field: "destinationCountry", headerName: "Country"},
+    { field: "callTime", headerName: "Call Time Balance",width:300},
+    { field: "transactionHistory", headerName:"Transaction History",width: 400,
+      renderCell: (rowData) => (
+        <strong>
+          <Link to={`${PATHS.TRANSACTIONS}?user=${rowData.value}`}
+          >
+            View
+          </Link>
+        </strong>
+      )
+    }
+  ];
+
+  const rows: { id: any; name: any; phoneNumber: any; destinationCountry: any; callTime: any; transactionHistory: any; }[] = [];
+
+  users.map((user: any) => (
+    rows.push(
+      {
+      id: user.id,
+      name: user.name,
+      phoneNumber: user.phoneNumber,
+      destinationCountry: user.destinationCountry,
+      callTime: formatSecondsWithHours(user.callTime),
+      transactionHistory: user.id
+     }
+     )
+  ))
+  
+
   return (
     <>
-      <Typography variant="h5" component="h2">
+    <div style={{ margin: "8px" }}>
+    <Typography variant="h5" component="h2">
         Users
       </Typography>
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Phone Number</TableCell>
-              <TableCell>Country</TableCell>
-              <TableCell>Call Time Balance</TableCell>
-              <TableCell>Transaction history</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {users.map((user: any) => (
-              <TableRow key={user.phoneNumber}>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.phoneNumber}</TableCell>
-                <TableCell>{user.destinationCountry}</TableCell>
-                <TableCell>{formatSecondsWithHours(user.callTime)}</TableCell>
-                <TableCell>
-                  <Link to={`${PATHS.TRANSACTIONS}?user=${user.id}`}>
-                    Transaction history
-                  </Link>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <DataGrid autoHeight rows={rows} columns={columns} pagination rowsPerPageOptions={[10,25,100]} pageSize={5}/>
+    </div>
     </>
   );
 }
+
+
 
 function TabPanel({
   value,
