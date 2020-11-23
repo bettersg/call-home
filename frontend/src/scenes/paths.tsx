@@ -80,6 +80,7 @@ function useRouting(ownRoute: string): RoutingResult {
     }
   }, [featureService]);
 
+  console.log(user);
   if (userRequestInFlight) {
     return {
       shouldRender: true,

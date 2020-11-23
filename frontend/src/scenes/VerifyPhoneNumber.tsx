@@ -93,15 +93,16 @@ export default function VerifyPhoneNumber({ locale, routePath }: SceneProps) {
                 setIsTouched(true);
                 setPhoneNumber(event.target.value);
               }}
-            />
-          </div>
+            />{' '}
+          </div>{' '}
           <PrimaryButton
             disableFocusRipple
             color="primary"
             type="submit"
             value="submit"
           >
-            {(STRINGS as any)[locale].VERIFY_PHONE_NUMBER_NEXT}
+            {' '}
+            {(STRINGS as any)[locale].VERIFY_PHONE_NUMBER_NEXT}{' '}
           </PrimaryButton>
         </div>
       </form>

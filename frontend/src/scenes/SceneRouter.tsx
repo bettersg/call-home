@@ -9,7 +9,8 @@ import {
   TransactionsPage,
   VerifyPhoneNumber,
   VerifyPhoneNumberCode,
-} from './index';
+  VerifyWorkpass,
+} from '.';
 import { Locale } from './types';
 
 export default function SceneRouter() {
@@ -40,6 +41,9 @@ export default function SceneRouter() {
           locale={locale}
           routePath={PATHS.VERIFY_PHONE_NUMBER}
         />
+      </Route>
+      <Route path={PATHS.VERIFY_WORKPASS}>
+        <VerifyWorkpass locale={locale} routePath={PATHS.VERIFY_WORKPASS} />
       </Route>
       <Route path={PATHS.CALLING}>
         <CallingPage locale={locale} routePath={PATHS.CALLING} />
