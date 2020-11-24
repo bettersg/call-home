@@ -102,10 +102,20 @@ function CallService(
       },
     });
   }
+
+  async function listRecentCallsByUserId(userId: number) {
+    return CallModel.findAll({
+      where: {
+        userId,
+      },
+    });
+  }
+
   return {
     createCall,
     getUserCallsForPeriod,
     getCallByIncomingSid,
+    listRecentCallsByUserId,
   };
 }
 
