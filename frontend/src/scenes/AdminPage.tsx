@@ -168,13 +168,14 @@ function AllowlistTabContent() {
     </form>
   );
 
-  const rows: { id: any; phoneNumber: any; destinationCountry: any }[] = [];
-
-  allowlistEntries.map((allowlistEntry: any) =>
-    rows.push({
+  const rows: { 
+    id: string; 
+    phoneNumber: string; 
+    destinationCountry: string 
+  }[] = allowlistEntries.map((allowlistEntry: any) => ({
       id: allowlistEntry.id,
       phoneNumber: allowlistEntry.phoneNumber,
-      destinationCountry: allowlistEntry.destinationCountry,
+      destinationCountry: allowlistEntry.destinationCountry
     })
   );
 
@@ -257,12 +258,12 @@ function UserTabContent() {
   ];
 
   const rows: {
-    id: any;
-    name: any;
-    phoneNumber: any;
-    destinationCountry: any;
-    callTime: any;
-    transactionHistory: any;
+    id: string;
+    name: string;
+    phoneNumber: string;
+    destinationCountry: string;
+    callTime: string;
+    transactionHistory: string;
   }[] = users.map((user: any) => ({
     id: user.id,
     name: user.name,
