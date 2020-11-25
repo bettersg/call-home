@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 import { useUserService, useFeatureService } from '../contexts';
-import { UserEntity, FeatureState } from '../services';
+import { UserState, FeatureState } from '../services';
 
 const PATHS = Object.freeze({
   LOGIN: '/',
@@ -16,9 +16,11 @@ const PATHS = Object.freeze({
 
 // TODO Feature state is sometimes {} due to compatibility reasons
 function routeFromState(
-  user: UserEntity | null,
+  userState: UserState,
   featureState: FeatureState | null | Record<string, undefined>
 ): string | null {
+  const { me: user } = userState;
+
   if (!user || !featureState) {
     return PATHS.LOGIN;
   }
@@ -45,7 +47,9 @@ function routeFromState(
   }
 
   if (!user.verificationState.workpass) {
-    return PATHS.VERIFY_WORKPASS;
+    return userState.hasDismissedWorkpassModal
+      ? PATHS.CONTACTS
+      : PATHS.VERIFY_WORKPASS;
   }
 
   return null;
@@ -58,7 +62,6 @@ interface RoutingResult {
 
 function useRouting(ownRoute: string): RoutingResult {
   const [userState, userService] = useUserService();
-  const { me: user = null } = userState || {};
   const [userRequestInFlight, setUserRequestInFlight] = useState(true);
 
   const [featureState, featureService] = useFeatureService();
@@ -80,7 +83,7 @@ function useRouting(ownRoute: string): RoutingResult {
     }
   }, [featureService]);
 
-  if (userRequestInFlight) {
+  if (userRequestInFlight || !userState) {
     return {
       shouldRender: true,
       renderElement: null,
@@ -94,7 +97,7 @@ function useRouting(ownRoute: string): RoutingResult {
     };
   }
 
-  const route = routeFromState(user, featureState);
+  const route = routeFromState(userState, featureState);
   if (route === ownRoute) {
     return {
       shouldRender: false,

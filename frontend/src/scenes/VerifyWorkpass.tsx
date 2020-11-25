@@ -1,14 +1,14 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Color } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
 import { useTheme } from '@material-ui/core/styles';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import CloseIcon from '@material-ui/icons/Close';
 import { useUserService } from '../contexts';
 import Container from '../components/shared/Container';
 import { PrimaryButton } from '../components/shared/RoundedButton';
-import { useRouting } from './paths';
-import { ApiValidationError } from '../services/apiClient';
+import PATHS, { useRouting } from './paths';
 import { validateWorkpass } from '../services/WorkpassValidation';
 import { Locale, SceneProps } from './types';
 import './VerifyWorkpass.css';
@@ -17,7 +17,12 @@ const EN_STRINGS = {
   VERIFY_WORKPASS_TITLE: 'Enter your Work Pass serial number',
   VERIFY_WORKPASS_WORKPASS_SN_PLACEHOLDER: 'e.g. L012345',
   VERIFY_WORKPASS_HELP:
-    'We need this to verify you’re a foreign worker in Singapore. ',
+    'We need this to verify you’re a foreign worker in Singapore.',
+  VERIFY_WORKPASS_DIALOG_TITLE:
+    'To continue using Call Home, enter your Work Pass serial number',
+  VERIFY_WORKPASS_DIALOG_COPY:
+    'We need to confirm you’re still a foreign worker in Singapore, so you can continue using Call Home.',
+  VERIFY_WORKPASS_ENTER_WORKPASS: 'Enter Work Pass Number',
   VERIFY_WORKPASS_FIND_SN_HELP: 'How do I find my serial number?',
   VERIFY_WORKPASS_FINLIKE_SN_MESSAGE: 'Enter your Serial Number, not FIN',
   VERIFY_WORKPASS_INVALID_SN_MESSAGE: 'Not a valid serial number. Try again',
@@ -45,7 +50,69 @@ interface VerifyWorkpassPresenterProps {
   wpSerialNumber: string;
   onSubmit: (event: React.FormEvent) => void;
   onWpSerialNumberChanged: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  navToContacts: () => void;
   errorMessage?: string;
+}
+
+function VerificationModal({
+  locale,
+  navToForm,
+  navToContacts,
+}: {
+  locale: Locale;
+  navToForm: () => unknown;
+  navToContacts: () => unknown;
+}): JSX.Element {
+  return (
+    <Container style={{ height: 'var(--viewport-height)' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+        }}
+      >
+        <IconButton onClick={navToContacts}>
+          <CloseIcon />
+        </IconButton>
+      </div>
+      <img
+        style={{ marginTop: '40px' }}
+        alt=""
+        src="/images/work_pass_caller.svg"
+      />
+      <Typography
+        variant="h5"
+        component="h1"
+        style={{
+          marginTop: '36px',
+          textAlign: 'center',
+          fontWeight: 'bold',
+        }}
+      >
+        {STRINGS[locale].VERIFY_WORKPASS_DIALOG_TITLE}
+      </Typography>
+      <Typography
+        style={{
+          textAlign: 'center',
+          marginTop: '12px',
+        }}
+      >
+        {STRINGS[locale].VERIFY_WORKPASS_DIALOG_COPY}
+      </Typography>
+      <PrimaryButton
+        disableFocusRipple
+        color="primary"
+        type="submit"
+        value="submit"
+        style={{
+          marginTop: 'auto',
+        }}
+        onClick={navToForm}
+      >
+        {STRINGS[locale].VERIFY_WORKPASS_ENTER_WORKPASS}
+      </PrimaryButton>
+    </Container>
+  );
 }
 
 function VerifyWorkpassPresenter({
@@ -54,13 +121,25 @@ function VerifyWorkpassPresenter({
   onSubmit,
   onWpSerialNumberChanged,
   errorMessage,
+  navToContacts,
 }: VerifyWorkpassPresenterProps) {
   const theme = useTheme();
+  const [shouldShowModal, setShouldShowModal] = useState(true);
   const [isSnImageOpened, setIsSnImageOpened] = useState(true);
 
-  const toggleIsSnImageOpened = useCallback(() => {
+  const toggleIsSnImageOpened = () => {
     setIsSnImageOpened(!isSnImageOpened);
-  }, [isSnImageOpened, setIsSnImageOpened]);
+  };
+
+  if (shouldShowModal) {
+    return (
+      <VerificationModal
+        navToContacts={navToContacts}
+        navToForm={() => setShouldShowModal(false)}
+        locale={locale}
+      />
+    );
+  }
 
   return (
     <Container>
@@ -140,50 +219,48 @@ export default function VerifyWorkpass({ locale, routePath }: SceneProps) {
   );
   const isSerialNumberFINLike = Boolean(wpSerialNumber.match(FIN_REGEX));
 
-  const onSubmit = useCallback(
-    async (event: React.FormEvent) => {
-      event.preventDefault();
-      setIsTouched(true);
-      if (isValidSerialNumber) {
-        try {
-          setApiErrorMessage(' ');
-          await validateWorkpass(wpSerialNumber);
-          await userService?.refreshSelf();
-        } catch (error) {
-          if (!error.data) {
-            setApiErrorMessage(
-              STRINGS[locale].VERIFY_WORKPASS_UNKNOWN_SN_MESSAGE
-            );
-          } else if (error.data.reason?.code === 'conflict') {
-            setApiErrorMessage(
-              STRINGS[locale].VERIFY_WORKPASS_CONFLICTING_SN_MESSAGE
-            );
-          } else if (error.data.reason?.code === 'expired') {
-            setApiErrorMessage(
-              STRINGS[locale].VERIFY_WORKPASS_EXPIRED_SN_MESSAGE
-            );
-          } else if (error.data.reason?.code === 'error') {
-            setApiErrorMessage(
-              STRINGS[locale].VERIFY_WORKPASS_INVALID_API_SN_MESSAGE
-            );
-          } else {
-            setApiErrorMessage(
-              STRINGS[locale].VERIFY_WORKPASS_UNKNOWN_SN_MESSAGE
-            );
-          }
+  const onSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setIsTouched(true);
+    if (isValidSerialNumber) {
+      try {
+        setApiErrorMessage(' ');
+        await validateWorkpass(wpSerialNumber);
+        await userService?.refreshSelf();
+      } catch (error) {
+        if (!error.data) {
+          setApiErrorMessage(
+            STRINGS[locale].VERIFY_WORKPASS_UNKNOWN_SN_MESSAGE
+          );
+        } else if (error.data.reason?.code === 'conflict') {
+          setApiErrorMessage(
+            STRINGS[locale].VERIFY_WORKPASS_CONFLICTING_SN_MESSAGE
+          );
+        } else if (error.data.reason?.code === 'expired') {
+          setApiErrorMessage(
+            STRINGS[locale].VERIFY_WORKPASS_EXPIRED_SN_MESSAGE
+          );
+        } else if (error.data.reason?.code === 'error') {
+          setApiErrorMessage(
+            STRINGS[locale].VERIFY_WORKPASS_INVALID_API_SN_MESSAGE
+          );
+        } else {
+          setApiErrorMessage(
+            STRINGS[locale].VERIFY_WORKPASS_UNKNOWN_SN_MESSAGE
+          );
         }
       }
-    },
-    [isValidSerialNumber, validateWorkpass, wpSerialNumber, userService]
-  );
+    }
+  };
 
-  const onWpSerialNumberChanged = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setIsTouched(true);
-      setWpSerialNumber(event.target.value);
-    },
-    [setIsTouched, setWpSerialNumber]
-  );
+  const onWpSerialNumberChanged = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setIsTouched(true);
+    setWpSerialNumber(event.target.value);
+  };
+
+  const navToContacts = () => userService?.dismissWorkpassModal();
 
   if (routeResult.shouldRender) {
     return routeResult.renderElement;
@@ -211,6 +288,7 @@ export default function VerifyWorkpass({ locale, routePath }: SceneProps) {
         wpSerialNumber,
         setWpSerialNumber,
         errorMessage,
+        navToContacts,
       }}
     />
   );
