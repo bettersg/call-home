@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
@@ -519,10 +519,6 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
     (window as any).location = '/oauth/logout';
   };
 
-  const onClickRecentCalls = async () => {
-    (window as any).location = '/recent';
-  };
-
   const openFeedbackDialog = () => setIsFeedbackDialogOpen(true);
   const userCallTimeDuration = Duration.fromObject({
     seconds: (user as any).callTime,
@@ -588,10 +584,12 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
             (user as any).destinationCountry
           )}
         </Typography>
-        <ActionLink variant="body1" role="button" onClick={onClickRecentCalls}>
-          <HistoryIcon />
-          {STRINGS[locale].CONTACTS_RECENT_CALLS}
-        </ActionLink>
+        <Link to={PATHS.RECENT_CALLS} style={{ textDecoration: 'none' }}>
+          <ActionLink variant="body1" role="button">
+            <HistoryIcon />
+            {STRINGS[locale].CONTACTS_RECENT_CALLS}
+          </ActionLink>
+        </Link>
       </div>
       <div
         style={{

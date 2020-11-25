@@ -1,6 +1,5 @@
 import express, { Router } from 'express';
 import * as z from 'zod';
-import _ from 'lodash';
 import { requireSelf } from './middlewares';
 import type {
   Call as CallService,
@@ -41,11 +40,11 @@ function mapObjectsToRecentCallResponse(
     );
     return {
       id: call.id,
-      avatar: _.get(currentContact, 'avatar', null),
-      name: _.get(currentContact, 'name', null),
+      avatar: (currentContact && currentContact.avatar) || null,
+      name: (currentContact && currentContact.name) || null,
       phoneNumber: call.phoneNumber,
       startTime: call.createdAt.toISOString(),
-      duration: _.get(currentTwilioCall, 'duration', null),
+      duration: (currentTwilioCall && currentTwilioCall.duration) || null,
     };
   });
 }
@@ -63,11 +62,10 @@ function CallRoutes(
     validateRequest(GET_RECENT_SCHEMA, async (parsedReq, res, req) => {
       const { userId } = parsedReq.params;
       const recentCalls = await callService.listRecentCallsByUserId(userId);
-      const contactIds = _.chain(recentCalls)
-        .map((contact) => contact.contactId)
-        .uniq();
+      const allContactIds = recentCalls.map((call) => call.contactId);
+      const uniqueContactIds = [...new Set(allContactIds)];
       const contacts = <Contact[]>(
-        await contactService.listContactsFromIds(contactIds)
+        await contactService.listContactsFromIds(uniqueContactIds)
       );
       const twilioCallSids = recentCalls.map(
         (call) => call.incomingTwilioCallSid

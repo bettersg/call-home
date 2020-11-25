@@ -55,7 +55,7 @@ export default function SceneRouter() {
       <Route path={PATHS.TRANSACTIONS}>
         <TransactionsPage />
       </Route>
-      <Route path={PATHS.RECENT}>
+      <Route path={PATHS.RECENT_CALLS}>
         <RecentCallsPage locale={locale} />
       </Route>
       <Route path={PATHS.LOGIN}>

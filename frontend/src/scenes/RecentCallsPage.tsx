@@ -1,17 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
-import {
-  format,
-  formatDistance,
-  addSeconds,
-  isToday,
-  isYesterday,
-} from 'date-fns';
-import { useHistory, Redirect } from 'react-router-dom';
+
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 import { withStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
+import { DateTime } from 'luxon';
 import Container from '../components/shared/Container';
 import { getRecentCalls, RecentCall } from '../services/Call';
 import { useUserService } from '../contexts';
@@ -30,13 +25,21 @@ const STRINGS: Record<string, typeof EN_STRINGS> = {
   },
 };
 
-function formatCallDuration(duration: number) {
-  if (!duration) {
+function formatCallDuration(seconds: number) {
+  if (!seconds) {
     return 'NA';
   }
-  const helperDate1 = new Date();
-  const helperDate2 = addSeconds(helperDate1, duration);
-  return formatDistance(helperDate1, helperDate2);
+  const fullMinutes = Math.trunc(seconds / 60);
+  const fullSeconds = seconds % 60;
+  const minutesText = `${fullMinutes} ${
+    fullMinutes === 1 ? 'minute' : 'minutes'
+  }`;
+  const secondsText = `${fullSeconds} ${
+    fullSeconds === 1 ? 'second' : 'seconds'
+  }`;
+  return `${fullMinutes ? minutesText : ''}${
+    fullSeconds ? ` ${secondsText}` : ' '
+  }`;
 }
 
 const RecentCallsBox: any = withStyles((theme) => ({
@@ -47,14 +50,18 @@ const RecentCallsBox: any = withStyles((theme) => ({
 }))(Box);
 
 function prettyFormatDate(date: string, locale: string) {
-  const dateObj = new Date(date);
-  if (isToday(dateObj)) {
+  const dateObj = DateTime.fromISO(date);
+  const today = DateTime.fromJSDate(new Date());
+  const yesterday = today.minus({ days: 1 });
+  if (dateObj.startOf('day').toISODate() === today.startOf('day').toISODate()) {
     return STRINGS[locale].TODAY;
   }
-  if (isYesterday(dateObj)) {
+  if (
+    dateObj.startOf('day').toISODate() === yesterday.startOf('day').toISODate()
+  ) {
     return STRINGS[locale].YESTERDAY;
   }
-  return format(dateObj, 'dd MMM yyyy');
+  return dateObj.toFormat('dd MMM yyyy');
 }
 
 function CallCard({ call, locale }: { call: RecentCall; locale: string }) {
@@ -111,21 +118,18 @@ function CallCards({ calls, locale }: { calls: RecentCall[]; locale: string }) {
 }
 
 function BackButton() {
-  const history = useHistory();
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-      }}
-      onClick={() => {
-        history.push(PATHS.CONTACTS);
-      }}
-      aria-hidden="true"
-    >
-      <ChevronLeftIcon />
-      back
-    </div>
+    <Link to={PATHS.CONTACTS} style={{ textDecoration: 'none' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        <ChevronLeftIcon />
+        back
+      </div>
+    </Link>
   );
 }
 
@@ -154,10 +158,6 @@ export default function RecentCallsPage({ locale }: any) {
       setUserId(String(user.id));
     }
   }, [user]);
-
-  if (!user) {
-    return <Redirect to={PATHS.RECENT} />;
-  }
 
   return (
     <Container

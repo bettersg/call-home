@@ -36,7 +36,6 @@
     "express-session-sequelize": "^2.2.0",
     "form-data": "^2.3.3",
     "helmet": "^3.22.0",
-    "lodash": "^4.17.20",
     "luxon": "^1.25.0",
     "morgan": "^1.10.0",
     "passport": "^0.4.1",
