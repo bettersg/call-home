@@ -12,6 +12,7 @@ const PATHS = Object.freeze({
   VERIFY_PHONE_NUMBER: '/verify-phone',
   VERIFY_PHONE_NUMBER_CODE: '/verify-phone/code',
   VERIFY_WORKPASS: '/verify-workpass',
+  RECENT_CALLS: '/recent-calls',
 });
 
 // TODO Feature state is sometimes {} due to compatibility reasons

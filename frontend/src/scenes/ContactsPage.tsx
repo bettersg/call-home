@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
@@ -16,6 +16,7 @@ import FeedbackIcon from '@material-ui/icons/Feedback';
 import PhoneInTalkIcon from '@material-ui/icons/PhoneInTalk';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import FavoriteIcon from '@material-ui/icons/Favorite';
+import HistoryIcon from '@material-ui/icons/History';
 import { DateTime, Duration } from 'luxon';
 import DetectBrowserSnackbar from '../components/shared/DetectBrowserSnackbar';
 import Container from '../components/shared/Container';
@@ -95,6 +96,7 @@ const EN_STRINGS = {
     DUPLICATE_CONTACT: 'You already have a loved one with this number',
     INVALID_PHONE_NUMBER: 'You have entered an invalid phone number',
   },
+  CONTACTS_RECENT_CALLS: 'Recent calls',
 };
 
 const STRINGS: Record<string, typeof EN_STRINGS> = {
@@ -571,16 +573,24 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
         {STRINGS[locale].CONTACTS_TITLE}
       </Typography>
       {subtitleContent}
-      <Typography
-        variant="body1"
-        style={{
-          marginBottom: '1rem',
-        }}
-      >
-        {STRINGS[locale].CONTACTS_COUNTRY_LABEL(
-          (user as any).destinationCountry
-        )}
-      </Typography>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Typography
+          variant="body1"
+          style={{
+            marginBottom: '1rem',
+          }}
+        >
+          {STRINGS[locale].CONTACTS_COUNTRY_LABEL(
+            (user as any).destinationCountry
+          )}
+        </Typography>
+        <Link to={PATHS.RECENT_CALLS} style={{ textDecoration: 'none' }}>
+          <ActionLink variant="body1" role="button">
+            <HistoryIcon />
+            {STRINGS[locale].CONTACTS_RECENT_CALLS}
+          </ActionLink>
+        </Link>
+      </div>
       <div
         style={{
           // Make this the right height so that the action links are positioned correctly
