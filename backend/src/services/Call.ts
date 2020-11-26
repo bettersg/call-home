@@ -108,6 +108,7 @@ function CallService(
       where: {
         userId,
       },
+      order: [['createdAt', 'DESC']],
     });
   }
 
