@@ -42,7 +42,7 @@ function formatCallDuration(seconds: number) {
   }`;
 }
 
-const RecentCallsBox: any = withStyles((theme) => ({
+const RecentCallsBox = withStyles((theme) => ({
   root: {
     backgroundColor: 'white',
     border: `1px solid ${theme.palette.grey[200]}`,
@@ -133,7 +133,11 @@ function BackButton() {
   );
 }
 
-export default function RecentCallsPage({ locale }: any) {
+export default function RecentCallsPage({
+  locale,
+}: {
+  locale: string;
+}): React.ReactElement {
   const [userState, userService] = useUserService();
   const { me: user } = userState || {};
   const [userId, setUserId] = useState<string>();
