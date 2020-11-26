@@ -79,7 +79,6 @@
     "nodemon": "^2.0.3",
     "pino-pretty": "^4.2.1",
     "prettier": "^2.0.4",
-    "sqlite3": "^4.1.1",
     "ts-jest": "^26.4.3",
     "typescript": "^3.9.7"
   }
