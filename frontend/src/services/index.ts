@@ -1,4 +1,4 @@
-export type { User as UserEntity, UserState } from './User';
+export type { User as UserEntity } from './User';
 export { default as User } from './User';
 export { default as Contact } from './Contact';
 export { default as Allowlist } from './Allowlist';

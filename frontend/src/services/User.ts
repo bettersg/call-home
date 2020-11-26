@@ -25,7 +25,6 @@ export interface User {
 export interface UserState {
   me: User | null;
   verificationPhoneNumber: string | null;
-  hasDismissedWorkpassModal: boolean;
 }
 
 // TODO make this configurable
@@ -37,8 +36,6 @@ export default class UserService extends ObservableService<UserState> {
     this.state = {
       me: null,
       verificationPhoneNumber: null,
-      // TODO This isn't the best place to keep this, but this is probably better solved at a later time
-      hasDismissedWorkpassModal: false,
     };
   }
 
@@ -67,14 +64,6 @@ export default class UserService extends ObservableService<UserState> {
     this.state = {
       ...this.state,
       verificationPhoneNumber,
-    };
-    this.notify();
-  }
-
-  dismissWorkpassModal(): void {
-    this.state = {
-      ...this.state,
-      hasDismissedWorkpassModal: true,
     };
     this.notify();
   }

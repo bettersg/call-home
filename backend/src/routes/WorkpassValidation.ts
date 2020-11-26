@@ -29,7 +29,7 @@ function WorkpassValidationRoutes(
         return res.status(200).send();
       }
 
-      return res.status(400).json(validationResult);
+      return res.status(400).json(validationResult.result);
     })
   );
 

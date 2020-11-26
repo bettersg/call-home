@@ -99,7 +99,6 @@ export default function VerificationPhoneNumberCode({ locale }: SceneProps) {
     return null;
   }
 
-  // TODO This can't use the unified routing because that doesn't accommodate the phone number verification code route.
   let isUserVerified;
 
   if (featureState.WORKPASS_VALIDATION) {

@@ -1,6 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { sanitizeDbErrors } = require('./lib');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { normalizePhoneNumber } = require('../util/country');
 
 function ContactService(ContactModel, userService) {
@@ -54,14 +52,6 @@ function ContactService(ContactModel, userService) {
     });
   }
 
-  async function listContactsFromIds(ids) {
-    return ContactModel.findAll({
-      where: {
-        id: ids,
-      },
-    });
-  }
-
   async function createContact(UserId, contact) {
     const user = await userService.getUser(UserId);
     await Promise.all([
@@ -106,7 +96,6 @@ function ContactService(ContactModel, userService) {
     getContact,
     updateContact,
     deleteContact,
-    listContactsFromIds,
   };
 }
 
