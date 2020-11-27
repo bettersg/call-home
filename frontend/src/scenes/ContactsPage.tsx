@@ -13,8 +13,7 @@ import CallIcon from '@material-ui/icons/Call';
 import PhoneDisabledIcon from '@material-ui/icons/PhoneDisabled';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import FeedbackIcon from '@material-ui/icons/Feedback';
-import PhoneInTalkIcon from '@material-ui/icons/PhoneInTalk';
-import AutorenewIcon from '@material-ui/icons/Autorenew';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import HistoryIcon from '@material-ui/icons/History';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
@@ -37,13 +36,14 @@ import {
 import { ApiValidationError } from '../services/apiClient';
 import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
 import {
-  formatDurationInHoursMinutes,
+  formatDurationInMinutes,
   formatDurationInDaysHoursMinutes,
 } from '../util/timeFormatters';
 import { getNextRefresh } from '../services/PeriodicCredit';
 import PATHS, { useRouting } from './paths';
 import './ContactsPage.css';
 import { Locale, SceneProps } from './types';
+import { RoundedProgressBar } from 'components/shared/RoundedProgressBar';
 
 const COUNTRIES = {
   en: {
@@ -83,17 +83,32 @@ const EN_STRINGS = {
   CONTACTS_REACHED_CALL_LIMIT_MESSAGE:
     'You have reached your call limit for the month',
   CONTACTS_TIME_TO_CREDIT_MESSAGE: function CreditMessage(
-    timeAmount: string | null,
-    creditAmount: string | null
+    timeAmount: Duration | null,
+    creditAmount: Duration | null
   ) {
-    if (!timeAmount) {
+    if (timeAmount == null || creditAmount == null) {
       return '';
     }
     return (
       <>
-        <strong>{timeAmount}</strong> to {creditAmount} top-up!
+        <strong>{formatDurationInDaysHoursMinutes(timeAmount)}</strong> to{' '}
+        {formatDurationInMinutes(creditAmount)} top-up!
       </>
     );
+  },
+  CONTACTS_CALL_DURATION_LEFT: function (duration: Duration | null): string {
+    return duration !== null ? `${formatDurationInMinutes(duration)} left` : '';
+  },
+  CONTACTS_NEXT_REFRESH_AMOUNT: function (
+    amount: Duration | null,
+    time: Duration | null
+  ): string {
+    return amount !== null && time !== null
+      ? '+' +
+          formatDurationInMinutes(amount) +
+          ' in ' +
+          formatDurationInDaysHoursMinutes(time)
+      : '';
   },
   CONTACTS_CANNOT_UNDO_MESSAGE: 'This action cannot be undone',
   CONTACTS_UNKNOWN_ERROR_MESSAGE: 'Unknown error',
@@ -187,7 +202,11 @@ const InfoItem = withStyles((theme) => ({
     color: (theme as any).palette.primary[900],
   },
 }))(Typography);
-
+const LightInfoItem = withStyles((theme) => ({
+  root: {
+    color: (theme as any).palette.primary[700],
+  },
+}))(Typography);
 const ErrorInfoItem = withStyles((theme) => ({
   root: {
     color: theme.palette.error.main,
@@ -438,46 +457,75 @@ function EditContactDialog({
   );
 }
 
-function CallLimitInfo({
-  userCallTimeDuration,
+function ContactsCountInfo({
   contacts,
   locale,
-  nextRefreshTimeString,
-  nextRefreshAmount,
-  callLimitExceeded,
 }: {
-  userCallTimeDuration: Duration;
   contacts: any[];
   locale: Locale;
-  nextRefreshTimeString: string | null;
-  nextRefreshAmount: string | null;
-  callLimitExceeded: boolean;
 }) {
-  const CallTimeInfoItem = callLimitExceeded ? ErrorInfoItem : InfoItem;
-  // TODO localization problems here
-  const nextRefreshInfoElement =
-    nextRefreshTimeString && nextRefreshAmount ? (
-      <p>
-        <strong>{nextRefreshAmount}</strong> in {nextRefreshTimeString}
-      </p>
-    ) : (
-      ''
-    );
   return (
     <div className="info-container" style={{ marginTop: '12px' }}>
-      <CallTimeInfoItem variant="subtitle2" className="info-item">
-        <PhoneInTalkIcon className="info-icon" />
-        {formatDurationInHoursMinutes(userCallTimeDuration)}
-      </CallTimeInfoItem>
-
-      <InfoItem variant="subtitle2" className="info-item">
-        <AutorenewIcon className="info-icon" />
-        {nextRefreshInfoElement}
-      </InfoItem>
       <InfoItem variant="subtitle2" className="info-item">
         <FavoriteIcon className="info-icon" />
         {contacts.length} {STRINGS[locale].CONTACTS_LOVED_ONES_LABEL}
       </InfoItem>
+    </div>
+  );
+}
+
+function CallLimitInfo({
+  userCallTimeDuration,
+  locale,
+  nextRefreshDuration,
+  nextRefreshAmount,
+  callLimitExceeded,
+}: {
+  userCallTimeDuration: Duration;
+  locale: Locale;
+  nextRefreshDuration: Duration | null;
+  nextRefreshAmount: Duration | null;
+  callLimitExceeded: boolean;
+}) {
+  const CallTimeInfoItem = callLimitExceeded ? ErrorInfoItem : LightInfoItem;
+  const callTimeInMins: number = userCallTimeDuration.as('minutes');
+  const callTimeRatio: number =
+    nextRefreshAmount != null
+      ? Math.min(
+          Math.max(callTimeInMins / nextRefreshAmount.as('minutes'), 0),
+          1
+        )
+      : 1;
+
+  return (
+    <div style={{ marginTop: '12px' }}>
+      <RoundedProgressBar
+        variant="determinate"
+        value={callTimeRatio * 100}
+        style={{ width: '100%' }}
+      />
+
+      <div
+        className="info-container"
+        style={{ justifyContent: 'space-between', marginTop: 4 }}
+      >
+        <CallTimeInfoItem variant="body2">
+          {STRINGS[locale].CONTACTS_CALL_DURATION_LEFT(userCallTimeDuration)}
+        </CallTimeInfoItem>
+
+        {nextRefreshDuration != null && nextRefreshAmount != null && (
+          <LightInfoItem
+            variant="body2"
+            style={{ display: 'flex', alignItems: 'center' }}
+          >
+            <RefreshIcon style={{ marginRight: 4 }} />
+            {STRINGS[locale].CONTACTS_NEXT_REFRESH_AMOUNT(
+              nextRefreshAmount,
+              nextRefreshDuration
+            )}
+          </LightInfoItem>
+        )}
+      </div>
     </div>
   );
 }
@@ -560,10 +608,11 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
   const [contactToEdit, setContactToEdit] = useState(null);
-  const [nextRefreshTimeString, setNextRefreshTimeString] = useState<
-    string | null
-  >(null);
-  const [nextRefreshAmount, setNextRefreshAmount] = useState<string | null>(
+  const [
+    nextRefreshDuration,
+    setNextRefreshDuration,
+  ] = useState<Duration | null>(null);
+  const [nextRefreshAmount, setNextRefreshAmount] = useState<Duration | null>(
     null
   );
 
@@ -581,10 +630,8 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
 
   useEffect(() => {
     getNextRefresh().then(({ time, amount }) => {
-      const nextRefreshDuration = DateTime.fromISO(time).diffNow();
-      setNextRefreshTimeString(
-        formatDurationInDaysHoursMinutes(nextRefreshDuration)
-      );
+      const nextDuration = time.diffNow();
+      setNextRefreshDuration(nextDuration);
       setNextRefreshAmount(amount);
     });
   }, []);
@@ -622,7 +669,7 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
         }}
       >
         {STRINGS[locale].CONTACTS_TIME_TO_CREDIT_MESSAGE(
-          nextRefreshTimeString,
+          nextRefreshDuration,
           nextRefreshAmount
         )}
       </Typography>
@@ -657,13 +704,19 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
         {STRINGS[locale].CONTACTS_TITLE}
       </Typography>
       {subtitleContent}
+      <div style={{ marginBottom: '1rem' }}>
+        {featureState.CALL_LIMITS ? (
+          <CallLimitInfo
+            callLimitExceeded={callLimitExceeded}
+            nextRefreshAmount={nextRefreshAmount}
+            nextRefreshDuration={nextRefreshDuration}
+            locale={locale}
+            userCallTimeDuration={userCallTimeDuration}
+          />
+        ) : null}
+      </div>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography
-          variant="body1"
-          style={{
-            marginBottom: '1rem',
-          }}
-        >
+        <Typography variant="body1">
           {STRINGS[locale].CONTACTS_COUNTRY_LABEL(
             (user as any).destinationCountry
           )}
@@ -792,16 +845,7 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
           />
           <div>{STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}</div>
         </AddContactButton>
-        {featureState.CALL_LIMITS ? (
-          <CallLimitInfo
-            userCallTimeDuration={userCallTimeDuration}
-            contacts={contacts}
-            locale={locale}
-            nextRefreshTimeString={nextRefreshTimeString}
-            nextRefreshAmount={nextRefreshAmount}
-            callLimitExceeded={callLimitExceeded}
-          />
-        ) : null}
+        <ContactsCountInfo contacts={contacts} locale={locale} />
       </div>
       <div
         style={{

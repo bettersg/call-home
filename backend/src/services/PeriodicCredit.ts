@@ -40,18 +40,12 @@ function PeriodicCreditService(
       .toJSDate();
   }
 
-  function getNextUpdateAmount(creditAmount: Duration) {
-    return creditAmount.toFormat(`mm 'minutes'`);
-  }
-
   async function getNextUpdateInfo(userId: number) {
     const creditInterval = await getUserCohort(userId);
-    const creditAmount = cohorts[creditInterval];
-    const [time, amount] = await Promise.all([
-      getNextUpdateEpoch(creditInterval),
-      getNextUpdateAmount(creditAmount),
-    ]);
-    return { time, amount };
+    return {
+      timeAsIso: getNextUpdateEpoch(creditInterval).toISOString(),
+      amountAsMinutes: cohorts[creditInterval].as("minutes"),
+    }
   }
 
   async function getPeriodicCreditAfterEpoch(
