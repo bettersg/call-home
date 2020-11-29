@@ -52,7 +52,24 @@ export default function VerifyWorkpass({
 
   return (
     <Container>
+<<<<<<< HEAD
       <form onSubmit={onSubmit} style={{ height: '100%' }}>
+=======
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+        }}
+      >
+        <IconButton onClick={navToContacts}>
+          <CloseIcon />
+        </IconButton>
+      </div>
+      <form
+        onSubmit={onSubmit}
+        style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+      >
+>>>>>>> upstream/master
         <Typography
           variant="h5"
           component="h1"
@@ -84,3 +101,94 @@ export default function VerifyWorkpass({
     </Container>
   );
 }
+<<<<<<< HEAD
+=======
+
+export default function VerifyWorkpass({ locale, routePath }: SceneProps) {
+  const routeResult = useRouting(routePath);
+  const [, userService] = useUserService();
+
+  const [wpSerialNumber, setWpSerialNumber] = useState('');
+  const [apiErrorMessage, setApiErrorMessage] = useState('');
+  const [isTouched, setIsTouched] = useState(false);
+
+  const isValidSerialNumber = Boolean(
+    wpSerialNumber.match(WP_SERIAL_NUMBER_REGEX)
+  );
+  const isSerialNumberFINLike = Boolean(wpSerialNumber.match(FIN_REGEX));
+
+  const onSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setIsTouched(true);
+    if (isValidSerialNumber) {
+      try {
+        setApiErrorMessage(' ');
+        await validateWorkpass(wpSerialNumber);
+        await userService?.refreshSelf();
+      } catch (error) {
+        if (!error.data) {
+          setApiErrorMessage(
+            STRINGS[locale].VERIFY_WORKPASS_UNKNOWN_SN_MESSAGE
+          );
+        } else if (error.data.reason?.code === 'conflict') {
+          setApiErrorMessage(
+            STRINGS[locale].VERIFY_WORKPASS_CONFLICTING_SN_MESSAGE
+          );
+        } else if (error.data.reason?.code === 'expired') {
+          setApiErrorMessage(
+            STRINGS[locale].VERIFY_WORKPASS_EXPIRED_SN_MESSAGE
+          );
+        } else if (error.data.reason?.code === 'error') {
+          setApiErrorMessage(
+            STRINGS[locale].VERIFY_WORKPASS_INVALID_API_SN_MESSAGE
+          );
+        } else {
+          setApiErrorMessage(
+            STRINGS[locale].VERIFY_WORKPASS_UNKNOWN_SN_MESSAGE
+          );
+        }
+      }
+    }
+  };
+
+  const onWpSerialNumberChanged = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setIsTouched(true);
+    setWpSerialNumber(event.target.value);
+  };
+
+  const navToContacts = () => userService?.setShouldDismissWorkpasssModal(true);
+
+  if (routeResult.shouldRender) {
+    return routeResult.renderElement;
+  }
+
+  let errorMessage;
+  if (apiErrorMessage) {
+    errorMessage = apiErrorMessage;
+  } else if (!isTouched) {
+    errorMessage = undefined;
+  } else if (isSerialNumberFINLike) {
+    errorMessage = STRINGS[locale].VERIFY_WORKPASS_FINLIKE_SN_MESSAGE;
+  } else if (!isValidSerialNumber) {
+    errorMessage = STRINGS[locale].VERIFY_WORKPASS_INVALID_SN_MESSAGE;
+  } else {
+    errorMessage = undefined;
+  }
+
+  return (
+    <VerifyWorkpassPresenter
+      {...{
+        onSubmit,
+        onWpSerialNumberChanged,
+        locale,
+        wpSerialNumber,
+        setWpSerialNumber,
+        errorMessage,
+        navToContacts,
+      }}
+    />
+  );
+}
+>>>>>>> upstream/master

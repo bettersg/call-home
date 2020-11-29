@@ -45,7 +45,13 @@ function routeFromState(
   }
 
   if (!user.verificationState.workpass) {
+<<<<<<< HEAD
     return PATHS.VERIFY_WORKPASS;
+=======
+    return userState.shouldDismissWorkpassModal
+      ? PATHS.CONTACTS
+      : PATHS.VERIFY_WORKPASS;
+>>>>>>> upstream/master
   }
 
   return null;
