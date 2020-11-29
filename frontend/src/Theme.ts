@@ -19,6 +19,9 @@ const colors = {
   error: {
     main: '#FF3131',
   },
+  yellow: {
+    main: '#F2CC0D',
+  },
 };
 
 const callHomeTheme = createMuiTheme({
@@ -29,6 +32,7 @@ const callHomeTheme = createMuiTheme({
     primary: colors.primary,
     grey: colors.grey,
     error: colors.error,
+    warning: colors.yellow,
   },
   overrides: {
     MuiTypography: {

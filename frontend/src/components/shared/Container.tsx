@@ -16,8 +16,8 @@ const CONTAINER_STYLES: React.CSSProperties = {
   // Mad hacks
   height: '1px',
   minHeight: 'var(--viewport-height)',
-  padding: '5% 5%',
-  paddingTop: '3em',
+  padding: '2rem',
+  paddingTop: '3rem',
   display: 'flex',
   flexDirection: 'column',
   position: 'relative',
@@ -28,7 +28,7 @@ export default function Container({
   style,
   ...rest
 }: {
-  children: JSX.Element | JSX.Element[];
+  children: React.ReactNode;
   style?: React.CSSProperties;
 }) {
   const containerStyles = style
@@ -39,7 +39,9 @@ export default function Container({
     : CONTAINER_STYLES;
   return (
     <MuContainer style={containerStyles} {...rest} maxWidth="sm">
-      {children}
+      {
+        children as any // Needed because the props don't accept null | undefined
+      }
     </MuContainer>
   );
 }

@@ -143,6 +143,16 @@ function VerifyWorkpassPresenter({
 
   return (
     <Container>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+        }}
+      >
+        <IconButton onClick={navToContacts}>
+          <CloseIcon />
+        </IconButton>
+      </div>
       <form
         onSubmit={onSubmit}
         style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
@@ -260,7 +270,7 @@ export default function VerifyWorkpass({ locale, routePath }: SceneProps) {
     setWpSerialNumber(event.target.value);
   };
 
-  const navToContacts = () => userService?.dismissWorkpassModal();
+  const navToContacts = () => userService?.setShouldDismissWorkpasssModal(true);
 
   if (routeResult.shouldRender) {
     return routeResult.renderElement;

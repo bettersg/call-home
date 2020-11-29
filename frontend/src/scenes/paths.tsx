@@ -48,7 +48,7 @@ function routeFromState(
   }
 
   if (!user.verificationState.workpass) {
-    return userState.hasDismissedWorkpassModal
+    return userState.shouldDismissWorkpassModal
       ? PATHS.CONTACTS
       : PATHS.VERIFY_WORKPASS;
   }

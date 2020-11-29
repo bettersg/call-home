@@ -7,7 +7,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
-import { withStyles } from '@material-ui/core/styles';
+import { useTheme, withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import CallIcon from '@material-ui/icons/Call';
 import PhoneDisabledIcon from '@material-ui/icons/PhoneDisabled';
@@ -17,6 +17,8 @@ import PhoneInTalkIcon from '@material-ui/icons/PhoneInTalk';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import HistoryIcon from '@material-ui/icons/History';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { DateTime, Duration } from 'luxon';
 import DetectBrowserSnackbar from '../components/shared/DetectBrowserSnackbar';
 import Container from '../components/shared/Container';
@@ -41,7 +43,7 @@ import {
 import { getNextRefresh } from '../services/PeriodicCredit';
 import PATHS, { useRouting } from './paths';
 import './ContactsPage.css';
-import { SceneProps } from './types';
+import { Locale, SceneProps } from './types';
 
 const COUNTRIES = {
   en: {
@@ -74,6 +76,9 @@ const EN_STRINGS = {
   CONTACTS_CANCEL_LABEL: 'Cancel',
   CONTACTS_DELETE_LABEL: 'Delete',
   CONTACTS_DELETE_CONTACT_LABEL: 'Delete contact',
+  CONTACTS_VERIFY_WORKPASS_BANNER_CTA: (deadline: string) =>
+    `Enter Work Pass number by ${deadline}`,
+  CONTACTS_VERIFY_WORKPASS_BANNER_INFO: 'to continue using Call Home',
   // TODO This hardcodes the credit interval
   CONTACTS_REACHED_CALL_LIMIT_MESSAGE:
     'You have reached your call limit for the month',
@@ -99,7 +104,7 @@ const EN_STRINGS = {
   CONTACTS_RECENT_CALLS: 'Recent calls',
 };
 
-const STRINGS: Record<string, typeof EN_STRINGS> = {
+const STRINGS = {
   en: EN_STRINGS,
   bn: {
     ...EN_STRINGS,
@@ -182,6 +187,7 @@ const InfoItem = withStyles((theme) => ({
     color: (theme as any).palette.primary[900],
   },
 }))(Typography);
+
 const ErrorInfoItem = withStyles((theme) => ({
   root: {
     color: theme.palette.error.main,
@@ -192,7 +198,15 @@ const DialogNeutralButton = withDialogButtonStyles(NeutralButton);
 const DialogPrimaryButton = withDialogButtonStyles(PrimaryButton);
 const DialogErrorButton = withDialogButtonStyles(ErrorButton);
 
-function AddContactDialog({ open, onClose, locale }: any) {
+function AddContactDialog({
+  open,
+  onClose,
+  locale,
+}: {
+  open: boolean;
+  onClose: () => unknown;
+  locale: Locale;
+}) {
   const [userState] = useUserService();
   const { me: user } = userState || {};
   const [, contactService] = useContactService();
@@ -285,7 +299,17 @@ function AddContactDialog({ open, onClose, locale }: any) {
   );
 }
 
-function EditContactDialog({ contact, open, onClose, locale }: any) {
+function EditContactDialog({
+  contact,
+  open,
+  onClose,
+  locale,
+}: {
+  contact: any;
+  open: boolean;
+  onClose: () => unknown;
+  locale: Locale;
+}) {
   const [userState] = useUserService();
   const { me: user } = userState || {};
   const [, contactService] = useContactService();
@@ -421,7 +445,14 @@ function CallLimitInfo({
   nextRefreshTimeString,
   nextRefreshAmount,
   callLimitExceeded,
-}: any) {
+}: {
+  userCallTimeDuration: Duration;
+  contacts: any[];
+  locale: Locale;
+  nextRefreshTimeString: string | null;
+  nextRefreshAmount: string | null;
+  callLimitExceeded: boolean;
+}) {
   const CallTimeInfoItem = callLimitExceeded ? ErrorInfoItem : InfoItem;
   // TODO localization problems here
   const nextRefreshInfoElement =
@@ -463,6 +494,59 @@ function CallContactButton({ contactService, contact, disabled }: any) {
     <IconButton style={{ padding: '0' }} onClick={onClick} disabled={disabled}>
       <Icon />
     </IconButton>
+  );
+}
+
+const VERIFY_WORKPASS_CUTOFF_DATE = DateTime.fromObject({
+  day: 26,
+  month: 11,
+  year: 2020,
+});
+function VerifyWorkpassBanner({ locale }: { locale: Locale }) {
+  const [, userService] = useUserService();
+  const theme = useTheme();
+  const navToWorkpassVerification = () =>
+    userService?.setShouldDismissWorkpasssModal(false);
+  return (
+    <div
+      style={{
+        padding: '8px 4px',
+        background: theme.palette.warning.main,
+        minHeight: '48px',
+        margin: '1rem -2rem -2rem',
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
+      <InfoOutlinedIcon
+        style={{
+          height: '2rem',
+          width: '2rem',
+          marginLeft: '8px',
+          marginRight: '8px',
+          color: theme.palette.text.primary,
+        }}
+      />
+      <Typography style={{ flex: '1 1 auto' }}>
+        <strong>
+          {STRINGS[locale].CONTACTS_VERIFY_WORKPASS_BANNER_CTA(
+            VERIFY_WORKPASS_CUTOFF_DATE.toFormat('dd MMM')
+          )}
+        </strong>{' '}
+        &nbsp;
+        {STRINGS[locale].CONTACTS_VERIFY_WORKPASS_BANNER_INFO}
+      </Typography>
+      <IconButton onClick={navToWorkpassVerification} style={{ padding: '0' }}>
+        <ArrowForwardIcon
+          style={{
+            height: '2rem',
+            width: '2rem',
+            marginRight: '8px',
+            color: theme.palette.text.primary,
+          }}
+        />
+      </IconButton>
+    </div>
   );
 }
 
@@ -752,6 +836,9 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
           />
         ) : null}
       </div>
+      {featureState.WORKPASS_VALIDATION ? (
+        <VerifyWorkpassBanner locale={locale} />
+      ) : null}
     </Container>
   );
 }
