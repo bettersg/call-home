@@ -7,7 +7,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import CloseIcon from '@material-ui/icons/Close';
 import { useUserService } from '../contexts';
 import Container from '../components/shared/Container';
-import { PrimaryButton } from '../components/shared/RoundedButton';
+import { ErrorButton, PrimaryButton } from '../components/shared/RoundedButton';
 import PATHS, { useRouting } from './paths';
 import { validateWorkpass } from '../services/WorkpassValidation';
 import { Locale, SceneProps } from './types';
@@ -23,6 +23,7 @@ const EN_STRINGS = {
   VERIFY_WORKPASS_DIALOG_COPY:
     'We need to confirm you’re still a foreign worker in Singapore, so you can continue using Call Home.',
   VERIFY_WORKPASS_ENTER_WORKPASS: 'Enter Work Pass Number',
+  VERIFY_WORKPASS_CANCEL: 'Cancel',
   VERIFY_WORKPASS_FIND_SN_HELP: 'How do I find my serial number?',
   VERIFY_WORKPASS_FINLIKE_SN_MESSAGE: 'Enter your Serial Number, not FIN',
   VERIFY_WORKPASS_INVALID_SN_MESSAGE: 'Not a valid serial number. Try again',
@@ -39,6 +40,10 @@ const STRINGS = {
   en: EN_STRINGS,
   bn: {
     ...EN_STRINGS,
+    VERIFY_WORKPASS_DIALOG_TITLE:
+      'কল হোম ব্যবহার চালিয়ে যেতে, আপনার ওয়ার্ক পাসের সিরিয়াল নম্বরটি প্রবেশ করুন',
+    VERIFY_WORKPASS_DIALOG_COPY:
+      ' আপনি এখনও সিঙ্গাপুরে বিদেশী কর্মী হিসাবে আমাদের নিশ্চিত করতে হবে, যাতে আপনি কল হোম ব্যবহার চালিয়ে যেতে পারেন।',
   },
 };
 
@@ -65,16 +70,6 @@ function VerificationModal({
 }): JSX.Element {
   return (
     <Container style={{ height: 'var(--viewport-height)' }}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-        }}
-      >
-        <IconButton onClick={navToContacts}>
-          <CloseIcon />
-        </IconButton>
-      </div>
       <img
         style={{ marginTop: '40px' }}
         alt=""
@@ -111,6 +106,15 @@ function VerificationModal({
       >
         {STRINGS[locale].VERIFY_WORKPASS_ENTER_WORKPASS}
       </PrimaryButton>
+      <ErrorButton
+        disableFocusRipple
+        style={{
+          marginTop: '8px',
+        }}
+        onClick={navToContacts}
+      >
+        {STRINGS[locale].VERIFY_WORKPASS_CANCEL}
+      </ErrorButton>
     </Container>
   );
 }
@@ -143,16 +147,6 @@ function VerifyWorkpassPresenter({
 
   return (
     <Container>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-        }}
-      >
-        <IconButton onClick={navToContacts}>
-          <CloseIcon />
-        </IconButton>
-      </div>
       <form
         onSubmit={onSubmit}
         style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
@@ -211,6 +205,15 @@ function VerifyWorkpassPresenter({
         >
           {STRINGS[locale].NEXT}
         </PrimaryButton>
+        <ErrorButton
+          disableFocusRipple
+          style={{
+            marginTop: '8px',
+          }}
+          onClick={navToContacts}
+        >
+          {STRINGS[locale].VERIFY_WORKPASS_CANCEL}
+        </ErrorButton>
       </form>
     </Container>
   );
