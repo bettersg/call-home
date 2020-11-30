@@ -498,8 +498,8 @@ function CallContactButton({ contactService, contact, disabled }: any) {
 }
 
 const VERIFY_WORKPASS_CUTOFF_DATE = DateTime.fromObject({
-  day: 26,
-  month: 11,
+  day: 6,
+  month: 12,
   year: 2020,
 });
 function VerifyWorkpassBanner({ locale }: { locale: Locale }) {
