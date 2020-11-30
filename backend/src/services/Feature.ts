@@ -2,6 +2,7 @@ const {
   CALL_LIMITS_ENABLED_NUMBERS = '',
   ENABLE_CALL_LIMIT_ALL,
   ENABLE_ALLOWLIST_SMS,
+  ENABLE_WORKPASS_VALIDATION_ALL,
   WORKPASS_VALIDATION_ENABLED_NUMBERS = '',
 } = process.env;
 const callLimitNumbers = CALL_LIMITS_ENABLED_NUMBERS.split(',').map(Number);
@@ -10,15 +11,20 @@ const workpassValidationNumbers = WORKPASS_VALIDATION_ENABLED_NUMBERS.split(
 ).map(Number);
 
 // TODO remove this flag
-function shouldEnableCallLimits(userId: number) {
-  return ENABLE_CALL_LIMIT_ALL || callLimitNumbers.includes(Number(userId));
+function shouldEnableCallLimits(userId: number): boolean {
+  return (
+    Boolean(ENABLE_CALL_LIMIT_ALL) || callLimitNumbers.includes(Number(userId))
+  );
 }
 
-function shouldEnableWorkpassValidation(userId: number) {
-  return workpassValidationNumbers.includes(userId);
+function shouldEnableWorkpassValidation(userId: number): boolean {
+  return (
+    Boolean(ENABLE_WORKPASS_VALIDATION_ALL) ||
+    workpassValidationNumbers.includes(userId)
+  );
 }
 
-function shouldEnableAllowlistSms() {
+function shouldEnableAllowlistSms(): boolean {
   return Boolean(ENABLE_ALLOWLIST_SMS);
 }
 
