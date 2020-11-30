@@ -120,7 +120,7 @@ function CallCards({ calls, locale }: { calls: RecentCall[]; locale: string }) {
 function BackButton() {
   return (
     <Link to={PATHS.CONTACTS} style={{ textDecoration: 'none' }}>
-      <div
+      <Typography
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -128,7 +128,7 @@ function BackButton() {
       >
         <ChevronLeftIcon />
         back
-      </div>
+      </Typography>
     </Link>
   );
 }
