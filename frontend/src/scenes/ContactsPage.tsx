@@ -668,12 +668,14 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
             (user as any).destinationCountry
           )}
         </Typography>
-        <Link to={PATHS.RECENT_CALLS} style={{ textDecoration: 'none' }}>
-          <ActionLink variant="body1" role="button">
-            <HistoryIcon />
-            {STRINGS[locale].CONTACTS_RECENT_CALLS}
-          </ActionLink>
-        </Link>
+        {false && (
+          <Link to={PATHS.RECENT_CALLS} style={{ textDecoration: 'none' }}>
+            <ActionLink variant="body1" role="button">
+              <HistoryIcon />
+              {STRINGS[locale].CONTACTS_RECENT_CALLS}
+            </ActionLink>
+          </Link>
+        )}
       </div>
       <div
         style={{
