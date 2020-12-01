@@ -12,6 +12,9 @@ function FeaturesRoutes(featureService: typeof Feature) {
       WORKPASS_VALIDATION: featureService.shouldEnableWorkpassValidation(
         userId
       ),
+      SHOW_WORKPASS_SCREEN: featureService.shouldEnableWorkpassValidationScreen(
+        userId
+      ),
     };
     return res.status(200).json(features);
   });

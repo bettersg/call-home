@@ -4,6 +4,7 @@ import ObservableService from './observableService';
 export interface FeatureState {
   CALL_LIMITS: boolean;
   WORKPASS_VALIDATION: boolean;
+  SHOW_WORKPASS_SCREEN: boolean;
 }
 
 const featureEndpoint = '/features';
@@ -14,6 +15,7 @@ export default class FeatureService extends ObservableService<FeatureState> {
     this.state = {
       CALL_LIMITS: true,
       WORKPASS_VALIDATION: false,
+      SHOW_WORKPASS_SCREEN: false,
     };
   }
 

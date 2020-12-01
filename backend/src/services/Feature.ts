@@ -3,6 +3,7 @@ const {
   ENABLE_CALL_LIMIT_ALL,
   ENABLE_ALLOWLIST_SMS,
   ENABLE_WORKPASS_VALIDATION_ALL,
+  ENABLE_WORKPASS_VALIDATION_SCREEN,
   WORKPASS_VALIDATION_ENABLED_NUMBERS = '',
 } = process.env;
 const callLimitNumbers = CALL_LIMITS_ENABLED_NUMBERS.split(',').map(Number);
@@ -21,6 +22,13 @@ function shouldEnableWorkpassValidation(userId: number): boolean {
   return (
     Boolean(ENABLE_WORKPASS_VALIDATION_ALL) ||
     workpassValidationNumbers.includes(userId)
+  );
+}
+
+function shouldEnableWorkpassValidationScreen(userId: number): boolean {
+  return (
+    shouldEnableWorkpassValidation(userId) ||
+    Boolean(ENABLE_WORKPASS_VALIDATION_SCREEN)
   );
 }
 
@@ -46,6 +54,7 @@ function getPeriodicCreditCohort(
 export {
   shouldEnableCallLimits,
   shouldEnableWorkpassValidation,
+  shouldEnableWorkpassValidationScreen,
   getPeriodicCreditCohort,
   shouldEnableAllowlistSms,
 };

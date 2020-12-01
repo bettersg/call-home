@@ -838,7 +838,7 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
           />
         ) : null}
       </div>
-      {featureState.WORKPASS_VALIDATION ? (
+      {featureState.SHOW_WORKPASS_SCREEN ? (
         <VerifyWorkpassBanner locale={locale} />
       ) : null}
     </Container>
