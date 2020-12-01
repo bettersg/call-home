@@ -5,11 +5,15 @@ const {
   ENABLE_WORKPASS_VALIDATION_ALL,
   ENABLE_WORKPASS_VALIDATION_SCREEN,
   WORKPASS_VALIDATION_ENABLED_NUMBERS = '',
+  ENABLE_WORKPASS_VALIDATION_NEW_USERS,
+  ENABLE_WORKPASS_NEW_USER_CUT_OFF = 0,
 } = process.env;
 const callLimitNumbers = CALL_LIMITS_ENABLED_NUMBERS.split(',').map(Number);
 const workpassValidationNumbers = WORKPASS_VALIDATION_ENABLED_NUMBERS.split(
   ','
 ).map(Number);
+const enableWorkpassNewUserCutOff =
+  Number(ENABLE_WORKPASS_NEW_USER_CUT_OFF) || 0;
 
 // TODO remove this flag
 function shouldEnableCallLimits(userId: number): boolean {
@@ -19,9 +23,16 @@ function shouldEnableCallLimits(userId: number): boolean {
 }
 
 function shouldEnableWorkpassValidation(userId: number): boolean {
+  if (ENABLE_WORKPASS_VALIDATION_ALL) {
+    return true;
+  }
+  if (workpassValidationNumbers.includes(userId)) {
+    return true;
+  }
   return (
-    Boolean(ENABLE_WORKPASS_VALIDATION_ALL) ||
-    workpassValidationNumbers.includes(userId)
+    Boolean(ENABLE_WORKPASS_VALIDATION_NEW_USERS) &&
+    Boolean(enableWorkpassNewUserCutOff) &&
+    userId >= enableWorkpassNewUserCutOff
   );
 }
 
