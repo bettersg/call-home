@@ -14,7 +14,7 @@ const errorMessageSelector = '.errorMessage';
 
 const expirySelector =
   '#ctl00_ctl40_g_6970c440_5b2c_4b60_ad5e_3fc670e7fb1f_cellDateValue';
-const expiryDateFormat = 'dd MMM yyyy';
+const expiryDateFormat = 'd MMM yyyy';
 
 export type WorkpassStatus = 'valid' | 'invalid' | 'error' | 'unknown';
 

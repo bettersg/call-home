@@ -89,6 +89,8 @@ function WorkpassValidationService(
 
     const { status: workpassStatus, expiry } = serialNumberValidationResult;
 
+    logger.info('Got workpass status result', serialNumberValidationResult);
+
     if (workpassStatus === 'error' || expiry === null) {
       logger.warn(
         'Unable to fetch work pass status. Got %s %s',
