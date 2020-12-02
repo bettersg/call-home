@@ -30,6 +30,7 @@ const phoneNumberValidationService = PhoneNumberValidation(
 const userService = User(
   models.User,
   allowlistEntryService,
+  Feature,
   phoneNumberValidationService
 );
 const contactService = Contact(models.Contact, userService);

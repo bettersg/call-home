@@ -7,6 +7,7 @@ const {
   WORKPASS_VALIDATION_ENABLED_NUMBERS = '',
   ENABLE_WORKPASS_VALIDATION_NEW_USERS,
   ENABLE_WORKPASS_NEW_USER_CUT_OFF = 0,
+  DISABLE_ALLOWLIST,
 } = process.env;
 const callLimitNumbers = CALL_LIMITS_ENABLED_NUMBERS.split(',').map(Number);
 const workpassValidationNumbers = WORKPASS_VALIDATION_ENABLED_NUMBERS.split(
@@ -47,6 +48,10 @@ function shouldEnableAllowlistSms(): boolean {
   return Boolean(ENABLE_ALLOWLIST_SMS);
 }
 
+function shouldDisableAllowlist(): boolean {
+  return Boolean(DISABLE_ALLOWLIST);
+}
+
 type PeriodicCreditCohort = 'week' | 'month';
 
 // TODO To keep the flags clean and consistent, this should just take a user Id. This is a workaround to reduce the effort needed.
@@ -67,5 +72,6 @@ export {
   shouldEnableWorkpassValidation,
   shouldEnableWorkpassValidationScreen,
   getPeriodicCreditCohort,
+  shouldDisableAllowlist,
   shouldEnableAllowlistSms,
 };

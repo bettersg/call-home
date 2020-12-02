@@ -1,11 +1,18 @@
 import { sanitizeDbErrors } from './lib';
 import type { User as UserEntity } from '../models';
-import type { AllowlistEntry, PhoneNumberValidation } from '.';
+import { UserTypes } from '../models';
+import type { AllowlistEntry, Feature, PhoneNumberValidation } from '.';
 import { logger } from '../config';
+
+const DEFAULT_USER_CONFIG = {
+  destinationCountry: 'BD',
+  role: UserTypes.USER,
+};
 
 function UserService(
   UserModel: typeof UserEntity,
   allowlistEntryService: typeof AllowlistEntry,
+  featureService: typeof Feature,
   phoneNumberValidationService: typeof PhoneNumberValidation
 ) {
   async function listUsers() {
@@ -119,7 +126,7 @@ function UserService(
     }
 
     // If the user is not allowed, we can just stop here
-    if (!allowlistEntry) {
+    if (!featureService.shouldDisableAllowlist() && !allowlistEntry) {
       return user;
     }
 
@@ -127,8 +134,11 @@ function UserService(
     // Phone numbers must be unique, so before we can do anything, we must invalidate the other user
     await phoneNumberValidationService.validateUser(user.id, phoneNumber);
 
-    user.destinationCountry = allowlistEntry.destinationCountry;
-    user.role = allowlistEntry.role;
+    user.destinationCountry =
+      allowlistEntry?.destinationCountry ||
+      DEFAULT_USER_CONFIG.destinationCountry;
+    user.role = allowlistEntry?.role || DEFAULT_USER_CONFIG.role;
+
     await user.save();
     await user.reload();
     return user;

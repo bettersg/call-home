@@ -76,7 +76,9 @@ export default function VerificationPhoneNumberCode({ locale }: SceneProps) {
 
   const handlePhoneNumberValidationRequest = async () => {
     try {
-      await beginPhoneNumberValidation(phoneNumber);
+      if (phoneNumber) {
+        await beginPhoneNumberValidation(phoneNumber);
+      }
     } catch (error) {
       const { data } = error;
       if (data && data.message === 'PHONE_NUMBER_RATE_LIMITED' && data.body) {
@@ -114,6 +116,14 @@ export default function VerificationPhoneNumberCode({ locale }: SceneProps) {
   }
   if (!phoneNumber) {
     return <Redirect to={PATHS.VERIFY_PHONE_NUMBER} />;
+  }
+
+  if (user.verificationState.phoneNumber && !user.verificationState.workpass) {
+    return userState?.shouldDismissWorkpassModal ? (
+      <Redirect to={PATHS.CONTACTS} />
+    ) : (
+      <Redirect to={PATHS.VERIFY_WORKPASS} />
+    );
   }
 
   const onSubmit = async (event: any) => {

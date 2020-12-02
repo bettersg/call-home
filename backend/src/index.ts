@@ -67,12 +67,7 @@ app.use('/features', secureRoutes, featureRoutes);
 // TODO For backwards-compatibility
 app.use('/passwordless', secureRoutes, phoneNumberValidationRoutes);
 app.use('/phone-number-validation', secureRoutes, phoneNumberValidationRoutes);
-app.use(
-  '/workpass-validation',
-  secureRoutes,
-  requireVerified,
-  workpassValidationRoutes
-);
+app.use('/workpass-validation', secureRoutes, workpassValidationRoutes);
 
 // Also ensure that twilio is NOT secured by oauth, just twilio auth
 app.use('/twilio', twilioRoutes);
