@@ -11,8 +11,10 @@ import {
   validateRequest,
   stringToNumberTransformer,
 } from './helpers/validation';
-import { Call, Contact } from '../models';
+import { Call, CallStatus, Contact } from '../models';
 import TwilioCall from '../models/TwilioCall';
+
+const COMPLETED = 'completed';
 
 const GET_SCHEMA = z.object({
   params: z.object({
@@ -31,13 +33,16 @@ function mapObjectsToRecentCallResponse(
   contacts: Contact[],
   twilioCalls: TwilioCall[]
 ) {
-  return calls.map((call) => {
+  const callsData = calls.map((call) => {
     const currentContact = contacts.find(
       (contact) => contact.id === call.contactId
     );
     const currentTwilioCall = twilioCalls.find(
       (twilioCall) => twilioCall.twilioSid === call.incomingTwilioCallSid
     );
+    if (!currentTwilioCall) {
+      return null;
+    }
     return {
       id: call.id,
       avatar: (currentContact && currentContact.avatar) || null,
@@ -47,6 +52,7 @@ function mapObjectsToRecentCallResponse(
       duration: (currentTwilioCall && currentTwilioCall.duration) || null,
     };
   });
+  return callsData.filter((data) => data);
 }
 
 function CallRoutes(
@@ -71,7 +77,8 @@ function CallRoutes(
         (call) => call.incomingTwilioCallSid
       );
       const twilioCalls = await twilioCallService.listTwilioCallsBySids(
-        twilioCallSids
+        twilioCallSids,
+        COMPLETED
       );
 
       return res
