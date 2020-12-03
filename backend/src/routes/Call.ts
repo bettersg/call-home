@@ -11,10 +11,8 @@ import {
   validateRequest,
   stringToNumberTransformer,
 } from './helpers/validation';
-import { Call, CallStatus, Contact } from '../models';
+import { Call, Contact } from '../models';
 import TwilioCall from '../models/TwilioCall';
-
-const COMPLETED = 'completed';
 
 const GET_SCHEMA = z.object({
   params: z.object({
@@ -37,9 +35,12 @@ function mapObjectsToRecentCallResponse(
     const currentContact = contacts.find(
       (contact) => contact.id === call.contactId
     );
-    const currentTwilioCall = twilioCalls.find(
-      (twilioCall) => twilioCall.twilioSid === call.incomingTwilioCallSid
-    );
+    const currentTwilioCall = twilioCalls.find((twilioCall) => {
+      return (
+        twilioCall.twilioSid === call.incomingTwilioCallSid &&
+        twilioCall.status === 'completed'
+      );
+    });
     if (!currentTwilioCall) {
       return null;
     }
@@ -65,7 +66,7 @@ function CallRoutes(
   router.get(
     '/:userId/calls/recent',
     requireSelf,
-    validateRequest(GET_RECENT_SCHEMA, async (parsedReq, res, req) => {
+    validateRequest(GET_RECENT_SCHEMA, async (parsedReq, res) => {
       const { userId } = parsedReq.params;
       const recentCalls = await callService.listRecentCallsByUserId(userId);
       const allContactIds = recentCalls.map((call) => call.contactId);
@@ -77,8 +78,7 @@ function CallRoutes(
         (call) => call.incomingTwilioCallSid
       );
       const twilioCalls = await twilioCallService.listTwilioCallsBySids(
-        twilioCallSids,
-        COMPLETED
+        twilioCallSids
       );
 
       return res
