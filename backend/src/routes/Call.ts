@@ -31,13 +31,19 @@ function mapObjectsToRecentCallResponse(
   contacts: Contact[],
   twilioCalls: TwilioCall[]
 ) {
-  return calls.map((call) => {
+  const callsData = calls.map((call) => {
     const currentContact = contacts.find(
       (contact) => contact.id === call.contactId
     );
-    const currentTwilioCall = twilioCalls.find(
-      (twilioCall) => twilioCall.twilioSid === call.incomingTwilioCallSid
-    );
+    const currentTwilioCall = twilioCalls.find((twilioCall) => {
+      return (
+        twilioCall.twilioSid === call.incomingTwilioCallSid &&
+        twilioCall.status === 'completed'
+      );
+    });
+    if (!currentTwilioCall) {
+      return null;
+    }
     return {
       id: call.id,
       avatar: (currentContact && currentContact.avatar) || null,
@@ -47,6 +53,7 @@ function mapObjectsToRecentCallResponse(
       duration: (currentTwilioCall && currentTwilioCall.duration) || null,
     };
   });
+  return callsData.filter((data) => data);
 }
 
 function CallRoutes(
@@ -59,7 +66,7 @@ function CallRoutes(
   router.get(
     '/:userId/calls/recent',
     requireSelf,
-    validateRequest(GET_RECENT_SCHEMA, async (parsedReq, res, req) => {
+    validateRequest(GET_RECENT_SCHEMA, async (parsedReq, res) => {
       const { userId } = parsedReq.params;
       const recentCalls = await callService.listRecentCallsByUserId(userId);
       const allContactIds = recentCalls.map((call) => call.contactId);

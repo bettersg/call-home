@@ -1,7 +1,7 @@
 import { Op } from 'sequelize';
 import { sanitizeDbErrors, TypedEventEmitter } from './lib';
 import { logger } from '../config';
-import type { TwilioCall as TwilioCallEntity } from '../models';
+import type { CallStatus, TwilioCall as TwilioCallEntity } from '../models';
 import type { TwilioClient } from './index';
 import type CallService from './Call';
 import type TransactionService from './Transaction';
