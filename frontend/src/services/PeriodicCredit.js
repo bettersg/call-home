@@ -1,12 +1,14 @@
+import { DateTime, Duration } from 'luxon';
 import apiClient from './apiClient';
 
 const periodicCreditEndpoint = '/periodic-credit';
 
 async function getNextRefresh() {
-  const { time, amount } = await apiClient.get(
-    `${periodicCreditEndpoint}/refresh/next`
-  );
-  return { time, amount };
+  const data = await apiClient.get(`${periodicCreditEndpoint}/refresh/next`);
+  return {
+    time: DateTime.fromISO(data.timeAsIso),
+    amount: Duration.fromObject({ minutes: data.amountAsMinutes }),
+  };
 }
 
 export { getNextRefresh };

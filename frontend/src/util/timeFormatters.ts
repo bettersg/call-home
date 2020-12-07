@@ -88,6 +88,12 @@ function formatDurationInHoursMinutes(rawDuration: Duration): string {
   return formatNegativeDuration(duration, formatString);
 }
 
+function formatDurationInMinutes(rawDuration: Duration): string {
+  const duration = rawDuration.shiftTo('minutes');
+  const formatString = humanReadableFormatString(duration, 'minutes');
+  return formatNegativeDuration(duration, formatString);
+}
+
 // TODO figure out how to name these consistently
 function formatSecondsWithHours(seconds: number): string {
   return Duration.fromObject({ seconds }).toFormat(
@@ -100,4 +106,5 @@ export {
   formatDurationInHoursMinutes,
   formatSecondsWithHours,
   formatDurationInDaysHoursMinutes,
+  formatDurationInMinutes,
 };
