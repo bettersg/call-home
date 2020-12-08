@@ -43,7 +43,7 @@ import { getNextRefresh } from '../services/PeriodicCredit';
 import PATHS, { useRouting } from './paths';
 import './ContactsPage.css';
 import { Locale, SceneProps } from './types';
-import { RoundedProgressBar } from 'components/shared/RoundedProgressBar';
+import { RoundedProgressBar } from '../components/shared/RoundedProgressBar';
 
 const COUNTRIES = {
   en: {
@@ -96,18 +96,17 @@ const EN_STRINGS = {
       </>
     );
   },
-  CONTACTS_CALL_DURATION_LEFT: function (duration: Duration | null): string {
+  CONTACTS_CALL_DURATION_LEFT(duration: Duration | null): string {
     return duration !== null ? `${formatDurationInMinutes(duration)} left` : '';
   },
-  CONTACTS_NEXT_REFRESH_AMOUNT: function (
+  CONTACTS_NEXT_REFRESH_AMOUNT(
     amount: Duration | null,
     time: Duration | null
   ): string {
     return amount !== null && time !== null
-      ? '+' +
-          formatDurationInMinutes(amount) +
-          ' in ' +
-          formatDurationInDaysHoursMinutes(time)
+      ? `+${formatDurationInMinutes(
+          amount
+        )} in ${formatDurationInDaysHoursMinutes(time)}`
       : '';
   },
   CONTACTS_CANNOT_UNDO_MESSAGE: 'This action cannot be undone',
@@ -721,14 +720,12 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
             (user as any).destinationCountry
           )}
         </Typography>
-        {false && (
-          <Link to={PATHS.RECENT_CALLS} style={{ textDecoration: 'none' }}>
-            <ActionLink variant="body1" role="button">
-              <HistoryIcon />
-              {STRINGS[locale].CONTACTS_RECENT_CALLS}
-            </ActionLink>
-          </Link>
-        )}
+        <Link to={PATHS.RECENT_CALLS} style={{ textDecoration: 'none' }}>
+          <ActionLink variant="body1" role="button">
+            <HistoryIcon />
+            {STRINGS[locale].CONTACTS_RECENT_CALLS}
+          </ActionLink>
+        </Link>
       </div>
       <div
         style={{
