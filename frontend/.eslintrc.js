@@ -38,6 +38,8 @@ module.exports = {
     '@typescript-eslint/no-use-before-define': 2,
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': 'error',
+    'no-unused-expressions': 'off',
+    '@typescript-eslint/no-unused-expressions': 'error',
     // end TS-variants
     'react/jsx-filename-extension': 'off',
     'react/jsx-one-expression-per-line': 'off',

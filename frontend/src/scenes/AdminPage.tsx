@@ -239,6 +239,7 @@ interface UserGridRow {
   destinationCountry: string;
   callTime: string;
   transactionHistory: string;
+  hasAdminGrantedValidation: boolean;
 }
 
 function UserTabContent() {
@@ -256,6 +257,27 @@ function UserTabContent() {
     { field: 'name', headerName: 'Name', width: 300 },
     { field: 'phoneNumber', headerName: 'Phone Number', width: 150 },
     { field: 'destinationCountry', headerName: 'Country' },
+    {
+      field: 'hasAdminGrantedValidation',
+      headerName: 'Special access',
+      width: 150,
+      renderCell(rowData) {
+        const { hasAdminGrantedValidation, id } = rowData.row as UserGridRow;
+        return (
+          <Switch
+            name="hasAdminGrantedValidation"
+            checked={Boolean(hasAdminGrantedValidation)}
+            onClick={() => {
+              if (rowData.value) {
+                adminService?.revokeSpecialAccess(id);
+              } else {
+                adminService?.grantSpecialAccess(id);
+              }
+            }}
+          />
+        );
+      },
+    },
     { field: 'callTime', headerName: 'Call Time Balance', width: 300 },
     {
       field: 'transactionHistory',
@@ -276,6 +298,7 @@ function UserTabContent() {
     destinationCountry: user.destinationCountry,
     callTime: formatSecondsWithHours(user.callTime),
     transactionHistory: user.id,
+    hasAdminGrantedValidation: user.verificationState.adminGranted,
   }));
 
   return (

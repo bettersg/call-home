@@ -31,7 +31,12 @@ function routeFromState(
   }
 
   let isUserVerified;
-  if (featureState.WORKPASS_VALIDATION || featureState.SHOW_WORKPASS_SCREEN) {
+  if (user.verificationState.adminGranted) {
+    isUserVerified = true;
+  } else if (
+    featureState.WORKPASS_VALIDATION ||
+    featureState.SHOW_WORKPASS_SCREEN
+  ) {
     isUserVerified =
       user.verificationState.phoneNumber && user.verificationState.workpass;
   } else {

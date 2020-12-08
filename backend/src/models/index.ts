@@ -1,4 +1,5 @@
 import sequelize from './sequelize';
+import AdminGrantedValidation from './AdminGrantedValidation';
 import AllowlistEntry from './AllowlistEntry';
 import Call from './Call';
 import Contact from './Contact';
@@ -11,6 +12,7 @@ import Wallet from './Wallet';
 import WorkpassValidation from './WorkpassValidation';
 
 sequelize.addModels([
+  AdminGrantedValidation,
   AllowlistEntry,
   Call,
   Contact,
@@ -63,6 +65,20 @@ WorkpassValidation.belongsTo(User, {
   foreignKey: 'userId',
 });
 
+// AdminGrantedValidation <-> User
+User.hasOne(AdminGrantedValidation, {
+  foreignKey: 'userId',
+});
+AdminGrantedValidation.belongsTo(User, {
+  foreignKey: 'userId',
+});
+User.hasMany(AdminGrantedValidation, {
+  foreignKey: 'grantedByUserId',
+});
+AdminGrantedValidation.belongsTo(User, {
+  foreignKey: 'grantedByUserId',
+});
+
 // Transaction <-> User
 User.hasMany(Transaction, {
   foreignKey: 'userId',
@@ -81,6 +97,7 @@ PeriodicCredit.belongsTo(User, {
 
 export {
   sequelize,
+  AdminGrantedValidation,
   AllowlistEntry,
   Call,
   CallStatus,

@@ -104,7 +104,12 @@ export default function VerificationPhoneNumberCode({ locale }: SceneProps) {
   // TODO This can't use the unified routing because that doesn't accommodate the phone number verification code route.
   let isUserVerified;
 
-  if (featureState.WORKPASS_VALIDATION || featureState.SHOW_WORKPASS_SCREEN) {
+  if (user.verificationState.adminGranted) {
+    isUserVerified = true;
+  } else if (
+    featureState.WORKPASS_VALIDATION ||
+    featureState.SHOW_WORKPASS_SCREEN
+  ) {
     isUserVerified =
       user.verificationState.phoneNumber && user.verificationState.workpass;
   } else {

@@ -83,12 +83,9 @@ const EN_STRINGS = {
   CONTACTS_REACHED_CALL_LIMIT_MESSAGE:
     'You have reached your call limit for the month',
   CONTACTS_TIME_TO_CREDIT_MESSAGE: function CreditMessage(
-    timeAmount: Duration | null,
-    creditAmount: Duration | null
+    timeAmount: Duration,
+    creditAmount: Duration
   ) {
-    if (timeAmount == null || creditAmount == null) {
-      return '';
-    }
     return (
       <>
         <strong>{formatDurationInDaysHoursMinutes(timeAmount)}</strong> to{' '}
@@ -99,15 +96,10 @@ const EN_STRINGS = {
   CONTACTS_CALL_DURATION_LEFT(duration: Duration | null): string {
     return duration !== null ? `${formatDurationInMinutes(duration)} left` : '';
   },
-  CONTACTS_NEXT_REFRESH_AMOUNT(
-    amount: Duration | null,
-    time: Duration | null
-  ): string {
-    return amount !== null && time !== null
-      ? `+${formatDurationInMinutes(
-          amount
-        )} in ${formatDurationInDaysHoursMinutes(time)}`
-      : '';
+  CONTACTS_NEXT_REFRESH_AMOUNT(amount: Duration, time: Duration): string {
+    return `+${formatDurationInMinutes(
+      amount
+    )} in ${formatDurationInDaysHoursMinutes(time)}`;
   },
   CONTACTS_CANNOT_UNDO_MESSAGE: 'This action cannot be undone',
   CONTACTS_UNKNOWN_ERROR_MESSAGE: 'Unknown error',
@@ -512,7 +504,7 @@ function CallLimitInfo({
           {STRINGS[locale].CONTACTS_CALL_DURATION_LEFT(userCallTimeDuration)}
         </CallTimeInfoItem>
 
-        {nextRefreshDuration != null && nextRefreshAmount != null && (
+        {nextRefreshDuration && nextRefreshAmount ? (
           <LightInfoItem
             variant="body2"
             style={{ display: 'flex', alignItems: 'center' }}
@@ -523,7 +515,7 @@ function CallLimitInfo({
               nextRefreshDuration
             )}
           </LightInfoItem>
-        )}
+        ) : null}
       </div>
     </div>
   );
@@ -667,10 +659,12 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
           marginBottom: '12px',
         }}
       >
-        {STRINGS[locale].CONTACTS_TIME_TO_CREDIT_MESSAGE(
-          nextRefreshDuration,
-          nextRefreshAmount
-        )}
+        {nextRefreshDuration && nextRefreshAmount
+          ? STRINGS[locale].CONTACTS_TIME_TO_CREDIT_MESSAGE(
+              nextRefreshDuration,
+              nextRefreshAmount
+            )
+          : ''}
       </Typography>
     </>
   ) : (

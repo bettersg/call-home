@@ -9,6 +9,7 @@ import Wallet from './Wallet';
 import User from './User';
 import * as Feature from './Feature';
 import AllowlistEntry from './AllowlistEntry';
+import AdminGrantedValidation from './AdminGrantedValidation';
 import PhoneNumberValidation from './PhoneNumberValidation';
 import WorkpassValidation from './WorkpassValidation';
 import * as WorkpassClient from './WorkpassClient';
@@ -40,12 +41,16 @@ const periodicCreditService = PeriodicCredit(
   transactionService
 );
 const walletService = new Wallet(models.Wallet, transactionService);
+const adminGrantedValidationService = AdminGrantedValidation(
+  models.AdminGrantedValidation
+);
 const workpassValidationService = WorkpassValidation(
   models.WorkpassValidation,
   WorkpassClient
 );
 const userValidationService = UserValidation(
   Feature,
+  adminGrantedValidationService,
   phoneNumberValidationService,
   workpassValidationService
 );
@@ -68,6 +73,7 @@ export {
   TwilioClient,
   VerificationState,
   WorkpassClient,
+  adminGrantedValidationService as AdminGrantedValidation,
   allowlistEntryService as AllowlistEntry,
   auth0Service as Auth0,
   callService as Call,

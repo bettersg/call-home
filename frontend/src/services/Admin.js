@@ -3,6 +3,7 @@ import ObservableService from './observableService';
 
 const userEndpoint = '/users';
 const transactionEndpoint = '/users/:userId/transactions';
+const adminGrantedValidationEndpoint = '/admin-granted-validation';
 
 function userTransactionEndpoint(userId) {
   return transactionEndpoint.replace(':userId', userId);
@@ -46,5 +47,17 @@ export default class AdminService extends ObservableService {
     });
     await this.refreshTransactions(userId);
     return transaction;
+  }
+
+  async grantSpecialAccess(userId) {
+    await apiClient.post(adminGrantedValidationEndpoint, {
+      userId,
+    });
+    await this.getUsers();
+  }
+
+  async revokeSpecialAccess(userId) {
+    await apiClient.delete(`${adminGrantedValidationEndpoint}/${userId}`);
+    await this.getUsers();
   }
 }

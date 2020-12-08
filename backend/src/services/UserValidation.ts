@@ -1,17 +1,25 @@
 import type {
+  AdminGrantedValidation as AdminGrantedValidationEntity,
   PhoneNumberValidation as PhoneNumberValidationEntity,
   WorkpassValidation as WorkpassValidationEntity,
 } from '../models';
-import type { PhoneNumberValidation, WorkpassValidation, Feature } from '.';
+import type {
+  AdminGrantedValidation,
+  PhoneNumberValidation,
+  WorkpassValidation,
+  Feature,
+} from '.';
 
 export interface VerificationCollection {
   phoneNumber: PhoneNumberValidationEntity | null;
   workpass: WorkpassValidationEntity | null;
+  adminGranted: AdminGrantedValidationEntity | null;
 }
 
 export interface VerificationState {
   phoneNumber: boolean;
   workpass: boolean;
+  adminGranted: boolean;
 }
 
 export interface UserVerifications {
@@ -21,6 +29,7 @@ export interface UserVerifications {
 
 function UserValidationService(
   featureService: typeof Feature,
+  adminGrantedValidationService: typeof AdminGrantedValidation,
   phoneNumberValidationService: typeof PhoneNumberValidation,
   workpassValidationService: typeof WorkpassValidation
 ): {
@@ -33,19 +42,26 @@ function UserValidationService(
   async function getVerificationsForUser(
     userId: number
   ): Promise<UserVerifications> {
-    const [phoneNumberValidation, workpassValidation] = await Promise.all([
+    const [
+      phoneNumberValidation,
+      workpassValidation,
+      adminGrantedValidation,
+    ] = await Promise.all([
       phoneNumberValidationService.getPhoneNumberValidationForUser(userId),
       workpassValidationService.getWorkpassValidationForUser(userId),
+      adminGrantedValidationService.getAdminGrantedValidationForUser(userId),
     ]);
 
     return {
       verifications: {
         phoneNumber: phoneNumberValidation,
         workpass: workpassValidation,
+        adminGranted: adminGrantedValidation,
       },
       state: {
         phoneNumber: phoneNumberValidation?.isPhoneNumberValidated || false,
         workpass: workpassValidation?.isWorkpassValidated || false,
+        adminGranted: Boolean(adminGrantedValidation),
       },
     };
   }
@@ -57,6 +73,9 @@ function UserValidationService(
     let verificationState = maybeVerificationState;
     if (!verificationState) {
       verificationState = (await getVerificationsForUser(userId)).state;
+    }
+    if (verificationState.adminGranted) {
+      return true;
     }
     if (featureService.shouldEnableWorkpassValidation(userId)) {
       return verificationState.phoneNumber && verificationState.workpass;

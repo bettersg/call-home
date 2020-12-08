@@ -2,21 +2,14 @@ import express from 'express';
 import { UserInjectedRequest, requireAdmin } from './middlewares';
 import { userToUserResponse, UserResponse } from './transformers';
 import type { User as UserModel } from '../models';
-import type {
-  User,
-  Wallet,
-  PeriodicCredit,
-  PhoneNumberValidation,
-  UserValidation,
-  WorkpassValidation,
-} from '../services';
+import type { User, Wallet, PeriodicCredit, UserValidation } from '../services';
 
 function UserRoutes(
   userService: typeof User,
   periodicCreditService: typeof PeriodicCredit,
   userValidationService: typeof UserValidation,
   walletService: typeof Wallet
-) {
+): express.Router {
   const router = express.Router();
 
   async function injectPhoneNumberValidation(user: UserModel) {

@@ -11,6 +11,7 @@ import 'express-async-errors';
 import './dotenv';
 
 import {
+  AdminGrantedValidation as adminGrantedValidationRoutes,
   AllowlistEntry as allowlistRoutes,
   Call as callRoutes,
   CallToken as callTokenRoutes,
@@ -68,6 +69,11 @@ app.use('/features', secureRoutes, featureRoutes);
 app.use('/passwordless', secureRoutes, phoneNumberValidationRoutes);
 app.use('/phone-number-validation', secureRoutes, phoneNumberValidationRoutes);
 app.use('/workpass-validation', secureRoutes, workpassValidationRoutes);
+app.use(
+  '/admin-granted-validation',
+  secureRoutes,
+  adminGrantedValidationRoutes
+);
 
 // Also ensure that twilio is NOT secured by oauth, just twilio auth
 app.use('/twilio', twilioRoutes);

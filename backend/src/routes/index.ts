@@ -10,6 +10,7 @@ import Transaction from './Transaction';
 import PeriodicCredit from './PeriodicCredit';
 import Contact from './Contact';
 import AllowlistEntry from './AllowlistEntry';
+import AdminGrantedValidation from './AdminGrantedValidation';
 import PhoneNumberValidation from './PhoneNumberValidation';
 import WorkpassValidation from './WorkpassValidation';
 import OAuth = require('./OAuth');
@@ -35,9 +36,13 @@ const transactionRoute = Transaction(services.Transaction);
 const featureRoute = Feature(services.Feature);
 const periodicCreditRoute = PeriodicCredit(services.PeriodicCredit);
 const workpassValidationRoute = WorkpassValidation(services.WorkpassValidation);
+const adminGrantedValidationRoute = AdminGrantedValidation(
+  services.AdminGrantedValidation
+);
 
 export {
   allowlistEntryRoute as AllowlistEntry,
+  adminGrantedValidationRoute as AdminGrantedValidation,
   callRoute as Call,
   callTokenRoute as CallToken,
   contactRoute as Contact,

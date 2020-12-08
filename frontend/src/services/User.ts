@@ -17,6 +17,7 @@ export interface User {
   verificationState: {
     phoneNumber: boolean;
     workpass: boolean;
+    adminGranted: boolean;
   };
 
   phoneNumber: string | null;
