@@ -37,7 +37,7 @@ function mapObjectsToRecentCallResponse(
     );
     const currentTwilioCall = twilioCalls.find((twilioCall) => {
       return (
-        twilioCall.twilioSid === call.incomingTwilioCallSid &&
+        twilioCall.parentCallSid === call.incomingTwilioCallSid &&
         twilioCall.status === 'completed'
       );
     });
