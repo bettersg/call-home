@@ -19,6 +19,7 @@ const EN_STRINGS = {
   CALLING_CONNECTED: 'Connected!',
   CALLING_CALL_FAILED: 'Call failed',
   CALLING_CALL_FINISHED: 'Call complete!',
+  CALLING_CALL_ENDED: 'Call ended', // When call is ended by recipient
   CALLING_NEED_MICROPHONE_ACCESS_MESSAGE:
     'Unable to make the call because the app does not have permissions to use your microphone. Please change your browser settings to allow us to use your microphone.',
   CALLING_TRANSIENT_ISSUE_MESSAGE:
@@ -34,6 +35,7 @@ const STRINGS = {
     CALLING_CONNECTING: 'সংযোজক',
     CALLING_CONNECTED: 'সংযুক্ত', // TODO Google translate
     CALLING_CALL_FAILED: 'কল ব্যর্থ হয়েছে',
+    CALLING_CALL_ENDED: 'শেষ হয়েছে', // 'ended' from Google translate
   },
 };
 
@@ -77,6 +79,7 @@ function subscribeToOptionalDevice(device, eventName, listener) {
 export default function CallingPage({ locale }) {
   const [hasAttemptedConnection, setHasAttemptedConnection] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [hasConnectedBefore, setHasConnectedBefore] = useState(false);
   const [connectTime, setConnectTime] = useState(null);
   const [currentTime, setCurrentTime] = useState(null);
   const [wasCallSuccessful, setWasCallSuccessful] = useState(false);
@@ -113,6 +116,12 @@ export default function CallingPage({ locale }) {
     },
     [device, handleStatusChange]
   );
+
+  useEffect(() => {
+    if (isConnected) {
+      setHasConnectedBefore(true);
+    }
+  }, [isConnected]);
 
   useEffect(() => {
     return subscribeToDeviceStatusEvent('connect');
@@ -241,6 +250,8 @@ export default function CallingPage({ locale }) {
     connectionMessage = callDuration ? '' : STRINGS[locale].CALLING_CONNECTED;
   } else if (hasUserDisconnected) {
     connectionMessage = STRINGS[locale].CALLING_CALL_FINISHED;
+  } else if (hasConnectedBefore) {
+    connectionMessage = STRINGS[locale].CALLING_CALL_ENDED;
   } else {
     connectionMessage = STRINGS[locale].CALLING_CONNECTING;
   }

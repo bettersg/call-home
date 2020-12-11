@@ -4,3 +4,4 @@ dist
 # production
 
 /static
+*.sqlite
