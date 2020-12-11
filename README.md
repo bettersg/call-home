@@ -37,7 +37,7 @@ INSERT INTO AllowlistEntries("phoneNumber", "role", "destinationCountry","create
 VALUES ('+65YOURNUMBER', 'ADMIN', 'SG', date('now'), date('now'));
 
 -- For POSTGRES
-INSERT INTO AllowlistEntries("phoneNumber", "role", "destinationCountry","createdAt", "updatedAt")
+INSERT INTO "AllowlistEntries"("phoneNumber", "role", "destinationCountry","createdAt", "updatedAt")
 VALUES ('+65YOURNUMBER', 'ADMIN', 'SG', NOW(), NOW());
 ```
 
@@ -95,7 +95,6 @@ Just change the `ports` configuration.
       - DESIRED_PORT:DONT_CHANGE_THIS
 ...
 ```
-
 
 ### Frontend
 
