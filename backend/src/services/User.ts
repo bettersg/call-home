@@ -1,9 +1,20 @@
 import { sanitizeDbErrors } from './lib';
-import { UserTypes } from '../models';
 import type { User as UserEntity } from '../models';
+import { UserTypes } from '../models';
+import type { AllowlistEntry, Feature, PhoneNumberValidation } from '.';
 import { logger } from '../config';
 
-function UserService(UserModel: typeof UserEntity, allowlistEntryService: any) {
+const DEFAULT_USER_CONFIG = {
+  destinationCountry: 'BD',
+  role: UserTypes.USER,
+};
+
+function UserService(
+  UserModel: typeof UserEntity,
+  allowlistEntryService: typeof AllowlistEntry,
+  featureService: typeof Feature,
+  phoneNumberValidationService: typeof PhoneNumberValidation
+) {
   async function listUsers() {
     return UserModel.findAll({
       order: ['email'],
@@ -19,6 +30,9 @@ function UserService(UserModel: typeof UserEntity, allowlistEntryService: any) {
     );
     await createdUser.save();
     await createdUser.reload();
+    await phoneNumberValidationService.createPhoneNumberValidationForUser(
+      createdUser.id
+    );
     return createdUser;
   }
 
@@ -34,14 +48,6 @@ function UserService(UserModel: typeof UserEntity, allowlistEntryService: any) {
     return UserModel.findOne({
       where: {
         email: userEmail,
-      },
-    });
-  }
-
-  async function getUserByPhoneNumber(phoneNumber: string) {
-    return UserModel.findOne({
-      where: {
-        phoneNumber,
       },
     });
   }
@@ -70,47 +76,6 @@ function UserService(UserModel: typeof UserEntity, allowlistEntryService: any) {
     });
     const updatedUser = await getUser(userId);
     return updatedUser;
-  }
-
-  // This function handles a request to assign a phone number to a given user.
-  async function verifyUserPhoneNumber(userId: number, phoneNumber: string) {
-    // We check the allowlist to ensure that the phone number is allowed in the first place.
-    const [user, allowlistEntry] = await Promise.all([
-      getUser(userId),
-      allowlistEntryService.getAllowlistEntryByPhoneNumber(phoneNumber),
-    ]);
-
-    if (!user) {
-      const msg = `User not found for userId ${userId}`;
-      logger.error(msg);
-      throw new Error(msg);
-    }
-
-    // If the user is not allow, we can just stop here
-    if (!allowlistEntry) {
-      return user;
-    }
-
-    // Otherwise, we need to consider the case where the phone number is already registered with another user.
-    // Phone numbers must be unique, so before we can do anything, we must invalidate the other user
-    const conflictingUserForPhoneNumber = await getUserByPhoneNumber(
-      phoneNumber
-    );
-    if (conflictingUserForPhoneNumber) {
-      conflictingUserForPhoneNumber.phoneNumber = null;
-      conflictingUserForPhoneNumber.isPhoneNumberValidated = false;
-      conflictingUserForPhoneNumber.destinationCountry = null;
-      conflictingUserForPhoneNumber.role = UserTypes.USER;
-      await conflictingUserForPhoneNumber.save();
-    }
-
-    user.isPhoneNumberValidated = true;
-    user.phoneNumber = phoneNumber;
-    user.destinationCountry = allowlistEntry.destinationCountry;
-    user.role = allowlistEntry.role;
-    await user.save();
-    await user.reload();
-    return user;
   }
 
   async function deleteUser(userId: number) {
@@ -144,6 +109,39 @@ function UserService(UserModel: typeof UserEntity, allowlistEntryService: any) {
       email: user.email,
       auth0Id,
     });
+  }
+
+  // This function handles a request to assign a phone number to a given user.
+  async function verifyUserPhoneNumber(userId: number, phoneNumber: string) {
+    // We check the allowlist to ensure that the phone number is allowed in the first place.
+    const [user, allowlistEntry] = await Promise.all([
+      getUser(userId),
+      allowlistEntryService.getAllowlistEntryByPhoneNumber(phoneNumber),
+    ]);
+
+    if (!user) {
+      const msg = `User not found for userId ${userId}`;
+      logger.error(msg);
+      throw new Error(msg);
+    }
+
+    // If the user is not allowed, we can just stop here
+    if (!featureService.shouldDisableAllowlist() && !allowlistEntry) {
+      return user;
+    }
+
+    // Otherwise, we need to consider the case where the phone number is already registered with another user.
+    // Phone numbers must be unique, so before we can do anything, we must invalidate the other user
+    await phoneNumberValidationService.validateUser(user.id, phoneNumber);
+
+    user.destinationCountry =
+      allowlistEntry?.destinationCountry ||
+      DEFAULT_USER_CONFIG.destinationCountry;
+    user.role = allowlistEntry?.role || DEFAULT_USER_CONFIG.role;
+
+    await user.save();
+    await user.reload();
+    return user;
   }
 
   return {

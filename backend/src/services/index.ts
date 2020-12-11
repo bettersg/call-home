@@ -9,33 +9,51 @@ import Wallet from './Wallet';
 import User from './User';
 import * as Feature from './Feature';
 import AllowlistEntry from './AllowlistEntry';
+import PhoneNumberValidation from './PhoneNumberValidation';
+import WorkpassValidation from './WorkpassValidation';
+import * as WorkpassClient from './WorkpassClient';
+import UserValidation, { VerificationState } from './UserValidation';
 import Contact = require('./Contact');
 import Auth0 = require('./Auth0');
-import PasswordlessRequest = require('./PasswordlessRequest');
 
 // TOPOLOGICAL SORT LOL
 const transactionService = new Transaction(models.Transaction);
-const passwordlessRequestService = PasswordlessRequest(
-  models.PasswordlessRequest
-);
-const AllowlistEntryService = AllowlistEntry(
+const allowlistEntryService = AllowlistEntry(
   models.AllowlistEntry,
   TwilioClient
 );
 const auth0Service = Auth0();
+const phoneNumberValidationService = PhoneNumberValidation(
+  models.PhoneNumberValidation
+);
 
-const userService = User(models.User, AllowlistEntryService);
+const userService = User(
+  models.User,
+  allowlistEntryService,
+  Feature,
+  phoneNumberValidationService
+);
 const contactService = Contact(models.Contact, userService);
 const periodicCreditService = PeriodicCredit(
   models.PeriodicCredit,
-  userService,
+  phoneNumberValidationService,
   transactionService
 );
 const walletService = new Wallet(models.Wallet, transactionService);
+const workpassValidationService = WorkpassValidation(
+  models.WorkpassValidation,
+  WorkpassClient
+);
+const userValidationService = UserValidation(
+  Feature,
+  phoneNumberValidationService,
+  workpassValidationService
+);
 const callService = Call(
   models.Call,
   userService,
   contactService,
+  userValidationService,
   walletService
 );
 const twilioCallService = new TwilioCall(
@@ -46,16 +64,20 @@ const twilioCallService = new TwilioCall(
 );
 
 export {
-  userService as User,
-  contactService as Contact,
-  callService as Call,
-  AllowlistEntryService as AllowlistEntry,
-  auth0Service as Auth0,
-  twilioCallService as TwilioCall,
-  TwilioClient,
-  passwordlessRequestService as PasswordlessRequest,
-  walletService as Wallet,
-  transactionService as Transaction,
-  periodicCreditService as PeriodicCredit,
   Feature,
+  TwilioClient,
+  VerificationState,
+  WorkpassClient,
+  allowlistEntryService as AllowlistEntry,
+  auth0Service as Auth0,
+  callService as Call,
+  contactService as Contact,
+  periodicCreditService as PeriodicCredit,
+  transactionService as Transaction,
+  twilioCallService as TwilioCall,
+  userService as User,
+  userValidationService as UserValidation,
+  phoneNumberValidationService as PhoneNumberValidation,
+  walletService as Wallet,
+  workpassValidationService as WorkpassValidation,
 };

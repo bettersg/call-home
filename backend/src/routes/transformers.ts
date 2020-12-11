@@ -1,6 +1,32 @@
 import type { Request, Response, NextFunction } from 'express';
-import { Contact, User } from '../models';
+import type {
+  Contact,
+  PhoneNumberValidation,
+  WorkpassValidation,
+  User,
+  UserTypes,
+} from '../models';
 import { logger } from '../config';
+import { VerificationState } from '../services';
+
+export interface UserResponse {
+  id: number;
+  name: string;
+  email: string | null;
+  destinationCountry: string;
+  role: UserTypes;
+
+  verificationState: VerificationState;
+  phoneNumber: string | null;
+}
+
+export interface UserProfileResponse {
+  displayName: string;
+  name: string;
+  emails: string[];
+  picture: string;
+  userId: string;
+}
 
 function parseUserRequestBody(req: Request, res: Response, next: NextFunction) {
   const { name, email } = req.body;
@@ -36,29 +62,27 @@ function contactToContactResponse(contact: Contact) {
   return response;
 }
 
-function userToUserResponse(user: User) {
-  const {
-    id,
-    name,
-    email,
-    destinationCountry,
-    phoneNumber,
-    role,
-    isPhoneNumberValidated: isVerified,
-  } = user;
+function userToUserResponse(
+  user: User,
+  phoneNumberValidation: PhoneNumberValidation | null,
+  verificationState: VerificationState
+): UserResponse {
+  const { id, name, email, destinationCountry, role } = user;
 
   return {
     id,
     name,
     email,
     destinationCountry,
-    phoneNumber,
     role,
-    isVerified,
+    phoneNumber: phoneNumberValidation && phoneNumberValidation.phoneNumber,
+    verificationState,
   };
 }
 
-function userProfileToUserProfileResponse(userProfile: any) {
+function userProfileToUserProfileResponse(
+  userProfile: any
+): UserProfileResponse {
   const { displayName, name, emails, picture, user_id: userId } = userProfile;
 
   logger.info('UserProfile', userProfile);

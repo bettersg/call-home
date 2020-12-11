@@ -1,7 +1,7 @@
 import { Op } from 'sequelize';
 import { sanitizeDbErrors, TypedEventEmitter } from './lib';
 import { logger } from '../config';
-import type { TwilioCall as TwilioCallEntity } from '../models';
+import type { CallStatus, TwilioCall as TwilioCallEntity } from '../models';
 import type { TwilioClient } from './index';
 import type CallService from './Call';
 import type TransactionService from './Transaction';
@@ -63,6 +63,14 @@ class TwilioCallService extends TypedEventEmitter<
     return this.twilioCallModel.findOne({
       where: {
         twilioSid,
+      },
+    });
+  };
+
+  listTwilioCallsBySids = async (twilioSids: string[]) => {
+    return this.twilioCallModel.findAll({
+      where: {
+        twilioSid: twilioSids,
       },
     });
   };

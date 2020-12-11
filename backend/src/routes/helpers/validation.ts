@@ -1,6 +1,6 @@
 import * as z from 'zod';
 import type { Request, Response } from 'express';
-import { CallHomeRequest } from '../middlewares';
+import { UserInjectedRequest } from '../middlewares';
 
 // Using Partial<Request> only requires us to specify the parts we care about
 type RequestSchema<Output, TD extends z.ZodTypeDef> = z.Schema<
@@ -14,12 +14,12 @@ function validateRequest<Output, TD extends z.ZodTypeDef, Input>(
   handler: (
     parsedReq: Output,
     res: Response,
-    rawReq: CallHomeRequest
+    rawReq: UserInjectedRequest
   ) => unknown
 ) {
-  return async (req: CallHomeRequest, res: Response) => {
+  return async (req: UserInjectedRequest, res: Response) => {
     try {
-      const parsedReq = schema.parse(req as Partial<CallHomeRequest>);
+      const parsedReq = schema.parse(req as Partial<UserInjectedRequest>);
       // Pass the raw request to the handler in case it is needed
       return handler(parsedReq, res, req);
     } catch (error) {
@@ -29,4 +29,9 @@ function validateRequest<Output, TD extends z.ZodTypeDef, Input>(
   };
 }
 
-export { validateRequest };
+const stringToNumberTransformer = z
+  .string()
+  .transform(z.number(), Number)
+  .refine((num) => !Number.isNaN(num));
+
+export { validateRequest, stringToNumberTransformer };

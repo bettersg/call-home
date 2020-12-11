@@ -45,24 +45,10 @@ class User extends Model<User> {
   auth0Id: string;
 
   @Validate({
-    is: {
-      args: [/\+65[0-9]{8}$/],
-      msg: 'Phone number should start with +65 and be followed by 8 digits.',
-    },
-  })
-  @Unique
-  @Column(DataType.TEXT)
-  phoneNumber: string | null;
-
-  @Default(false)
-  @Column
-  isPhoneNumberValidated: boolean;
-
-  @Validate({
     isIn: [['SG', 'BD', '']],
   })
-  @Column(DataType.TEXT)
-  destinationCountry: string | null;
+  @Column
+  destinationCountry: string;
 }
 
 export default User;

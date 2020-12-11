@@ -1,4 +1,4 @@
-.MuiDialog-paper.MuiPaper-root {
+.contacts-dialog .MuiDialog-paper.MuiPaper-root {
   height: calc(0.8 * var(--viewport-height));
   padding: 1em;
   background-color: #F7FBFD; /* primary 300 */

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
@@ -7,15 +7,17 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
-import { withStyles } from '@material-ui/core/styles';
+import { useTheme, withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import CallIcon from '@material-ui/icons/Call';
 import PhoneDisabledIcon from '@material-ui/icons/PhoneDisabled';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import FeedbackIcon from '@material-ui/icons/Feedback';
-import PhoneInTalkIcon from '@material-ui/icons/PhoneInTalk';
-import AutorenewIcon from '@material-ui/icons/Autorenew';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import FavoriteIcon from '@material-ui/icons/Favorite';
+import HistoryIcon from '@material-ui/icons/History';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { DateTime, Duration } from 'luxon';
 import DetectBrowserSnackbar from '../components/shared/DetectBrowserSnackbar';
 import Container from '../components/shared/Container';
@@ -26,17 +28,22 @@ import {
 } from '../components/shared/RoundedButton';
 import ContactsDialog from '../components/shared/ContactsDialog';
 import ReportIssueDialog from '../components/shared/ReportIssueDialog';
-import { useUserService, useContactService } from '../contexts';
+import {
+  useUserService,
+  useContactService,
+  useFeatureService,
+} from '../contexts';
 import { ApiValidationError } from '../services/apiClient';
 import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
 import {
-  formatDurationInHoursMinutes,
+  formatDurationInMinutes,
   formatDurationInDaysHoursMinutes,
 } from '../util/timeFormatters';
 import { getNextRefresh } from '../services/PeriodicCredit';
-import { getFeatures } from '../services/Feature';
-import PATHS from './paths';
+import PATHS, { useRouting } from './paths';
 import './ContactsPage.css';
+import { Locale, SceneProps } from './types';
+import { RoundedProgressBar } from 'components/shared/RoundedProgressBar';
 
 const COUNTRIES = {
   en: {
@@ -57,7 +64,8 @@ const EN_STRINGS = {
   CONTACTS_LOVED_ONES_LABEL: 'loved ones',
   CONTACTS_ADD_CONTACT_LABEL: 'Add a loved one',
   CONTACTS_ADD_LABEL: 'Add',
-  CONTACTS_COUNTRY_LABEL: (code) => `Country: ${COUNTRIES.en[code]}`,
+  CONTACTS_COUNTRY_LABEL: (code: 'SG' | 'BD') =>
+    `Country: ${COUNTRIES.en[code]}`,
   CONTACTS_NAME_LABEL: 'Name',
   CONTACTS_PHONE_NUMBER_LABEL: 'Phone number',
   CONTACTS_EDIT_CONTACT_HEADER: 'Edit',
@@ -68,18 +76,39 @@ const EN_STRINGS = {
   CONTACTS_CANCEL_LABEL: 'Cancel',
   CONTACTS_DELETE_LABEL: 'Delete',
   CONTACTS_DELETE_CONTACT_LABEL: 'Delete contact',
+  CONTACTS_VERIFY_WORKPASS_BANNER_CTA: (deadline: string) =>
+    `Enter Work Pass number by ${deadline}`,
+  CONTACTS_VERIFY_WORKPASS_BANNER_INFO: 'to continue using Call Home',
   // TODO This hardcodes the credit interval
   CONTACTS_REACHED_CALL_LIMIT_MESSAGE:
     'You have reached your call limit for the month',
   CONTACTS_TIME_TO_CREDIT_MESSAGE: function CreditMessage(
-    timeAmount,
-    creditAmount
+    timeAmount: Duration | null,
+    creditAmount: Duration | null
   ) {
+    if (timeAmount == null || creditAmount == null) {
+      return '';
+    }
     return (
       <>
-        <strong>{timeAmount}</strong> to {creditAmount} top-up!
+        <strong>{formatDurationInDaysHoursMinutes(timeAmount)}</strong> to{' '}
+        {formatDurationInMinutes(creditAmount)} top-up!
       </>
     );
+  },
+  CONTACTS_CALL_DURATION_LEFT: function (duration: Duration | null): string {
+    return duration !== null ? `${formatDurationInMinutes(duration)} left` : '';
+  },
+  CONTACTS_NEXT_REFRESH_AMOUNT: function (
+    amount: Duration | null,
+    time: Duration | null
+  ): string {
+    return amount !== null && time !== null
+      ? '+' +
+          formatDurationInMinutes(amount) +
+          ' in ' +
+          formatDurationInDaysHoursMinutes(time)
+      : '';
   },
   CONTACTS_CANNOT_UNDO_MESSAGE: 'This action cannot be undone',
   CONTACTS_UNKNOWN_ERROR_MESSAGE: 'Unknown error',
@@ -87,6 +116,7 @@ const EN_STRINGS = {
     DUPLICATE_CONTACT: 'You already have a loved one with this number',
     INVALID_PHONE_NUMBER: 'You have entered an invalid phone number',
   },
+  CONTACTS_RECENT_CALLS: 'Recent calls',
 };
 
 const STRINGS = {
@@ -97,7 +127,7 @@ const STRINGS = {
     CONTACTS_SUBTITLE: 'আপনার প্রিয়জনকে বিনামূল্যে বাড়ি ফিরে কল করুন',
     CONTACTS_ADD_CONTACT_LABEL: 'প্রিয়জনকে যুক্ত করুন',
     CONTACTS_ADD_LABEL: 'যোগ',
-    CONTACTS_COUNTRY_LABEL: (code) => `দেশ: ${COUNTRIES.bn[code]}`, // Google translate
+    CONTACTS_COUNTRY_LABEL: (code: 'SG' | 'BD') => `দেশ: ${COUNTRIES.bn[code]}`, // Google translate
     CONTACTS_NAME_LABEL: 'নাম', // Google translate
     // TODO this says mobile number
     CONTACTS_PHONE_NUMBER_LABEL: 'মোবাইল নম্বর',
@@ -120,8 +150,8 @@ const STRINGS = {
 const AddContactButton = withStyles((theme) => ({
   root: {
     backgroundColor: 'white',
-    border: `1px solid ${theme.palette.grey.light}`,
-    color: theme.palette.primary[700],
+    border: `1px solid ${theme.palette.grey[200]}`,
+    color: (theme as any).palette.primary[700],
     fontWeight: 'bold',
     '&:hover': {
       backgroundColor: 'white',
@@ -132,22 +162,22 @@ const AddContactButton = withStyles((theme) => ({
 const AddContactIcon = withStyles((theme) => ({
   root: {
     color: 'white',
-    backgroundColor: theme.palette.primary[300],
+    backgroundColor: (theme as any).palette.primary[300],
     borderRadius: '1000px',
   },
 }))(AddIcon);
 
-const ContactBox = withStyles((theme) => ({
+const ContactBox: any = withStyles((theme) => ({
   root: {
     backgroundColor: 'white',
-    border: `1px solid ${theme.palette.grey.light}`,
+    border: `1px solid ${theme.palette.grey[200]}`,
   },
 }))(Box);
 
 const ContactCallIcon = withStyles((theme) => ({
   root: {
     transform: 'rotate(270deg)',
-    color: theme.palette.primary[900],
+    color: (theme as any).palette.primary[900],
   },
 }))(CallIcon);
 
@@ -155,7 +185,7 @@ const ActionLink = withStyles((theme) => ({
   root: {
     cursor: 'pointer',
     display: 'flex',
-    color: theme.palette.primary[900],
+    color: (theme as any).palette.primary[900],
   },
 }))(Typography);
 
@@ -169,7 +199,12 @@ const withDialogButtonStyles = withStyles(() => ({
 
 const InfoItem = withStyles((theme) => ({
   root: {
-    color: theme.palette.primary[900],
+    color: (theme as any).palette.primary[900],
+  },
+}))(Typography);
+const LightInfoItem = withStyles((theme) => ({
+  root: {
+    color: (theme as any).palette.primary[700],
   },
 }))(Typography);
 const ErrorInfoItem = withStyles((theme) => ({
@@ -182,9 +217,17 @@ const DialogNeutralButton = withDialogButtonStyles(NeutralButton);
 const DialogPrimaryButton = withDialogButtonStyles(PrimaryButton);
 const DialogErrorButton = withDialogButtonStyles(ErrorButton);
 
-function AddContactDialog({ open, onClose, locale }) {
+function AddContactDialog({
+  open,
+  onClose,
+  locale,
+}: {
+  open: boolean;
+  onClose: () => unknown;
+  locale: Locale;
+}) {
   const [userState] = useUserService();
-  const { me: user } = userState;
+  const { me: user } = userState || {};
   const [, contactService] = useContactService();
   const [newContactName, setNewContactName] = useState('');
   const [newContactPhoneNumber, setNewContactPhoneNumber] = useState('');
@@ -199,12 +242,12 @@ function AddContactDialog({ open, onClose, locale }) {
     setNewContactPhoneNumber('');
   }, [open]);
 
-  const createContact = async (event) => {
+  const createContact = async (event: Event) => {
     event.preventDefault();
     try {
       setErrorMessage(null);
       setIsRequestInFlight(true);
-      await contactService.createContact(user.id, {
+      await (contactService as any).createContact((user as any).id, {
         name: newContactName,
         phoneNumber: newContactPhoneNumber,
         avatar: newContactAvatarChoice,
@@ -214,7 +257,7 @@ function AddContactDialog({ open, onClose, locale }) {
       if (error instanceof ApiValidationError) {
         const { code } = error;
         setErrorMessage(
-          STRINGS[locale].errors[code] ||
+          (STRINGS as any)[locale].errors[code] ||
             STRINGS[locale].CONTACTS_UNKNOWN_ERROR_MESSAGE
         );
       }
@@ -246,7 +289,9 @@ function AddContactDialog({ open, onClose, locale }) {
         value={newContactPhoneNumber}
         onChange={(event) => setNewContactPhoneNumber(event.target.value)}
         InputProps={{
-          inputComponent: PhoneNumberMasks[user.destinationCountry],
+          inputComponent: (PhoneNumberMasks as any)[
+            (user as any).destinationCountry
+          ],
         }}
         className="contacts-dialog-input"
       />
@@ -273,9 +318,19 @@ function AddContactDialog({ open, onClose, locale }) {
   );
 }
 
-function EditContactDialog({ contact, open, onClose, locale }) {
+function EditContactDialog({
+  contact,
+  open,
+  onClose,
+  locale,
+}: {
+  contact: any;
+  open: boolean;
+  onClose: () => unknown;
+  locale: Locale;
+}) {
   const [userState] = useUserService();
-  const { me: user } = userState;
+  const { me: user } = userState || {};
   const [, contactService] = useContactService();
   const [newContactName, setNewContactName] = useState(contact.name);
   const [isDeletingContact, setIsDeletingContact] = useState(false);
@@ -288,22 +343,26 @@ function EditContactDialog({ contact, open, onClose, locale }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [isRequestInFlight, setIsRequestInFlight] = useState(false);
 
-  const updateContact = async (event) => {
+  const updateContact = async (event: any) => {
     event.preventDefault();
     try {
       setErrorMessage(null);
       setIsRequestInFlight(true);
-      await contactService.updateContact(user.id, contact.id, {
-        name: newContactName,
-        phoneNumber: newContactPhoneNumber,
-        avatar: newContactAvatarChoice,
-      });
+      await (contactService as any).updateContact(
+        (user as any).id,
+        contact.id,
+        {
+          name: newContactName,
+          phoneNumber: newContactPhoneNumber,
+          avatar: newContactAvatarChoice,
+        }
+      );
       onClose();
     } catch (error) {
       if (error instanceof ApiValidationError) {
         const { code } = error;
         setErrorMessage(
-          STRINGS[locale].errors[code] ||
+          (STRINGS as any)[locale].errors[code] ||
             STRINGS[locale].CONTACTS_UNKNOWN_ERROR_MESSAGE
         );
       }
@@ -313,7 +372,7 @@ function EditContactDialog({ contact, open, onClose, locale }) {
   };
 
   const deleteContact = async () => {
-    await contactService.deleteContact(user.id, contact.id);
+    await (contactService as any).deleteContact((user as any).id, contact.id);
     onClose();
   };
 
@@ -340,7 +399,9 @@ function EditContactDialog({ contact, open, onClose, locale }) {
         value={newContactPhoneNumber}
         onChange={(event) => setNewContactPhoneNumber(event.target.value)}
         InputProps={{
-          inputComponent: PhoneNumberMasks[user.destinationCountry],
+          inputComponent: (PhoneNumberMasks as any)[
+            (user as any).destinationCountry
+          ],
         }}
         className="contacts-dialog-input"
       />
@@ -396,35 +457,15 @@ function EditContactDialog({ contact, open, onClose, locale }) {
   );
 }
 
-function CallLimitInfo({
-  userCallTimeDuration,
+function ContactsCountInfo({
   contacts,
   locale,
-  nextRefreshTimeString,
-  nextRefreshAmount,
-  callLimitExceeded,
+}: {
+  contacts: any[];
+  locale: Locale;
 }) {
-  const CallTimeInfoItem = callLimitExceeded ? ErrorInfoItem : InfoItem;
-  // TODO localization problems here
-  const nextRefreshInfoElement =
-    nextRefreshTimeString && nextRefreshAmount ? (
-      <p>
-        <strong>{nextRefreshAmount}</strong> in {nextRefreshTimeString}
-      </p>
-    ) : (
-      ''
-    );
   return (
     <div className="info-container" style={{ marginTop: '12px' }}>
-      <CallTimeInfoItem variant="subtitle2" className="info-item">
-        <PhoneInTalkIcon className="info-icon" />
-        {formatDurationInHoursMinutes(userCallTimeDuration)}
-      </CallTimeInfoItem>
-
-      <InfoItem variant="subtitle2" className="info-item">
-        <AutorenewIcon className="info-icon" />
-        {nextRefreshInfoElement}
-      </InfoItem>
       <InfoItem variant="subtitle2" className="info-item">
         <FavoriteIcon className="info-icon" />
         {contacts.length} {STRINGS[locale].CONTACTS_LOVED_ONES_LABEL}
@@ -433,9 +474,65 @@ function CallLimitInfo({
   );
 }
 
-function CallContactButton({ contactService, contact, disabled }) {
+function CallLimitInfo({
+  userCallTimeDuration,
+  locale,
+  nextRefreshDuration,
+  nextRefreshAmount,
+  callLimitExceeded,
+}: {
+  userCallTimeDuration: Duration;
+  locale: Locale;
+  nextRefreshDuration: Duration | null;
+  nextRefreshAmount: Duration | null;
+  callLimitExceeded: boolean;
+}) {
+  const CallTimeInfoItem = callLimitExceeded ? ErrorInfoItem : LightInfoItem;
+  const callTimeInMins: number = userCallTimeDuration.as('minutes');
+  const callTimeRatio: number =
+    nextRefreshAmount != null
+      ? Math.min(
+          Math.max(callTimeInMins / nextRefreshAmount.as('minutes'), 0),
+          1
+        )
+      : 1;
+
+  return (
+    <div style={{ marginTop: '12px' }}>
+      <RoundedProgressBar
+        variant="determinate"
+        value={callTimeRatio * 100}
+        style={{ width: '100%' }}
+      />
+
+      <div
+        className="info-container"
+        style={{ justifyContent: 'space-between', marginTop: 4 }}
+      >
+        <CallTimeInfoItem variant="body2">
+          {STRINGS[locale].CONTACTS_CALL_DURATION_LEFT(userCallTimeDuration)}
+        </CallTimeInfoItem>
+
+        {nextRefreshDuration != null && nextRefreshAmount != null && (
+          <LightInfoItem
+            variant="body2"
+            style={{ display: 'flex', alignItems: 'center' }}
+          >
+            <RefreshIcon style={{ marginRight: 4 }} />
+            {STRINGS[locale].CONTACTS_NEXT_REFRESH_AMOUNT(
+              nextRefreshAmount,
+              nextRefreshDuration
+            )}
+          </LightInfoItem>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CallContactButton({ contactService, contact, disabled }: any) {
   const onClick = disabled
-    ? null
+    ? undefined
     : () => {
         contactService.setActiveContact(contact);
       };
@@ -448,17 +545,76 @@ function CallContactButton({ contactService, contact, disabled }) {
   );
 }
 
-export default function ContactsPage({ locale }) {
-  const [features, setFeatures] = useState({});
+const VERIFY_WORKPASS_CUTOFF_DATE = DateTime.fromObject({
+  day: 6,
+  month: 12,
+  year: 2020,
+});
+function VerifyWorkpassBanner({ locale }: { locale: Locale }) {
+  const [, userService] = useUserService();
+  const theme = useTheme();
+  const navToWorkpassVerification = () =>
+    userService?.setShouldDismissWorkpasssModal(false);
+  return (
+    <div
+      style={{
+        padding: '8px 4px',
+        background: theme.palette.warning.main,
+        minHeight: '48px',
+        margin: '1rem -2rem -2rem',
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
+      <InfoOutlinedIcon
+        style={{
+          height: '2rem',
+          width: '2rem',
+          marginLeft: '8px',
+          marginRight: '8px',
+          color: theme.palette.text.primary,
+        }}
+      />
+      <Typography style={{ flex: '1 1 auto' }}>
+        <strong>
+          {STRINGS[locale].CONTACTS_VERIFY_WORKPASS_BANNER_CTA(
+            VERIFY_WORKPASS_CUTOFF_DATE.toFormat('dd MMM')
+          )}
+        </strong>{' '}
+        &nbsp;
+        {STRINGS[locale].CONTACTS_VERIFY_WORKPASS_BANNER_INFO}
+      </Typography>
+      <IconButton onClick={navToWorkpassVerification} style={{ padding: '0' }}>
+        <ArrowForwardIcon
+          style={{
+            height: '2rem',
+            width: '2rem',
+            marginRight: '8px',
+            color: theme.palette.text.primary,
+          }}
+        />
+      </IconButton>
+    </div>
+  );
+}
+
+export default function ContactsPage({ locale, routePath }: SceneProps) {
+  const routeResult = useRouting(routePath);
+  const [featureState] = useFeatureService();
   const [userState, userService] = useUserService();
-  const { me: user } = userState;
+  const { me: user } = userState || {};
   const [contactState, contactService] = useContactService();
   const { contacts = [], activeContact } = contactState;
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
   const [contactToEdit, setContactToEdit] = useState(null);
-  const [nextRefreshTimeString, setNextRefreshTimeString] = useState(null);
-  const [nextRefreshAmount, setNextRefreshAmount] = useState(null);
+  const [
+    nextRefreshDuration,
+    setNextRefreshDuration,
+  ] = useState<Duration | null>(null);
+  const [nextRefreshAmount, setNextRefreshAmount] = useState<Duration | null>(
+    null
+  );
 
   useEffect(() => {
     if (userService) {
@@ -474,33 +630,32 @@ export default function ContactsPage({ locale }) {
 
   useEffect(() => {
     getNextRefresh().then(({ time, amount }) => {
-      const nextRefreshDuration = DateTime.fromISO(time).diffNow();
-      setNextRefreshTimeString(
-        formatDurationInDaysHoursMinutes(nextRefreshDuration)
-      );
+      const nextDuration = time.diffNow();
+      setNextRefreshDuration(nextDuration);
       setNextRefreshAmount(amount);
     });
   }, []);
 
-  useEffect(() => {
-    getFeatures().then(setFeatures);
-  }, []);
-
-  if (!user) {
-    return <Redirect to={PATHS.LOGIN} />;
+  if (routeResult.shouldRender) {
+    return routeResult.renderElement;
   }
   if (activeContact) {
     return <Redirect to={PATHS.CALLING} />;
   }
+  if (!featureState) {
+    return null;
+  }
 
   const logout = async () => {
-    window.location = '/oauth/logout';
+    (window as any).location = '/oauth/logout';
   };
 
   const openFeedbackDialog = () => setIsFeedbackDialogOpen(true);
-  const userCallTimeDuration = Duration.fromObject({ seconds: user.callTime });
+  const userCallTimeDuration = Duration.fromObject({
+    seconds: (user as any).callTime,
+  });
   const callLimitExceeded =
-    features.CALL_LIMITS && userCallTimeDuration.as('minutes') < 1;
+    featureState?.CALL_LIMITS && userCallTimeDuration.as('minutes') < 1;
 
   const subtitleContent = callLimitExceeded ? (
     <>
@@ -514,7 +669,7 @@ export default function ContactsPage({ locale }) {
         }}
       >
         {STRINGS[locale].CONTACTS_TIME_TO_CREDIT_MESSAGE(
-          nextRefreshTimeString,
+          nextRefreshDuration,
           nextRefreshAmount
         )}
       </Typography>
@@ -543,20 +698,38 @@ export default function ContactsPage({ locale }) {
         component="h1"
         style={{
           marginBottom: '12px',
-          fontWeight: '700',
+          fontWeight: 700,
         }}
       >
         {STRINGS[locale].CONTACTS_TITLE}
       </Typography>
       {subtitleContent}
-      <Typography
-        variant="body1"
-        style={{
-          marginBottom: '1rem',
-        }}
-      >
-        {STRINGS[locale].CONTACTS_COUNTRY_LABEL(user.destinationCountry)}
-      </Typography>
+      <div style={{ marginBottom: '1rem' }}>
+        {featureState.CALL_LIMITS ? (
+          <CallLimitInfo
+            callLimitExceeded={callLimitExceeded}
+            nextRefreshAmount={nextRefreshAmount}
+            nextRefreshDuration={nextRefreshDuration}
+            locale={locale}
+            userCallTimeDuration={userCallTimeDuration}
+          />
+        ) : null}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Typography variant="body1">
+          {STRINGS[locale].CONTACTS_COUNTRY_LABEL(
+            (user as any).destinationCountry
+          )}
+        </Typography>
+        {false && (
+          <Link to={PATHS.RECENT_CALLS} style={{ textDecoration: 'none' }}>
+            <ActionLink variant="body1" role="button">
+              <HistoryIcon />
+              {STRINGS[locale].CONTACTS_RECENT_CALLS}
+            </ActionLink>
+          </Link>
+        )}
+      </div>
       <div
         style={{
           // Make this the right height so that the action links are positioned correctly
@@ -577,7 +750,7 @@ export default function ContactsPage({ locale }) {
               flexDirection: 'column',
             }}
           >
-            {contacts.map((contact) => (
+            {contacts.map((contact: any) => (
               <ListItem
                 key={contact.id}
                 style={{
@@ -672,16 +845,7 @@ export default function ContactsPage({ locale }) {
           />
           <div>{STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}</div>
         </AddContactButton>
-        {features.CALL_LIMITS ? (
-          <CallLimitInfo
-            userCallTimeDuration={userCallTimeDuration}
-            contacts={contacts}
-            locale={locale}
-            nextRefreshTimeString={nextRefreshTimeString}
-            nextRefreshAmount={nextRefreshAmount}
-            callLimitExceeded={callLimitExceeded}
-          />
-        ) : null}
+        <ContactsCountInfo contacts={contacts} locale={locale} />
       </div>
       <div
         style={{
@@ -718,6 +882,10 @@ export default function ContactsPage({ locale }) {
           />
         ) : null}
       </div>
+      {featureState.SHOW_WORKPASS_SCREEN &&
+      !user?.verificationState.workpass ? (
+        <VerifyWorkpassBanner locale={locale} />
+      ) : null}
     </Container>
   );
 }

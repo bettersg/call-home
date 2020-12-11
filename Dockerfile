@@ -8,6 +8,7 @@ COPY frontend/package-lock.json .
 
 RUN npm install
 
+COPY frontend/tsconfig.json .
 COPY frontend/src/ src/
 COPY frontend/public/ public/
 
@@ -27,10 +28,6 @@ RUN npm install
 
 COPY backend/tsconfig.json .
 COPY backend/src/ src/
-
-# Copy migration files over
-COPY backend/.sequelizerc .
-COPY backend/sequelize sequelize/
 
 RUN npm run build
 

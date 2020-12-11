@@ -12,18 +12,25 @@ window.addEventListener('resize', () => {
   );
 });
 
-const CONTAINER_STYLES = {
+const CONTAINER_STYLES: React.CSSProperties = {
   // Mad hacks
   height: '1px',
   minHeight: 'var(--viewport-height)',
-  padding: '5% 5%',
-  paddingTop: '3em',
+  padding: '2rem',
+  paddingTop: '3rem',
   display: 'flex',
   flexDirection: 'column',
   position: 'relative',
 };
 
-export default function Container({ children, style, ...rest }) {
+export default function Container({
+  children,
+  style,
+  ...rest
+}: {
+  children: React.ReactNode;
+  style?: React.CSSProperties;
+}) {
   const containerStyles = style
     ? {
         ...CONTAINER_STYLES,
@@ -32,7 +39,9 @@ export default function Container({ children, style, ...rest }) {
     : CONTAINER_STYLES;
   return (
     <MuContainer style={containerStyles} {...rest} maxWidth="sm">
-      {children}
+      {
+        children as any // Needed because the props don't accept null | undefined
+      }
     </MuContainer>
   );
 }

@@ -4,6 +4,8 @@ module.exports = {
     browser: true,
     commonjs: true,
     es6: true,
+    jest: true
+
   },
   extends: ['plugin:@typescript-eslint/recommended', 'eslint:recommended', 'airbnb', 'prettier'],
   plugins: ['prettier', '@typescript-eslint'],
@@ -18,6 +20,7 @@ module.exports = {
     }
   },
   rules: {
+    'no-unused-vars': 'off',
     'import/prefer-default-export': 'off',
     'import/extensions': 'off',
     'prettier/prettier': ['error'],

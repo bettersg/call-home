@@ -1,24 +1,26 @@
 import sequelize from './sequelize';
 import AllowlistEntry from './AllowlistEntry';
-import User, { UserType } from './User';
-import Contact from './Contact';
 import Call from './Call';
+import Contact from './Contact';
 import PeriodicCredit from './PeriodicCredit';
 import Transaction from './Transaction';
-import Wallet from './Wallet';
 import TwilioCall, { CallStatus } from './TwilioCall';
-import PasswordlessRequest from './PasswordlessRequest';
+import User, { UserType } from './User';
+import PhoneNumberValidation from './PhoneNumberValidation';
+import Wallet from './Wallet';
+import WorkpassValidation from './WorkpassValidation';
 
 sequelize.addModels([
   AllowlistEntry,
   Call,
   Contact,
-  User,
-  TwilioCall,
-  PasswordlessRequest,
   PeriodicCredit,
-  Wallet,
   Transaction,
+  TwilioCall,
+  User,
+  PhoneNumberValidation,
+  Wallet,
+  WorkpassValidation,
 ]);
 
 // User <-> Contact
@@ -37,19 +39,27 @@ Contact.belongsToMany(Call, { through: 'callContacts' });
 Call.belongsToMany(User, { through: 'callUsers' });
 User.belongsToMany(Call, { through: 'callUsers' });
 
-// PasswordlessRequest <-> User
-User.hasMany(PasswordlessRequest, {
-  foreignKey: {
-    name: 'UserId',
-  },
-});
-PasswordlessRequest.belongsTo(User);
-
 // Wallet <-> User
 User.hasOne(Wallet, {
   foreignKey: 'userId',
 });
 Wallet.belongsTo(User, {
+  foreignKey: 'userId',
+});
+
+// PhoneNumberValidation <-> User
+User.hasOne(PhoneNumberValidation, {
+  foreignKey: 'userId',
+});
+PhoneNumberValidation.belongsTo(User, {
+  foreignKey: 'userId',
+});
+
+// WorkpassValidation <-> User
+User.hasOne(WorkpassValidation, {
+  foreignKey: 'userId',
+});
+WorkpassValidation.belongsTo(User, {
   foreignKey: 'userId',
 });
 
@@ -71,15 +81,16 @@ PeriodicCredit.belongsTo(User, {
 
 export {
   sequelize,
-  User,
-  UserType as UserTypes,
-  Contact,
+  AllowlistEntry,
   Call,
   CallStatus,
-  AllowlistEntry,
-  TwilioCall,
-  PasswordlessRequest,
+  Contact,
   PeriodicCredit,
-  Wallet,
   Transaction,
+  TwilioCall,
+  User,
+  UserType as UserTypes,
+  PhoneNumberValidation,
+  Wallet,
+  WorkpassValidation,
 };

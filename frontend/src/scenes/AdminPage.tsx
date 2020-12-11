@@ -1,29 +1,31 @@
-import React, { useCallback, useState, useEffect, FormEvent} from 'react';
-import Tabs
-from '@material-ui/core/Tabs';
+import React, { useCallback, useState, useEffect, FormEvent } from 'react';
+import Tabs from '@material-ui/core/Tabs';
 import Switch from '@material-ui/core/Switch';
 import Tab from '@material-ui/core/Tab';
-import Table from '@material-ui/core/Table';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
+import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
 import Typography from '@material-ui/core/Typography';
 import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import TextField from '@material-ui/core/TextField';
+import { DataGrid, ColDef } from '@material-ui/data-grid';
 import { Link } from 'react-router-dom';
+import { FormControlLabel, Grid } from '@material-ui/core';
 import { useAllowlistService, useAdminService } from '../contexts';
-import { PrimaryButton } from '../components/shared/RoundedButton';
 import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
 import { ApiValidationError } from '../services/apiClient';
 import useAdminRoute from '../util/useAdminRoute';
 import PATHS from './paths';
 import { formatSecondsWithHours } from '../util/timeFormatters';
+import { SceneProps } from './types';
+
+interface AllowlistGridRow {
+  id: string;
+  phoneNumber: string;
+  destinationCountry: string;
+}
 
 function AllowlistTabContent() {
   const [allowlistState, allowlistService] = useAllowlistService();
@@ -34,18 +36,18 @@ function AllowlistTabContent() {
     setNewAllowlistMultiplePhoneNumbers,
   ] = useState('');
   const [useMultipleNumbers, setUseMultipleNumbers] = useState(false);
-  const [newAllowlistCountry, setNewAllowlistCountry] = useState('');
+  const [newAllowlistCountry, setNewAllowlistCountry] = useState('BD');
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
 
   useEffect(() => {
     if (allowlistService) {
-      allowlistService.refreshAllowlistEntries();
+      (allowlistService as any).refreshAllowlistEntries();
     }
   }, [allowlistService]);
 
   const createAllowlistEntry = async (newNumber: string) => {
     try {
-      await allowlistService.createAllowlistEntry({
+      await (allowlistService as any).createAllowlistEntry({
         phoneNumber: `+65${newNumber}`,
         destinationCountry: newAllowlistCountry,
       });
@@ -76,10 +78,12 @@ function AllowlistTabContent() {
   };
 
   const deleteAllowlistEntry = async (id: number) => {
-    await allowlistService.deleteAllowlistEntry(id);
+    await (allowlistService as any).deleteAllowlistEntry(id);
   };
 
-  const handlePhoneNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhoneNumberChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (useMultipleNumbers) {
       setNewAllowlistMultiplePhoneNumbers(event.target.value);
     } else {
@@ -88,117 +92,153 @@ function AllowlistTabContent() {
   };
 
   const newEntryForm = (
-    <form
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        marginTop: '12px',
-      }}
-      onSubmit={onSubmit}
-    >
-      {useMultipleNumbers ? (
-        <TextField
-          style={{
-            marginBottom: '12px',
-            background: 'white',
-          }}
-          multiline
-          variant="outlined"
-          label="Phone numbers"
-          value={newAllowlistMultiplePhoneNumbers}
-          onChange={handlePhoneNumberChange}
-        />
-      ) : (
-        <TextField
-          style={{
-            marginBottom: '12px',
-            background: 'white',
-          }}
-          variant="outlined"
-          label="Phone number"
-          value={newAllowlistPhoneNumber}
-          onChange={handlePhoneNumberChange}
-          InputProps={{
-            inputComponent: PhoneNumberMasks.SG as any,
-          }}
-        />
-      )}
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <InputLabel id="allowlist-country-label">Country</InputLabel>
-        <Select
-          style={{ background: 'white' }}
-          labelId="allowlist-country-label"
-          onChange={(e: React.ChangeEvent<any>) => setNewAllowlistCountry(e.target.value)}
+    <form onSubmit={onSubmit}>
+      <Grid
+        container
+        alignItems="center"
+        spacing={2}
+        style={{ margin: '8px 0 0 0' }}
+      >
+        {useMultipleNumbers ? (
+          <Grid item>
+            <TextField
+              style={{
+                background: 'white',
+              }}
+              multiline
+              variant="outlined"
+              label="Phone numbers"
+              value={newAllowlistMultiplePhoneNumbers}
+              onChange={handlePhoneNumberChange}
+            />
+          </Grid>
+        ) : (
+          <Grid item>
+            <TextField
+              style={{
+                background: 'white',
+              }}
+              variant="outlined"
+              label="Phone number"
+              value={newAllowlistPhoneNumber}
+              onChange={handlePhoneNumberChange}
+              InputProps={{
+                inputComponent: PhoneNumberMasks.SG as any,
+              }}
+            />
+          </Grid>
+        )}
+        <Grid item>
+          <FormControl
+            variant="outlined"
+            style={{
+              background: 'white',
+            }}
+          >
+            <InputLabel>Country</InputLabel>
+            <Select
+              native
+              onChange={(e: React.ChangeEvent<any>) =>
+                setNewAllowlistCountry(e.target.value)
+              }
+              label="Country"
+            >
+              <option value="BD">BD</option>
+              <option value="SG">SG</option>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item>
+          <FormControlLabel
+            control={
+              <Switch
+                name="useMultipleNumbers"
+                checked={useMultipleNumbers}
+                onChange={() => setUseMultipleNumbers(!useMultipleNumbers)}
+              />
+            }
+            label="Multiple Entries"
+          />
+        </Grid>
+
+        <Button
+          type="submit"
+          value="submit"
+          variant="contained"
+          color="primary"
+          size="small"
         >
-          <MenuItem value="BD">BD</MenuItem>
-          <MenuItem value="SG">SG</MenuItem>
-        </Select>
-      </div>
-      <PrimaryButton type="submit" value="submit">
-        Add entry
-      </PrimaryButton>
+          Add entry
+        </Button>
+      </Grid>
     </form>
   );
 
+  const rows: AllowlistGridRow[] = allowlistEntries.map(
+    (allowlistEntry: any) => ({
+      id: allowlistEntry.id,
+      phoneNumber: allowlistEntry.phoneNumber,
+      destinationCountry: allowlistEntry.destinationCountry,
+    })
+  );
+
+  const columns: ColDef[] = [
+    { field: 'phoneNumber', headerName: 'Phone Number', width: 150 },
+    { field: 'destinationCountry', headerName: 'Country' },
+    {
+      field: '',
+      headerName: 'Delete',
+      hideSortIcons: true,
+      renderCell(row) {
+        return (
+          <IconButton role="button" style={{ color: 'red' }}>
+            <CloseIcon
+              onClick={() => {
+                deleteAllowlistEntry(Number(row.row.id));
+              }}
+            />
+          </IconButton>
+        );
+      },
+    },
+  ];
+
   return (
     <>
-      <Typography variant="h5" component="h2">
+      <Typography variant="h5" component="h2" style={{ margin: '8px' }}>
         Allowlist
       </Typography>
-      <Typography variant="body2" component="h3">
-        New entry
-      </Typography>
-      <Switch
-        name="useMultipleNumbers"
-        checked={useMultipleNumbers}
-        onChange={() => setUseMultipleNumbers(!useMultipleNumbers)}
-      />
+
       {errorMessages.map((errorMessage) => (
         <Typography key={errorMessage} variant="body1" color="error">
           {errorMessage}
         </Typography>
       ))}
       {newEntryForm}
-      <Typography variant="body2" component="h3">
-        Current entries
-      </Typography>
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Phone number</TableCell>
-              <TableCell>Country</TableCell>
-              <TableCell>Delete</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {allowlistEntries.map((allowlistEntry: any) => (
-              <TableRow key={allowlistEntry.phoneNumber}>
-                <TableCell>
-                  <Typography variant="body2">
-                    {allowlistEntry.phoneNumber}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body1">
-                    {allowlistEntry.destinationCountry}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <IconButton
-                    onClick={() => deleteAllowlistEntry(allowlistEntry.id)}
-                    role="button"
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+
+      <div style={{ margin: '8px' }}>
+        <Typography variant="body2" component="h3">
+          Current Entries
+        </Typography>
+        <DataGrid
+          autoHeight
+          rows={rows}
+          columns={columns}
+          pagination
+          rowsPerPageOptions={[10, 25, 100]}
+        />
+      </div>
     </>
   );
+}
+
+interface UserGridRow {
+  id: string;
+  name: string;
+  phoneNumber: string;
+  destinationCountry: string;
+  callTime: string;
+  transactionHistory: string;
 }
 
 function UserTabContent() {
@@ -207,55 +247,72 @@ function UserTabContent() {
 
   useEffect(() => {
     if (adminService) {
-      adminService.getUsers();
+      (adminService as any).getUsers();
     }
   }, [adminService]);
 
+  const columns: ColDef[] = [
+    { field: 'id', headerName: 'Id', width: 80 },
+    { field: 'name', headerName: 'Name', width: 300 },
+    { field: 'phoneNumber', headerName: 'Phone Number', width: 150 },
+    { field: 'destinationCountry', headerName: 'Country' },
+    { field: 'callTime', headerName: 'Call Time Balance', width: 300 },
+    {
+      field: 'transactionHistory',
+      headerName: 'Transaction History',
+      width: 400,
+      renderCell(rowData) {
+        return (
+          <Link to={`${PATHS.TRANSACTIONS}?user=${rowData.value}`}>View</Link>
+        );
+      },
+    },
+  ];
+
+  const rows: UserGridRow[] = users.map((user: any) => ({
+    id: user.id,
+    name: user.name,
+    phoneNumber: user.phoneNumber,
+    destinationCountry: user.destinationCountry,
+    callTime: formatSecondsWithHours(user.callTime),
+    transactionHistory: user.id,
+  }));
+
   return (
     <>
-      <Typography variant="h5" component="h2">
-        Users
-      </Typography>
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Phone Number</TableCell>
-              <TableCell>Country</TableCell>
-              <TableCell>Call Time Balance</TableCell>
-              <TableCell>Transaction history</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {users.map((user: any) => (
-              <TableRow key={user.phoneNumber}>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.phoneNumber}</TableCell>
-                <TableCell>{user.destinationCountry}</TableCell>
-                <TableCell>{formatSecondsWithHours(user.callTime)}</TableCell>
-                <TableCell>
-                  <Link to={`${PATHS.TRANSACTIONS}?user=${user.id}`}>
-                    Transaction history
-                  </Link>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <div style={{ margin: '8px' }}>
+        <Typography variant="h5" component="h2">
+          Users
+        </Typography>
+        <DataGrid
+          autoHeight
+          rows={rows}
+          columns={columns}
+          pagination
+          rowsPerPageOptions={[10, 25, 100]}
+          pageSize={5}
+        />
+      </div>
     </>
   );
 }
 
-function TabPanel({ value, index, children } : { value: number, index: number, children: JSX.Element}) {
+function TabPanel({
+  value,
+  index,
+  children,
+}: {
+  value: number;
+  index: number;
+  children: JSX.Element;
+}) {
   if (value !== index) {
     return null;
   }
   return children;
 }
 
-export default function AdminPage() {
+export default function AdminPage({ locale, routePath }: SceneProps) {
   const [tabIndex, setTabIndex] = useState(0);
 
   const handleTabChange = useCallback(

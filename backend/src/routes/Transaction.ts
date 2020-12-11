@@ -1,43 +1,49 @@
-import express, { Request, Response } from 'express';
+import express, { Router } from 'express';
+import * as z from 'zod';
 import type { Transaction } from '../services';
 import { requireAdmin } from './middlewares';
+import {
+  validateRequest,
+  stringToNumberTransformer,
+} from './helpers/validation';
 
-function TransactionRoutes(transactionService: typeof Transaction) {
+const GET_SCHEMA = z.object({
+  params: z.object({ userId: stringToNumberTransformer }),
+});
+
+const POST_SCHEMA = z.object({
+  params: z.object({ userId: stringToNumberTransformer }),
+  body: z.object({ amount: z.number() }),
+});
+
+function TransactionRoutes(transactionService: typeof Transaction): Router {
   const router = express.Router();
 
   router.get(
     '/:userId/transactions/',
     requireAdmin,
-    async (req: Request, res: Response) => {
-      const { userId } = req.params;
+    validateRequest(GET_SCHEMA, async (parsedReq, res) => {
+      const { userId } = parsedReq.params;
       const transactions = await transactionService.getTransactionsForUser(
-        Number(userId)
+        userId
       );
       return res.json(transactions);
-    }
+    })
   );
 
   router.post(
     '/:userId/transactions/',
     requireAdmin,
-    async (req: Request, res: Response) => {
-      const { userId } = req.params;
-      const { amount } = req.body as { amount: number | undefined };
-      if (!amount) {
-        return res
-          .status(400)
-          .json('Invalid transaction, amount must be specified');
-      }
-      if (!Number(userId) || !Number(amount)) {
-        return res.status(400).json('Invalid transaction.');
-      }
+    validateRequest(POST_SCHEMA, async (parsedReq, res) => {
+      const { userId } = parsedReq.params;
+      const { amount } = parsedReq.body;
       const transaction = await transactionService.createTransaction({
-        userId: Number(userId),
+        userId,
         reference: 'admin',
-        amount: Number(amount),
+        amount,
       });
       return res.json(transaction);
-    }
+    })
   );
 
   return router;
