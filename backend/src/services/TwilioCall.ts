@@ -67,10 +67,10 @@ class TwilioCallService extends TypedEventEmitter<
     });
   };
 
-  listTwilioCallsBySids = async (twilioSids: string[]) => {
+  listTwilioCallsByParentSids = async (parentCallSids: string[]) => {
     return this.twilioCallModel.findAll({
       where: {
-        twilioSid: twilioSids,
+        parentCallSid: parentCallSids,
       },
     });
   };

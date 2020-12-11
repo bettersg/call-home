@@ -77,7 +77,7 @@ function CallRoutes(
       const twilioCallSids = recentCalls.map(
         (call) => call.incomingTwilioCallSid
       );
-      const twilioCalls = await twilioCallService.listTwilioCallsBySids(
+      const twilioCalls = await twilioCallService.listTwilioCallsByParentSids(
         twilioCallSids
       );
 
