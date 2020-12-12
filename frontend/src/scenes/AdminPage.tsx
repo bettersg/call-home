@@ -313,7 +313,6 @@ function UserTabContent() {
           columns={columns}
           pagination
           rowsPerPageOptions={[10, 25, 100]}
-          pageSize={5}
         />
       </div>
     </>
