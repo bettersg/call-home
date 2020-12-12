@@ -738,10 +738,10 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
       >
         <div
           style={{
-            overflowY: 'scroll',
             width: '100%',
             // 20em to accomodate logout and add contact button
             maxHeight: 'calc(var(--viewport-height) - 20rem)',
+            overflow: 'auto'
           }}
         >
           <List
@@ -764,8 +764,7 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     width: '100%',
-                    height: '4em',
-                    padding: '4px 8px',
+                    padding: '4px 8px'
                   }}
                   variant="outlined"
                 >
@@ -799,6 +798,7 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
                           style={{
                             fontSize: '0.675rem',
                             marginRight: '0.5rem',
+                            overflowWrap: 'break-word'
                           }}
                           variant="body2"
                         >
