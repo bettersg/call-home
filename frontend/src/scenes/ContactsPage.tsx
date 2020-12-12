@@ -537,7 +537,7 @@ function CallContactButton({ contactService, contact, disabled }: any) {
 }
 
 const VERIFY_WORKPASS_CUTOFF_DATE = DateTime.fromObject({
-  day: 6,
+  day: 18,
   month: 12,
   year: 2020,
 });
