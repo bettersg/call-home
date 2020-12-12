@@ -764,7 +764,8 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     width: '100%',
-                    padding: '4px 8px'
+                    padding: '4px 8px',
+                    borderRadius: '8px'
                   }}
                   variant="outlined"
                 >
@@ -792,13 +793,12 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
                         flex: '1 0',
                       }}
                     >
-                      <Typography variant="body1">{contact.name}</Typography>
+                      <Typography variant="body1" style={{ overflowWrap:'anywhere'}} >{contact.name}</Typography>
                       <div style={{ display: 'flex' }}>
                         <Typography
                           style={{
                             fontSize: '0.675rem',
-                            marginRight: '0.5rem',
-                            overflowWrap: 'break-word'
+                            marginRight: '0.5rem'
                           }}
                           variant="body2"
                         >
@@ -830,6 +830,7 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
             width: '100%',
             height: '4em',
             marginTop: '1em',
+            borderRadius: '8px'
           }}
           variant="outlined"
           onClick={() => {
