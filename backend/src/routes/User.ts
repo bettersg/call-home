@@ -1,4 +1,5 @@
-import express from 'express';
+import express, { Response } from 'express';
+import { UserWalletResponse } from '@call-home/shared/types/User';
 import { UserInjectedRequest, requireAdmin } from './middlewares';
 import { userToUserResponse, UserResponse } from './transformers';
 import type { User as UserModel } from '../models';
@@ -23,48 +24,53 @@ function UserRoutes(
     );
   }
 
-  async function injectWallet(user: UserResponse) {
+  async function injectWallet(user: UserResponse): Promise<UserWalletResponse> {
     const wallet = await walletService.getWalletForUser(user.id);
     return {
       ...user,
-      callTime: wallet?.callTime,
+      callTime: wallet?.callTime || null,
     };
   }
 
-  router.get('/me', async (req: UserInjectedRequest, res) => {
-    const { user } = req;
-    const isUserVerified = await userValidationService.isUserVerified(
-      req.user.id,
-      req.user.verificationState
-    );
+  router.get(
+    '/me',
+    async (req: UserInjectedRequest, res: Response<UserWalletResponse>) => {
+      const { user } = req;
+      const isUserVerified = await userValidationService.isUserVerified(
+        req.user.id,
+        req.user.verificationState
+      );
 
-    let userTasks: Promise<unknown>[] = [
-      walletService.createWalletForUser(user.id),
-    ];
-    if (isUserVerified) {
-      userTasks = [
-        ...userTasks,
-        periodicCreditService.tryCreatePeriodicCredit(user.id),
+      let userTasks: Promise<unknown>[] = [
+        walletService.createWalletForUser(user.id),
       ];
+      if (isUserVerified) {
+        userTasks = [
+          ...userTasks,
+          periodicCreditService.tryCreatePeriodicCredit(user.id),
+        ];
+      }
+      await Promise.all(userTasks);
+      const userWithWallet = await injectWallet(req.user);
+      // Return isVerified for old clients
+      return res.status(200).json(userWithWallet);
     }
-    await Promise.all(userTasks);
-    const userWithWallet = await injectWallet(req.user);
-    // Return isVerified for old clients
-    return res
-      .status(200)
-      .json({ ...userWithWallet, isVerified: isUserVerified });
-  });
+  );
 
-  router.get('/', requireAdmin, async (_req: UserInjectedRequest, res) => {
-    const users = await userService.listUsers();
-    const usersWithPhoneNumber = await Promise.all(
-      users.map(injectPhoneNumberValidation)
-    );
-    const usersWithWallet = await Promise.all(
-      usersWithPhoneNumber.map(injectWallet)
-    );
-    return res.json(usersWithWallet);
-  });
+  router.get(
+    '/',
+    requireAdmin,
+    async (_req: UserInjectedRequest, res: Response<UserWalletResponse[]>) => {
+      const users = await userService.listUsers();
+      const usersWithPhoneNumber = await Promise.all(
+        users.map(injectPhoneNumberValidation)
+      );
+      const usersWithWallet = await Promise.all(
+        usersWithPhoneNumber.map(injectWallet)
+      );
+      return res.json(usersWithWallet);
+    }
+  );
 
   return router;
 }

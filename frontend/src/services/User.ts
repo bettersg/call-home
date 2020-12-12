@@ -1,30 +1,9 @@
+import { UserWalletResponse } from '@call-home/shared/types/User';
 import { noRedirectClient, UnauthenticatedError } from './apiClient';
 import ObservableService from './observableService';
 
-export enum UserType {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-}
-
-// TODO this is the same as the UserResponse type in the backend. Find a way to combine them
-export interface User {
-  id: number;
-  name: string;
-  email: string | null;
-  destinationCountry: string;
-  role: UserType;
-
-  verificationState: {
-    phoneNumber: boolean;
-    workpass: boolean;
-    adminGranted: boolean;
-  };
-
-  phoneNumber: string | null;
-}
-
 export interface UserState {
-  me: User | null;
+  me: UserWalletResponse | null;
   verificationPhoneNumber: string | null;
   shouldDismissWorkpassModal: boolean;
 }
@@ -50,7 +29,9 @@ export default class UserService extends ObservableService<UserState> {
 
   async refreshSelf(): Promise<void> {
     try {
-      const me = (await noRedirectClient.get(`${userEndpoint}/me`)) as User;
+      const me = (await noRedirectClient.get(
+        `${userEndpoint}/me`
+      )) as UserWalletResponse;
       this.state = {
         ...this.state,
         me,

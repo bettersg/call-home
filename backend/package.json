@@ -4,6 +4,7 @@
   "description": "A more friendly way to call home",
   "main": "index.js",
   "scripts": {
+    "init": "npm link @call-home/shared",
     "build": "tsc",
     "start": "node --enable-source-maps dist/index.js",
     "lint": "eslint",
@@ -25,6 +26,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@call-home/shared": "npm:shared@^1.0.0",
     "axios": "^0.19.2",
     "cheerio": "^1.0.0-rc.3",
     "dotenv": "^8.2.0",

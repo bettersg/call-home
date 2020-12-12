@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@call-home/shared": "npm:shared@^1.0.0",
     "@material-ui/core": "^4.9.11",
     "@material-ui/data-grid": "^4.0.0-alpha.10",
     "@material-ui/icons": "^4.9.1",
@@ -26,6 +27,7 @@
     "twilio-client": "^1.12.1"
   },
   "scripts": {
+    "init": "npm link @call-home/shared",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

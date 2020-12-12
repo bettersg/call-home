@@ -1,11 +1,12 @@
 {
-  "name": "call-home-shared",
+  "name": "@call-home/shared",
   "version": "1.0.0",
   "description": "Shared code for Call Home frontend and backend",
   "main": "index.js",
   "scripts": {
     "lint:fix": "eslint --fix",
-    "precommit": "tsc --noEmit && lint-staged"
+    "precommit": "tsc --noEmit && lint-staged",
+    "init": "npm link"
   },
   "author": "",
   "license": "ISC",

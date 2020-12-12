@@ -3,7 +3,7 @@ export enum UserType {
   USER = 'USER',
 }
 
-export interface User {
+export interface UserWalletResponse {
   id: number;
   name: string;
   email: string | null;
@@ -17,4 +17,5 @@ export interface User {
   };
 
   phoneNumber: string | null;
+  callTime: number | null;
 }

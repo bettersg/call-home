@@ -1,11 +1,25 @@
+# Prepare shared code in a base image
+FROM node:12 AS base
+
+WORKDIR /app/shared
+
+COPY shared/package.json .
+COPY shared/package-lock.json .
+
+RUN npm run init
+RUN npm install
+
+COPY shared/types/ types/
+
 # frontend
-FROM node:12 AS frontend
+FROM base AS frontend
 
 WORKDIR /app/frontend
 
 COPY frontend/package.json .
 COPY frontend/package-lock.json .
 
+RUN npm run init
 RUN npm install
 
 COPY frontend/tsconfig.json .
@@ -18,12 +32,13 @@ ENV PUBLIC_URL=${PUBLIC_URL}
 RUN npm run build
 
 # backend
-FROM node:12
+FROM base
 WORKDIR /app/backend
 
 COPY backend/package.json .
 COPY backend/package-lock.json .
 
+RUN npm run init
 RUN npm install
 
 COPY backend/tsconfig.json .

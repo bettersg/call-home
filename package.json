@@ -6,9 +6,14 @@
     "build": "docker build . -t call-home",
     "deploy:staging": "./buildAndDeploy.sh staging",
     "deploy:prod": "./buildAndDeploy.sh prod",
+    "init": "npm run init:shared && npm run init:backend && npm run init:frontend",
+    "init:shared": "cd shared && npm run init",
+    "init:frontend": "cd frontend && npm run init",
+    "init:backend": "cd backend && npm run init",
+    "precommit:shared": "cd shared && npm run precommit",
     "precommit:frontend": "cd frontend && npm run precommit",
     "precommit:backend": "cd backend && npm run precommit",
-    "precommit": "npm run precommit:frontend && npm run precommit:backend"
+    "precommit": "npm run precommit:frontend && npm run precommit:backend && npm run precommit:shared"
   },
   "repository": {
     "type": "git",
