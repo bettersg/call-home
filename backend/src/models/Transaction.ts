@@ -1,3 +1,4 @@
+import { TransactionReference } from '@call-home/shared/types/Transaction';
 import {
   AllowNull,
   Column,
@@ -5,8 +6,6 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-
-export type TransactionReference = 'call' | 'periodic-credit' | 'admin';
 
 // Represents a single transaction that affects a user's wallet.
 @Table

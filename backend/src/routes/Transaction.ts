@@ -1,5 +1,6 @@
-import express, { Router } from 'express';
+import express, { Response, Router } from 'express';
 import * as z from 'zod';
+import { TransactionResponse } from '@call-home/shared/types/Transaction';
 import type { Transaction } from '../services';
 import { requireAdmin } from './middlewares';
 import {
@@ -22,28 +23,34 @@ function TransactionRoutes(transactionService: typeof Transaction): Router {
   router.get(
     '/:userId/transactions/',
     requireAdmin,
-    validateRequest(GET_SCHEMA, async (parsedReq, res) => {
-      const { userId } = parsedReq.params;
-      const transactions = await transactionService.getTransactionsForUser(
-        userId
-      );
-      return res.json(transactions);
-    })
+    validateRequest(
+      GET_SCHEMA,
+      async (parsedReq, res: Response<TransactionResponse[]>) => {
+        const { userId } = parsedReq.params;
+        const transactions = await transactionService.getTransactionsForUser(
+          userId
+        );
+        return res.json(transactions);
+      }
+    )
   );
 
   router.post(
     '/:userId/transactions/',
     requireAdmin,
-    validateRequest(POST_SCHEMA, async (parsedReq, res) => {
-      const { userId } = parsedReq.params;
-      const { amount } = parsedReq.body;
-      const transaction = await transactionService.createTransaction({
-        userId,
-        reference: 'admin',
-        amount,
-      });
-      return res.json(transaction);
-    })
+    validateRequest(
+      POST_SCHEMA,
+      async (parsedReq, res: Response<TransactionResponse>) => {
+        const { userId } = parsedReq.params;
+        const { amount } = parsedReq.body;
+        const transaction = await transactionService.createTransaction({
+          userId,
+          reference: 'admin',
+          amount,
+        });
+        return res.json(transaction);
+      }
+    )
   );
 
   return router;

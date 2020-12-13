@@ -1,3 +1,4 @@
+import { UserWalletResponse } from '@call-home/shared/types/User';
 import React, { useCallback, useState, useEffect, FormEvent } from 'react';
 import Tabs from '@material-ui/core/Tabs';
 import Switch from '@material-ui/core/Switch';
@@ -233,22 +234,21 @@ function AllowlistTabContent() {
 }
 
 interface UserGridRow {
-  id: string;
+  id: number;
   name: string;
-  phoneNumber: string;
+  phoneNumber: string | null;
   destinationCountry: string;
-  callTime: string;
-  transactionHistory: string;
+  callTime: string | null;
   hasAdminGrantedValidation: boolean;
 }
 
 function UserTabContent() {
   const [adminState, adminService] = useAdminService();
-  const { users = [] } = adminState;
+  const { users = [] } = adminState || {};
 
   useEffect(() => {
     if (adminService) {
-      (adminService as any).getUsers();
+      adminService.getUsers();
     }
   }, [adminService]);
 
@@ -269,9 +269,9 @@ function UserTabContent() {
             checked={Boolean(hasAdminGrantedValidation)}
             onClick={() => {
               if (rowData.value) {
-                adminService?.revokeSpecialAccess(id);
+                adminService?.revokeSpecialAccess(Number(id));
               } else {
-                adminService?.grantSpecialAccess(id);
+                adminService?.grantSpecialAccess(Number(id));
               }
             }}
           />
@@ -280,24 +280,26 @@ function UserTabContent() {
     },
     { field: 'callTime', headerName: 'Call Time Balance', width: 300 },
     {
-      field: 'transactionHistory',
+      field: 'transactionHistoryButton',
       headerName: 'Transaction History',
       width: 400,
       renderCell(rowData) {
         return (
-          <Link to={`${PATHS.TRANSACTIONS}?user=${rowData.value}`}>View</Link>
+          <Link to={`${PATHS.TRANSACTIONS}?user=${rowData.row.id}`}>View</Link>
         );
       },
     },
   ];
 
-  const rows: UserGridRow[] = users.map((user: any) => ({
+  const rows: UserGridRow[] = users.map((user: UserWalletResponse) => ({
     id: user.id,
     name: user.name,
     phoneNumber: user.phoneNumber,
     destinationCountry: user.destinationCountry,
-    callTime: formatSecondsWithHours(user.callTime),
-    transactionHistory: user.id,
+    callTime:
+      user.callTime === undefined || user.callTime === null
+        ? ''
+        : formatSecondsWithHours(user.callTime),
     hasAdminGrantedValidation: user.verificationState.adminGranted,
   }));
 
