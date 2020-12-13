@@ -1,52 +1,40 @@
 import { Op } from 'sequelize';
-import { sanitizeDbErrors, TypedEventEmitter } from './lib';
+import { sanitizeDbErrors } from './lib';
 import { logger } from '../config';
-import type { CallStatus, TwilioCall as TwilioCallEntity } from '../models';
-import type { TwilioClient } from './index';
-import type CallService from './Call';
-import type TransactionService from './Transaction';
+import type { TwilioCall as TwilioCallEntity } from '../models';
+import type { Call, TwilioClient, Transaction } from './index';
 
-export type TwilioCallServiceEvent = 'twilio-call-updated';
-export interface TwilioCallUpdatedPayload {
-  type: 'twilio-call-updated';
-  twilioCall: TwilioCallEntity;
+interface TwilioCallService {
+  createTwilioCall: (
+    twilioCall: Partial<TwilioCallEntity>
+  ) => Promise<TwilioCallEntity>;
+  getCallsMissingDuration: () => Promise<TwilioCallEntity[]>;
+  listTwilioCallsByParentSids: (
+    parentCallSids: string[]
+  ) => Promise<TwilioCallEntity[]>;
+  getTwilioCallBySid: (twilioSid: string) => Promise<TwilioCallEntity | null>;
+  fetchTwilioDataForPendingTwilioCalls: () => Promise<void>;
+  fetchTwilioDataForTwilioParentSid: (parentCallSid: string) => Promise<void>;
+  getTwilioCallByParentSid: (
+    parentSid: string
+  ) => Promise<TwilioCallEntity | null>;
 }
-export type TwilioCallServicePayload = TwilioCallUpdatedPayload;
 
-class TwilioCallService extends TypedEventEmitter<
-  TwilioCallServiceEvent,
-  TwilioCallServicePayload
-> {
-  twilioCallModel: typeof TwilioCallEntity;
-
-  twilioClient: typeof TwilioClient;
-
-  callService: ReturnType<typeof CallService>;
-
-  transactionService: TransactionService;
-
-  constructor(
-    twilioCallModel: typeof TwilioCallEntity,
-    twilioClient: typeof TwilioClient,
-    callService: ReturnType<typeof CallService>,
-    transactionService: TransactionService
-  ) {
-    super();
-    this.twilioCallModel = twilioCallModel;
-    this.twilioClient = twilioClient;
-    this.callService = callService;
-    this.transactionService = transactionService;
+function TwilioCallService(
+  TwilioCallModel: typeof TwilioCallEntity,
+  twilioClient: typeof TwilioClient,
+  callService: typeof Call,
+  transactionService: typeof Transaction
+): TwilioCallService {
+  async function createTwilioCall(twilioCall: Partial<TwilioCallEntity>) {
+    return sanitizeDbErrors(() => TwilioCallModel.create(twilioCall));
   }
 
-  createTwilioCall = async (twilioCall: Partial<TwilioCallEntity>) => {
-    return sanitizeDbErrors(() => this.twilioCallModel.create(twilioCall));
-  };
-
-  updateTwilioCall = async (
+  async function updateTwilioCall(
     twilioCallId: number,
     twilioCall: Partial<TwilioCallEntity>
-  ) => {
-    return this.twilioCallModel.update(
+  ) {
+    return TwilioCallModel.update(
       {
         ...twilioCall,
         lastUpdated: new Date(),
@@ -57,34 +45,34 @@ class TwilioCallService extends TypedEventEmitter<
         },
       }
     );
-  };
+  }
 
-  getTwilioCallBySid = async (twilioSid: string) => {
-    return this.twilioCallModel.findOne({
+  async function getTwilioCallBySid(twilioSid: string) {
+    return TwilioCallModel.findOne({
       where: {
         twilioSid,
       },
     });
-  };
+  }
 
-  listTwilioCallsByParentSids = async (parentCallSids: string[]) => {
-    return this.twilioCallModel.findAll({
+  async function listTwilioCallsByParentSids(parentCallSids: string[]) {
+    return TwilioCallModel.findAll({
       where: {
         parentCallSid: parentCallSids,
       },
     });
-  };
+  }
 
-  getTwilioCallByParentSid = async (parentCallSid: string) => {
-    return this.twilioCallModel.findOne({
+  async function getTwilioCallByParentSid(parentCallSid: string) {
+    return TwilioCallModel.findOne({
       where: {
         parentCallSid,
       },
     });
-  };
+  }
 
-  getPendingCallsOrderByLastUpdated = async () => {
-    return this.twilioCallModel.findAll({
+  async function getPendingCallsOrderByLastUpdated() {
+    return TwilioCallModel.findAll({
       // Add an arbitrary limit just in case
       limit: 100,
       where: {
@@ -103,10 +91,10 @@ class TwilioCallService extends TypedEventEmitter<
       },
       order: [['lastUpdated', 'ASC']],
     });
-  };
+  }
 
-  getCallsMissingDuration = async () => {
-    return this.twilioCallModel.findAll({
+  async function getCallsMissingDuration() {
+    return TwilioCallModel.findAll({
       // Add an arbitrary limit just in case
       limit: 100,
       where: {
@@ -115,11 +103,11 @@ class TwilioCallService extends TypedEventEmitter<
       },
       order: [['lastUpdated', 'ASC']],
     });
-  };
+  }
 
-  createTransactionForTwilioCall = async (twilioCall: TwilioCallEntity) => {
+  async function createTransactionForTwilioCall(twilioCall: TwilioCallEntity) {
     logger.info('Creating transaction for twilio call %s', twilioCall);
-    const callEntity = await this.callService.getCallByIncomingSid(
+    const callEntity = await callService.getCallByIncomingSid(
       twilioCall.parentCallSid
     );
     if (!callEntity) {
@@ -127,24 +115,24 @@ class TwilioCallService extends TypedEventEmitter<
       logger.error(msg);
       throw new Error(msg);
     }
-    return this.transactionService.createTransaction({
+    return transactionService.createTransaction({
       reference: 'call',
       userId: callEntity.userId,
       amount: -twilioCall.duration,
     });
-  };
+  }
 
   // Collects the business logic for updating twilio calls by calling the Twilio API.
   // Used in two places: the status callback and the pending calls poller
-  fetchTwilioDataForTwilioCall = async (twilioCall: TwilioCallEntity) => {
+  async function fetchTwilioDataForTwilioCall(twilioCall: TwilioCallEntity) {
     logger.info('fetchTwilioDataForTwilioCall -> Updating call', twilioCall.id);
     const { parentCallSid } = twilioCall;
     const [twilioResponseCalls, twilioParentCall] = await Promise.all([
-      this.twilioClient.getCallsByIncomingSid(parentCallSid),
-      this.twilioClient.getCall(parentCallSid),
+      twilioClient.getCallsByIncomingSid(parentCallSid),
+      twilioClient.getCall(parentCallSid),
     ]);
     if (twilioParentCall.status === 'canceled') {
-      await this.updateTwilioCall(twilioCall.id, {
+      await updateTwilioCall(twilioCall.id, {
         status: 'x-parent-canceled',
       });
       return;
@@ -160,7 +148,7 @@ class TwilioCallService extends TypedEventEmitter<
         price,
         priceUnit,
       } = twilioResponseCall;
-      await this.updateTwilioCall(twilioCall.id, {
+      await updateTwilioCall(twilioCall.id, {
         twilioSid,
         fromPhoneNumber,
         toPhoneNumber,
@@ -170,14 +158,14 @@ class TwilioCallService extends TypedEventEmitter<
         duration: Number(duration),
       });
       await twilioCall.reload();
-      // TODO seems like it might be possible to create duplicate transactions, there should be a way to protect against this.
-      this.createTransactionForTwilioCall(twilioCall);
+      // TODO seems like it might be possible to create duplicate transactions, there should be a way to protect against
+      createTransactionForTwilioCall(twilioCall);
       return;
     }
     if (twilioParentCall.status === 'completed') {
       // It is possible for the parent call to complete without the child call happening
       // e.g. an error occurs.
-      await this.updateTwilioCall(twilioCall.id, {
+      await updateTwilioCall(twilioCall.id, {
         status: 'x-not-initiated',
       });
       return;
@@ -186,28 +174,38 @@ class TwilioCallService extends TypedEventEmitter<
       'Expected exactly one child call for parent SID. This is a potential error. SID: ',
       twilioCall.parentCallSid
     );
-  };
+  }
 
-  fetchTwilioDataForTwilioParentSid = async (parentCallSid: string) => {
+  async function fetchTwilioDataForTwilioParentSid(parentCallSid: string) {
     logger.info('fetchTwilioDataForTwilioParentSid -> %s', parentCallSid);
-    const twilioCall = await this.getTwilioCallByParentSid(parentCallSid);
+    const twilioCall = await getTwilioCallByParentSid(parentCallSid);
     if (!twilioCall) {
       const msg = `twilioCall not found for parentCallSid ${parentCallSid}`;
       logger.error(msg);
       throw new Error(msg);
     }
-    await this.fetchTwilioDataForTwilioCall(twilioCall);
+    await fetchTwilioDataForTwilioCall(twilioCall);
     logger.info(
       'fetchTwilioDataForTwilioParentSid completed -> %s',
       parentCallSid
     );
-  };
+  }
 
-  fetchTwilioDataForPendingTwilioCalls = async () => {
+  async function fetchTwilioDataForPendingTwilioCalls() {
     logger.info('fetchTwilioDataForPendingTwilioCalls');
-    const twilioCalls = await this.getPendingCallsOrderByLastUpdated();
-    await Promise.all(twilioCalls.map(this.fetchTwilioDataForTwilioCall));
+    const twilioCalls = await getPendingCallsOrderByLastUpdated();
+    await Promise.all(twilioCalls.map(fetchTwilioDataForTwilioCall));
     logger.info('fetchTwilioDataForPendingTwilioCalls completed');
+  }
+
+  return {
+    createTwilioCall,
+    fetchTwilioDataForPendingTwilioCalls,
+    fetchTwilioDataForTwilioParentSid,
+    listTwilioCallsByParentSids,
+    getCallsMissingDuration,
+    getTwilioCallBySid,
+    getTwilioCallByParentSid,
   };
 }
 

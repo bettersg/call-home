@@ -1,52 +1,47 @@
-import { sanitizeDbErrors, TypedEventEmitter } from './lib';
+import { sanitizeDbErrors } from './lib';
 import type { Transaction as TransactionEntity } from '../models';
+import type { WalletService } from './Wallet';
 
-export type TransactionServiceEvent = 'transaction-created';
-export interface TransactionCreatedPayload {
-  type: 'transaction-created';
-  transaction: TransactionEntity;
-}
-export type TransactionServicePayload = TransactionCreatedPayload;
-
-// TODO We're not doing this event emitter thing any more.
-class TransactionService extends TypedEventEmitter<
-  TransactionServiceEvent,
-  TransactionServicePayload
-> {
-  transactionModel: typeof TransactionEntity;
-
-  constructor(transactionModel: typeof TransactionEntity) {
-    super();
-    this.transactionModel = transactionModel;
-  }
-
-  async createTransaction({
+function TransactionService(
+  TransactionModel: typeof TransactionEntity,
+  walletService: ReturnType<typeof WalletService>
+): {
+  createTransaction: (
+    newTransaction: Partial<TransactionEntity>
+  ) => Promise<TransactionEntity>;
+  getTransactionsForUser: (userId: number) => Promise<TransactionEntity[]>;
+} {
+  async function createTransaction({
     reference,
     userId,
     amount,
   }: Partial<TransactionEntity>) {
     const transaction = await sanitizeDbErrors(() =>
-      this.transactionModel.create({
+      TransactionModel.create({
         reference,
         userId,
         amount,
       })
     );
-    this.emit('transaction-created', {
-      type: 'transaction-created',
-      transaction,
-    });
+    await walletService.handleTransactionCreated(transaction);
     return transaction;
   }
 
-  async getTransactionsForUser(userId: number) {
-    return this.transactionModel.findAll({
+  async function getTransactionsForUser(
+    userId: number
+  ): Promise<TransactionEntity[]> {
+    return TransactionModel.findAll({
       where: {
         userId,
       },
       order: [['createdAt', 'DESC']],
     });
   }
+
+  return {
+    createTransaction,
+    getTransactionsForUser,
+  };
 }
 
 export { TransactionService };

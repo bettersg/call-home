@@ -18,7 +18,7 @@ import Contact = require('./Contact');
 import Auth0 = require('./Auth0');
 
 // TOPOLOGICAL SORT LOL
-const transactionService = new Transaction(models.Transaction);
+const walletService = Wallet(models.Wallet);
 const allowlistEntryService = AllowlistEntry(
   models.AllowlistEntry,
   TwilioClient
@@ -35,12 +35,12 @@ const userService = User(
   phoneNumberValidationService
 );
 const contactService = Contact(models.Contact, userService);
+const transactionService = Transaction(models.Transaction, walletService);
 const periodicCreditService = PeriodicCredit(
   models.PeriodicCredit,
   phoneNumberValidationService,
   transactionService
 );
-const walletService = new Wallet(models.Wallet, transactionService);
 const adminGrantedValidationService = AdminGrantedValidation(
   models.AdminGrantedValidation
 );
@@ -61,7 +61,7 @@ const callService = Call(
   userValidationService,
   walletService
 );
-const twilioCallService = new TwilioCall(
+const twilioCallService = TwilioCall(
   models.TwilioCall,
   TwilioClient,
   callService,

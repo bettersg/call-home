@@ -1,39 +1,21 @@
 import { logger } from '../config';
-import type { Wallet as WalletEntity } from '../models';
-import { shouldEnableCallLimits } from './Feature';
 import type {
-  TransactionService,
-  TransactionCreatedPayload,
-} from './Transaction';
+  Transaction as TransactionEntity,
+  Wallet as WalletEntity,
+} from '../models';
+import { shouldEnableCallLimits } from './Feature';
 
-class WalletService {
-  walletModel: typeof WalletEntity;
+interface WalletService {
+  handleTransactionCreated: (
+    transaction: TransactionEntity
+  ) => Promise<WalletEntity | null>;
+  getWalletForUser: (userId: number) => Promise<WalletEntity | null>;
+  createWalletForUser: (userId: number) => Promise<WalletEntity>;
+}
 
-  transactionService: TransactionService;
-
-  constructor(
-    walletModel: typeof WalletEntity,
-    transactionService: TransactionService
-  ) {
-    this.walletModel = walletModel;
-    this.transactionService = transactionService;
-
-    this.transactionService.on(
-      'transaction-created',
-      this.handleTransactionCreated
-    );
-  }
-
-  handleTransactionCreated = async ({
-    transaction,
-  }: TransactionCreatedPayload) => {
-    logger.info('Processing wallet transaction %s', transaction);
-    const { userId, amount } = transaction;
-    return this.processTransaction(userId, amount);
-  };
-
-  createWalletForUser = async (userId: number) => {
-    const currentWallet = await this.walletModel.findOne({
+function WalletService(WalletModel: typeof WalletEntity): WalletService {
+  async function createWalletForUser(userId: number) {
+    const currentWallet = await WalletModel.findOne({
       where: {
         userId,
       },
@@ -41,19 +23,19 @@ class WalletService {
     if (currentWallet) {
       return currentWallet;
     }
-    return this.walletModel.create({ userId });
-  };
+    return WalletModel.create({ userId });
+  }
 
-  getWalletForUser = async (userId: number) => {
-    return this.walletModel.findOne({
+  async function getWalletForUser(userId: number) {
+    return WalletModel.findOne({
       where: {
         userId,
       },
     });
-  };
+  }
 
-  processTransaction = async (userId: number, amount: number) => {
-    const wallet = await this.getWalletForUser(userId);
+  async function processTransaction(userId: number, amount: number) {
+    const wallet = await getWalletForUser(userId);
     // If call limits are not enabled, we don't subtract from the user's balance.
     if (!shouldEnableCallLimits(userId)) {
       return wallet;
@@ -63,7 +45,7 @@ class WalletService {
       logger.error(msg);
       throw new Error(msg);
     }
-    await this.walletModel.update(
+    await WalletModel.update(
       {
         callTime: wallet.callTime + amount,
       },
@@ -73,8 +55,20 @@ class WalletService {
         },
       }
     );
-    return this.getWalletForUser(userId);
+    return getWalletForUser(userId);
+  }
+
+  async function handleTransactionCreated(transaction: TransactionEntity) {
+    logger.info('Processing wallet transaction %s', transaction);
+    const { userId, amount } = transaction;
+    return processTransaction(userId, amount);
+  }
+  return {
+    handleTransactionCreated,
+    getWalletForUser,
+    createWalletForUser,
   };
 }
 
+export { WalletService };
 export default WalletService;

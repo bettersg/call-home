@@ -1,4 +1,3 @@
-import EventEmitter from 'events';
 import type { ValidationError } from 'sequelize';
 
 async function sanitizeDbErrors<T>(asyncFunc: () => Promise<T>): Promise<T> {
@@ -18,21 +17,4 @@ async function sanitizeDbErrors<T>(asyncFunc: () => Promise<T>): Promise<T> {
   }
 }
 
-class TypedEventEmitter<
-  Event extends string,
-  Payload
-> extends EventEmitter.EventEmitter {
-  on(event: Event, subscription: (payload: Payload) => any) {
-    return super.on(event, subscription);
-  }
-
-  once(event: Event, subscription: (payload: Payload) => any) {
-    return super.once(event, subscription);
-  }
-
-  emit(event: Event, payload: Payload) {
-    return super.emit(event, payload);
-  }
-}
-
-export { sanitizeDbErrors, TypedEventEmitter };
+export { sanitizeDbErrors };
