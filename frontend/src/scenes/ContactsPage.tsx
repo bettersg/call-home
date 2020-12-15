@@ -740,7 +740,7 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
           style={{
             width: '100%',
             // 20em to accomodate logout and add contact button
-            maxHeight: 'calc(var(--viewport-height) - 20rem)',
+            maxHeight: 'calc(var(--viewport-height) - 24rem)',
             overflow: 'auto'
           }}
         >
