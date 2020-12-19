@@ -47,8 +47,8 @@ const STRINGS = {
   },
 };
 
-const WP_SERIAL_NUMBER_REGEX = /[A-Z][0-9]+/;
-const FIN_REGEX = /[A-Z][0-9]+[A-Z]/;
+const WP_SERIAL_NUMBER_REGEX = /[A-Za-z][0-9]+/;
+const FIN_REGEX = /[A-Za-z][0-9]+[A-Za-z]/;
 
 interface VerifyWorkpassPresenterProps {
   locale: Locale;
