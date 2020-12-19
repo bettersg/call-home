@@ -24,7 +24,7 @@ export default function SceneRouter() {
     localStorage.setItem('lang', queryLang);
   }
   const locale: Locale =
-    (queryLang as Locale) || (localStorageLang as Locale) || 'en';
+    (queryLang as Locale) || (localStorageLang as Locale) || 'bn';
 
   return (
     <Switch>
