@@ -741,7 +741,8 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
             width: '100%',
             // 20em to accomodate logout and add contact button
             maxHeight: 'calc(var(--viewport-height) - 24rem)',
-            overflow: 'auto'
+            overflow: 'auto',
+            minHeight: '4em'
           }}
         >
           <List
