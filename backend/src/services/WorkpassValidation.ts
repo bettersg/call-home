@@ -115,7 +115,7 @@ function WorkpassValidationService(
       };
     }
 
-    const serialNumberSha256 = hashSha256(serialNumber);
+    const serialNumberSha256 = hashSha256(serialNumber.toUpperCase());
     const existingWorkpassUser = await getValidationBySerialNumberSha256(
       serialNumberSha256
     );
