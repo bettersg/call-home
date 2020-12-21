@@ -20,6 +20,7 @@ const EN_STRINGS = {
     'We need this to verify you’re a foreign worker in Singapore.',
   VERIFY_WORKPASS_DIALOG_TITLE:
     'To continue using Call Home, enter your Work Pass serial number',
+
   VERIFY_WORKPASS_DIALOG_COPY:
     'We need to confirm you’re still a foreign worker in Singapore, so you can continue using Call Home.',
   VERIFY_WORKPASS_ENTER_WORKPASS: 'Enter Work Pass Number',
@@ -247,7 +248,7 @@ export default function VerifyWorkpass({ locale, routePath }: SceneProps) {
     setIsTouched(true);
     if (isValidSerialNumber) {
       try {
-        setApiErrorMessage(' ');
+        setApiErrorMessage('');
         await validateWorkpass(wpSerialNumber);
         await userService?.refreshSelf();
       } catch (error) {
