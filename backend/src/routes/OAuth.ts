@@ -1,20 +1,32 @@
-const url = require('url');
-const querystring = require('querystring');
-const express = require('express');
-const passport = require('passport');
-const { User: UserService } = require('../services');
+import url from 'url';
+import querystring from 'querystring';
+import { Router } from 'express';
+import passport from 'passport';
+import type { User as UserService } from '../services';
 
 const { AUTH0_DOMAIN, AUTH0_CLIENT_ID } = process.env;
 
-function OAuthRoutes() {
-  const router = express.Router();
+function OAuthRoutes(userService: typeof UserService): Router {
+  const router = Router();
 
   router.get(
-    '/login',
+    '/login/facebook',
     passport.authenticate('auth0', {
       scope: `openid email profile`,
       connection: 'facebook',
-    }),
+    } as any),
+    (req, res) => {
+      req.log.info('Received login');
+      return res.redirect('/');
+    }
+  );
+
+  router.get(
+    '/login/google',
+    passport.authenticate('auth0', {
+      scope: `openid email profile`,
+      connection: 'google-oauth2',
+    } as any),
     (req, res) => {
       req.log.info('Received login');
       return res.redirect('/');
@@ -41,8 +53,8 @@ function OAuthRoutes() {
           return res.redirect('/');
         }
 
-        const { returnTo } = req.session;
-        delete req.session.returnTo;
+        const { returnTo } = (req as any).session;
+        delete (req as any).session.returnTo;
 
         const auth0Id = user.user_id || user.id;
         if (!auth0Id) {
@@ -51,16 +63,16 @@ function OAuthRoutes() {
           return null;
         }
 
-        const emails = (user.emails || []).map((email) => email.value);
-        const dbUser = await UserService.getUserByEmails(emails);
+        const emails = (user.emails || []).map((email: any) => email.value);
+        const dbUser = await userService.getUserByEmails(emails);
 
         if (dbUser) {
-          await UserService.updateUser(dbUser.id, {
+          await userService.updateUser(dbUser.id, {
             ...dbUser,
             auth0Id,
           });
         } else {
-          await UserService.registerUserWithAuth0Id(auth0Id, {
+          await userService.registerUserWithAuth0Id(auth0Id, {
             name: user.displayName,
             email: emails[0], // this is intentionally undefined sometimes
           });
@@ -86,10 +98,10 @@ function OAuthRoutes() {
     });
     logoutURL.search = searchString;
 
-    return res.redirect(logoutURL);
+    return res.redirect(String(logoutURL));
   });
 
   return router;
 }
 
-module.exports = OAuthRoutes;
+export default OAuthRoutes;

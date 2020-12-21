@@ -13,12 +13,12 @@ import AllowlistEntry from './AllowlistEntry';
 import AdminGrantedValidation from './AdminGrantedValidation';
 import PhoneNumberValidation from './PhoneNumberValidation';
 import WorkpassValidation from './WorkpassValidation';
-import OAuth = require('./OAuth');
+import OAuth from './OAuth';
 
 const callRoute = Call(services.Call, services.TwilioCall, services.Contact);
 const callTokenRoute = CallToken();
 const twilioRoute = Twilio(services.Call, services.TwilioCall);
-const oAuthRoute = OAuth();
+const oAuthRoute = OAuth(services.User);
 const phoneNumberValidationRoute = PhoneNumberValidation(
   services.User,
   services.Auth0,

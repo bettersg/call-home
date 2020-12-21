@@ -9,7 +9,9 @@ const IS_PROD = process.env.NODE_ENV === 'production';
 export default function PassportConfig(app) {
   const { APP_SECRET } = process.env;
   const sessionConfig = {
-    cookie: {},
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 30, // 30 day expiry
+    },
     secret: APP_SECRET,
     resave: false,
     saveUninitialized: true,

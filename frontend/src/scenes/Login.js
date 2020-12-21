@@ -15,6 +15,7 @@ const EN_STRINGS = {
   DISPLAY_SUBTITLE: 'Make free calls to loved ones back home in Bangladesh',
   DATA_CONSUMPTION_COPY: '100MB = 40 min talk',
   FACEBOOK_SIGN_UP: 'Sign up with Facebook',
+  GOOGLE_SIGN_UP: 'Sign up with Google',
 };
 const STRINGS = {
   en: EN_STRINGS,
@@ -44,7 +45,17 @@ const FacebookButton = withStyles(() => ({
     backgroundColor: '#1877F2',
     width: '100%',
     color: 'white',
-    padding: '10px',
+    padding: '19px',
+  },
+}))(Button);
+
+const GoogleButton = withStyles(() => ({
+  root: {
+    marginTop: '60px',
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    color: 'grey',
+    fontWeight: 'bold',
   },
 }))(Button);
 
@@ -60,6 +71,7 @@ export default function Login({ locale, routePath }) {
       style={{
         background: 'no-repeat url(/images/landing_bg.svg) bottom center',
         backgroundSize: 'contain',
+        overflow: 'auto',
       }}
     >
       <DetectBrowserSnackbar />
@@ -79,12 +91,28 @@ export default function Login({ locale, routePath }) {
             {STRINGS[locale].DATA_CONSUMPTION_COPY}
           </Typography>
         </DataConsumptionCopy>
+        <GoogleButton
+          className="sign-up-button"
+          variant="contained"
+          disableElevation
+          onClick={() => {
+            window.location = '/oauth/login/google';
+          }}
+          style={{ marginTop: '36px' }}
+        >
+          <img
+            style={{ height: '3rem' }}
+            alt=""
+            src="/images/google_login.svg"
+          />
+          {STRINGS[locale].GOOGLE_SIGN_UP}
+        </GoogleButton>
         <FacebookButton
           className="sign-up-button"
           variant="contained"
           disableElevation
           onClick={() => {
-            window.location = '/oauth/login';
+            window.location = '/oauth/login/facebook';
           }}
           style={{ marginTop: '36px' }}
         >
