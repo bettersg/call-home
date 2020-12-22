@@ -3,10 +3,11 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
+import Link from '@material-ui/core/Link';
+import FeedbackIcon from '@material-ui/icons/Feedback';
 import Container from '../components/shared/Container';
 import DetectBrowserSnackbar from '../components/shared/DetectBrowserSnackbar';
 import { useRouting } from './paths';
-import FeedbackIcon from '@material-ui/icons/Feedback';
 
 import './Login.css';
 
@@ -16,7 +17,7 @@ const EN_STRINGS = {
   DISPLAY_SUBTITLE: 'Make free calls to loved ones back home in Bangladesh',
   DATA_CONSUMPTION_COPY: '100MB = 40 min talk',
   FACEBOOK_SIGN_UP: 'Sign up with Facebook',
-  FACEBOOK_MESSAGE: 'Can\'t sign in? Message us!'
+  FACEBOOK_MESSAGE: "Can't sign in? Message us!",
 };
 const STRINGS = {
   en: EN_STRINGS,
@@ -27,7 +28,7 @@ const STRINGS = {
     DISPLAY_SUBTITLE: 'ভারতে ফিরে বাংলাদেশে প্রিয়জনকে বিনামূল্যে কল করুন',
     /* DATA_CONSUMPTION_COPY: '100MB = 40 min talk', */
     FACEBOOK_SIGN_UP: 'ফেসবুক দিয়ে সাইন আপ',
-    FACEBOOK_MESSAGE: 'সাইন ইন করতে পারবেন না? আমাদের বার্তা!'
+    FACEBOOK_MESSAGE: 'সাইন ইন করতে পারবেন না? আমাদের বার্তা!',
   },
 };
 
@@ -50,15 +51,6 @@ const FacebookButton = withStyles(() => ({
     padding: '10px',
   },
 }))(Button);
-
-const ActionLink = withStyles((theme) => ({
-  root: {
-    marginTop: '36px',
-    cursor: 'pointer',
-    display: 'flex',
-    color: theme.palette.primary[900],
-  },
-}))(Typography);
 
 export default function Login({ locale, routePath }) {
   const routeResult = useRouting(routePath);
@@ -102,10 +94,15 @@ export default function Login({ locale, routePath }) {
         >
           {STRINGS[locale].FACEBOOK_SIGN_UP}
         </FacebookButton>
-        <ActionLink variant="body1" role="button" onClick={()=>{window.location.href='https://m.me/callhomesg'}}>
+        <Link
+          className
+          href="https://m.me/callhomesg"
+          variant="body1"
+          style={{ marginTop: '36px', display: 'flex' }}
+        >
           <FeedbackIcon />
           {STRINGS[locale].FACEBOOK_MESSAGE}
-        </ActionLink>
+        </Link>
       </div>
     </Container>
   );
