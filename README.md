@@ -21,6 +21,9 @@ Backend runs on port `4000` while Frontend runs on port `3000` and can be run us
 ### Quick Start
 
 - Get a working copy of `.env`
+
+- from project root, run `npm run init`
+
 - Start Backend:
 
 ```bash
