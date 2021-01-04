@@ -28,11 +28,7 @@ import {
 } from '../components/shared/RoundedButton';
 import ContactsDialog from '../components/shared/ContactsDialog';
 import ReportIssueDialog from '../components/shared/ReportIssueDialog';
-import {
-  useUserService,
-  useContactService,
-  useFeatureService,
-} from '../contexts';
+import { useUserService, useContactService } from '../contexts';
 import { ApiValidationError } from '../services/apiClient';
 import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
 import {
@@ -591,7 +587,6 @@ function VerifyWorkpassBanner({ locale }: { locale: Locale }) {
 
 export default function ContactsPage({ locale, routePath }: SceneProps) {
   const routeResult = useRouting(routePath);
-  const [featureState] = useFeatureService();
   const [userState, userService] = useUserService();
   const { me: user } = userState || {};
   const [contactState, contactService] = useContactService();
@@ -632,9 +627,6 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
   }
   if (activeContact) {
     return <Redirect to={PATHS.CALLING} />;
-  }
-  if (!featureState) {
-    return null;
   }
 
   const logout = async () => {
@@ -870,8 +862,7 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
           />
         ) : null}
       </div>
-      {featureState.SHOW_WORKPASS_SCREEN &&
-      !user?.verificationState.workpass ? (
+      {!user?.verificationState.workpass ? (
         <VerifyWorkpassBanner locale={locale} />
       ) : null}
     </Container>

@@ -1,22 +1,15 @@
 import { noRedirectClient, UnauthenticatedError } from './apiClient';
 import ObservableService from './observableService';
 
-export interface FeatureState {
-  CALL_LIMITS: boolean;
-  WORKPASS_VALIDATION: boolean;
-  SHOW_WORKPASS_SCREEN: boolean;
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface FeatureState {}
 
 const featureEndpoint = '/features';
 
 export default class FeatureService extends ObservableService<FeatureState> {
   constructor() {
     super();
-    this.state = {
-      CALL_LIMITS: true,
-      WORKPASS_VALIDATION: false,
-      SHOW_WORKPASS_SCREEN: false,
-    };
+    this.state = {};
   }
 
   async refreshFeatures(): Promise<FeatureState> {

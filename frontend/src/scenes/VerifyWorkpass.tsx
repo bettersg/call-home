@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
 import { useTheme } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import CloseIcon from '@material-ui/icons/Close';
-import { useFeatureService, useUserService } from '../contexts';
+import { useUserService } from '../contexts';
 import Container from '../components/shared/Container';
-import { ErrorButton, PrimaryButton } from '../components/shared/RoundedButton';
-import PATHS, { useRouting } from './paths';
+import { PrimaryButton } from '../components/shared/RoundedButton';
+import { useRouting } from './paths';
 import { validateWorkpass } from '../services/WorkpassValidation';
 import { Locale, SceneProps } from './types';
 import './VerifyWorkpass.css';
@@ -56,21 +54,15 @@ interface VerifyWorkpassPresenterProps {
   wpSerialNumber: string;
   onSubmit: (event: React.FormEvent) => void;
   onWpSerialNumberChanged: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  navToContacts: () => void;
   errorMessage?: string;
-  allowCancel: boolean;
 }
 
 function VerificationModal({
   locale,
   navToForm,
-  navToContacts,
-  allowCancel,
 }: {
   locale: Locale;
   navToForm: () => unknown;
-  navToContacts: () => unknown;
-  allowCancel: boolean;
 }): JSX.Element {
   return (
     <Container style={{ height: 'var(--viewport-height)' }}>
@@ -110,17 +102,6 @@ function VerificationModal({
       >
         {STRINGS[locale].VERIFY_WORKPASS_ENTER_WORKPASS}
       </PrimaryButton>
-      {allowCancel ? (
-        <ErrorButton
-          disableFocusRipple
-          style={{
-            marginTop: '8px',
-          }}
-          onClick={navToContacts}
-        >
-          {STRINGS[locale].VERIFY_WORKPASS_CANCEL}
-        </ErrorButton>
-      ) : null}
     </Container>
   );
 }
@@ -131,8 +112,6 @@ function VerifyWorkpassPresenter({
   onSubmit,
   onWpSerialNumberChanged,
   errorMessage,
-  navToContacts,
-  allowCancel,
 }: VerifyWorkpassPresenterProps) {
   const theme = useTheme();
   const [shouldShowModal, setShouldShowModal] = useState(true);
@@ -145,10 +124,8 @@ function VerifyWorkpassPresenter({
   if (shouldShowModal) {
     return (
       <VerificationModal
-        navToContacts={navToContacts}
         navToForm={() => setShouldShowModal(false)}
         locale={locale}
-        allowCancel={allowCancel}
       />
     );
   }
@@ -213,17 +190,6 @@ function VerifyWorkpassPresenter({
         >
           {STRINGS[locale].NEXT}
         </PrimaryButton>
-        {allowCancel ? (
-          <ErrorButton
-            disableFocusRipple
-            style={{
-              marginTop: '8px',
-            }}
-            onClick={navToContacts}
-          >
-            {STRINGS[locale].VERIFY_WORKPASS_CANCEL}
-          </ErrorButton>
-        ) : null}
       </form>
     </Container>
   );
@@ -232,7 +198,6 @@ function VerifyWorkpassPresenter({
 export default function VerifyWorkpass({ locale, routePath }: SceneProps) {
   const routeResult = useRouting(routePath);
   const [, userService] = useUserService();
-  const [featureState] = useFeatureService();
 
   const [wpSerialNumber, setWpSerialNumber] = useState('');
   const [apiErrorMessage, setApiErrorMessage] = useState('');
@@ -284,13 +249,9 @@ export default function VerifyWorkpass({ locale, routePath }: SceneProps) {
     setWpSerialNumber(event.target.value);
   };
 
-  const navToContacts = () => userService?.setShouldDismissWorkpasssModal(true);
-
   if (routeResult.shouldRender) {
     return routeResult.renderElement;
   }
-
-  const allowCancel = !featureState?.WORKPASS_VALIDATION;
 
   let errorMessage;
   if (apiErrorMessage) {
@@ -314,8 +275,6 @@ export default function VerifyWorkpass({ locale, routePath }: SceneProps) {
         wpSerialNumber,
         setWpSerialNumber,
         errorMessage,
-        navToContacts,
-        allowCancel,
       }}
     />
   );

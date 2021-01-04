@@ -77,10 +77,7 @@ function UserValidationService(
     if (verificationState.adminGranted) {
       return true;
     }
-    if (featureService.shouldEnableWorkpassValidation(userId)) {
-      return verificationState.phoneNumber && verificationState.workpass;
-    }
-    return verificationState.phoneNumber;
+    return verificationState.phoneNumber && verificationState.workpass;
   }
 
   return {

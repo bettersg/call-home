@@ -3,7 +3,7 @@ import { Redirect } from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import ContainerWrong from '../components/shared/Container';
-import { useFeatureService, useUserService } from '../contexts';
+import { useUserService } from '../contexts';
 import RoundedButton, {
   PrimaryButton,
 } from '../components/shared/RoundedButton';
@@ -51,7 +51,6 @@ function formatRateLimitExpiry(rateLimitExpiryMillis: number) {
 export default function VerificationPhoneNumberCode({ locale }: SceneProps) {
   const [userState, userService] = useUserService();
   const { me: user, verificationPhoneNumber: phoneNumber } = userState || {};
-  const [featureState, featureService] = useFeatureService();
   const [code, setCode] = useState('');
   const [hasBadOtpError, setHasBadOtpError] = useState(false);
   const [hasAllowlistError, setHasAllowlistError] = useState(false);
@@ -63,12 +62,6 @@ export default function VerificationPhoneNumberCode({ locale }: SceneProps) {
       (userService as any).refreshSelf();
     }
   }, [userService]);
-
-  useEffect(() => {
-    if (featureService) {
-      featureService.refreshFeatures();
-    }
-  }, [featureService]);
 
   useEffect(() => {
     setInterval(() => setCurrentTime(new Date()), 1000);
@@ -97,23 +90,14 @@ export default function VerificationPhoneNumberCode({ locale }: SceneProps) {
     return <Redirect to={PATHS.LOGIN} />;
   }
 
-  if (!featureState || featureState.WORKPASS_VALIDATION === undefined) {
-    return null;
-  }
-
   // TODO This can't use the unified routing because that doesn't accommodate the phone number verification code route.
   let isUserVerified;
 
   if (user.verificationState.adminGranted) {
     isUserVerified = true;
-  } else if (
-    featureState.WORKPASS_VALIDATION ||
-    featureState.SHOW_WORKPASS_SCREEN
-  ) {
+  } else {
     isUserVerified =
       user.verificationState.phoneNumber && user.verificationState.workpass;
-  } else {
-    isUserVerified = user.verificationState.phoneNumber;
   }
 
   if (isUserVerified) {

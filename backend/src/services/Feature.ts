@@ -1,38 +1,4 @@
-const {
-  ENABLE_ALLOWLIST_SMS,
-  ENABLE_WORKPASS_VALIDATION_ALL,
-  ENABLE_WORKPASS_VALIDATION_SCREEN,
-  WORKPASS_VALIDATION_ENABLED_NUMBERS = '',
-  ENABLE_WORKPASS_VALIDATION_NEW_USERS,
-  ENABLE_WORKPASS_NEW_USER_CUT_OFF = 0,
-  DISABLE_ALLOWLIST,
-} = process.env;
-const workpassValidationNumbers = WORKPASS_VALIDATION_ENABLED_NUMBERS.split(
-  ','
-).map(Number);
-const enableWorkpassNewUserCutOff =
-  Number(ENABLE_WORKPASS_NEW_USER_CUT_OFF) || 0;
-
-function shouldEnableWorkpassValidation(userId: number): boolean {
-  if (ENABLE_WORKPASS_VALIDATION_ALL) {
-    return true;
-  }
-  if (workpassValidationNumbers.includes(userId)) {
-    return true;
-  }
-  return (
-    Boolean(ENABLE_WORKPASS_VALIDATION_NEW_USERS) &&
-    Boolean(enableWorkpassNewUserCutOff) &&
-    userId >= enableWorkpassNewUserCutOff
-  );
-}
-
-function shouldEnableWorkpassValidationScreen(userId: number): boolean {
-  return (
-    shouldEnableWorkpassValidation(userId) ||
-    Boolean(ENABLE_WORKPASS_VALIDATION_SCREEN)
-  );
-}
+const { ENABLE_ALLOWLIST_SMS, DISABLE_ALLOWLIST } = process.env;
 
 function shouldEnableAllowlistSms(): boolean {
   return Boolean(ENABLE_ALLOWLIST_SMS);
@@ -58,8 +24,6 @@ function getPeriodicCreditCohort(
 }
 
 export {
-  shouldEnableWorkpassValidation,
-  shouldEnableWorkpassValidationScreen,
   getPeriodicCreditCohort,
   shouldDisableAllowlist,
   shouldEnableAllowlistSms,

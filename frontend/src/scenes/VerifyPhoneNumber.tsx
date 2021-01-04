@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import TextFieldWrong from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';

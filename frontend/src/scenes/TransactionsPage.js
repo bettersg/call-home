@@ -29,7 +29,7 @@ export default function TransactionsPage() {
       adminService.refreshTransactions(userId);
       adminService.getUsers();
     }
-  }, [adminService]);
+  }, [adminService, userId]);
 
   const adminRedirect = useAdminRoute();
   if (adminRedirect) {

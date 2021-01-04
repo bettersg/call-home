@@ -26,21 +26,12 @@ function routeFromState(
     return PATHS.LOGIN;
   }
 
-  if (featureState.WORKPASS_VALIDATION === undefined) {
-    return null;
-  }
-
   let isUserVerified;
   if (user.verificationState.adminGranted) {
     isUserVerified = true;
-  } else if (
-    featureState.WORKPASS_VALIDATION ||
-    featureState.SHOW_WORKPASS_SCREEN
-  ) {
+  } else {
     isUserVerified =
       user.verificationState.phoneNumber && user.verificationState.workpass;
-  } else {
-    isUserVerified = user.verificationState.phoneNumber;
   }
 
   if (isUserVerified) {
