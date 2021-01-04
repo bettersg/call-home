@@ -2,7 +2,7 @@ import { DateTime, Duration } from 'luxon';
 import { Op } from 'sequelize';
 import { sanitizeDbErrors } from './lib';
 import type { PeriodicCredit as PeriodicCreditEntity } from '../models';
-import { shouldEnableCallLimits, getPeriodicCreditCohort } from './Feature';
+import { getPeriodicCreditCohort } from './Feature';
 import type { PhoneNumberValidation, Transaction } from './index';
 
 const cohorts = {
@@ -44,8 +44,8 @@ function PeriodicCreditService(
     const creditInterval = await getUserCohort(userId);
     return {
       timeAsIso: getNextUpdateEpoch(creditInterval).toISOString(),
-      amountAsMinutes: cohorts[creditInterval].as("minutes"),
-    }
+      amountAsMinutes: cohorts[creditInterval].as('minutes'),
+    };
   }
 
   async function getPeriodicCreditAfterEpoch(
@@ -65,9 +65,6 @@ function PeriodicCreditService(
   async function tryCreatePeriodicCredit(
     userId: number
   ): Promise<PeriodicCreditEntity | null> {
-    if (!shouldEnableCallLimits(userId)) {
-      return null;
-    }
     // We don't create credits for users by default. We only credit users when they log in/interact with the app in some way. As such, we need to ensure that we only credit users once per period.
     // We do this by determining the start of a top up interval, the "epoch".
     // If the user has a credit that is later than the top up interval, the user does not get a credit.

@@ -2,7 +2,6 @@ import { DateTime } from 'luxon';
 import { Op } from 'sequelize';
 import { logger } from '../config';
 import { sanitizeDbErrors } from './lib';
-import { shouldEnableCallLimits } from './Feature';
 import type { Call as CallEntity } from '../models';
 import type { Contact, Wallet, User, UserValidation } from '.';
 
@@ -42,9 +41,7 @@ function CallService(
       throw new Error(`Authorization error for user ${userId}`);
     }
 
-    if (shouldEnableCallLimits(userId)) {
-      await checkWalletBalance(userId);
-    }
+    await checkWalletBalance(userId);
 
     const userContacts = await contactService.listContactsByUserId(userId);
 

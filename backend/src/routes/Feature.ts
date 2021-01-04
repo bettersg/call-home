@@ -1,14 +1,15 @@
-import express from 'express';
+import express, { Router } from 'express';
 import { UserInjectedRequest } from './middlewares';
 import type { Feature } from '../services';
 
-function FeaturesRoutes(featureService: typeof Feature) {
+function FeaturesRoutes(featureService: typeof Feature): Router {
   const router = express.Router();
 
   router.get('/', async (req: UserInjectedRequest, res) => {
     const userId = req.user.id;
     const features = {
-      CALL_LIMITS: featureService.shouldEnableCallLimits(userId),
+      // TODO Remove this after 11/01/2021
+      CALL_LIMITS: true,
       WORKPASS_VALIDATION: featureService.shouldEnableWorkpassValidation(
         userId
       ),

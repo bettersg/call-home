@@ -1,6 +1,4 @@
 const {
-  CALL_LIMITS_ENABLED_NUMBERS = '',
-  ENABLE_CALL_LIMIT_ALL,
   ENABLE_ALLOWLIST_SMS,
   ENABLE_WORKPASS_VALIDATION_ALL,
   ENABLE_WORKPASS_VALIDATION_SCREEN,
@@ -9,19 +7,11 @@ const {
   ENABLE_WORKPASS_NEW_USER_CUT_OFF = 0,
   DISABLE_ALLOWLIST,
 } = process.env;
-const callLimitNumbers = CALL_LIMITS_ENABLED_NUMBERS.split(',').map(Number);
 const workpassValidationNumbers = WORKPASS_VALIDATION_ENABLED_NUMBERS.split(
   ','
 ).map(Number);
 const enableWorkpassNewUserCutOff =
   Number(ENABLE_WORKPASS_NEW_USER_CUT_OFF) || 0;
-
-// TODO remove this flag
-function shouldEnableCallLimits(userId: number): boolean {
-  return (
-    Boolean(ENABLE_CALL_LIMIT_ALL) || callLimitNumbers.includes(Number(userId))
-  );
-}
 
 function shouldEnableWorkpassValidation(userId: number): boolean {
   if (ENABLE_WORKPASS_VALIDATION_ALL) {
@@ -68,7 +58,6 @@ function getPeriodicCreditCohort(
 }
 
 export {
-  shouldEnableCallLimits,
   shouldEnableWorkpassValidation,
   shouldEnableWorkpassValidationScreen,
   getPeriodicCreditCohort,

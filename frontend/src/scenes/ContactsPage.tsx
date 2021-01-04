@@ -645,8 +645,7 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
   const userCallTimeDuration = Duration.fromObject({
     seconds: (user as any).callTime,
   });
-  const callLimitExceeded =
-    featureState?.CALL_LIMITS && userCallTimeDuration.as('minutes') < 1;
+  const callLimitExceeded = userCallTimeDuration.as('minutes') < 1;
 
   const subtitleContent = callLimitExceeded ? (
     <>
@@ -698,15 +697,13 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
       </Typography>
       {subtitleContent}
       <div style={{ marginBottom: '1rem' }}>
-        {featureState.CALL_LIMITS ? (
-          <CallLimitInfo
-            callLimitExceeded={callLimitExceeded}
-            nextRefreshAmount={nextRefreshAmount}
-            nextRefreshDuration={nextRefreshDuration}
-            locale={locale}
-            userCallTimeDuration={userCallTimeDuration}
-          />
-        ) : null}
+        <CallLimitInfo
+          callLimitExceeded={callLimitExceeded}
+          nextRefreshAmount={nextRefreshAmount}
+          nextRefreshDuration={nextRefreshDuration}
+          locale={locale}
+          userCallTimeDuration={userCallTimeDuration}
+        />
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Typography variant="body1">

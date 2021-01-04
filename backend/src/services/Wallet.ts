@@ -3,7 +3,6 @@ import type {
   Transaction as TransactionEntity,
   Wallet as WalletEntity,
 } from '../models';
-import { shouldEnableCallLimits } from './Feature';
 
 interface WalletService {
   handleTransactionCreated: (
@@ -36,10 +35,6 @@ function WalletService(WalletModel: typeof WalletEntity): WalletService {
 
   async function processTransaction(userId: number, amount: number) {
     const wallet = await getWalletForUser(userId);
-    // If call limits are not enabled, we don't subtract from the user's balance.
-    if (!shouldEnableCallLimits(userId)) {
-      return wallet;
-    }
     if (!wallet) {
       const msg = `No wallet found for userId ${userId}`;
       logger.error(msg);
