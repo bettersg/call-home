@@ -9,6 +9,7 @@ import User from './User';
 import Transaction from './Transaction';
 import PeriodicCredit from './PeriodicCredit';
 import Contact from './Contact';
+import Dorm from './Dorm';
 import AllowlistEntry from './AllowlistEntry';
 import AdminGrantedValidation from './AdminGrantedValidation';
 import PhoneNumberValidation from './PhoneNumberValidation';
@@ -17,6 +18,7 @@ import OAuth from './OAuth';
 
 const callRoute = Call(services.Call, services.TwilioCall, services.Contact);
 const callTokenRoute = CallToken();
+const dormRoute = Dorm(services.Dorm);
 const twilioRoute = Twilio(services.Call, services.TwilioCall);
 const oAuthRoute = OAuth(services.User);
 const phoneNumberValidationRoute = PhoneNumberValidation(
@@ -46,6 +48,7 @@ export {
   callRoute as Call,
   callTokenRoute as CallToken,
   contactRoute as Contact,
+  dormRoute as Dorm,
   featureRoute as Feature,
   middlewares,
   oAuthRoute as OAuth,

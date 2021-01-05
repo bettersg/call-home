@@ -14,10 +14,12 @@ import PhoneNumberValidation from './PhoneNumberValidation';
 import WorkpassValidation from './WorkpassValidation';
 import * as WorkpassClient from './WorkpassClient';
 import UserValidation, { VerificationState } from './UserValidation';
+import Dorm from './Dorm';
 import Contact = require('./Contact');
 import Auth0 = require('./Auth0');
 
 // TOPOLOGICAL SORT LOL
+const dormService = Dorm(models.Dorm);
 const walletService = Wallet(models.Wallet);
 const allowlistEntryService = AllowlistEntry(
   models.AllowlistEntry,
@@ -78,6 +80,7 @@ export {
   auth0Service as Auth0,
   callService as Call,
   contactService as Contact,
+  dormService as Dorm,
   periodicCreditService as PeriodicCredit,
   transactionService as Transaction,
   twilioCallService as TwilioCall,

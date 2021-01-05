@@ -24,5 +24,6 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'import/extensions': 'off',
     'prettier/prettier': ['error'],
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
   },
 };

@@ -16,6 +16,7 @@ import {
   Call as callRoutes,
   CallToken as callTokenRoutes,
   Contact as contactRoutes,
+  Dorm as dormRoutes,
   Feature as featureRoutes,
   OAuth as oauthRoutes,
   PeriodicCredit as periodicCreditRoutes,
@@ -84,6 +85,7 @@ app.use('/users', secureRoutes, requireVerified, contactRoutes);
 app.use('/users', secureRoutes, requireVerified, callRoutes);
 app.use('/users', secureRoutes, requireVerified, transactionRoutes);
 app.use('/allowlistEntries', secureRoutes, allowlistRoutes);
+app.use('/dorms', secureRoutes, dormRoutes);
 app.use('/periodic-credit', secureRoutes, periodicCreditRoutes);
 
 if (NODE_ENV === 'development') {
