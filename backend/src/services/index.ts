@@ -11,6 +11,7 @@ import * as Feature from './Feature';
 import AllowlistEntry from './AllowlistEntry';
 import AdminGrantedValidation from './AdminGrantedValidation';
 import PhoneNumberValidation from './PhoneNumberValidation';
+import DormValidation from './DormValidation';
 import WorkpassValidation from './WorkpassValidation';
 import * as WorkpassClient from './WorkpassClient';
 import UserValidation, { VerificationState } from './UserValidation';
@@ -28,6 +29,10 @@ const allowlistEntryService = AllowlistEntry(
 const auth0Service = Auth0();
 const phoneNumberValidationService = PhoneNumberValidation(
   models.PhoneNumberValidation
+);
+const dormValidationService = DormValidation(
+  models.DormValidation,
+  dormService
 );
 
 const userService = User(
@@ -81,6 +86,7 @@ export {
   callService as Call,
   contactService as Contact,
   dormService as Dorm,
+  dormValidationService as DormValidation,
   periodicCreditService as PeriodicCredit,
   transactionService as Transaction,
   twilioCallService as TwilioCall,

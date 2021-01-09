@@ -8,6 +8,7 @@ import PeriodicCredit from './PeriodicCredit';
 import Transaction from './Transaction';
 import TwilioCall, { CallStatus } from './TwilioCall';
 import User, { UserType } from './User';
+import DormValidation from './DormValidation';
 import PhoneNumberValidation from './PhoneNumberValidation';
 import Wallet from './Wallet';
 import WorkpassValidation from './WorkpassValidation';
@@ -18,6 +19,7 @@ sequelize.addModels([
   Call,
   Contact,
   Dorm,
+  DormValidation,
   PeriodicCredit,
   Transaction,
   TwilioCall,
@@ -67,6 +69,14 @@ WorkpassValidation.belongsTo(User, {
   foreignKey: 'userId',
 });
 
+// DormValidation <-> User
+User.hasOne(DormValidation, {
+  foreignKey: 'userId',
+});
+DormValidation.belongsTo(User, {
+  foreignKey: 'userId',
+});
+
 // AdminGrantedValidation <-> User
 User.hasOne(AdminGrantedValidation, {
   foreignKey: 'userId',
@@ -105,6 +115,7 @@ export {
   CallStatus,
   Contact,
   Dorm,
+  DormValidation,
   PeriodicCredit,
   Transaction,
   TwilioCall,

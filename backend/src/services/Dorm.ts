@@ -45,6 +45,7 @@ function DormService(DormModel: typeof DormEntity) {
 
   return {
     createDorm,
+    getDorm,
     getDorms,
     deleteDorm,
     updateDorm,

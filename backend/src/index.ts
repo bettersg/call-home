@@ -17,6 +17,7 @@ import {
   CallToken as callTokenRoutes,
   Contact as contactRoutes,
   Dorm as dormRoutes,
+  DormValidation as dormValidationRoutes,
   Feature as featureRoutes,
   OAuth as oauthRoutes,
   PeriodicCredit as periodicCreditRoutes,
@@ -78,14 +79,17 @@ app.use(
 
 // Also ensure that twilio is NOT secured by oauth, just twilio auth
 app.use('/twilio', twilioRoutes);
+app.use('/call-token', secureRoutes, requireVerified, callTokenRoutes);
 
 app.use('/users', secureRoutes, userRoutes);
-app.use('/call-token', secureRoutes, requireVerified, callTokenRoutes);
 app.use('/users', secureRoutes, requireVerified, contactRoutes);
 app.use('/users', secureRoutes, requireVerified, callRoutes);
 app.use('/users', secureRoutes, requireVerified, transactionRoutes);
-app.use('/allowlistEntries', secureRoutes, allowlistRoutes);
 app.use('/dorms', secureRoutes, dormRoutes);
+app.use('/dorm-validations', secureRoutes, dormValidationRoutes);
+
+// TODO these names are not standard kebab-case plurals
+app.use('/allowlistEntries', secureRoutes, allowlistRoutes);
 app.use('/periodic-credit', secureRoutes, periodicCreditRoutes);
 
 if (NODE_ENV === 'development') {
