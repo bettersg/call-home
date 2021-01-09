@@ -1,26 +1,18 @@
-import { UserWalletResponse } from '@call-home/shared/types/User';
-import React, { useCallback, useState, useEffect, FormEvent } from 'react';
-import Tabs from '@material-ui/core/Tabs';
-import Switch from '@material-ui/core/Switch';
-import Tab from '@material-ui/core/Tab';
+import React, { useState, useEffect, FormEvent } from 'react';
 import Button from '@material-ui/core/Button';
+import Switch from '@material-ui/core/Switch';
 import FormControl from '@material-ui/core/FormControl';
-import Typography from '@material-ui/core/Typography';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import CloseIcon from '@material-ui/icons/Close';
 import { DataGrid, ColDef } from '@material-ui/data-grid';
-import { Link } from 'react-router-dom';
 import { FormControlLabel, Grid } from '@material-ui/core';
-import { useAllowlistService, useAdminService } from '../contexts';
-import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
-import { ApiValidationError } from '../services/apiClient';
-import useAdminRoute from '../util/useAdminRoute';
-import PATHS from './paths';
-import { formatSecondsWithHours } from '../util/timeFormatters';
-import { SceneProps } from './types';
+import { useAllowlistService } from 'contexts';
+import PhoneNumberMasks from 'components/shared/PhoneNumberMask';
+import { ApiValidationError } from 'services/apiClient';
 
 interface AllowlistGridRow {
   id: string;
@@ -28,7 +20,7 @@ interface AllowlistGridRow {
   destinationCountry: string;
 }
 
-function AllowlistTabContent() {
+export default function AllowlistTabContent() {
   const [allowlistState, allowlistService] = useAllowlistService();
   const { allowlistEntries = [] } = allowlistState;
   const [newAllowlistPhoneNumber, setNewAllowlistPhoneNumber] = useState('');
@@ -192,12 +184,14 @@ function AllowlistTabContent() {
       hideSortIcons: true,
       renderCell(row) {
         return (
-          <IconButton role="button" style={{ color: 'red' }}>
-            <CloseIcon
-              onClick={() => {
-                deleteAllowlistEntry(Number(row.row.id));
-              }}
-            />
+          <IconButton
+            role="button"
+            style={{ color: 'red' }}
+            onClick={() => {
+              deleteAllowlistEntry(Number(row.row.id));
+            }}
+          >
+            <CloseIcon />
           </IconButton>
         );
       },
@@ -229,140 +223,6 @@ function AllowlistTabContent() {
           rowsPerPageOptions={[10, 25, 100]}
         />
       </div>
-    </>
-  );
-}
-
-interface UserGridRow {
-  id: number;
-  name: string;
-  phoneNumber: string | null;
-  destinationCountry: string;
-  callTime: string | null;
-  hasAdminGrantedValidation: boolean;
-}
-
-function UserTabContent() {
-  const [adminState, adminService] = useAdminService();
-  const { users = [] } = adminState || {};
-
-  useEffect(() => {
-    if (adminService) {
-      adminService.getUsers();
-    }
-  }, [adminService]);
-
-  const columns: ColDef[] = [
-    { field: 'id', headerName: 'Id', width: 80 },
-    { field: 'name', headerName: 'Name', width: 300 },
-    { field: 'phoneNumber', headerName: 'Phone Number', width: 150 },
-    { field: 'destinationCountry', headerName: 'Country' },
-    {
-      field: 'hasAdminGrantedValidation',
-      headerName: 'Special access',
-      width: 150,
-      renderCell(rowData) {
-        const { hasAdminGrantedValidation, id } = rowData.row as UserGridRow;
-        return (
-          <Switch
-            name="hasAdminGrantedValidation"
-            checked={Boolean(hasAdminGrantedValidation)}
-            onClick={() => {
-              if (rowData.value) {
-                adminService?.revokeSpecialAccess(Number(id));
-              } else {
-                adminService?.grantSpecialAccess(Number(id));
-              }
-            }}
-          />
-        );
-      },
-    },
-    { field: 'callTime', headerName: 'Call Time Balance', width: 300 },
-    {
-      field: 'transactionHistoryButton',
-      headerName: 'Transaction History',
-      width: 400,
-      renderCell(rowData) {
-        return (
-          <Link to={`${PATHS.TRANSACTIONS}?user=${rowData.row.id}`}>View</Link>
-        );
-      },
-    },
-  ];
-
-  const rows: UserGridRow[] = users.map((user: UserWalletResponse) => ({
-    id: user.id,
-    name: user.name,
-    phoneNumber: user.phoneNumber,
-    destinationCountry: user.destinationCountry,
-    callTime:
-      user.callTime === undefined || user.callTime === null
-        ? ''
-        : formatSecondsWithHours(user.callTime),
-    hasAdminGrantedValidation: user.verificationState.adminGranted,
-  }));
-
-  return (
-    <>
-      <div style={{ margin: '8px' }}>
-        <Typography variant="h5" component="h2">
-          Users
-        </Typography>
-        <DataGrid
-          autoHeight
-          rows={rows}
-          columns={columns}
-          pagination
-          rowsPerPageOptions={[10, 25, 100]}
-        />
-      </div>
-    </>
-  );
-}
-
-function TabPanel({
-  value,
-  index,
-  children,
-}: {
-  value: number;
-  index: number;
-  children: JSX.Element;
-}) {
-  if (value !== index) {
-    return null;
-  }
-  return children;
-}
-
-export default function AdminPage({ locale, routePath }: SceneProps) {
-  const [tabIndex, setTabIndex] = useState(0);
-
-  const handleTabChange = useCallback(
-    (_event, newValue) => {
-      setTabIndex(newValue);
-    },
-    [setTabIndex]
-  );
-
-  const adminRedirect = useAdminRoute();
-  if (adminRedirect) {
-    return adminRedirect;
-  }
-
-  return (
-    <>
-      <Tabs value={tabIndex} onChange={handleTabChange}>
-        <Tab label="Users" />
-        <Tab label="Allowlist" />
-      </Tabs>
-      <TabPanel value={tabIndex} index={0}>
-        <UserTabContent />
-      </TabPanel>
-      <TabPanel value={tabIndex} index={1}>
-        <AllowlistTabContent />
-      </TabPanel>
     </>
   );
 }

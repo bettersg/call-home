@@ -14,6 +14,7 @@ interface WalletService {
 
 function WalletService(WalletModel: typeof WalletEntity): WalletService {
   async function createWalletForUser(userId: number) {
+    // TODO looks like this can be replaced with findOrCreate
     const currentWallet = await WalletModel.findOne({
       where: {
         userId,

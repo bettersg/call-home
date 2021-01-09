@@ -1,5 +1,6 @@
 import type { UserWalletResponse } from '@call-home/shared/types/User';
 import type { TransactionResponse } from '@call-home/shared/types/Transaction';
+import type { DormResponse } from '@call-home/shared/types/Dorm';
 
 import apiClient from './apiClient';
 import ObservableService from './observableService';
@@ -7,10 +8,16 @@ import ObservableService from './observableService';
 const userEndpoint = '/users';
 const transactionEndpoint = '/users/:userId/transactions';
 const adminGrantedValidationEndpoint = '/admin-granted-validation';
+const dormEndpoint = '/dorms';
 
 export interface AdminState {
   users: UserWalletResponse[];
   userTransactions: TransactionResponse[];
+  dorms: DormResponse[];
+}
+
+interface Dorm {
+  name: string;
 }
 
 function userTransactionEndpoint(userId: number) {
@@ -24,6 +31,7 @@ export default class AdminService extends ObservableService<AdminState> {
     this.state = {
       users: [],
       userTransactions: [],
+      dorms: [],
     };
   }
 
@@ -60,6 +68,38 @@ export default class AdminService extends ObservableService<AdminState> {
     })) as TransactionResponse;
     await this.refreshTransactions(userId);
     return transaction;
+  }
+
+  async refreshDorms(): Promise<DormResponse[]> {
+    const dorms = (await apiClient.get(dormEndpoint)) as DormResponse[];
+    this.state = {
+      ...this.state,
+      dorms,
+    };
+    this.notify();
+    return dorms;
+  }
+
+  async createDorm({ name }: Dorm): Promise<DormResponse> {
+    const newDorm = (await apiClient.post(dormEndpoint, {
+      name,
+    })) as DormResponse;
+    this.refreshDorms();
+    return newDorm;
+  }
+
+  async updateDorm(dormId: number, dorm: Partial<Dorm>): Promise<DormResponse> {
+    const updatedDorm = (await apiClient.put(
+      `${dormEndpoint}/dormId`,
+      dorm
+    )) as DormResponse;
+    this.refreshDorms();
+    return updatedDorm;
+  }
+
+  async deleteDorm(dormId: number): Promise<void> {
+    await apiClient.delete(`${dormEndpoint}/${dormId}`);
+    this.refreshDorms();
   }
 
   async grantSpecialAccess(userId: number): Promise<void> {

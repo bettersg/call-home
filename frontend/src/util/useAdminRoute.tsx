@@ -6,7 +6,7 @@ import PATHS from '../scenes/paths';
 export default function useAdminRoute() {
   const [userRequestInFlight, setUserRequestInFlight] = useState(true);
   const [userState, userService] = useUserService();
-  const { me: user } = userState;
+  const { me: user } = userState || {};
 
   useEffect(() => {
     if (userService) {

@@ -29,6 +29,8 @@ module.exports = {
       node: {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
       },
+      // This resolves tsconfig baseUrl imports
+      typescript: {},
     },
   },
   plugins: ['react', '@typescript-eslint', 'prettier'],
