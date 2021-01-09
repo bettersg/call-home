@@ -1,6 +1,9 @@
 import { sanitizeDbErrors } from './lib';
 import type { Dorm as DormEntity } from '../models';
 
+// Open questions:
+// - How do we report dorm-user relationships if the dorm is deleted?
+// - How do we recover data if the dorm is updated beyond recognition?
 function DormService(DormModel: typeof DormEntity) {
   async function createDorm({ name }: Pick<DormEntity, 'name'>) {
     return sanitizeDbErrors(() =>

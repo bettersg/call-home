@@ -16,7 +16,7 @@ export interface AdminState {
   dorms: DormResponse[];
 }
 
-interface Dorm {
+export interface Dorm {
   name: string;
 }
 
@@ -90,7 +90,7 @@ export default class AdminService extends ObservableService<AdminState> {
 
   async updateDorm(dormId: number, dorm: Partial<Dorm>): Promise<DormResponse> {
     const updatedDorm = (await apiClient.put(
-      `${dormEndpoint}/dormId`,
+      `${dormEndpoint}/${dormId}`,
       dorm
     )) as DormResponse;
     this.refreshDorms();
