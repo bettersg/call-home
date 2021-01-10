@@ -11,6 +11,7 @@ import {
   VerifyPhoneNumberCode,
   RecentCallsPage,
   VerifyWorkpass,
+  VerifyDorm,
 } from '.';
 import { Locale } from './types';
 
@@ -45,6 +46,9 @@ export default function SceneRouter() {
       </Route>
       <Route path={PATHS.VERIFY_WORKPASS}>
         <VerifyWorkpass locale={locale} routePath={PATHS.VERIFY_WORKPASS} />
+      </Route>
+      <Route path={PATHS.VERIFY_DORM}>
+        <VerifyDorm locale={locale} routePath={PATHS.VERIFY_DORM} />
       </Route>
       <Route path={PATHS.CALLING}>
         <CallingPage locale={locale} routePath={PATHS.CALLING} />

@@ -11,11 +11,11 @@ import TableCell from '@material-ui/core/TableCell';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import EditIcon from '@material-ui/icons/Edit';
-import { useAdminService } from 'contexts';
+import { useDormService } from 'contexts';
 import { DormResponse } from '@call-home/shared/types/Dorm';
 
 function NewDormForm() {
-  const [, adminService] = useAdminService();
+  const [, dormService] = useDormService();
 
   const [dormName, setDormName] = useState('');
 
@@ -25,7 +25,7 @@ function NewDormForm() {
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    return adminService?.createDorm({ name: dormName });
+    return dormService?.createDorm({ name: dormName });
   };
 
   return (
@@ -59,11 +59,11 @@ function DormNameCellContent({
   isEdit: boolean;
   dorm: DormResponse;
 }) {
-  const [, adminService] = useAdminService();
+  const [, dormService] = useDormService();
   const [dormName, setDormName] = useState(dorm.name);
 
   const updateDormName = async () => {
-    await adminService?.updateDorm(dorm.id, {
+    await dormService?.updateDorm(dorm.id, {
       name: dormName,
     });
   };
@@ -87,15 +87,15 @@ function DormNameCellContent({
 
 // This uses plain tables instead of DataGrid because DataGrid's rigid Row/Column approach makes it difficult to dynamically change cell contents.
 export default function DormTabContent() {
-  const [adminState, adminService] = useAdminService();
-  const { dorms = [] } = adminState || {};
+  const [dormState, dormService] = useDormService();
+  const { dorms = [] } = dormState || {};
   const [rowIdToEdit, setDormIdToEdit] = useState<number | string | null>(null);
 
   useEffect(() => {
-    if (adminService) {
-      adminService.refreshDorms();
+    if (dormService) {
+      dormService.refreshDorms();
     }
-  }, [adminService]);
+  }, [dormService]);
 
   return (
     <>
@@ -140,7 +140,7 @@ export default function DormTabContent() {
                     role="button"
                     style={{ color: 'red' }}
                     onClick={() => {
-                      adminService?.deleteDorm(Number(dorm.id));
+                      dormService?.deleteDorm(Number(dorm.id));
                     }}
                   >
                     <CloseIcon />

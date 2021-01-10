@@ -19,7 +19,7 @@ export default function createServiceProvider<
 
   return {
     Provider: function Provider({ children }: { children: JSX.Element }) {
-      // TODO this should use null for the empty state
+      // TODO This should use null for the empty state. This is only safe to change once all of the services move to typescript.
       const [serviceState, setServiceState] = useState<S>({} as S);
 
       useEffect(() => {
