@@ -4,28 +4,12 @@ import { logger } from '../config';
 import type { TwilioCall as TwilioCallEntity } from '../models';
 import type { Call, TwilioClient, Transaction } from './index';
 
-interface TwilioCallService {
-  createTwilioCall: (
-    twilioCall: Partial<TwilioCallEntity>
-  ) => Promise<TwilioCallEntity>;
-  getCallsMissingDuration: () => Promise<TwilioCallEntity[]>;
-  listTwilioCallsByParentSids: (
-    parentCallSids: string[]
-  ) => Promise<TwilioCallEntity[]>;
-  getTwilioCallBySid: (twilioSid: string) => Promise<TwilioCallEntity | null>;
-  fetchTwilioDataForPendingTwilioCalls: () => Promise<void>;
-  fetchTwilioDataForTwilioParentSid: (parentCallSid: string) => Promise<void>;
-  getTwilioCallByParentSid: (
-    parentSid: string
-  ) => Promise<TwilioCallEntity | null>;
-}
-
 function TwilioCallService(
   TwilioCallModel: typeof TwilioCallEntity,
   twilioClient: typeof TwilioClient,
   callService: typeof Call,
   transactionService: typeof Transaction
-): TwilioCallService {
+) {
   async function createTwilioCall(twilioCall: Partial<TwilioCallEntity>) {
     return sanitizeDbErrors(() => TwilioCallModel.create(twilioCall));
   }
@@ -93,6 +77,17 @@ function TwilioCallService(
     });
   }
 
+  async function getCompletedNoPriceCallsOrderByLastUpdated() {
+    return TwilioCallModel.findAll({
+      // Add an arbitrary limit just in case
+      limit: 100,
+      where: {
+        status: 'completed',
+        price: null,
+      },
+      order: [['lastUpdated', 'ASC']],
+    });
+  }
   async function getCallsMissingDuration() {
     return TwilioCallModel.findAll({
       // Add an arbitrary limit just in case
@@ -125,7 +120,10 @@ function TwilioCallService(
   // Collects the business logic for updating twilio calls by calling the Twilio API.
   // Used in two places: the status callback and the pending calls poller
   async function fetchTwilioDataForTwilioCall(twilioCall: TwilioCallEntity) {
-    logger.info('fetchTwilioDataForTwilioCall -> Updating call', twilioCall.id);
+    logger.info(
+      'fetchTwilioDataForTwilioCall -> Updating call with id: %s',
+      twilioCall.id
+    );
     const { parentCallSid } = twilioCall;
     const [twilioResponseCalls, twilioParentCall] = await Promise.all([
       twilioClient.getCallsByIncomingSid(parentCallSid),
@@ -148,6 +146,7 @@ function TwilioCallService(
         price,
         priceUnit,
       } = twilioResponseCall;
+      const oldCallDuration = twilioCall.duration;
       await updateTwilioCall(twilioCall.id, {
         twilioSid,
         fromPhoneNumber,
@@ -159,7 +158,9 @@ function TwilioCallService(
       });
       await twilioCall.reload();
       // TODO seems like it might be possible to create duplicate transactions, there should be a way to protect against
-      createTransactionForTwilioCall(twilioCall);
+      if (oldCallDuration !== twilioCall.duration) {
+        createTransactionForTwilioCall(twilioCall);
+      }
       return;
     }
     if (twilioParentCall.status === 'completed') {
@@ -195,13 +196,27 @@ function TwilioCallService(
     logger.info('fetchTwilioDataForPendingTwilioCalls');
     const twilioCalls = await getPendingCallsOrderByLastUpdated();
     await Promise.all(twilioCalls.map(fetchTwilioDataForTwilioCall));
-    logger.info('fetchTwilioDataForPendingTwilioCalls completed');
+    logger.info(
+      'fetchTwilioDataForPendingTwilioCalls completed for %s calls',
+      twilioCalls.length
+    );
+  }
+
+  async function fetchTwilioDataForCompletedNoPriceTwilioCalls() {
+    logger.info('fetchTwilioDataForCompletedNoPriceTwilioCalls');
+    const twilioCalls = await getCompletedNoPriceCallsOrderByLastUpdated();
+    await Promise.all(twilioCalls.map(fetchTwilioDataForTwilioCall));
+    logger.info(
+      'fetchTwilioDataForCompletedNoPriceTwilioCalls completed for %s calls',
+      twilioCalls.length
+    );
   }
 
   return {
     createTwilioCall,
     fetchTwilioDataForPendingTwilioCalls,
     fetchTwilioDataForTwilioParentSid,
+    fetchTwilioDataForCompletedNoPriceTwilioCalls,
     listTwilioCallsByParentSids,
     getCallsMissingDuration,
     getTwilioCallBySid,
