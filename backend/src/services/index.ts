@@ -58,6 +58,7 @@ const workpassValidationService = WorkpassValidation(
 const userValidationService = UserValidation(
   Feature,
   adminGrantedValidationService,
+  dormValidationService,
   phoneNumberValidationService,
   workpassValidationService
 );

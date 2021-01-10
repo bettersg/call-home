@@ -1,4 +1,11 @@
-import { AllowNull, Column, Model, Table, Unique } from 'sequelize-typescript';
+import {
+  AllowNull,
+  Column,
+  Model,
+  Table,
+  Unique,
+  DataType,
+} from 'sequelize-typescript';
 
 @Table
 class DormValidation extends Model<DormValidation> {
@@ -9,7 +16,7 @@ class DormValidation extends Model<DormValidation> {
 
   // null is a special case for dormId: it means that the user is not a resident of any of our listed dorms.
   // Because this is nullable, this is not an acceptable foreign key.
-  @Column
+  @Column(DataType.INTEGER)
   dormId: number | null;
 }
 

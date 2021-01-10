@@ -58,6 +58,7 @@ function DormValidationService(
   return {
     validateUser,
     invalidateUser,
+    getDormValidationForUser,
   };
 }
 
