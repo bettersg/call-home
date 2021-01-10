@@ -1,38 +1,44 @@
 /* eslint-disable max-classes-per-file */
-import axios from 'axios';
+import axios, { AxiosResponse, AxiosError } from 'axios';
 import axiosRetry from 'axios-retry';
 import * as Sentry from '@sentry/react';
 
 export class UnauthenticatedError extends Error {}
 
-export class ApiDataError extends Error {
-  constructor(apiData) {
+export class ApiDataError<T> extends Error {
+  data: T;
+
+  constructor(apiData: T) {
     super();
     this.data = apiData;
   }
 }
 
 export class ApiValidationError extends Error {
-  constructor(message) {
+  code: string;
+
+  constructor(message: string) {
     super();
     this.code = message.replace(ApiValidationError.validationErrorPrefix, '');
   }
 
   static validationErrorPrefix = 'Validation Error: ';
 
-  static isValidationErrorMessage(message) {
+  static isValidationErrorMessage(message: string) {
     return message.startsWith(ApiValidationError.validationErrorPrefix);
   }
 }
 
-function unwrapResponseInterceptor(response) {
+function unwrapResponseInterceptor<T>(
+  response: AxiosResponse<T>
+): T | AxiosResponse<T> {
   if (response && response.data) {
     return response.data;
   }
   return response;
 }
 
-async function unauthenticatedRedirectInterceptor(error) {
+async function unauthenticatedRedirectInterceptor(error: AxiosError) {
   const { response } = error;
   if (!response || response.status !== 401) {
     throw error;
@@ -41,7 +47,7 @@ async function unauthenticatedRedirectInterceptor(error) {
   window.location = response.data.location;
 }
 
-async function unauthenticatedThrowInterceptor(error) {
+async function unauthenticatedThrowInterceptor(error: AxiosError) {
   const { response } = error;
   if (!response || response.status !== 401 || !response.data.location) {
     throw error;
@@ -50,7 +56,7 @@ async function unauthenticatedThrowInterceptor(error) {
   throw new UnauthenticatedError('Unauthenticated');
 }
 
-async function badRequestInterceptor(error) {
+async function badRequestInterceptor(error: AxiosError) {
   const { response } = error;
   if (!response || response.status !== 400) {
     return Promise.reject(error);
@@ -65,7 +71,7 @@ async function badRequestInterceptor(error) {
   throw new ApiDataError(response.data);
 }
 
-async function apiDataErrorInterceptor(error) {
+async function apiDataErrorInterceptor(error: AxiosError) {
   // this should be next to last because it will swallow every error that has data attached to it
   const { response } = error;
   if (!response || !response.data) {
@@ -75,7 +81,7 @@ async function apiDataErrorInterceptor(error) {
   throw new ApiDataError(response.data);
 }
 
-async function defaultErrorInterceptor(error) {
+async function defaultErrorInterceptor(error: AxiosError) {
   // Absolutely last interceptor. Capture the exception and throw.
   // This means that the request never reached the backend, could be due to CORS, bad gateway, etc.
   Sentry.captureException(error);

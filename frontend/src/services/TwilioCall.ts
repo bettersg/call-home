@@ -29,7 +29,7 @@ const SETUP_OPTIONS = {
   enableRingingState: true,
 };
 
-function isTransientIssue(error) {
+function isTransientIssue(error: any) {
   const { code } = error;
   if (TransientIssueErrorCodes.has(code)) {
     return true;
@@ -40,7 +40,7 @@ function isTransientIssue(error) {
   return false;
 }
 
-async function makeCallOnce(call) {
+async function makeCallOnce(call: any) {
   if (!isProd) {
     return null;
   }
@@ -75,7 +75,7 @@ async function makeCallOnce(call) {
   });
 }
 
-async function makeCall(call) {
+async function makeCall(call: any) {
   let lastError;
 
   for (let i = 0; i < CALL_RETRY_COUNT; i += 1) {

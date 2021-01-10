@@ -3,7 +3,11 @@ import ObservableService from './observableService';
 
 const allowlistEntryEndpoint = '/allowlistEntries';
 
-export default class AllowlistService extends ObservableService {
+interface AllowlistState {
+  allowlistEntries: any[];
+}
+
+export default class AllowlistService extends ObservableService<AllowlistState> {
   constructor() {
     super();
     this.state = {
@@ -12,7 +16,9 @@ export default class AllowlistService extends ObservableService {
   }
 
   async refreshAllowlistEntries() {
-    const allowlistEntries = await apiClient.get(allowlistEntryEndpoint);
+    const allowlistEntries = (await apiClient.get(
+      allowlistEntryEndpoint
+    )) as any[];
     this.state = {
       ...this.state,
       allowlistEntries,
@@ -20,7 +26,13 @@ export default class AllowlistService extends ObservableService {
     this.notify();
   }
 
-  async createAllowlistEntry({ phoneNumber, destinationCountry }) {
+  async createAllowlistEntry({
+    phoneNumber,
+    destinationCountry,
+  }: {
+    phoneNumber: string;
+    destinationCountry: string;
+  }) {
     await apiClient.post(allowlistEntryEndpoint, {
       phoneNumber,
       destinationCountry,
@@ -28,7 +40,7 @@ export default class AllowlistService extends ObservableService {
     return this.refreshAllowlistEntries();
   }
 
-  async deleteAllowlistEntry(id) {
+  async deleteAllowlistEntry(id: string) {
     await apiClient.delete(`${allowlistEntryEndpoint}/${id}`);
     return this.refreshAllowlistEntries();
   }

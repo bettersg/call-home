@@ -590,7 +590,7 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
   const [userState, userService] = useUserService();
   const { me: user } = userState || {};
   const [contactState, contactService] = useContactService();
-  const { contacts = [], activeContact } = contactState;
+  const { contacts = [], activeContact } = contactState || {};
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
   const [contactToEdit, setContactToEdit] = useState(null);
@@ -610,7 +610,7 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
   // TODO change this up so that we don't have to keep supplying user id
   useEffect(() => {
     if (contactService && user) {
-      contactService.refreshContacts(user.id);
+      contactService.refreshContacts(String(user.id));
     }
   }, [contactService, user]);
 

@@ -22,7 +22,7 @@ interface AllowlistGridRow {
 
 export default function AllowlistTabContent() {
   const [allowlistState, allowlistService] = useAllowlistService();
-  const { allowlistEntries = [] } = allowlistState;
+  const { allowlistEntries = [] } = allowlistState || {};
   const [newAllowlistPhoneNumber, setNewAllowlistPhoneNumber] = useState('');
   const [
     newAllowlistMultiplePhoneNumbers,
