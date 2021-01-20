@@ -2,18 +2,14 @@ import { noRedirectClient, UnauthenticatedError } from './apiClient';
 import ObservableService from './observableService';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface FeatureState {
-  DORM_VALIDATION: boolean;
-}
+export interface FeatureState {}
 
 const featureEndpoint = '/features';
 
 export default class FeatureService extends ObservableService<FeatureState> {
   constructor() {
     super();
-    this.state = {
-      DORM_VALIDATION: false,
-    };
+    this.state = {};
   }
 
   async refreshFeatures(): Promise<FeatureState> {

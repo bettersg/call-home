@@ -12,7 +12,6 @@ import Contact from './Contact';
 import Dorm from './Dorm';
 import AllowlistEntry from './AllowlistEntry';
 import AdminGrantedValidation from './AdminGrantedValidation';
-import DormValidation from './DormValidation';
 import PhoneNumberValidation from './PhoneNumberValidation';
 import WorkpassValidation from './WorkpassValidation';
 import OAuth from './OAuth';
@@ -39,7 +38,6 @@ const transactionRoute = Transaction(services.Transaction);
 const featureRoute = Feature(services.Feature);
 const periodicCreditRoute = PeriodicCredit(services.PeriodicCredit);
 const workpassValidationRoute = WorkpassValidation(services.WorkpassValidation);
-const dormValidationRoute = DormValidation(services.DormValidation);
 const adminGrantedValidationRoute = AdminGrantedValidation(
   services.AdminGrantedValidation
 );
@@ -51,7 +49,6 @@ export {
   callTokenRoute as CallToken,
   contactRoute as Contact,
   dormRoute as Dorm,
-  dormValidationRoute as DormValidation,
   featureRoute as Feature,
   middlewares,
   oAuthRoute as OAuth,

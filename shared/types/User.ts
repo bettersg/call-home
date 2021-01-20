@@ -14,7 +14,6 @@ export interface UserWalletResponse {
     phoneNumber: boolean;
     workpass: boolean;
     adminGranted: boolean;
-    dorm: boolean;
   };
 
   phoneNumber: string | null;

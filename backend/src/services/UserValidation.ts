@@ -1,28 +1,23 @@
 import type {
   AdminGrantedValidation as AdminGrantedValidationEntity,
-  DormValidation as DormValidationEntity,
   PhoneNumberValidation as PhoneNumberValidationEntity,
   WorkpassValidation as WorkpassValidationEntity,
 } from '../models';
 import type {
   AdminGrantedValidation,
-  DormValidation,
   PhoneNumberValidation,
   WorkpassValidation,
-  Feature,
 } from '.';
 
 export interface VerificationCollection {
   phoneNumber: PhoneNumberValidationEntity | null;
   workpass: WorkpassValidationEntity | null;
-  dorm: DormValidationEntity | null;
   adminGranted: AdminGrantedValidationEntity | null;
 }
 
 export interface VerificationState {
   phoneNumber: boolean;
   workpass: boolean;
-  dorm: boolean;
   adminGranted: boolean;
 }
 
@@ -32,9 +27,7 @@ export interface UserVerifications {
 }
 
 function UserValidationService(
-  featureService: typeof Feature,
   adminGrantedValidationService: typeof AdminGrantedValidation,
-  dormValidationService: typeof DormValidation,
   phoneNumberValidationService: typeof PhoneNumberValidation,
   workpassValidationService: typeof WorkpassValidation
 ): {
@@ -50,12 +43,10 @@ function UserValidationService(
     const [
       phoneNumberValidation,
       workpassValidation,
-      dormValidation,
       adminGrantedValidation,
     ] = await Promise.all([
       phoneNumberValidationService.getPhoneNumberValidationForUser(userId),
       workpassValidationService.getWorkpassValidationForUser(userId),
-      dormValidationService.getDormValidationForUser(userId),
       adminGrantedValidationService.getAdminGrantedValidationForUser(userId),
     ]);
 
@@ -63,13 +54,11 @@ function UserValidationService(
       verifications: {
         phoneNumber: phoneNumberValidation,
         workpass: workpassValidation,
-        dorm: dormValidation,
         adminGranted: adminGrantedValidation,
       },
       state: {
         phoneNumber: phoneNumberValidation?.isPhoneNumberValidated || false,
         workpass: workpassValidation?.isWorkpassValidated || false,
-        dorm: Boolean(dormValidation),
         adminGranted: Boolean(adminGrantedValidation),
       },
     };
@@ -87,13 +76,6 @@ function UserValidationService(
       return true;
     }
 
-    if (featureService.shouldEnableDormValidation()) {
-      return (
-        verificationState.phoneNumber &&
-        verificationState.workpass &&
-        verificationState.dorm
-      );
-    }
     return verificationState.phoneNumber && verificationState.workpass;
   }
 

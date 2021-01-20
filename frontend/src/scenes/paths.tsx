@@ -12,7 +12,6 @@ const PATHS = Object.freeze({
   VERIFY_PHONE_NUMBER: '/verify-phone',
   VERIFY_PHONE_NUMBER_CODE: '/verify-phone/code',
   VERIFY_WORKPASS: '/verify-workpass',
-  VERIFY_DORM: '/verify-dorm',
   RECENT_CALLS: '/recent-calls',
 });
 
@@ -30,11 +29,6 @@ function routeFromState(
   let isUserVerified;
   if (user.verificationState.adminGranted) {
     isUserVerified = true;
-  } else if (featureState.DORM_VALIDATION) {
-    isUserVerified =
-      user.verificationState.phoneNumber &&
-      user.verificationState.workpass &&
-      user.verificationState.dorm;
   } else {
     isUserVerified =
       user.verificationState.phoneNumber && user.verificationState.workpass;
@@ -53,10 +47,6 @@ function routeFromState(
     return userState.shouldDismissWorkpassModal
       ? PATHS.CONTACTS
       : PATHS.VERIFY_WORKPASS;
-  }
-
-  if (featureState.DORM_VALIDATION && !user.verificationState.dorm) {
-    return PATHS.VERIFY_DORM;
   }
 
   return null;
