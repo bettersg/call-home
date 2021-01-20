@@ -5,17 +5,12 @@ import type { WalletService } from './Wallet';
 function TransactionService(
   TransactionModel: typeof TransactionEntity,
   walletService: ReturnType<typeof WalletService>
-): {
-  createTransaction: (
-    newTransaction: Partial<TransactionEntity>
-  ) => Promise<TransactionEntity>;
-  getTransactionsForUser: (userId: number) => Promise<TransactionEntity[]>;
-} {
+) {
   async function createTransaction({
     reference,
     userId,
     amount,
-  }: Partial<TransactionEntity>) {
+  }: Pick<TransactionEntity, 'reference' | 'userId' | 'amount'>) {
     const transaction = await sanitizeDbErrors(() =>
       TransactionModel.create({
         reference,
