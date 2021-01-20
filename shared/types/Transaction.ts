@@ -1,4 +1,8 @@
-export type TransactionReference = 'call' | 'periodic-credit' | 'admin';
+export type TransactionReference =
+  | 'call'
+  | 'periodic-credit'
+  | 'admin'
+  | 'redeemable-code-fb';
 
 export interface TransactionResponse {
   userId: number;
