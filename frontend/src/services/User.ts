@@ -5,7 +5,6 @@ import ObservableService from './observableService';
 export interface UserState {
   me: UserWalletResponse | null;
   verificationPhoneNumber: string | null;
-  shouldDismissWorkpassModal: boolean;
 }
 
 // TODO make this configurable
@@ -17,8 +16,6 @@ export default class UserService extends ObservableService<UserState> {
     this.state = {
       me: null,
       verificationPhoneNumber: null,
-      // TODO This isn't the best place to keep this, but this is probably better solved at a later time
-      shouldDismissWorkpassModal: false,
     };
   }
 
@@ -49,14 +46,6 @@ export default class UserService extends ObservableService<UserState> {
     this.state = {
       ...this.state,
       verificationPhoneNumber,
-    };
-    this.notify();
-  }
-
-  setShouldDismissWorkpasssModal(shouldDismissWorkpassModal: boolean): void {
-    this.state = {
-      ...this.state,
-      shouldDismissWorkpassModal,
     };
     this.notify();
   }

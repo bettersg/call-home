@@ -7,7 +7,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
-import { useTheme, withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import CallIcon from '@material-ui/icons/Call';
 import PhoneDisabledIcon from '@material-ui/icons/PhoneDisabled';
@@ -16,9 +16,7 @@ import FeedbackIcon from '@material-ui/icons/Feedback';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import HistoryIcon from '@material-ui/icons/History';
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
-import { DateTime, Duration } from 'luxon';
+import { Duration } from 'luxon';
 import DetectBrowserSnackbar from '../components/shared/DetectBrowserSnackbar';
 import Container from '../components/shared/Container';
 import {
@@ -532,59 +530,6 @@ function CallContactButton({ contactService, contact, disabled }: any) {
   );
 }
 
-const VERIFY_WORKPASS_CUTOFF_DATE = DateTime.fromObject({
-  day: 18,
-  month: 12,
-  year: 2020,
-});
-function VerifyWorkpassBanner({ locale }: { locale: Locale }) {
-  const [, userService] = useUserService();
-  const theme = useTheme();
-  const navToWorkpassVerification = () =>
-    userService?.setShouldDismissWorkpasssModal(false);
-  return (
-    <div
-      style={{
-        padding: '8px 4px',
-        background: theme.palette.warning.main,
-        minHeight: '48px',
-        margin: '1rem -2rem -2rem',
-        display: 'flex',
-        alignItems: 'center',
-      }}
-    >
-      <InfoOutlinedIcon
-        style={{
-          height: '2rem',
-          width: '2rem',
-          marginLeft: '8px',
-          marginRight: '8px',
-          color: theme.palette.text.primary,
-        }}
-      />
-      <Typography style={{ flex: '1 1 auto' }}>
-        <strong>
-          {STRINGS[locale].CONTACTS_VERIFY_WORKPASS_BANNER_CTA(
-            VERIFY_WORKPASS_CUTOFF_DATE.toFormat('dd MMM')
-          )}
-        </strong>{' '}
-        &nbsp;
-        {STRINGS[locale].CONTACTS_VERIFY_WORKPASS_BANNER_INFO}
-      </Typography>
-      <IconButton onClick={navToWorkpassVerification} style={{ padding: '0' }}>
-        <ArrowForwardIcon
-          style={{
-            height: '2rem',
-            width: '2rem',
-            marginRight: '8px',
-            color: theme.palette.text.primary,
-          }}
-        />
-      </IconButton>
-    </div>
-  );
-}
-
 export default function ContactsPage({ locale, routePath }: SceneProps) {
   const routeResult = useRouting(routePath);
   const [userState, userService] = useUserService();
@@ -862,9 +807,6 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
           />
         ) : null}
       </div>
-      {!user?.verificationState.workpass ? (
-        <VerifyWorkpassBanner locale={locale} />
-      ) : null}
     </Container>
   );
 }

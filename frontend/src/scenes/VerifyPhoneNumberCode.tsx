@@ -108,11 +108,7 @@ export default function VerificationPhoneNumberCode({ locale }: SceneProps) {
   }
 
   if (user.verificationState.phoneNumber && !user.verificationState.workpass) {
-    return userState?.shouldDismissWorkpassModal ? (
-      <Redirect to={PATHS.CONTACTS} />
-    ) : (
-      <Redirect to={PATHS.VERIFY_WORKPASS} />
-    );
+    return <Redirect to={PATHS.VERIFY_WORKPASS} />;
   }
 
   const onSubmit = async (event: any) => {

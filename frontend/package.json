@@ -33,7 +33,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint",
-    "lint:js": "eslint . --ext .js,ts,tsx",
+    "lint:js": "eslint . --ext .js,ts,tsx && tsc --noEmit",
     "lint:js:fix": "eslint . --ext .js,ts,tsx --fix",
     "lint:fix": "eslint . --fix",
     "precommit": "tsc --noEmit && lint-staged"
