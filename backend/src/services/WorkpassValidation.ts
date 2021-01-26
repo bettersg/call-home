@@ -78,10 +78,12 @@ function WorkpassValidationService(
 
   async function validateUser(
     userId: number,
-    serialNumber: string
+    serialNumberUntrimmed: string
   ): Promise<WorkpassValidationResult> {
     await createWorkpassValidationForUser(userId);
 
+    // It's important to trim this because running this through qs.stringify will automatically trim it.
+    const serialNumber = serialNumberUntrimmed.trim();
     const [serialNumberValidationResult, requestTime] = await Promise.all([
       workpassClient.getSerialNumberStatus(serialNumber),
       updateWorkpassValidationRequestTime(userId),

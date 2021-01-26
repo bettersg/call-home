@@ -46,8 +46,10 @@ function getExpiryDate($: cheerio.Root) {
 }
 
 async function getSerialNumberStatus(
-  serialNumber: string
+  serialNumberUntrimmed: string
 ): Promise<WorkpassResult> {
+  // It's important to trim this because running this through qs.stringify will automatically trim it.
+  const serialNumber = serialNumberUntrimmed.trim();
   const sourceFormInputs = await getFormInputs();
   const formInputs = {
     ...sourceFormInputs,
