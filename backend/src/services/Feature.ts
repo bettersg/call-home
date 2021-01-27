@@ -14,8 +14,11 @@ type PeriodicCreditCohort = 'week' | 'month';
 // Returns which cohort to use for the periodic credit feature
 // Even phone numbers get 'week' and odd ones get 'month'
 function getPeriodicCreditCohort(
-  userPhoneNumber: string
+  userPhoneNumber: string | null | undefined
 ): PeriodicCreditCohort {
+  if (!userPhoneNumber) {
+    return 'week';
+  }
   const phoneNumberMod2 =
     Number(userPhoneNumber[userPhoneNumber.length - 1]) % 2;
   // We'll treat NaN as odd.

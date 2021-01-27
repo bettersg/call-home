@@ -20,12 +20,6 @@ function PeriodicCreditService(
       userId
     );
     const phoneNumber = userPhoneNumberValidation?.phoneNumber;
-    if (!phoneNumber) {
-      // Well, technically the user can also be not found
-      throw new Error(
-        `Cannot get periodic credit cohort for userId ${userId} because phone number cannot be found`
-      );
-    }
     return getPeriodicCreditCohort(phoneNumber);
   }
 
