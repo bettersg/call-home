@@ -10,7 +10,8 @@ if (!DATABASE_URL) {
 }
 
 const sequelize = new Sequelize(DATABASE_URL, {
-  logging: logger.info.bind(logger),
+  // Disable logging because we exceed our quota too often
+  logging: false, // logger.info.bind(logger),
 });
 
 sequelize
