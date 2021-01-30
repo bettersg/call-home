@@ -14,6 +14,7 @@ import AllowlistEntry from './AllowlistEntry';
 import AdminGrantedValidation from './AdminGrantedValidation';
 import PhoneNumberValidation from './PhoneNumberValidation';
 import WorkpassValidation from './WorkpassValidation';
+import FacebookDormCodeRedemption from './FacebookDormCodeRedemption';
 import OAuth from './OAuth';
 
 const callRoute = Call(services.Call, services.TwilioCall, services.Contact);
@@ -41,6 +42,10 @@ const workpassValidationRoute = WorkpassValidation(services.WorkpassValidation);
 const adminGrantedValidationRoute = AdminGrantedValidation(
   services.AdminGrantedValidation
 );
+const facebookDormCodeRedemption = FacebookDormCodeRedemption(
+  services.FacebookDormCodeRedemption,
+  services.RedeemableCode
+);
 
 export {
   allowlistEntryRoute as AllowlistEntry,
@@ -49,6 +54,7 @@ export {
   callTokenRoute as CallToken,
   contactRoute as Contact,
   dormRoute as Dorm,
+  facebookDormCodeRedemption as FacebookDormCodeRedemption,
   featureRoute as Feature,
   middlewares,
   oAuthRoute as OAuth,
