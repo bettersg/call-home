@@ -1,7 +1,8 @@
 import { logger } from '../config';
 import type { TwilioCall } from '../services';
 
-const jobIntervalMillis = 20000;
+// Hourly
+const jobIntervalMillis = 60 * 60 * 1000;
 
 // call duration only seems to update at the END of the call. This means that we need some other way of tracking in-progress calls?
 

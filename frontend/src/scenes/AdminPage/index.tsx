@@ -5,6 +5,7 @@ import { SceneProps } from 'scenes/types';
 import useAdminRoute from 'util/useAdminRoute';
 import AllowlistTabContent from './AllowlistTabContent';
 import DormTabContent from './DormTabContent';
+import RedeemableCodeTabContent from './RedeemableCodeTabContent';
 import UserTabContent from './UserTabContent';
 
 function TabPanel({
@@ -42,7 +43,8 @@ export default function AdminPage(_props: SceneProps) {
       <Tabs value={tabIndex} onChange={handleTabChange}>
         <Tab label="Users" />
         <Tab label="Allowlist" />
-        <Tab label="Dorm" />
+        <Tab label="Dorms" />
+        <Tab label="Promo codes" />
       </Tabs>
       <TabPanel value={tabIndex} index={0}>
         <UserTabContent />
@@ -52,6 +54,9 @@ export default function AdminPage(_props: SceneProps) {
       </TabPanel>
       <TabPanel value={tabIndex} index={2}>
         <DormTabContent />
+      </TabPanel>
+      <TabPanel value={tabIndex} index={3}>
+        <RedeemableCodeTabContent />
       </TabPanel>
     </>
   );

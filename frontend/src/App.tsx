@@ -8,6 +8,7 @@ import {
   UserServiceProvider,
   ContactServiceProvider,
   DormServiceProvider,
+  RedeemableCodeServiceProvider,
   ThemeProvider,
   useUserService,
 } from './contexts';
@@ -88,22 +89,24 @@ class ErrorBoundary extends React.Component {
 function App() {
   return (
     <AdminServiceProvider>
-      <DormServiceProvider>
-        <AllowlistServiceProvider>
-          <UserServiceProvider>
-            <ContactServiceProvider>
-              <FeatureServiceProvider>
-                <ThemeProvider>
-                  <ErrorBoundary>
-                    <InitApp />
-                  </ErrorBoundary>
-                  <CssBaseline />
-                </ThemeProvider>
-              </FeatureServiceProvider>
-            </ContactServiceProvider>
-          </UserServiceProvider>
-        </AllowlistServiceProvider>
-      </DormServiceProvider>
+      <RedeemableCodeServiceProvider>
+        <DormServiceProvider>
+          <AllowlistServiceProvider>
+            <UserServiceProvider>
+              <ContactServiceProvider>
+                <FeatureServiceProvider>
+                  <ThemeProvider>
+                    <ErrorBoundary>
+                      <InitApp />
+                    </ErrorBoundary>
+                    <CssBaseline />
+                  </ThemeProvider>
+                </FeatureServiceProvider>
+              </ContactServiceProvider>
+            </UserServiceProvider>
+          </AllowlistServiceProvider>
+        </DormServiceProvider>
+      </RedeemableCodeServiceProvider>
     </AdminServiceProvider>
   );
 }

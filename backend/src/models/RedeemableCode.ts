@@ -1,3 +1,5 @@
+// TODO This doesn't compile for some reason
+// import { RedeemableCodeType } from '@call-home/shared/types/RedeemableCode';
 import {
   AllowNull,
   Column,

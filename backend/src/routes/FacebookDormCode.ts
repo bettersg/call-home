@@ -18,11 +18,24 @@ const FACEBOOK_DORM_CODE_CONFIG = {
   redemptionLimit: 1,
 };
 
-function FacebookDormCodeRedemptionRoutes(
+function FacebookDormCodeRoutes(
   facebookDormCodeRedemptionService: typeof FacebookDormCodeRedemption,
   redeemableCodeService: typeof RedeemableCode
 ): Router {
   const router = express.Router();
+
+  router.get(
+    '/facebook-dorm',
+    requireAdmin,
+    async (req, res: Response<RedeemableCodeEntity[]>) => {
+      const redeemableCodes = await redeemableCodeService.getRedeemableCodes();
+      return res.json(
+        redeemableCodes.filter(
+          (redeemableCode) => redeemableCode.codeType === 'FACEBOOK_DORM'
+        )
+      );
+    }
+  );
 
   router.post(
     '/facebook-dorm',
@@ -61,4 +74,4 @@ function FacebookDormCodeRedemptionRoutes(
   return router;
 }
 
-export default FacebookDormCodeRedemptionRoutes;
+export default FacebookDormCodeRoutes;
