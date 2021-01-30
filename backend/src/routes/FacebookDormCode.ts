@@ -24,8 +24,8 @@ function FacebookDormCodeRedemptionRoutes(
 ): Router {
   const router = express.Router();
 
-  router.get(
-    '/facebook-dorm/new',
+  router.post(
+    '/facebook-dorm',
     requireAdmin,
     validateRequest(
       z.object({}),
@@ -39,7 +39,7 @@ function FacebookDormCodeRedemptionRoutes(
   );
 
   router.post(
-    '/facebook-dorm',
+    '/facebook-dorm/redemptions',
     validateRequest(
       POST_SCHEMA,
       async (parsedReq, res: Response<void>, req) => {
