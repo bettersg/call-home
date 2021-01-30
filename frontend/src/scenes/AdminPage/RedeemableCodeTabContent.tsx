@@ -1,4 +1,4 @@
-import React, { useEffect, useState, FormEvent } from 'react';
+import React, { useEffect, useState } from 'react';
 import QRCode from 'qrcode.react';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -13,6 +13,7 @@ import TableCell from '@material-ui/core/TableCell';
 import Typography from '@material-ui/core/Typography';
 import CropFreeIcon from '@material-ui/icons/CropFree';
 import { useRedeemableCodeService } from 'contexts';
+import PATHS from '../paths';
 import './RedeemableCodeTabContent.css';
 
 const baseUrl = process.env.PUBLIC_URL || 'http://localhost:4000';
@@ -26,7 +27,7 @@ function QRCodeDialog({
   code: string;
   onClose: () => void;
 }) {
-  const codeUrl = `${baseUrl}/wip-placeholder/?code=${code}`;
+  const codeUrl = `${baseUrl}/${PATHS.PROMO_CODE}?code=${code}`;
   return (
     <Dialog
       classes={{

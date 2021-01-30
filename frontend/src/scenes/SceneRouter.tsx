@@ -5,6 +5,7 @@ import {
   AdminPage,
   Login,
   CallingPage,
+  ClaimRedeemableCode,
   ContactsPage,
   TransactionsPage,
   VerifyPhoneNumber,
@@ -54,6 +55,9 @@ export default function SceneRouter() {
       </Route>
       <Route path={PATHS.TRANSACTIONS}>
         <TransactionsPage />
+      </Route>
+      <Route path={PATHS.PROMO_CODE}>
+        <ClaimRedeemableCode locale={locale} routePath={PATHS.PROMO_CODE} />
       </Route>
       <Route path={PATHS.RECENT_CALLS}>
         <RecentCallsPage locale={locale} />

@@ -13,6 +13,7 @@ const PATHS = Object.freeze({
   VERIFY_PHONE_NUMBER_CODE: '/verify-phone/code',
   VERIFY_WORKPASS: '/verify-workpass',
   RECENT_CALLS: '/recent-calls',
+  PROMO_CODE: '/promo-code',
 });
 
 // TODO Verification should probably all be routed to the same /verify/ path and then branch out from there.

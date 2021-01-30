@@ -37,6 +37,13 @@ export default class RedeemableCodeService extends ObservableService<RedeemableC
     return newRedeemableCode;
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  async redeemCode(code: string): Promise<void> {
+    return apiClient.post(`${facebookRedeemableCodeEndpoint}/redemptions`, {
+      code,
+    });
+  }
+
   // async deleteRedeemableCode(dormId: number): Promise<void> {
   //   await apiClient.delete(`${facebookRedeemableCodeEndpoint}/${dormId}`);
   //   this.refreshRedeemableCodes();
