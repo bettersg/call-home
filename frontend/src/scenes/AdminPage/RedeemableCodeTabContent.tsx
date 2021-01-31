@@ -27,7 +27,7 @@ function QRCodeDialog({
   code: string;
   onClose: () => void;
 }) {
-  const codeUrl = `${baseUrl}/${PATHS.PROMO_CODE}?code=${code}`;
+  const codeUrl = new URL(`${PATHS.PROMO_CODE}?code=${code}`, baseUrl);
   return (
     <Dialog
       classes={{
@@ -48,7 +48,7 @@ function QRCodeDialog({
         <IconButton style={{ marginBottom: '1rem' }} onClick={onClose}>
           <CloseIcon />
         </IconButton>
-        <QRCode size={256} value={codeUrl} />
+        <QRCode size={256} value={codeUrl.href} />
       </div>
     </Dialog>
   );

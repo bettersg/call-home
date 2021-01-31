@@ -17,27 +17,27 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import HistoryIcon from '@material-ui/icons/History';
 import { Duration } from 'luxon';
-import DetectBrowserSnackbar from '../components/shared/DetectBrowserSnackbar';
-import Container from '../components/shared/Container';
+import DetectBrowserSnackbar from 'components/shared/DetectBrowserSnackbar';
+import Container from 'components/shared/Container';
 import {
   NeutralButton,
   ErrorButton,
   PrimaryButton,
-} from '../components/shared/RoundedButton';
-import ContactsDialog from '../components/shared/ContactsDialog';
-import ReportIssueDialog from '../components/shared/ReportIssueDialog';
-import { useUserService, useContactService } from '../contexts';
-import { ApiValidationError } from '../services/apiClient';
-import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
+} from 'components/shared/RoundedButton';
+import ContactsDialog from 'components/shared/ContactsDialog';
+import ReportIssueDialog from 'components/shared/ReportIssueDialog';
+import { useUserService, useContactService } from 'contexts';
+import { ApiValidationError } from 'services/apiClient';
+import PhoneNumberMasks from 'components/shared/PhoneNumberMask';
 import {
   formatDurationInMinutes,
   formatDurationInDaysHoursMinutes,
-} from '../util/timeFormatters';
-import { getNextRefresh } from '../services/PeriodicCredit';
-import PATHS, { useRouting } from './paths';
+} from 'util/timeFormatters';
+import { getNextRefresh } from 'services/PeriodicCredit';
+import PATHS from 'scenes/paths';
 import './ContactsPage.css';
-import { Locale, SceneProps } from './types';
-import { RoundedProgressBar } from '../components/shared/RoundedProgressBar';
+import { Locale, SceneProps } from 'scenes/types';
+import { RoundedProgressBar } from 'components/shared/RoundedProgressBar';
 
 const COUNTRIES = {
   en: {
@@ -531,7 +531,6 @@ function CallContactButton({ contactService, contact, disabled }: any) {
 }
 
 export default function ContactsPage({ locale, routePath }: SceneProps) {
-  const routeResult = useRouting(routePath);
   const [userState, userService] = useUserService();
   const { me: user } = userState || {};
   const [contactState, contactService] = useContactService();
@@ -567,9 +566,6 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
     });
   }, []);
 
-  if (routeResult.shouldRender) {
-    return routeResult.renderElement;
-  }
   if (activeContact) {
     return <Redirect to={PATHS.CALLING} />;
   }

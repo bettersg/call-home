@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { useTheme } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { useUserService } from '../contexts';
-import Container from '../components/shared/Container';
-import { PrimaryButton } from '../components/shared/RoundedButton';
-import { useRouting } from './paths';
-import { validateWorkpass } from '../services/WorkpassValidation';
-import { Locale, SceneProps } from './types';
+import { useUserService } from 'contexts';
+import Container from 'components/shared/Container';
+import { PrimaryButton } from 'components/shared/RoundedButton';
+import { validateWorkpass } from 'services/WorkpassValidation';
+import { Locale, SceneProps } from 'scenes/types';
 import './VerifyWorkpass.css';
 
 const EN_STRINGS = {
@@ -196,12 +195,16 @@ function VerifyWorkpassPresenter({
 }
 
 export default function VerifyWorkpass({ locale, routePath }: SceneProps) {
-  const routeResult = useRouting(routePath);
   const [, userService] = useUserService();
 
   const [wpSerialNumber, setWpSerialNumber] = useState('');
   const [apiErrorMessage, setApiErrorMessage] = useState('');
   const [isTouched, setIsTouched] = useState(false);
+  useEffect(() => {
+    if (userService) {
+      userService.refreshSelf();
+    }
+  }, [userService]);
 
   const isValidSerialNumber = Boolean(
     wpSerialNumber.match(WP_SERIAL_NUMBER_REGEX)
@@ -248,10 +251,6 @@ export default function VerifyWorkpass({ locale, routePath }: SceneProps) {
     setIsTouched(true);
     setWpSerialNumber(event.target.value);
   };
-
-  if (routeResult.shouldRender) {
-    return routeResult.renderElement;
-  }
 
   let errorMessage;
   if (apiErrorMessage) {

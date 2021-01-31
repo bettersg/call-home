@@ -119,7 +119,7 @@ function CallCards({ calls, locale }: { calls: RecentCall[]; locale: string }) {
 
 function BackButton() {
   return (
-    <Link to={PATHS.CONTACTS} style={{ textDecoration: 'none' }}>
+    <Link to={PATHS.HOME} style={{ textDecoration: 'none' }}>
       <Typography
         style={{
           display: 'flex',

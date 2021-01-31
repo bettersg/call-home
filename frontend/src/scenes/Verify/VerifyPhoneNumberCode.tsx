@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import ContainerWrong from '../components/shared/Container';
-import { useUserService } from '../contexts';
-import RoundedButton, {
-  PrimaryButton,
-} from '../components/shared/RoundedButton';
-import { beginPhoneNumberValidation, login } from '../services/Auth';
-import PATHS from './paths';
-import { SceneProps } from './types';
+import ContainerWrong from 'components/shared/Container';
+import { useUserService } from 'contexts';
+import RoundedButton, { PrimaryButton } from 'components/shared/RoundedButton';
+import { beginPhoneNumberValidation, login } from 'services/Auth';
+import { SceneProps } from 'scenes/types';
+
+interface VerifyPhoneNumberCodeProps extends SceneProps {
+  phoneNumber: string;
+}
 
 const Container: React.FunctionComponent<any> = ContainerWrong;
 
@@ -48,9 +48,12 @@ function formatRateLimitExpiry(rateLimitExpiryMillis: number) {
   return `${minutes}:${seconds}`;
 }
 
-export default function VerificationPhoneNumberCode({ locale }: SceneProps) {
+export default function VerificationPhoneNumberCode({
+  locale,
+  phoneNumber,
+}: VerifyPhoneNumberCodeProps) {
   const [userState, userService] = useUserService();
-  const { me: user, verificationPhoneNumber: phoneNumber } = userState || {};
+  const { me: user } = userState || {};
   const [code, setCode] = useState('');
   const [hasBadOtpError, setHasBadOtpError] = useState(false);
   const [hasAllowlistError, setHasAllowlistError] = useState(false);
@@ -59,7 +62,7 @@ export default function VerificationPhoneNumberCode({ locale }: SceneProps) {
 
   useEffect(() => {
     if (userService) {
-      (userService as any).refreshSelf();
+      userService.refreshSelf();
     }
   }, [userService]);
 
@@ -85,31 +88,6 @@ export default function VerificationPhoneNumberCode({ locale }: SceneProps) {
   useEffect(() => {
     handlePhoneNumberValidationRequest();
   }, [phoneNumber]);
-
-  if (!user) {
-    return <Redirect to={PATHS.LOGIN} />;
-  }
-
-  // TODO This can't use the unified routing because that doesn't accommodate the phone number verification code route.
-  let isUserVerified;
-
-  if (user.verificationState.adminGranted) {
-    isUserVerified = true;
-  } else {
-    isUserVerified =
-      user.verificationState.phoneNumber && user.verificationState.workpass;
-  }
-
-  if (isUserVerified) {
-    return <Redirect to={PATHS.CONTACTS} />;
-  }
-  if (!phoneNumber) {
-    return <Redirect to={PATHS.VERIFY_PHONE_NUMBER} />;
-  }
-
-  if (user.verificationState.phoneNumber && !user.verificationState.workpass) {
-    return <Redirect to={PATHS.VERIFY_WORKPASS} />;
-  }
 
   const onSubmit = async (event: any) => {
     event.preventDefault();

@@ -1,67 +1,42 @@
+import { UserWalletResponse } from '@call-home/shared/types/User';
 import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
-import { useUserService, useFeatureService } from '../contexts';
-import { UserState, FeatureState } from '../services';
+import { useUserService } from '../contexts';
+import { UserState } from '../services';
 
-const PATHS = Object.freeze({
-  LOGIN: '/',
-  ADMIN: '/admin',
-  CALLING: '/call',
-  CONTACTS: '/contacts',
-  TRANSACTIONS: '/transactions',
-  VERIFY_PHONE_NUMBER: '/verify-phone',
-  VERIFY_PHONE_NUMBER_CODE: '/verify-phone/code',
-  VERIFY_WORKPASS: '/verify-workpass',
-  RECENT_CALLS: '/recent-calls',
-  PROMO_CODE: '/promo-code',
-});
+enum PATHS {
+  HOME = '/',
+  ADMIN = '/admin',
+  CALLING = '/call',
+  TRANSACTIONS = '/transactions',
+  RECENT_CALLS = '/recent-calls',
+  PROMO_CODE = '/promo-code',
+  VERIFY = '/verify',
+}
 
-// TODO Verification should probably all be routed to the same /verify/ path and then branch out from there.
-function routeFromState(
-  userState: UserState,
-  featureState: FeatureState | null
-): string | null {
-  const { me: user } = userState;
-
-  if (!user || !featureState) {
-    return PATHS.LOGIN;
-  }
-
-  let isUserVerified;
+function isUserVerified(user: UserWalletResponse): boolean {
   if (user.verificationState.adminGranted) {
-    isUserVerified = true;
-  } else {
-    isUserVerified =
-      user.verificationState.phoneNumber && user.verificationState.workpass;
+    return true;
+  }
+  return user.verificationState.phoneNumber && user.verificationState.workpass;
+}
+
+function routeFromState(userState: UserState): string | null {
+  // If there is no user, the user is not logged in and should be directed to home.
+  if (!userState.me) {
+    return PATHS.HOME;
   }
 
-  if (isUserVerified) {
-    return PATHS.CONTACTS;
-  }
-
-  // Verify phone number before work pass. This works for users with and without work pass verification enabled
-  if (!user.verificationState.phoneNumber) {
-    return PATHS.VERIFY_PHONE_NUMBER;
-  }
-
-  if (!user.verificationState.workpass) {
-    return PATHS.VERIFY_WORKPASS;
+  if (!isUserVerified(userState.me)) {
+    return PATHS.VERIFY;
   }
 
   return null;
 }
 
-interface RoutingResult {
-  shouldRender: boolean;
-  renderElement: JSX.Element | null;
-}
-
-function useRouting(ownRoute: string): RoutingResult {
+function useReadyUserState(): UserState | null {
   const [userState, userService] = useUserService();
   const [userRequestInFlight, setUserRequestInFlight] = useState(true);
-
-  const [featureState, featureService] = useFeatureService();
-  const [featureRequestInFlight, setFeatureRequestInFlight] = useState(true);
 
   useEffect(() => {
     if (userService) {
@@ -71,47 +46,54 @@ function useRouting(ownRoute: string): RoutingResult {
     }
   }, [userService]);
 
-  useEffect(() => {
-    if (featureService) {
-      featureService
-        .refreshFeatures()
-        .finally(() => setFeatureRequestInFlight(false));
-    }
-  }, [featureService]);
+  if (userRequestInFlight) {
+    return null;
+  }
 
-  if (userRequestInFlight || !userState) {
+  return userState;
+}
+
+interface RoutingResult {
+  ready: boolean;
+  renderElement?: JSX.Element;
+}
+
+function useAuthRouting(ownRoute: string): RoutingResult {
+  // Uncomment if feature state is needed
+  // const [featureState, featureService] = useFeatureService();
+  // const [featureRequestInFlight, setFeatureRequestInFlight] = useState(true);
+
+  // useEffect(() => {
+  //   if (featureService) {
+  //     featureService
+  //       .refreshFeatures()
+  //       .finally(() => setFeatureRequestInFlight(false));
+  //   }
+  // }, [featureService]);
+
+  // if (featureRequestInFlight === true) {
+  //   return {
+  //     ready: false,
+  //   };
+  // }
+
+  const userState = useReadyUserState();
+  if (!userState) {
     return {
-      shouldRender: true,
-      renderElement: null,
+      ready: false,
     };
   }
 
-  if (featureRequestInFlight === true) {
+  const route = routeFromState(userState);
+  if (route && route !== ownRoute) {
     return {
-      shouldRender: true,
-      renderElement: null,
-    };
-  }
-
-  const route = routeFromState(userState, featureState);
-  if (route === ownRoute) {
-    return {
-      shouldRender: false,
-      renderElement: null,
-    };
-  }
-  if (route) {
-    return {
-      shouldRender: true,
+      ready: true,
       renderElement: <Redirect to={route} />,
     };
   }
 
-  return {
-    shouldRender: false,
-    renderElement: null,
-  };
+  return { ready: true };
 }
 
-export { useRouting };
+export { isUserVerified, useAuthRouting, useReadyUserState };
 export default PATHS;

@@ -3,9 +3,9 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
-import Container from '../components/shared/Container';
-import DetectBrowserSnackbar from '../components/shared/DetectBrowserSnackbar';
-import { useRouting } from './paths';
+import Container from 'components/shared/Container';
+import DetectBrowserSnackbar from 'components/shared/DetectBrowserSnackbar';
+import { SceneProps } from 'scenes/types';
 
 import './Login.css';
 
@@ -29,7 +29,7 @@ const STRINGS = {
   },
 };
 
-const DataConsumptionCopy = withStyles((theme) => ({
+const DataConsumptionCopy = withStyles((theme: any) => ({
   root: {
     borderRadius: '10000px',
     background: 'white',
@@ -59,13 +59,7 @@ const GoogleButton = withStyles(() => ({
   },
 }))(Button);
 
-export default function Login({ locale, routePath }) {
-  const routeResult = useRouting(routePath);
-
-  if (routeResult.shouldRender) {
-    return routeResult.renderElement;
-  }
-
+export default function Login({ locale }: SceneProps) {
   return (
     <Container
       style={{
@@ -96,7 +90,7 @@ export default function Login({ locale, routePath }) {
           variant="contained"
           disableElevation
           onClick={() => {
-            window.location = '/oauth/login/google';
+            (window as any).location = '/oauth/login/google';
           }}
           style={{ marginTop: '36px' }}
         >
@@ -112,7 +106,7 @@ export default function Login({ locale, routePath }) {
           variant="contained"
           disableElevation
           onClick={() => {
-            window.location = '/oauth/login/facebook';
+            (window as any).location = '/oauth/login/facebook';
           }}
           style={{ marginTop: '36px' }}
         >

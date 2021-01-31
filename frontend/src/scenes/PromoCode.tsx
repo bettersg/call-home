@@ -1,15 +1,19 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import { useRedeemableCodeService } from 'contexts';
 import useQuery from '../util/useQuery';
 import Container from '../components/shared/Container';
 
 import { PrimaryButton } from '../components/shared/RoundedButton';
-import { useRouting } from './paths';
+import { useAuthRouting } from './paths';
 import { SceneProps } from './types';
 
 // TODO figure out where to put these later
-const EN_STRINGS = {};
+const EN_STRINGS = {
+  PROMO_CODE_TITLE: 'Enter your promo code here!',
+  SUBMIT: 'Submit',
+};
 const STRINGS = {
   en: EN_STRINGS,
   bn: {
@@ -17,9 +21,9 @@ const STRINGS = {
   },
 };
 
-export default function ClaimRedeemableCode({ locale, routePath }: SceneProps) {
+export default function PromoCode({ locale, routePath }: SceneProps) {
   const [, redeemableCodeService] = useRedeemableCodeService();
-  const routeResult = useRouting(routePath);
+  const routeResult = useAuthRouting(routePath);
   const [code, setCode] = useState('');
   const query = useQuery();
 
@@ -30,7 +34,10 @@ export default function ClaimRedeemableCode({ locale, routePath }: SceneProps) {
     }
   }, [query]);
 
-  if (routeResult.shouldRender) {
+  if (!routeResult.ready) {
+    return null;
+  }
+  if (routeResult.ready && routeResult.renderElement) {
     return routeResult.renderElement;
   }
 
@@ -41,7 +48,17 @@ export default function ClaimRedeemableCode({ locale, routePath }: SceneProps) {
 
   return (
     <Container>
-      <form onSubmit={onSubmit}>
+      <Typography variant="h5" component="h1" style={{ marginBottom: '12px' }}>
+        {STRINGS[locale].PROMO_CODE_TITLE}
+      </Typography>
+      <form
+        onSubmit={onSubmit}
+        style={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         <TextField
           fullWidth
           value={code}
@@ -53,8 +70,11 @@ export default function ClaimRedeemableCode({ locale, routePath }: SceneProps) {
           color="primary"
           type="submit"
           value="submit"
+          style={{
+            marginTop: 'auto',
+          }}
         >
-          {(STRINGS as any)[locale].VERIFY_PHONE_NUMBER_NEXT}
+          {STRINGS[locale].SUBMIT}
         </PrimaryButton>
       </form>
     </Container>

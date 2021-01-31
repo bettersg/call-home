@@ -1,10 +1,7 @@
-export { default as Login } from './Login';
 export { default as AdminPage } from './AdminPage';
 export { default as CallingPage } from './CallingPage';
-export { default as ClaimRedeemableCode } from './ClaimRedeemableCode';
-export { default as ContactsPage } from './ContactsPage';
+export { default as PromoCode } from './PromoCode';
 export { default as TransactionsPage } from './TransactionsPage';
-export { default as VerifyPhoneNumber } from './VerifyPhoneNumber';
-export { default as VerifyPhoneNumberCode } from './VerifyPhoneNumberCode';
 export { default as RecentCallsPage } from './RecentCallsPage';
-export { default as VerifyWorkpass } from './VerifyWorkpass';
+export { default as Verify } from './Verify';
+export { default as Home } from './Home';

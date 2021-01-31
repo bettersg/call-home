@@ -3,15 +3,12 @@ import { Switch, Route } from 'react-router-dom';
 import PATHS from './paths';
 import {
   AdminPage,
-  Login,
   CallingPage,
-  ClaimRedeemableCode,
-  ContactsPage,
-  TransactionsPage,
-  VerifyPhoneNumber,
-  VerifyPhoneNumberCode,
+  PromoCode,
+  Home,
   RecentCallsPage,
-  VerifyWorkpass,
+  TransactionsPage,
+  Verify,
 } from '.';
 import { Locale } from './types';
 
@@ -32,38 +29,23 @@ export default function SceneRouter() {
       <Route path={PATHS.ADMIN}>
         <AdminPage locale={locale} routePath={PATHS.ADMIN} />
       </Route>
-      <Route path={PATHS.VERIFY_PHONE_NUMBER_CODE}>
-        <VerifyPhoneNumberCode
-          locale={locale}
-          routePath={PATHS.VERIFY_PHONE_NUMBER_CODE}
-        />
-      </Route>
-      <Route path={PATHS.VERIFY_PHONE_NUMBER}>
-        <VerifyPhoneNumber
-          locale={locale}
-          routePath={PATHS.VERIFY_PHONE_NUMBER}
-        />
-      </Route>
-      <Route path={PATHS.VERIFY_WORKPASS}>
-        <VerifyWorkpass locale={locale} routePath={PATHS.VERIFY_WORKPASS} />
-      </Route>
       <Route path={PATHS.CALLING}>
         <CallingPage locale={locale} routePath={PATHS.CALLING} />
-      </Route>
-      <Route path={PATHS.CONTACTS}>
-        <ContactsPage locale={locale} routePath={PATHS.CONTACTS} />
       </Route>
       <Route path={PATHS.TRANSACTIONS}>
         <TransactionsPage />
       </Route>
       <Route path={PATHS.PROMO_CODE}>
-        <ClaimRedeemableCode locale={locale} routePath={PATHS.PROMO_CODE} />
+        <PromoCode locale={locale} routePath={PATHS.PROMO_CODE} />
       </Route>
       <Route path={PATHS.RECENT_CALLS}>
         <RecentCallsPage locale={locale} />
       </Route>
-      <Route path={PATHS.LOGIN}>
-        <Login locale={locale} routePath={PATHS.LOGIN} />
+      <Route path={PATHS.VERIFY}>
+        <Verify locale={locale} routePath={PATHS.VERIFY} />
+      </Route>
+      <Route path={PATHS.HOME}>
+        <Home locale={locale} routePath={PATHS.HOME} />
       </Route>
     </Switch>
   );

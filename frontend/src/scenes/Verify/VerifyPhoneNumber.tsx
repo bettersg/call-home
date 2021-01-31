@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { Redirect } from 'react-router-dom';
 import TextFieldWrong from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import ContainerWrong from '../components/shared/Container';
-import { useUserService } from '../contexts';
-import { PrimaryButton } from '../components/shared/RoundedButton';
-import PhoneNumberMasks from '../components/shared/PhoneNumberMask';
-import PATHS, { useRouting } from './paths';
-import { SceneProps } from './types';
+import ContainerWrong from 'components/shared/Container';
+import { useUserService } from 'contexts';
+import { PrimaryButton } from 'components/shared/RoundedButton';
+import PhoneNumberMasks from 'components/shared/PhoneNumberMask';
+import { SceneProps } from 'scenes/types';
 
 const Container: React.FunctionComponent<any> = ContainerWrong;
 const TextField: React.FunctionComponent<any> = TextFieldWrong;
@@ -28,21 +26,12 @@ const STRINGS = {
   },
 };
 
-export default function VerifyPhoneNumber({ locale, routePath }: SceneProps) {
-  const routeResult = useRouting(routePath);
+export default function VerifyPhoneNumber({ locale }: SceneProps) {
   const [userState, userService] = useUserService();
   const { verificationPhoneNumber } = userState || {};
 
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isTouched, setIsTouched] = useState(false);
-
-  if (routeResult.shouldRender) {
-    return routeResult.renderElement;
-  }
-
-  if (verificationPhoneNumber) {
-    return <Redirect to={PATHS.VERIFY_PHONE_NUMBER_CODE} />;
-  }
 
   const validatePhoneNumber = () => {
     if (!phoneNumber) {
@@ -75,15 +64,13 @@ export default function VerifyPhoneNumber({ locale, routePath }: SceneProps) {
               component="h1"
               style={{ marginBottom: '12px' }}
             >
-              {(STRINGS as any)[locale].VERIFY_PHONE_NUMBER_TITLE}
+              {STRINGS[locale].VERIFY_PHONE_NUMBER_TITLE}
             </Typography>
             <TextField
               fullWidth
               autoFocus
               error={isTouched && !validatePhoneNumber()}
-              label={
-                (STRINGS as any)[locale].VERIFY_PHONE_NUMBER_PHONE_NUMBER_LABEL
-              }
+              label={STRINGS[locale].VERIFY_PHONE_NUMBER_PHONE_NUMBER_LABEL}
               value={phoneNumber}
               variant="outlined"
               InputProps={{

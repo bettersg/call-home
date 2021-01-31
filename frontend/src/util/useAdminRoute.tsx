@@ -15,7 +15,7 @@ export default function useAdminRoute() {
   }, [userService]);
 
   if (!user && !userRequestInFlight) {
-    return <Redirect to={PATHS.LOGIN} />;
+    return <Redirect to={PATHS.HOME} />;
   }
   return null;
 }
