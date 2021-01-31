@@ -1,20 +1,31 @@
 import React, { useState, useEffect, FormEvent } from 'react';
+import { useHistory } from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { useRedeemableCodeService } from 'contexts';
-import useQuery from '../util/useQuery';
-import Container from '../components/shared/Container';
+import { ApiValidationError } from 'services/apiClient';
+import useQuery from 'util/useQuery';
+import Container from 'components/shared/Container';
+import PATHS, { useAuthRouting } from 'scenes/paths';
 
-import { PrimaryButton } from '../components/shared/RoundedButton';
-import { useAuthRouting } from './paths';
+import { ErrorButton, PrimaryButton } from '../components/shared/RoundedButton';
+
 import { SceneProps } from './types';
 
 // TODO figure out where to put these later
 const EN_STRINGS = {
   PROMO_CODE_TITLE: 'Enter your promo code here!',
+  PROMO_CODE_SUCCESS_MESSAGE: 'Promo code redeemed successfully!',
+  PROMO_CODE_ERROR_CODE_NOT_FOUND_MESSAGE: 'Promo code was not found',
+  PROMO_CODE_ERROR_USER_CODE_REDEMPTIONS_EXCEEDED_MESSAGE:
+    'You have already claimed this code',
+  PROMO_CODE_ERROR_CODE_FULLY_REDEEMED_MESSAGE:
+    'This code has already been claimed',
+  PROMO_CODE_ERROR_GENERIC_MESSAGE: 'We are unable to process this code',
   SUBMIT: 'Submit',
+  CLOSE: 'Close',
 };
-const STRINGS = {
+const STRINGS: Record<string, typeof EN_STRINGS> = {
   en: EN_STRINGS,
   bn: {
     ...EN_STRINGS,
@@ -23,7 +34,10 @@ const STRINGS = {
 
 export default function PromoCode({ locale, routePath }: SceneProps) {
   const [, redeemableCodeService] = useRedeemableCodeService();
+  const history = useHistory();
   const routeResult = useAuthRouting(routePath);
+  const [codeClaimed, setCodeClaimed] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [code, setCode] = useState('');
   const query = useQuery();
 
@@ -41,9 +55,38 @@ export default function PromoCode({ locale, routePath }: SceneProps) {
     return routeResult.renderElement;
   }
 
-  const onSubmit = (event: FormEvent) => {
+  const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    redeemableCodeService?.redeemCode(code);
+    try {
+      await redeemableCodeService?.redeemCode(code);
+      setCodeClaimed(true);
+      setErrorMessage('');
+    } catch (error) {
+      if (error instanceof ApiValidationError) {
+        switch (error.code) {
+          case 'CODE_NOT_FOUND':
+            setErrorMessage(
+              STRINGS[locale].PROMO_CODE_ERROR_CODE_NOT_FOUND_MESSAGE
+            );
+            break;
+          case 'USER_CODE_REDEMPTIONS_EXCEEDED':
+            setErrorMessage(
+              STRINGS[locale]
+                .PROMO_CODE_ERROR_USER_CODE_REDEMPTIONS_EXCEEDED_MESSAGE
+            );
+            break;
+          case 'CODE_FULLY_REDEEMED':
+            setErrorMessage(
+              STRINGS[locale].PROMO_CODE_ERROR_CODE_FULLY_REDEEMED_MESSAGE
+            );
+            break;
+          default:
+            setErrorMessage(STRINGS[locale].PROMO_CODE_ERROR_GENERIC_MESSAGE);
+        }
+        return;
+      }
+      setErrorMessage(STRINGS[locale].PROMO_CODE_ERROR_GENERIC_MESSAGE);
+    }
   };
 
   return (
@@ -64,6 +107,11 @@ export default function PromoCode({ locale, routePath }: SceneProps) {
           value={code}
           onChange={(event) => setCode(event.target.value)}
           label="Enter your code here"
+          error={Boolean(errorMessage)}
+          helperText={
+            errorMessage ||
+            (codeClaimed ? STRINGS[locale].PROMO_CODE_SUCCESS_MESSAGE : ' ')
+          }
         />
         <PrimaryButton
           disableFocusRipple
@@ -76,6 +124,15 @@ export default function PromoCode({ locale, routePath }: SceneProps) {
         >
           {STRINGS[locale].SUBMIT}
         </PrimaryButton>
+        <ErrorButton
+          disableFocusRipple
+          style={{
+            marginTop: '12px',
+          }}
+          onClick={() => history.push(PATHS.HOME)}
+        >
+          {STRINGS[locale].CLOSE}
+        </ErrorButton>
       </form>
     </Container>
   );
