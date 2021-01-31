@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Redirect, Link } from 'react-router-dom';
+import { Redirect, Link, useLocation, useHistory } from 'react-router-dom';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
@@ -530,12 +530,14 @@ function CallContactButton({ contactService, contact, disabled }: any) {
   );
 }
 
+const dialogHashId = '#new-contact';
 export default function ContactsPage({ locale, routePath }: SceneProps) {
+  const history = useHistory();
+  const location = useLocation();
   const [userState, userService] = useUserService();
   const { me: user } = userState || {};
   const [contactState, contactService] = useContactService();
   const { contacts = [], activeContact } = contactState || {};
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
   const [contactToEdit, setContactToEdit] = useState(null);
   const [
@@ -610,6 +612,7 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
     </Typography>
   );
 
+  const isAddDialogOpen = location.hash === dialogHashId;
   return (
     <Container
       style={{
@@ -754,7 +757,7 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
           }}
           variant="outlined"
           onClick={() => {
-            setIsAddDialogOpen(true);
+            history.push(dialogHashId);
           }}
         >
           <AddContactIcon
@@ -784,7 +787,9 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
           {STRINGS[locale].CONTACTS_LOGOUT_LABEL}
         </ActionLink>
         <AddContactDialog
-          onClose={() => setIsAddDialogOpen(false)}
+          onClose={() => {
+            history.replace('');
+          }}
           open={isAddDialogOpen}
           locale={locale}
         />
