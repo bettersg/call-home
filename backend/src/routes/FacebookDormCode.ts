@@ -28,12 +28,8 @@ function FacebookDormCodeRoutes(
     '/facebook-dorm',
     requireAdmin,
     async (req, res: Response<RedeemableCodeEntity[]>) => {
-      const redeemableCodes = await redeemableCodeService.getRedeemableCodes();
-      return res.json(
-        redeemableCodes.filter(
-          (redeemableCode) => redeemableCode.codeType === 'FACEBOOK_DORM'
-        )
-      );
+      const redeemableCodes = await facebookDormCodeRedemptionService.getUnredeemedCodes();
+      return res.json(redeemableCodes);
     }
   );
 

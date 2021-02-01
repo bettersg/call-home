@@ -5,7 +5,11 @@ import type {
   Transaction,
 } from '.';
 import type { CodeRedemptionRequest } from './CodeRedemption';
-import { RedeemableCodeType } from '../models';
+import {
+  RedeemableCodeType,
+  RedeemableCode as RedeemableCodeEntity,
+  CodeRedemption as CodeRedemptionEntity,
+} from '../models';
 
 const FACEBOOK_DORM_ID = 1;
 const FACEBOOK_CREDIT_AMOUNT = 50 * 60; // 50 minutes
@@ -70,8 +74,24 @@ function FacebookDormCodeRedemption(
     await Promise.all([dormValidationPromise, transactionPromise]);
   }
 
+  async function getUnredeemedCodes() {
+    const allRedeemableCodes = await redeemableCodeService.getRedeemableCodes();
+    const facebookCodes = allRedeemableCodes.filter(
+      (redeemableCode) => redeemableCode.codeType === 'FACEBOOK_DORM'
+    );
+    const facebookCodesIsFullyRedeemed = await Promise.all(
+      facebookCodes.map((redeemableCode) =>
+        codeRedemptionService.isCodeFullyRedeemed(redeemableCode)
+      )
+    );
+    return facebookCodes.filter(
+      (_code, index) => !facebookCodesIsFullyRedeemed[index]
+    );
+  }
+
   return {
     redeemCode,
+    getUnredeemedCodes,
   };
 }
 

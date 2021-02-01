@@ -1,5 +1,8 @@
 import { sanitizeDbErrors } from './lib';
-import type { CodeRedemption as CodeRedemptionEntity } from '../models';
+import type {
+  CodeRedemption as CodeRedemptionEntity,
+  RedeemableCode as RedeemableCodeEntity,
+} from '../models';
 import type { RedeemableCode } from '.';
 
 export interface CodeRedemptionRequest {
@@ -27,6 +30,16 @@ function CodeRedemptionService(
     });
   }
 
+  async function isCodeFullyRedeemed(
+    redeemableCode: RedeemableCodeEntity
+  ): Promise<boolean> {
+    if (redeemableCode.redemptionLimit === null) {
+      return false;
+    }
+    const redemptions = await getRedemptionsForCode(redeemableCode.id);
+    return redemptions.length >= redeemableCode.redemptionLimit;
+  }
+
   async function redeemCode(codeRedemptionRequest: CodeRedemptionRequest) {
     const { userId, code } = codeRedemptionRequest;
     const redeemableCode = await redeemableCodeService.getRedeemableCodeByCode(
@@ -36,11 +49,9 @@ function CodeRedemptionService(
       throw new Error('Validation Error: CODE_NOT_FOUND');
     }
 
-    if (redeemableCode.redemptionLimit !== null) {
-      const redemptions = await getRedemptionsForCode(redeemableCode.id);
-      if (redemptions.length >= redeemableCode.redemptionLimit) {
-        throw new Error('Validation Error: CODE_FULLY_REDEEMED');
-      }
+    const codeFullyRedeemed = await isCodeFullyRedeemed(redeemableCode);
+    if (codeFullyRedeemed) {
+      throw new Error('Validation Error: CODE_FULLY_REDEEMED');
     }
 
     return sanitizeDbErrors(() =>
@@ -53,6 +64,7 @@ function CodeRedemptionService(
 
   return {
     redeemCode,
+    isCodeFullyRedeemed,
     getRedemptionsForCode,
     getRedemptionsForUser,
   };
