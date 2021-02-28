@@ -55,7 +55,10 @@ function WalletService(WalletModel: typeof WalletEntity): WalletService {
   }
 
   async function handleTransactionCreated(transaction: TransactionEntity) {
-    logger.info('Processing wallet transaction %s', transaction);
+    logger.info(
+      'Processing wallet transaction %s',
+      JSON.stringify(transaction)
+    );
     const { userId, amount } = transaction;
     return processTransaction(userId, amount);
   }
