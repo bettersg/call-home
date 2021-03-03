@@ -38,6 +38,7 @@ import PATHS from 'scenes/paths';
 import './ContactsPage.css';
 import { Locale, SceneProps } from 'scenes/types';
 import { RoundedProgressBar } from 'components/shared/RoundedProgressBar';
+import Footer from 'components/shared/Footer';
 
 const COUNTRIES = {
   en: {
@@ -778,25 +779,11 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
           justifyContent: 'space-between',
         }}
       >
-        <ActionLink variant="body1" role="button" onClick={openFeedbackDialog}>
-          <FeedbackIcon />
-          {STRINGS[locale].CONTACTS_REPORT_PROBLEM_LABEL}
-        </ActionLink>
-        <ActionLink variant="body1" role="button" onClick={logout}>
-          <ExitToAppIcon style={{ transform: 'rotate(180deg)' }} />
-          {STRINGS[locale].CONTACTS_LOGOUT_LABEL}
-        </ActionLink>
         <AddContactDialog
           onClose={() => {
             history.replace('');
           }}
           open={isAddDialogOpen}
-          locale={locale}
-        />
-        <ReportIssueDialog
-          user={user}
-          onClose={() => setIsFeedbackDialogOpen(false)}
-          open={isFeedbackDialogOpen}
           locale={locale}
         />
         {contactToEdit ? (
@@ -808,6 +795,7 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
           />
         ) : null}
       </div>
+      <Footer locale={locale} />
     </Container>
   );
 }

@@ -9,6 +9,7 @@ import { PrimaryButton } from 'components/shared/RoundedButton';
 import { validateWorkpass } from 'services/WorkpassValidation';
 import { Locale, SceneProps } from 'scenes/types';
 import './VerifyWorkpass.css';
+import Footer from 'components/shared/Footer';
 
 const EN_STRINGS = {
   VERIFY_WORKPASS_TITLE: 'Enter your Work Pass serial number',
@@ -190,6 +191,7 @@ function VerifyWorkpassPresenter({
           {STRINGS[locale].NEXT}
         </PrimaryButton>
       </form>
+      <Footer locale={locale} />
     </Container>
   );
 }

@@ -6,6 +6,7 @@ import { useUserService } from 'contexts';
 import RoundedButton, { PrimaryButton } from 'components/shared/RoundedButton';
 import { beginPhoneNumberValidation, login } from 'services/Auth';
 import { SceneProps } from 'scenes/types';
+import Footer from 'components/shared/Footer';
 
 interface VerifyPhoneNumberCodeProps extends SceneProps {
   phoneNumber: string;
@@ -188,5 +189,10 @@ export default function VerificationPhoneNumberCode({
       </form>
     );
   }
-  return <Container>{content}</Container>;
+  return (
+    <Container>
+      {content}
+      <Footer locale={locale} />
+    </Container>
+  );
 }
