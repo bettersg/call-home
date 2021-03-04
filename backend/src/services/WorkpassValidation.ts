@@ -122,13 +122,7 @@ function WorkpassValidationService(
       serialNumberSha256
     );
     if (existingWorkpassUser) {
-      return {
-        result: 'failure',
-        reason: {
-          code: 'conflict',
-          workpassStatus,
-        },
-      };
+      await invalidateUser(existingWorkpassUser.userId);
     }
 
     await updateWorkpassValidation(userId, {
