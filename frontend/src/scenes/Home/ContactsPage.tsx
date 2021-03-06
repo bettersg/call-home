@@ -662,10 +662,11 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
       >
         <div
           style={{
-            overflowY: 'scroll',
             width: '100%',
-            // 20em to accomodate logout and add contact button
-            maxHeight: 'calc(var(--viewport-height) - 20rem)',
+            // 24rem to accomodate logout and add contact button
+            maxHeight: 'calc(var(--viewport-height) - 24rem)',
+            overflow: 'auto',
+            minHeight: '4em',
           }}
         >
           <List
@@ -688,8 +689,9 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     width: '100%',
-                    height: '4em',
+                    minHeight: '4em',
                     padding: '4px 8px',
+                    borderRadius: '8px',
                   }}
                   variant="outlined"
                 >
@@ -717,7 +719,12 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
                         flex: '1 0',
                       }}
                     >
-                      <Typography variant="body1">{contact.name}</Typography>
+                      <Typography
+                        variant="body1"
+                        style={{ overflowWrap: 'anywhere' }}
+                      >
+                        {contact.name}
+                      </Typography>
                       <div style={{ display: 'flex' }}>
                         <Typography
                           style={{
@@ -754,6 +761,7 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
             width: '100%',
             height: '4em',
             marginTop: '1em',
+            borderRadius: '8px',
           }}
           variant="outlined"
           onClick={() => {
