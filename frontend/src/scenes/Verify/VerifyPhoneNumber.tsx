@@ -6,6 +6,7 @@ import { useUserService } from 'contexts';
 import { PrimaryButton } from 'components/shared/RoundedButton';
 import PhoneNumberMasks from 'components/shared/PhoneNumberMask';
 import { SceneProps } from 'scenes/types';
+import Footer from 'components/shared/Footer';
 
 const Container: React.FunctionComponent<any> = ContainerWrong;
 const TextField: React.FunctionComponent<any> = TextFieldWrong;
@@ -93,6 +94,7 @@ export default function VerifyPhoneNumber({ locale }: SceneProps) {
           </PrimaryButton>
         </div>
       </form>
+      <Footer locale={locale} />
     </Container>
   );
 }
