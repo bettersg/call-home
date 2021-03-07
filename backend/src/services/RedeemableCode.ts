@@ -4,11 +4,10 @@ import type {
   RedeemableCodeType,
 } from '../models';
 
-const DEFAULT_SEGMENT_LENGTH = 4;
+const DEFAULT_SEGMENT_LENGTH = 3;
 const DEFAULT_SEGMENT_COUNT = 3;
 const DEFAULT_SEPARATOR = '-';
-const DEFAULT_CHARACTER_SET =
-  'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const DEFAULT_CHARACTER_SET = '0123456789';
 
 function generateCodeString(
   characterSet: string = DEFAULT_CHARACTER_SET,
