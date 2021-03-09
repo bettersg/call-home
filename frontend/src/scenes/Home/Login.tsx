@@ -125,15 +125,14 @@ export default function Login({ locale }: SceneProps) {
         >
           {STRINGS[locale].FACEBOOK_SIGN_UP}
         </FacebookButton>
-        <SupportButton
-          className="sign-up-button"
-          disableElevation
-          onClick={() => {
-            (window as any).location = 'https://m.me/callhomesg';
-          }}
-        >
-          <FeedbackIcon />
-          {STRINGS[locale].FACEBOOK_MESSAGE}
+        <SupportButton className="sign-up-button" disableElevation>
+          <a
+            href="https://m.me/callhomesg"
+            style={{ color: 'grey', display: 'flex' }}
+          >
+            <FeedbackIcon />
+            {STRINGS[locale].FACEBOOK_MESSAGE}
+          </a>
         </SupportButton>
       </div>
     </Container>
