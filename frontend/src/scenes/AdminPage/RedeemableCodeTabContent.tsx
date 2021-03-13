@@ -70,7 +70,7 @@ export default function RedeemableCodeTabContent() {
   }, [redeemableCodeService]);
 
   const createFacebookDormCode = () =>
-    redeemableCodeService?.createRedeemableCode();
+    redeemableCodeService?.createFacebookRedeemableCode();
 
   return (
     <>
@@ -92,6 +92,7 @@ export default function RedeemableCodeTabContent() {
             <TableRow>
               <TableCell>Code</TableCell>
               <TableCell>QR</TableCell>
+              <TableCell>Delete</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -104,6 +105,18 @@ export default function RedeemableCodeTabContent() {
                     onClick={() => setDisplayedQrCode(redeemableCode.code)}
                   >
                     <CropFreeIcon />
+                  </IconButton>
+                </TableCell>
+                <TableCell>
+                  <IconButton
+                    role="button"
+                    onClick={() =>
+                      redeemableCodeService?.deleteRedeemableCode(
+                        redeemableCode.id
+                      )
+                    }
+                  >
+                    <CloseIcon />
                   </IconButton>
                 </TableCell>
               </TableRow>

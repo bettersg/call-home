@@ -5,12 +5,19 @@ import {
   RedeemableCodeType,
   RedeemableCode as RedeemableCodeEntity,
 } from '../models';
-import { validateRequest } from './helpers/validation';
+import {
+  validateRequest,
+  stringToNumberTransformer,
+} from './helpers/validation';
 import { requireAdmin } from './middlewares';
 import { handleServiceError } from './transformers';
 
 const POST_SCHEMA = z.object({
   body: z.object({ code: z.string() }),
+});
+
+const DELETE_CODE_SCHEMA = z.object({
+  params: z.object({ codeId: stringToNumberTransformer }),
 });
 
 const FACEBOOK_DORM_CODE_CONFIG = {
@@ -59,6 +66,22 @@ function FacebookDormCodeRoutes(
             userId,
             code,
           });
+          return res.json();
+        } catch (e) {
+          return handleServiceError(e, res);
+        }
+      }
+    )
+  );
+
+  router.delete(
+    '/facebook-dorm/codes/:codeId',
+    validateRequest(
+      DELETE_CODE_SCHEMA,
+      async (parsedReq, res: Response<void>, req) => {
+        const { codeId } = parsedReq.params;
+        try {
+          await facebookDormCodeRedemptionService.deleteCode(codeId);
           return res.json();
         } catch (e) {
           return handleServiceError(e, res);

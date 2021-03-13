@@ -89,7 +89,12 @@ function FacebookDormCodeRedemption(
     );
   }
 
+  async function deleteCode(codeId: number) {
+    return redeemableCodeService.deleteRedeemableCode(codeId);
+  }
+
   return {
+    deleteCode,
     redeemCode,
     getUnredeemedCodes,
   };

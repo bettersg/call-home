@@ -4,6 +4,7 @@ import apiClient from './apiClient';
 import ObservableService from './observableService';
 
 const facebookRedeemableCodeEndpoint = '/promo-codes/facebook-dorm';
+const cckRedeemableCodeEndpoint = '/promo-codes/cck-dorm';
 
 export interface RedeemableCodeState {
   codes: RedeemableCode[];
@@ -29,7 +30,7 @@ export default class RedeemableCodeService extends ObservableService<RedeemableC
     return codes;
   }
 
-  async createRedeemableCode(): Promise<RedeemableCode> {
+  async createFacebookRedeemableCode(): Promise<RedeemableCode> {
     const newRedeemableCode = (await apiClient.post(
       facebookRedeemableCodeEndpoint
     )) as RedeemableCode;
@@ -44,8 +45,8 @@ export default class RedeemableCodeService extends ObservableService<RedeemableC
     });
   }
 
-  // async deleteRedeemableCode(dormId: number): Promise<void> {
-  //   await apiClient.delete(`${facebookRedeemableCodeEndpoint}/${dormId}`);
-  //   this.refreshRedeemableCodes();
-  // }
+  async deleteRedeemableCode(codeId: number): Promise<void> {
+    await apiClient.delete(`${facebookRedeemableCodeEndpoint}/codes/${codeId}`);
+    this.refreshRedeemableCodes();
+  }
 }
