@@ -15,6 +15,7 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import FeedbackIcon from '@material-ui/icons/Feedback';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import FavoriteIcon from '@material-ui/icons/Favorite';
+import LinkIcon from '@material-ui/icons/Link';
 import HistoryIcon from '@material-ui/icons/History';
 import { Duration } from 'luxon';
 import DetectBrowserSnackbar from 'components/shared/DetectBrowserSnackbar';
@@ -103,6 +104,7 @@ const EN_STRINGS = {
     INVALID_PHONE_NUMBER: 'You have entered an invalid phone number',
   },
   CONTACTS_RECENT_CALLS: 'Recent calls',
+  CONTACTS_PROMO_CODE_LABEL: 'Enter promo code',
 };
 
 const STRINGS = {
@@ -443,7 +445,7 @@ function EditContactDialog({
   );
 }
 
-function ContactsCountInfo({
+function ContactsInfoBar({
   contacts,
   locale,
 }: {
@@ -456,6 +458,12 @@ function ContactsCountInfo({
         <FavoriteIcon className="info-icon" />
         {contacts.length} {STRINGS[locale].CONTACTS_LOVED_ONES_LABEL}
       </InfoItem>
+      <Link to={PATHS.PROMO_CODE} style={{ textDecoration: 'none' }}>
+        <InfoItem variant="subtitle2" className="info-item">
+          <LinkIcon className="info-icon" />
+          {STRINGS[locale].CONTACTS_PROMO_CODE_LABEL}
+        </InfoItem>
+      </Link>
     </div>
   );
 }
@@ -778,7 +786,7 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
           />
           <div>{STRINGS[locale].CONTACTS_ADD_CONTACT_LABEL}</div>
         </AddContactButton>
-        <ContactsCountInfo contacts={contacts} locale={locale} />
+        <ContactsInfoBar contacts={contacts} locale={locale} />
       </div>
       <div
         style={{
