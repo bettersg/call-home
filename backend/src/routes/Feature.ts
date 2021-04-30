@@ -8,7 +8,9 @@ function FeaturesRoutes(featureService: typeof Feature): Router {
 
   router.get('/', async (_req: UserInjectedRequest, res) => {
     // const userId = req.user.id;
-    const features = {};
+    const features = {
+      DORM_VALIDATION: featureService.shouldEnableDormValidation(),
+    };
     return res.status(200).json(features);
   });
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import * as Sentry from '@sentry/react';
 import {
@@ -11,6 +11,7 @@ import {
   RedeemableCodeServiceProvider,
   ThemeProvider,
   useUserService,
+  useFeatureService,
 } from './contexts';
 import { initSentry, configureUser } from './services/Sentry';
 import SceneRouter from './scenes/SceneRouter';
@@ -46,6 +47,22 @@ function InitApp() {
       configureUser(user);
     }
   }, [user]);
+
+  // Feature service stuff
+  const [featureState, featureService] = useFeatureService();
+  const [featureRequestInFlight, setFeatureRequestInFlight] = useState(true);
+  useEffect(() => {
+    if (featureService) {
+      featureService
+        .refreshFeatures()
+        .finally(() => setFeatureRequestInFlight(false));
+    }
+  }, [featureService]);
+
+  if (featureRequestInFlight === true || !featureState) {
+    return null;
+  }
+  // End feature service stuff
 
   return <SceneRouter />;
 }

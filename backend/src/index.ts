@@ -17,6 +17,7 @@ import {
   CallToken as callTokenRoutes,
   Contact as contactRoutes,
   Dorm as dormRoutes,
+  DormValidation as dormValidationRoutes,
   FacebookDormCode as facebookDormCodeRoutes,
   Feature as featureRoutes,
   OAuth as oauthRoutes,
@@ -87,6 +88,7 @@ app.use('/users', secureRoutes, requireVerified, callRoutes);
 app.use('/users', secureRoutes, requireVerified, transactionRoutes);
 app.use('/dorms', secureRoutes, requireVerified, dormRoutes);
 app.use('/promo-codes', secureRoutes, requireVerified, facebookDormCodeRoutes);
+app.use('/dorm-validations', secureRoutes, dormValidationRoutes);
 
 // TODO these names are not standard kebab-case plurals
 app.use('/allowlistEntries', secureRoutes, allowlistRoutes);

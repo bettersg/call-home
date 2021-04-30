@@ -1,8 +1,8 @@
 import { UserWalletResponse } from '@call-home/shared/types/User';
 import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
-import { useUserService } from '../contexts';
-import { UserState } from '../services';
+import { useUserService, useFeatureService } from '../contexts';
+import { UserState, FeatureState } from '../services';
 
 enum PATHS {
   HOME = '/',
@@ -14,20 +14,33 @@ enum PATHS {
   VERIFY = '/verify',
 }
 
-function isUserVerified(user: UserWalletResponse): boolean {
+function isUserVerified(
+  user: UserWalletResponse,
+  featureState: FeatureState
+): boolean {
   if (user.verificationState.adminGranted) {
     return true;
+  }
+  if (featureState.DORM_VALIDATION) {
+    return (
+      user.verificationState.phoneNumber &&
+      user.verificationState.workpass &&
+      user.verificationState.dorm
+    );
   }
   return user.verificationState.phoneNumber && user.verificationState.workpass;
 }
 
-function routeFromState(userState: UserState): string | null {
+function routeFromState(
+  userState: UserState,
+  featureState: FeatureState
+): string | null {
   // If there is no user, the user is not logged in and should be directed to home.
   if (!userState.me) {
     return PATHS.HOME;
   }
 
-  if (!isUserVerified(userState.me)) {
+  if (!isUserVerified(userState.me, featureState)) {
     return PATHS.VERIFY;
   }
 
@@ -60,31 +73,31 @@ interface RoutingResult {
 
 function useAuthRouting(ownRoute: string): RoutingResult {
   // Uncomment if feature state is needed
-  // const [featureState, featureService] = useFeatureService();
-  // const [featureRequestInFlight, setFeatureRequestInFlight] = useState(true);
-
-  // useEffect(() => {
-  //   if (featureService) {
-  //     featureService
-  //       .refreshFeatures()
-  //       .finally(() => setFeatureRequestInFlight(false));
-  //   }
-  // }, [featureService]);
-
-  // if (featureRequestInFlight === true) {
-  //   return {
-  //     ready: false,
-  //   };
-  // }
-
+  const [featureState, featureService] = useFeatureService();
+  const [featureRequestInFlight, setFeatureRequestInFlight] = useState(true);
   const userState = useReadyUserState();
+
+  useEffect(() => {
+    if (featureService) {
+      featureService
+        .refreshFeatures()
+        .finally(() => setFeatureRequestInFlight(false));
+    }
+  }, [featureService]);
+
+  if (featureRequestInFlight === true || !featureState) {
+    return {
+      ready: false,
+    };
+  }
+
   if (!userState) {
     return {
       ready: false,
     };
   }
 
-  const route = routeFromState(userState);
+  const route = routeFromState(userState, featureState);
   if (route && route !== ownRoute) {
     return {
       ready: true,
