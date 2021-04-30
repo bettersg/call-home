@@ -96,31 +96,37 @@ export default function RedeemableCodeTabContent() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {redeemableCodes.map((redeemableCode) => (
-              <TableRow key={redeemableCode.id}>
-                <TableCell>{redeemableCode.code}</TableCell>
-                <TableCell>
-                  <IconButton
-                    role="button"
-                    onClick={() => setDisplayedQrCode(redeemableCode.code)}
-                  >
-                    <CropFreeIcon />
-                  </IconButton>
-                </TableCell>
-                <TableCell>
-                  <IconButton
-                    role="button"
-                    onClick={() =>
-                      redeemableCodeService?.deleteRedeemableCode(
-                        redeemableCode.id
-                      )
-                    }
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
+            {redeemableCodes
+              .sort(
+                (a, b) =>
+                  (new Date(b.createdAt) as any) -
+                  (new Date(a.createdAt) as any)
+              )
+              .map((redeemableCode) => (
+                <TableRow key={redeemableCode.id}>
+                  <TableCell>{redeemableCode.code}</TableCell>
+                  <TableCell>
+                    <IconButton
+                      role="button"
+                      onClick={() => setDisplayedQrCode(redeemableCode.code)}
+                    >
+                      <CropFreeIcon />
+                    </IconButton>
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      role="button"
+                      onClick={() =>
+                        redeemableCodeService?.deleteRedeemableCode(
+                          redeemableCode.id
+                        )
+                      }
+                    >
+                      <CloseIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>

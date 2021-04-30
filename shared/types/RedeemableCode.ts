@@ -7,4 +7,5 @@ export interface RedeemableCode {
   code: string;
   codeType: RedeemableCodeType;
   redemptionLimit: number | null;
+  createdAt: string;
 }
