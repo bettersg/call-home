@@ -9,9 +9,22 @@ if (!DATABASE_URL) {
   throw new Error('DATABASE_URL was not found');
 }
 
+const sequelizeOptions = DATABASE_URL.includes('postgres')
+  ? ({
+      dialect: 'postgres',
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false,
+        },
+      },
+    } as any)
+  : {};
+
 const sequelize = new Sequelize(DATABASE_URL, {
   // Disable logging because we exceed our quota too often
   logging: false, // logger.info.bind(logger),
+  ...sequelizeOptions,
 });
 
 sequelize
