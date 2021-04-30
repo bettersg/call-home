@@ -19,6 +19,7 @@ import LinkIcon from '@material-ui/icons/Link';
 import HistoryIcon from '@material-ui/icons/History';
 import { Duration } from 'luxon';
 import DetectBrowserSnackbar from 'components/shared/DetectBrowserSnackbar';
+import RamadanSnackbar from 'components/shared/RamadanSnackbar';
 import Container from 'components/shared/Container';
 import {
   NeutralButton,
@@ -630,6 +631,7 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
       }}
     >
       <DetectBrowserSnackbar />
+      <RamadanSnackbar />
       <Typography
         variant="h5"
         component="h1"

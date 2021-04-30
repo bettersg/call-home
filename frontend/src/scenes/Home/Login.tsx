@@ -5,6 +5,7 @@ import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import Container from 'components/shared/Container';
 import DetectBrowserSnackbar from 'components/shared/DetectBrowserSnackbar';
+import RamadanSnackbar from 'components/shared/RamadanSnackbar';
 import { SceneProps } from 'scenes/types';
 
 import './Login.css';
@@ -69,6 +70,7 @@ export default function Login({ locale }: SceneProps) {
       }}
     >
       <DetectBrowserSnackbar />
+      <RamadanSnackbar />
       <div className="login-content">
         <img alt="" src="/images/landing_splash.svg" />
         <Typography style={{ marginTop: '24px' }} variant="h5" component="h1">
