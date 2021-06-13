@@ -70,6 +70,7 @@ function FacebookDormCodeRedemption(
       userId: createdRedemption.userId,
       amount: FACEBOOK_CREDIT_AMOUNT,
       reference: 'redeemable-code-fb',
+      additionalReference: null,
     });
     await Promise.all([dormValidationPromise, transactionPromise]);
   }

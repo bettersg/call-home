@@ -1,3 +1,4 @@
+// The type of transactions allowed
 export type TransactionReference =
   | 'call'
   | 'periodic-credit'

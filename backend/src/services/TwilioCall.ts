@@ -114,6 +114,7 @@ function TwilioCallService(
       reference: 'call',
       userId: callEntity.userId,
       amount: -twilioCall.duration,
+      additionalReference: String(twilioCall.id as number),
     });
   }
 

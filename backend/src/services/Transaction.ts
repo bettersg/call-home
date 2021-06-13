@@ -10,12 +10,17 @@ function TransactionService(
     reference,
     userId,
     amount,
-  }: Pick<TransactionEntity, 'reference' | 'userId' | 'amount'>) {
+    additionalReference,
+  }: Pick<
+    TransactionEntity,
+    'reference' | 'userId' | 'amount' | 'additionalReference'
+  >) {
     const transaction = await sanitizeDbErrors(() =>
       TransactionModel.create({
         reference,
         userId,
         amount,
+        additionalReference,
       })
     );
     await walletService.handleTransactionCreated(transaction);

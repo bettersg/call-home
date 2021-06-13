@@ -3,6 +3,7 @@ import { Op } from 'sequelize';
 import { sanitizeDbErrors } from './lib';
 import type { PeriodicCredit as PeriodicCreditEntity } from '../models';
 import type { PhoneNumberValidation, Transaction } from './index';
+import { logger } from '../config';
 
 // Config object for handling multiple credit intervals for users. No longer necessary.
 const cohorts = {
@@ -70,10 +71,12 @@ function PeriodicCreditService(
         amount: creditAmountSeconds,
       })
     );
+    logger.info('Created periodic credit %s', periodicCredit);
     await transactionService.createTransaction({
       userId,
       amount: creditAmountSeconds,
       reference: 'periodic-credit',
+      additionalReference: null,
     });
     return periodicCredit;
   }

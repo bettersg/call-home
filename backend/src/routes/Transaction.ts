@@ -47,6 +47,7 @@ function TransactionRoutes(transactionService: typeof Transaction): Router {
           userId,
           reference: 'admin',
           amount,
+          additionalReference: null,
         });
         return res.json(transaction);
       }
