@@ -1,8 +1,10 @@
+import { Transaction } from 'sequelize';
 import { logger } from '../config';
-import type {
+import {
   Transaction as TransactionEntity,
   Wallet as WalletEntity,
   WalletTransaction as WalletTransactionEntity,
+  sequelize,
 } from '../models';
 
 interface WalletService {
@@ -30,8 +32,9 @@ function WalletService(
     return WalletModel.create({ userId });
   }
 
-  async function getWalletForUser(userId: number) {
+  async function getWalletForUser(userId: number, transaction?: Transaction) {
     return WalletModel.findOne({
+      transaction,
       where: {
         userId,
       },
@@ -42,30 +45,35 @@ function WalletService(
     userId: number,
     amount: number,
     transactionId: number
-  ) {
-    const wallet = await getWalletForUser(userId);
-    if (!wallet) {
-      const msg = `No wallet found for userId ${userId}`;
-      logger.error(msg);
-      throw new Error(msg);
-    }
-    // TODO use sequelize's increment instead of setting this on our own
-    const walletUpdatePromise = WalletModel.update(
-      {
-        callTime: wallet.callTime + amount,
-      },
-      {
+  ): Promise<WalletEntity | null> {
+    await sequelize.transaction(async (transaction) => {
+      const wallet = await getWalletForUser(userId, transaction);
+      if (!wallet) {
+        const msg = `No wallet found for userId ${userId}`;
+        logger.error(msg);
+        throw new Error(msg);
+      }
+
+      await WalletModel.increment(['callTime'], {
+        by: amount,
         where: {
           userId,
         },
-      }
-    );
-    const walletTransactionPromise = WalletTransactionModel.create({
-      callTime: wallet.callTime + amount,
-      userId,
-      transactionId,
+        transaction,
+      });
+
+      await wallet.reload();
+
+      await WalletTransactionModel.create(
+        {
+          callTime: wallet.callTime + amount,
+          userId,
+          transactionId,
+        },
+        { transaction }
+      );
     });
-    await Promise.all([walletUpdatePromise, walletTransactionPromise]);
+
     return getWalletForUser(userId);
   }
 
