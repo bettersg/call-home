@@ -13,6 +13,7 @@ import CodeRedemption from './CodeRedemption';
 import DormValidation from './DormValidation';
 import PhoneNumberValidation from './PhoneNumberValidation';
 import Wallet from './Wallet';
+import { WalletTransaction } from './WalletTransaction';
 import WorkpassValidation from './WorkpassValidation';
 
 sequelize.addModels([
@@ -30,6 +31,7 @@ sequelize.addModels([
   User,
   PhoneNumberValidation,
   Wallet,
+  WalletTransaction,
   WorkpassValidation,
 ]);
 
@@ -146,5 +148,6 @@ export {
   UserType as UserTypes,
   PhoneNumberValidation,
   Wallet,
+  WalletTransaction,
   WorkpassValidation,
 };

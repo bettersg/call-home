@@ -26,7 +26,7 @@ function deploySentrySourceMaps {
     docker cp temp:/app/backend/static/static/js /tmp/call-home-js
     docker container rm temp
 
-    npx sentry-cli releases --org=ring-a-senior --project=ring-a-senior-frontend files ${VERSION} upload-sourcemaps --ext js --ext map --rewrite /tmp/call-home-js
+    npx @sentry/cli releases --org=ring-a-senior --project=ring-a-senior-frontend files ${VERSION} upload-sourcemaps --ext js --ext map --rewrite /tmp/call-home-js
 }
 
 # Associate the current time with the release.

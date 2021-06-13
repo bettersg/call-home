@@ -26,7 +26,7 @@ import Auth0 = require('./Auth0');
 const auth0Service = Auth0();
 
 const dormService = Dorm(models.Dorm);
-const walletService = Wallet(models.Wallet);
+const walletService = Wallet(models.Wallet, models.WalletTransaction);
 const redeemableCodeService = RedeemableCode(models.RedeemableCode);
 
 const allowlistEntryService = AllowlistEntry(
