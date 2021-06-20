@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/react';
-import { Device } from 'twilio-client';
+import { Connection, Device } from 'twilio-client';
 import { getLogger } from 'loglevel';
 import getToken from './CallToken';
 
@@ -40,7 +40,12 @@ function isTransientIssue(error: any) {
   return false;
 }
 
-async function makeCallOnce(call: any) {
+async function makeCallOnce(
+  call: any
+): Promise<{
+  device: Device;
+  connection: Connection;
+} | null> {
   if (!isProd) {
     return null;
   }

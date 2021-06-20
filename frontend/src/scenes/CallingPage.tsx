@@ -1,3 +1,4 @@
+import { Connection, Device } from 'twilio-client';
 import React, { useCallback, useState, useEffect } from 'react';
 import * as Sentry from '@sentry/react';
 import CallEndIcon from '@material-ui/icons/CallEnd';
@@ -50,7 +51,10 @@ const CallEndButton = withStyles((theme) => ({
   },
 }))(Button);
 
-const USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE = {
+const USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE: Record<
+  number,
+  keyof typeof STRINGS['en']
+> = {
   31002: 'CALLING_TRANSIENT_ISSUE_MESSAGE',
   31003: 'CALLING_TRANSIENT_ISSUE_MESSAGE',
   31005: 'CALLING_TRANSIENT_ISSUE_MESSAGE',
@@ -60,7 +64,11 @@ const USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE = {
   31208: 'CALLING_NEED_MICROPHONE_ACCESS_MESSAGE',
 };
 
-function subscribeToOptionalDevice(device, eventName, listener) {
+function subscribeToOptionalDevice(
+  device: Device | null,
+  eventName: Device.EventName,
+  listener: (...args: any[]) => void
+) {
   if (device) {
     device.on(eventName, listener);
   }
@@ -77,27 +85,29 @@ function subscribeToOptionalDevice(device, eventName, listener) {
   };
 }
 
-export default function CallingPage({ locale, routePath }) {
+export default function CallingPage({ locale, routePath }: SceneProps) {
   const [hasAttemptedConnection, setHasAttemptedConnection] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [hasConnectedBefore, setHasConnectedBefore] = useState(false);
-  const [connectTime, setConnectTime] = useState(null);
-  const [currentTime, setCurrentTime] = useState(null);
+  const [connectTime, setConnectTime] = useState<DateTime | null>(null);
+  const [currentTime, setCurrentTime] = useState<DateTime | null>(null);
   const [wasCallSuccessful, setWasCallSuccessful] = useState(false);
   const [hasUserDisconnected, setHasUserDisconnected] = useState(false);
-  const [activeConnection, setActiveConnection] = useState(null);
-  const [device, setDevice] = useState(null);
-  const [lastErrorMessage, setLastErrorMessage] = useState(null);
-  const [userState] = useUserService();
-  const { me: user } = userState;
+  const [activeConnection, setActiveConnection] = useState<Connection | null>(
+    null
+  );
+  const [device, setDevice] = useState<Device | null>(null);
+  const [lastErrorMessage, setLastErrorMessage] = useState<string | null>(null);
+  const [userState, userService] = useUserService();
+  const { me: user } = userState || {};
   const [contactState, contactService] = useContactService();
-  const { activeContact } = contactState;
+  const { activeContact } = contactState || {};
 
   const handleStatusChange = useCallback(() => {
     if (!device) {
       return;
     }
-    const status = device.status();
+    const status = device?.status();
     if (status === 'busy') {
       setIsConnected(true);
       setConnectTime(DateTime.local());
@@ -146,7 +156,10 @@ export default function CallingPage({ locale, routePath }) {
 
   // Errors don't seem to always correspond to status changes. We can capture these and if the calls 'fail' (however we detect that), we present messages to the user.
   useEffect(() => {
-    const listener = (error) => {
+    const listener = (error: {
+      message: string;
+      code: keyof typeof USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE;
+    }) => {
       console.log('ERRRORRRR');
       console.log(error);
 
@@ -175,7 +188,7 @@ export default function CallingPage({ locale, routePath }) {
         }
       });
     };
-    return subscribeToOptionalDevice(device, 'error', listener);
+    return subscribeToOptionalDevice(device, 'error' as any, listener);
   }, [setLastErrorMessage, device]);
 
   useEffect(() => {
@@ -186,14 +199,15 @@ export default function CallingPage({ locale, routePath }) {
       try {
         setHasAttemptedConnection(true);
         // TODO we can perform more sophisticated things with this connection like subscribe to updates
-        const { device: newDevice, connection } = await makeCall({
-          userId: user.id,
-          contactId: activeContact.id,
-        });
+        const { device: newDevice = null, connection = null } =
+          (await makeCall({
+            userId: user!.id,
+            contactId: activeContact.id,
+          })) || {};
         setActiveConnection(connection);
         setDevice(newDevice);
       } catch (error) {
-        if (device && !device.isSupported) {
+        if (device && !(device as any).isSupported) {
           setLastErrorMessage(
             STRINGS[locale].CALLING_UNSUPPORTED_BROWSER_MESSAGE
           );
@@ -229,14 +243,12 @@ export default function CallingPage({ locale, routePath }) {
 
   const exitCallingPage = useCallback(() => {
     disconnectCall();
-    contactService.setActiveContact(null);
+    userService?.setShouldSleep(true);
+    contactService?.setActiveContact(null);
   }, [contactService, disconnectCall]);
 
-  if (!user) {
-    return <Redirect to={PATHS.LOGIN} />;
-  }
-  if (!activeContact) {
-    return <Redirect to={PATHS.CONTACTS} />;
+  if (!user || !activeContact) {
+    return <Redirect to={PATHS.HOME} />;
   }
 
   const avatarUrl = `/images/avatars/${activeContact.avatar}.svg`;

@@ -41,6 +41,8 @@ import './ContactsPage.css';
 import { Locale, SceneProps } from 'scenes/types';
 import { RoundedProgressBar } from 'components/shared/RoundedProgressBar';
 import Footer from 'components/shared/Footer';
+import ContactService from 'services/Contact';
+import UserService from 'services/User';
 
 const COUNTRIES = {
   en: {
@@ -525,11 +527,22 @@ function CallLimitInfo({
   );
 }
 
-function CallContactButton({ contactService, contact, disabled }: any) {
+function CallContactButton({
+  contactService,
+  contact,
+  disabled,
+  userService,
+}: {
+  contactService: ContactService | null;
+  contact: unknown;
+  disabled: boolean;
+  userService: UserService | null;
+}) {
   const onClick = disabled
     ? undefined
     : () => {
-        contactService.setActiveContact(contact);
+        contactService?.setActiveContact(contact);
+        userService?.setShouldSleep(false);
       };
   const Icon = disabled ? PhoneDisabledIcon : ContactCallIcon;
 
@@ -759,6 +772,7 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
                   </div>
                   <CallContactButton
                     contactService={contactService}
+                    userService={userService}
                     contact={contact}
                     disabled={callLimitExceeded}
                   />
