@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
-import { DateTime } from 'luxon';
 import { Locale } from 'scenes/types';
 
 const EN_STRINGS = {
@@ -23,6 +22,8 @@ const BN_STRINGS = {
     'সেরা কলিং অভিজ্ঞতার জন্য, গুগল ক্রোম খোলা এবং দৃশ্যমান এবং আপনি অ্যাপটি ব্যবহার করার সময় সেই কল হোমটি Chrome পৃষ্ঠায় প্রদর্শিত হচ্ছে তা নিশ্চিত করুন।',
   HELP_MESSAGE_NO_CLOSE_CHROME:
     'সেরা কলিং অভিজ্ঞতার জন্য, আপনি কলটিতে থাকার সময় কল হোম ওয়েবসাইটটি বন্ধ করবেন না। আপনি যদি ওয়েবসাইটটি বন্ধ করেন তবে আপনার কলটি সংযোগ বিচ্ছিন্ন হতে পারে।',
+  HELP_MESSAGE_NO_NAVIGATE_CHROME:
+    'যদি আপনার কলগুলি মাঝে মাঝে সংযোগ বিচ্ছিন্ন হয়, কল হোম ওয়েবসাইটটি উন্মুক্ত রাখার চেষ্টা করুন এবং আপনি কোনও কল করার সময় অন্য ওয়েবসাইটগুলিতে যাবেন না।',
 };
 
 const STRINGS = {
