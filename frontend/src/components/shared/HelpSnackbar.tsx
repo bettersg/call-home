@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
-import { DateTime } from 'luxon';
 import { Locale } from 'scenes/types';
 
 const EN_STRINGS = {
