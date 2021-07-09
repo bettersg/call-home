@@ -18,13 +18,16 @@ services:
       context: ./shared/
 
   backend:
-    build: backend/
+    build:
+      context: backend/
+      dockerfile: Dockerfile.dev
     env_file:
       - ./backend/.env
     depends_on:
       - shared
       - db
     environment:
+      NODE_ENV: development
       DATABASE_URL: "postgresql://postgres:password@db:5432/callhome"
 
 volumes:

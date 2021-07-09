@@ -1,0 +1,30 @@
+# Built by npm run dockerize from ../shared
+# This is designed to work in docker compose, where this image is automatically built.
+FROM call-home-shared
+
+RUN apt update && apt install -y sqlite3
+
+WORKDIR /app/backend
+
+# Install node-gyp globally to install sqlite3 via npm.
+RUN npm install -g node-gyp node-pre-gyp \
+    # Install ts-node to run the bootstrapping script (in .ts).
+    ts-node
+RUN npm install --build-from-source --sqlite=/usr/local sqlite3
+
+COPY package.json .
+COPY package-lock.json .
+
+RUN npm run init
+RUN npm install
+
+COPY src/ src/
+COPY tsconfig.json .
+
+# Copy the sequelize configuration, otherwise npm run migration:seed will fail.
+COPY .sequelizerc .
+COPY sequelize/ sequelize/
+# This is needed in order to run the database bootstrapping script.
+COPY scripts/ scripts/
+
+CMD npx ts-node scripts/bootstrapDb.js && npm run migration:seed && npm run start:dev

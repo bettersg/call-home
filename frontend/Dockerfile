@@ -1,3 +1,5 @@
+# Built by npm run dockerize from ../shared
+# This is designed to work in docker compose, where this image is automatically built.
 FROM call-home-shared
 
 WORKDIR /app/frontend
