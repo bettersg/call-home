@@ -46,7 +46,7 @@ type env = 'development' | 'production' | 'staging';
 
 // Env vars
 const { NODE_ENV } = process.env as { NODE_ENV: env };
-const { PORT = 4000, STATIC_DIR = 'static' } = process.env;
+const { PORT = 4000, STATIC_DIR = 'static', FRONTEND_HOST = 'localhost' } = process.env;
 
 app.use(morgan('dev'));
 app.use(pinoHttp(httpPinoConfig));
@@ -96,7 +96,7 @@ app.use('/periodic-credit', secureRoutes, periodicCreditRoutes);
 
 if (NODE_ENV === 'development') {
   // proxy requests to development frontend
-  app.use('/', proxy('http://localhost:3000'));
+  app.use('/', proxy(`http://${FRONTEND_HOST}:3000`));
 } else {
   // STATIC_DIR gets populated in a docker build
   app.use(express.static(STATIC_DIR));

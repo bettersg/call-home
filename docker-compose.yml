@@ -12,23 +12,29 @@ services:
     ports:
       - 5432:5432
 
-  shared:
-    image: call-home-shared
-    build:
-      context: ./shared/
-
   backend:
+    depends_on:
+      - db
     build:
       context: backend/
       dockerfile: Dockerfile.dev
     env_file:
       - ./backend/.env
-    depends_on:
-      - shared
-      - db
     environment:
       NODE_ENV: development
       DATABASE_URL: "postgresql://postgres:password@db:5432/callhome"
+      FRONTEND_HOST: frontend
+
+  frontend:
+    build:
+      context: frontend/
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3000:3000
+    environment:
+      BACKEND_HOST: backend
+    stdin_open: true
+    command: npm start
 
 volumes:
   db-data:
