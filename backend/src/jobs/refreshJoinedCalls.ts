@@ -4,6 +4,7 @@
 
 import { logger } from '../config';
 import { sequelize } from '../models';
+import { readFile } from 'fs';
 
 const jobIntervalMillis = 24 * 60 * 60 * 1000;
 
@@ -11,7 +12,7 @@ function refreshJoinedCalls() {
   async function job() {
     try {
       logger.info('refreshJoinedCalls==========');
-      await sequelize.query('REFRESH MATERIALIZED VIEW joined_calls');
+      await readFile('join_calls.sql', 'utf8', (_, sql) => sequelize.query(sql));
     } catch (error) {
       logger.error(error);
     } finally {
