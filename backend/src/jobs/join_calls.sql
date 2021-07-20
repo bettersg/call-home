@@ -1,4 +1,4 @@
-CREATE MATERIALIZED VIEW call_attempts_joined
+CREATE MATERIALIZED VIEW if NOT EXISTS joined_calls
 AS
   SELECT
   "Calls"."createdAt",
@@ -14,3 +14,5 @@ AS
   "Calls" FULL OUTER JOIN "TwilioCalls"
   ON
   "Calls"."incomingTwilioCallSid"="TwilioCalls"."parentCallSid";
+
+REFRESH MATERIALIZED VIEW joined_calls;

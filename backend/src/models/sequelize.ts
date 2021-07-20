@@ -2,24 +2,25 @@ import { Sequelize } from 'sequelize-typescript';
 
 import { logger } from '../config';
 
-const { DATABASE_URL } = process.env;
+const { DATABASE_URL, NODE_ENV } = process.env;
 
 if (!DATABASE_URL) {
   logger.error('DATABASE_URL was not found');
   throw new Error('DATABASE_URL was not found');
 }
 
-const sequelizeOptions = DATABASE_URL.includes('postgres')
-  ? ({
-      dialect: 'postgres',
-      dialectOptions: {
-        ssl: {
-          require: true,
-          rejectUnauthorized: false,
+const sequelizeOptions =
+  DATABASE_URL.includes('postgres') && NODE_ENV !== 'development'
+    ? ({
+        dialect: 'postgres',
+        dialectOptions: {
+          ssl: {
+            require: true,
+            rejectUnauthorized: false,
+          },
         },
-      },
-    } as any)
-  : {};
+      } as any)
+    : {};
 
 const sequelize = new Sequelize(DATABASE_URL, {
   // Disable logging because we exceed our quota too often

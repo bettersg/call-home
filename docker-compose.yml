@@ -1,16 +1,5 @@
 version: "3.8"
 services:
-  server:
-    build:
-      context: ./
-    env_file:
-      - ./backend/.env
-    ports:
-      - 4000:4000
-    depends_on:
-      - db
-    environment:
-      DATABASE_URL: 'postgresql://postgres:password@db:5432/callhome'
   db:
     image: postgres
     restart: always
@@ -22,6 +11,30 @@ services:
       - db-data:/var/lib/postgresql/data
     ports:
       - 5432:5432
+
+  backend:
+    depends_on:
+      - db
+    build:
+      context: backend/
+      dockerfile: Dockerfile.dev
+    env_file:
+      - ./backend/.env
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: "postgresql://postgres:password@db:5432/callhome"
+      FRONTEND_HOST: frontend
+
+  frontend:
+    build:
+      context: frontend/
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3000:3000
+    environment:
+      BACKEND_HOST: backend
+    stdin_open: true
+    command: npm start
 
 volumes:
   db-data:

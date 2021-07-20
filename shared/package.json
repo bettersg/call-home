@@ -6,7 +6,8 @@
   "scripts": {
     "lint:fix": "eslint --fix",
     "precommit": "tsc --noEmit && lint-staged",
-    "init": "npm link"
+    "init": "npm link",
+    "dockerize": "docker build . -t call-home-shared"
   },
   "author": "",
   "license": "ISC",
