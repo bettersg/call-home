@@ -1,4 +1,11 @@
+import { DateTime, Duration } from 'luxon';
+import { Op } from 'sequelize';
 import type { PhoneNumberValidation as PhoneNumberValidationEntity } from '../models';
+
+const VALIDITY_LENGTH: Duration = Duration.fromObject({
+  month: 1,
+});
+const EXPIRY_BATCH_SIZE = 100;
 
 function PhoneNumberValidationService(
   PhoneNumberValidationModel: typeof PhoneNumberValidationEntity
@@ -65,10 +72,32 @@ function PhoneNumberValidationService(
     });
   }
 
+  async function invalidateExpiredEntries() {
+    const expiryDate: Date = DateTime.now().minus(VALIDITY_LENGTH).toJSDate();
+    const expiredEntries = await PhoneNumberValidationModel.findAll({
+      where: {
+        updatedAt: {
+          // Less than because the expired entries are earlier than our cutoff.
+          [Op.lt]: expiryDate,
+        },
+      },
+    });
+
+    // Expire these in batches
+    await Promise.all(
+      expiredEntries
+        .slice(0, EXPIRY_BATCH_SIZE)
+        .map((phoneNumberValidation) =>
+          invalidateUser(phoneNumberValidation.userId)
+        )
+    );
+  }
+
   return {
     createPhoneNumberValidationForUser,
     getPhoneNumberValidationForUser,
     invalidateUser,
+    invalidateExpiredEntries,
     updatePhoneNumberValidationRequestTime,
     updatePhoneNumberValidation,
     validateUser,
