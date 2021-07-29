@@ -46,7 +46,6 @@ async function getSerialNumberStatus(
   }
 
   const expiryDateTime = DateTime.fromFormat(expiryStr, expiryDateFormat);
-  console.log(expiryDateTime);
 
   // Apparently, even if the status is 'Valid', it can still be expired
   if (
