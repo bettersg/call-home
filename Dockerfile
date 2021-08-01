@@ -1,5 +1,5 @@
 # Prepare shared code in a base image
-FROM node:12 AS base
+FROM node:15 AS base
 
 WORKDIR /app/shared
 
