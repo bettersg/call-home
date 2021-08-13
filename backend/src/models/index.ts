@@ -8,6 +8,7 @@ import PeriodicCredit from './PeriodicCredit';
 import Transaction from './Transaction';
 import TwilioCall, { CallStatus } from './TwilioCall';
 import User, { UserType } from './User';
+import UserExperimentConfig from './UserExperimentConfig';
 import RedeemableCode, { RedeemableCodeType } from './RedeemableCode';
 import CodeRedemption from './CodeRedemption';
 import DormValidation from './DormValidation';
@@ -29,6 +30,7 @@ sequelize.addModels([
   Transaction,
   TwilioCall,
   User,
+  UserExperimentConfig,
   PhoneNumberValidation,
   Wallet,
   WalletTransaction,
@@ -145,6 +147,7 @@ export {
   Transaction,
   TwilioCall,
   User,
+  UserExperimentConfig,
   UserType as UserTypes,
   PhoneNumberValidation,
   Wallet,
