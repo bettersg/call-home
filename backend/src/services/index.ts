@@ -19,6 +19,7 @@ import * as WorkpassClient from './WorkpassClient';
 import UserValidation, { VerificationState } from './UserValidation';
 import FacebookDormCodeRedemption from './FacebookDormCodeRedemption';
 import Dorm from './Dorm';
+import UserExperimentConfig from './UserExperimentConfig';
 import Contact = require('./Contact');
 import Auth0 = require('./Auth0');
 
@@ -94,6 +95,10 @@ const facebookDormCodeRedemptionService = FacebookDormCodeRedemption(
   transactionService
 );
 
+const userExperimentConfigService = UserExperimentConfig(
+  models.UserExperimentConfig
+);
+
 export {
   Feature,
   TwilioClient,
@@ -113,6 +118,7 @@ export {
   transactionService as Transaction,
   twilioCallService as TwilioCall,
   userService as User,
+  userExperimentConfigService as UserExperimentConfig,
   userValidationService as UserValidation,
   phoneNumberValidationService as PhoneNumberValidation,
   walletService as Wallet,
