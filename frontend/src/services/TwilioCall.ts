@@ -1,8 +1,14 @@
 import * as Sentry from '@sentry/react';
 import { Connection, Device } from 'twilio-client';
+// TODO for some reason, this file requires using the dist/ directory
+import { Edge } from '@call-home/shared/dist/types/CallExperimentFlags';
 import { getLogger } from 'loglevel';
 import getToken from './CallToken';
 
+interface Call extends Record<string, string> {
+  userId: string;
+  contactId: string;
+}
 // TODO handle production environments better
 const isProd = true;
 const twilioLogger = getLogger(Device.packageName);
@@ -24,10 +30,22 @@ const TransientIssueErrorCodes = new Set([
 // Helper functions for performing Twilio calls. The goal of this is to abstract over some of the minor details of interacting with the Twilio device.
 // This assumes that there is only one global device.
 
-const SETUP_OPTIONS = {
+const SETUP_OPTIONS: Device.Options = {
   enableIceRestart: true,
   enableRingingState: true,
 };
+
+function getEdgeOption(edgeFlag: Edge) {
+  switch (edgeFlag) {
+    case Edge.SINGAPORE_ONLY:
+      return { edge: 'singapore' };
+    case Edge.SINGAPORE_ROAMING:
+      return { edge: ['singapore', 'roaming'] };
+    case Edge.DEFAULT:
+    default:
+      return {};
+  }
+}
 
 function isTransientIssue(error: any) {
   const { code } = error;
@@ -41,7 +59,8 @@ function isTransientIssue(error: any) {
 }
 
 async function makeCallOnce(
-  call: any
+  call: Call,
+  edgeFlag: Edge
 ): Promise<{
   device: Device;
   connection: Connection;
@@ -52,7 +71,10 @@ async function makeCallOnce(
 
   const device = new Device();
   const token = await getToken();
-  device.setup(token, SETUP_OPTIONS);
+  device.setup(token, {
+    ...SETUP_OPTIONS,
+    ...getEdgeOption(edgeFlag),
+  });
 
   return new Promise((resolve, reject) => {
     if (device.status() === 'ready') {
@@ -80,14 +102,13 @@ async function makeCallOnce(
   });
 }
 
-async function makeCall(call: any) {
+async function makeCall(call: Call, edgeFlag: Edge) {
   let lastError;
 
   for (let i = 0; i < CALL_RETRY_COUNT; i += 1) {
     try {
-      console.log('attempting call', i + 1);
-      // eslint-disable-next-line
-      return await makeCallOnce(call);
+      // eslint-disable-next-line no-await-in-loop
+      return await makeCallOnce(call, edgeFlag);
     } catch (error) {
       if (!error.code || !TransientIssueErrorCodes.has(error.code)) {
         throw error;
