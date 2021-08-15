@@ -2,12 +2,15 @@
   "name": "@call-home/shared",
   "version": "1.0.0",
   "description": "Shared code for Call Home frontend and backend",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "files": ["dist/"],
   "scripts": {
     "lint:fix": "eslint --fix",
     "precommit": "tsc --noEmit && lint-staged",
     "init": "npm link",
-    "dockerize": "docker build . -t call-home-shared"
+    "dockerize": "docker build . -t call-home-shared",
+    "build": "tsc -p tsconfig.json"
   },
   "author": "",
   "license": "ISC",
@@ -25,5 +28,8 @@
     "*.{js,ts}": [
       "npm run lint:fix"
     ]
+  },
+  "exports": {
+    "./": "./dist/"
   }
 }
