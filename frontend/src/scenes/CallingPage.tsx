@@ -8,7 +8,11 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { DateTime } from 'luxon';
 import { Redirect } from 'react-router-dom';
-import { useUserService, useContactService } from '../contexts';
+import {
+  useUserService,
+  useContactService,
+  useFeatureService,
+} from '../contexts';
 import PATHS from './paths';
 import Container from '../components/shared/Container';
 import DetectBrowserSnackbar from '../components/shared/DetectBrowserSnackbar';
@@ -102,6 +106,14 @@ export default function CallingPage({ locale, routePath }: SceneProps) {
   const { me: user } = userState || {};
   const [contactState, contactService] = useContactService();
   const { activeContact } = contactState || {};
+  const [featureState, featureService] = useFeatureService();
+  const { EDGE_EXPERIMENT: edgeFlag } = featureState || {};
+
+  useEffect(() => {
+    if (featureService) {
+      featureService.refreshFeatures();
+    }
+  }, [featureService]);
 
   const handleStatusChange = useCallback(() => {
     if (!device) {
@@ -193,17 +205,20 @@ export default function CallingPage({ locale, routePath }: SceneProps) {
 
   useEffect(() => {
     (async () => {
-      if (!activeContact) {
+      if (!activeContact || !edgeFlag) {
         return;
       }
       try {
         setHasAttemptedConnection(true);
         // TODO we can perform more sophisticated things with this connection like subscribe to updates
         const { device: newDevice = null, connection = null } =
-          (await makeCall({
-            userId: user!.id,
-            contactId: activeContact.id,
-          })) || {};
+          (await makeCall(
+            {
+              userId: String(user!.id),
+              contactId: String(activeContact.id),
+            },
+            edgeFlag
+          )) || {};
         setActiveConnection(connection);
         setDevice(newDevice);
       } catch (error) {
