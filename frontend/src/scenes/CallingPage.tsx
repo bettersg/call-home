@@ -12,6 +12,7 @@ import { useUserService, useContactService } from '../contexts';
 import PATHS from './paths';
 import Container from '../components/shared/Container';
 import DetectBrowserSnackbar from '../components/shared/DetectBrowserSnackbar';
+import FeedbackDialog from '../components/shared/FeedbackDialog';
 import { makeCall, isTransientIssue } from '../services/TwilioCall';
 import { formatCallTime } from '../util/timeFormatters';
 import { SceneProps } from './types';
@@ -102,6 +103,21 @@ export default function CallingPage({ locale, routePath }: SceneProps) {
   const { me: user } = userState || {};
   const [contactState, contactService] = useContactService();
   const { activeContact } = contactState || {};
+  const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
+
+  const exitCallingPage = () => {
+    userService?.setShouldSleep(true);
+    contactService?.setActiveContact(null);
+  };
+
+  const openFeedbackDialog = () => {
+    setIsFeedbackDialogOpen(true);
+  };
+
+  const closeFeedbackDialog = () => {
+    setIsFeedbackDialogOpen(false);
+    exitCallingPage();
+  };
 
   const handleStatusChange = useCallback(() => {
     if (!device) {
@@ -120,7 +136,6 @@ export default function CallingPage({ locale, routePath }: SceneProps) {
   const subscribeToDeviceStatusEvent = useCallback(
     (eventName) => {
       const listener = () => {
-        console.log(eventName);
         handleStatusChange();
       };
       return subscribeToOptionalDevice(device, eventName, listener);
@@ -160,8 +175,7 @@ export default function CallingPage({ locale, routePath }: SceneProps) {
       message: string;
       code: keyof typeof USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE;
     }) => {
-      console.log('ERRRORRRR');
-      console.log(error);
+      console.error(error);
 
       // Comment in if there is any doubt about whether events are being surfaced
       // Sentry.captureMessage(`Error smoke test`);
@@ -188,7 +202,7 @@ export default function CallingPage({ locale, routePath }: SceneProps) {
         }
       });
     };
-    return subscribeToOptionalDevice(device, 'error' as any, listener);
+    return subscribeToOptionalDevice(device, Device.EventName.Error, listener);
   }, [setLastErrorMessage, device]);
 
   useEffect(() => {
@@ -241,10 +255,12 @@ export default function CallingPage({ locale, routePath }: SceneProps) {
     setHasUserDisconnected(true);
   }, [activeConnection]);
 
-  const exitCallingPage = useCallback(() => {
+  const handleExitCallButton = useCallback(() => {
     disconnectCall();
-    userService?.setShouldSleep(true);
-    contactService?.setActiveContact(null);
+    if (activeConnection) {
+      return openFeedbackDialog();
+    }
+    return exitCallingPage();
   }, [contactService, disconnectCall]);
 
   if (!user || !activeContact) {
@@ -276,7 +292,7 @@ export default function CallingPage({ locale, routePath }: SceneProps) {
   );
 
   const ExitPageButton = (
-    <CallEndButton variant="contained" onClick={exitCallingPage}>
+    <CallEndButton variant="contained" onClick={handleExitCallButton}>
       <CloseIcon />
     </CallEndButton>
   );
@@ -323,6 +339,14 @@ export default function CallingPage({ locale, routePath }: SceneProps) {
           ) : null}
         </div>
         {isConnected ? DisconnectCallButton : ExitPageButton}
+        {activeConnection ? (
+          <FeedbackDialog
+            connection={activeConnection}
+            onClose={() => closeFeedbackDialog()}
+            open={isFeedbackDialogOpen}
+            locale={locale}
+          />
+        ) : null}
       </div>
     </Container>
   );
