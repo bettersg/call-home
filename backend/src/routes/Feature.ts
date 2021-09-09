@@ -1,15 +1,24 @@
 import express, { Router } from 'express';
 import { UserInjectedRequest } from './middlewares';
-import type { Feature } from '../services';
+import type { Feature, UserExperimentConfig } from '../services';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function FeaturesRoutes(featureService: typeof Feature): Router {
+function FeaturesRoutes(
+  featureService: typeof Feature,
+  userExperimentConfigService: typeof UserExperimentConfig
+): Router {
   const router = express.Router();
 
-  router.get('/', async (_req: UserInjectedRequest, res) => {
-    // const userId = req.user.id;
+  router.get('/', async (req: UserInjectedRequest, res) => {
+    const userId = req.user.id;
+    const userExperimentConfig = await userExperimentConfigService.getOrUpsert(
+      userId
+    );
+
     const features = {
       DORM_VALIDATION: featureService.shouldEnableDormValidation(),
+      EDGE_EXPERIMENT:
+        featureService.getEdgeExperimentFlag(userExperimentConfig),
     };
     return res.status(200).json(features);
   });

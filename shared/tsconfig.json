@@ -10,7 +10,9 @@
     "noImplicitAny": true,
     "moduleResolution": "node",
     "sourceMap": true,
+    "rootDir": ".",
     "outDir": "dist",
+    "declaration": true,
     "baseUrl": ".",
     "strictNullChecks": true,
     "paths": {
@@ -20,6 +22,6 @@
     }
   },
   "include": [
-    "**/*"
+    "types/*"
   ]
 }
