@@ -213,6 +213,26 @@ function TwilioCallService(
     );
   }
 
+  async function postCallFeedback(
+    parentCallSid: string,
+    qualityScore: number,
+    qualityIssue?: string
+  ): Promise<number | null> {
+    const feedback = await twilioClient.postCallFeedback(
+      parentCallSid,
+      qualityScore,
+      qualityIssue
+    );
+    const twilioCall = await getTwilioCallByParentSid(parentCallSid);
+    if (!twilioCall) {
+      return null;
+    }
+    twilioCall.qualityScore = qualityScore;
+    twilioCall.qualityIssue = qualityIssue;
+    await twilioCall.save();
+    return feedback.qualityScore;
+  }
+
   return {
     createTwilioCall,
     fetchTwilioDataForPendingTwilioCalls,
@@ -222,6 +242,7 @@ function TwilioCallService(
     getCallsMissingDuration,
     getTwilioCallBySid,
     getTwilioCallByParentSid,
+    postCallFeedback,
   };
 }
 

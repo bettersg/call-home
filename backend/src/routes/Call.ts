@@ -26,6 +26,17 @@ const GET_RECENT_SCHEMA = z.object({
   }),
 });
 
+const POST_FEEDBACK_SCHEMA = z.object({
+  params: z.object({
+    userId: stringToNumberTransformer,
+    twilioParentSid: z.string(),
+  }),
+  body: z.object({
+    qualityScore: z.number(),
+    qualityIssue: z.optional(z.string()),
+  }),
+});
+
 function mapObjectsToRecentCallResponse(
   calls: Call[],
   contacts: Contact[],
@@ -117,6 +128,21 @@ function CallRoutes(
         stopwatch.millisTaken
       );
       res.send(String(totalDurationSeconds));
+    })
+  );
+
+  router.post(
+    '/:userId/calls/:twilioParentSid/feedback',
+    requireSelf,
+    validateRequest(POST_FEEDBACK_SCHEMA, async (parsedReq, res, req) => {
+      const { userId, twilioParentSid } = parsedReq.params;
+      const { qualityScore, qualityIssue } = parsedReq.body;
+      const feedback = await twilioCallService.postCallFeedback(
+        twilioParentSid,
+        qualityScore,
+        qualityIssue
+      );
+      res.json(feedback);
     })
   );
 

@@ -15,11 +15,8 @@ import {
 
 const { VoiceResponse } = twilio.twiml;
 
-const {
-  TWILIO_CALL_PHONE_NUMBER,
-  NODE_ENV,
-  TWILIO_WEBHOOK_BASE_URL,
-} = process.env;
+const { TWILIO_CALL_PHONE_NUMBER, NODE_ENV, TWILIO_WEBHOOK_BASE_URL } =
+  process.env;
 const isDev = NODE_ENV === 'development';
 logger.info('Running twilio webhook in development mode?', isDev);
 
@@ -88,7 +85,8 @@ function TwilioRoutes(
         await twilioCallService.createTwilioCall({
           parentCallSid: incomingTwilioCallSid,
         });
-        const response = new VoiceResponse().dial(
+        const response = new VoiceResponse();
+        response.dial(
           {
             callerId: TWILIO_CALL_PHONE_NUMBER,
             // TODO this is hardcoded

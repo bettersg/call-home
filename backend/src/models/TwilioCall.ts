@@ -52,6 +52,12 @@ class TwilioCall extends Model<TwilioCall> {
   @Column
   // This is our own field to determine the freshness of the data from the API
   lastUpdated: Date;
+
+  @Column
+  qualityScore: number;
+
+  @Column
+  qualityIssue?: string;
 }
 
 export default TwilioCall;

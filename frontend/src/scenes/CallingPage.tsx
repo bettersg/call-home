@@ -18,6 +18,7 @@ import Container from '../components/shared/Container';
 import DetectBrowserSnackbar from '../components/shared/DetectBrowserSnackbar';
 import FeedbackDialog from '../components/shared/FeedbackDialog';
 import { makeCall, isTransientIssue } from '../services/TwilioCall';
+import { postFeedback } from '../services/Call';
 import { formatCallTime } from '../util/timeFormatters';
 import { SceneProps } from './types';
 
@@ -107,6 +108,7 @@ export default function CallingPage({ locale, routePath }: SceneProps) {
   const { me: user } = userState || {};
   const [contactState, contactService] = useContactService();
   const { activeContact } = contactState || {};
+  const [callSid, setCallSid] = useState<string | null>(null);
   const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
   const [featureState, featureService] = useFeatureService();
   const { EDGE_EXPERIMENT: edgeFlag } = featureState || {};
@@ -217,6 +219,15 @@ export default function CallingPage({ locale, routePath }: SceneProps) {
     return subscribeToOptionalDevice(device, Device.EventName.Error, listener);
   }, [setLastErrorMessage, device]);
 
+  const connectionCallSid = activeConnection?.parameters.CallSid;
+  useEffect(() => {
+    // This can be a 'temporary' id with a different schema.
+    if (connectionCallSid && connectionCallSid.startsWith('CA')) {
+      setCallSid(connectionCallSid);
+    }
+  }, [connectionCallSid]);
+  // setTimeout(() => console.log(connection?.parameters['CallSid']), 1000);
+
   useEffect(() => {
     (async () => {
       if (!activeContact || !edgeFlag) {
@@ -281,6 +292,15 @@ export default function CallingPage({ locale, routePath }: SceneProps) {
   if (!user || !activeContact) {
     return <Redirect to={PATHS.HOME} />;
   }
+
+  const onSubmitFeedback = (feedback: number, qualityIssue?: string) => {
+    if (callSid) {
+      postFeedback(String(user.id), callSid, {
+        qualityScore: feedback,
+        qualityIssue,
+      });
+    }
+  };
 
   const avatarUrl = `/images/avatars/${activeContact.avatar}.svg`;
 
@@ -356,8 +376,8 @@ export default function CallingPage({ locale, routePath }: SceneProps) {
         {isConnected ? DisconnectCallButton : ExitPageButton}
         {activeConnection ? (
           <FeedbackDialog
-            connection={activeConnection}
             onClose={() => closeFeedbackDialog()}
+            onSubmitFeedback={onSubmitFeedback}
             open={isFeedbackDialogOpen}
             locale={locale}
           />

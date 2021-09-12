@@ -26,6 +26,20 @@ async function sendSms(toPhoneNumber: string, body: string) {
   });
 }
 
+async function postCallFeedback(
+  twilioCallSid: string,
+  qualityScore: number,
+  reason?: string
+) {
+  return twilioClient
+    .calls(twilioCallSid)
+    .feedback(twilioCallSid)
+    .create({
+      qualityScore,
+      issue: reason as any, // TODO narrow down the type with proper checking
+    });
+}
+
 // It's important to specify this is outgoing because TwiML from the browser is treated as an 'incoming call'
 // This means that the sid received by the hook are for the parent TwiML call and not the actual status of the outgoing call.
 // OMG KILL ME
@@ -36,4 +50,10 @@ async function listOutgoingCalls(options = { limit: 20 }) {
   });
 }
 
-export { getCall, listOutgoingCalls, getCallsByIncomingSid, sendSms };
+export {
+  getCall,
+  listOutgoingCalls,
+  getCallsByIncomingSid,
+  sendSms,
+  postCallFeedback,
+};

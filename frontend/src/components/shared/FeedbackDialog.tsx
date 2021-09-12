@@ -11,8 +11,11 @@ import { Connection } from 'twilio-client';
 import { PrimaryButton } from './RoundedButton';
 
 interface FeedbackDialogProps extends DialogProps {
-  connection: Connection;
   locale: Locale;
+  onSubmitFeedback: (
+    feedback: number,
+    issue?: Connection.FeedbackIssue
+  ) => unknown;
 }
 
 // Reference for Problem Keys: https://www.twilio.com/docs/voice/sdks/javascript/overview-1x-deprecated/connection
@@ -52,26 +55,19 @@ const withDialogButtonStyles = withStyles(() => ({
 const DialogPrimaryButton = withDialogButtonStyles(PrimaryButton);
 
 export default function FeedbackDialog({
-  connection,
   locale,
   open,
   onClose,
+  onSubmitFeedback,
 }: FeedbackDialogProps) {
   const [feedback, setFeedback] = useState<number | null>(null);
   const [problem, setProblem] = useState<Connection.FeedbackIssue | null>(null);
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (connection && feedback) {
-      // pass problem only when feedback is less than perfect
-      if (feedback === 5) {
-        await connection.postFeedback(feedback);
-      } else {
-        await connection.postFeedback(
-          feedback,
-          problem as Connection.FeedbackIssue
-        );
-      }
+    // pass problem only when feedback is less than perfect
+    if (feedback) {
+      onSubmitFeedback(feedback, problem || undefined);
     }
     if (onClose) {
       onClose({}, 'escapeKeyDown');
