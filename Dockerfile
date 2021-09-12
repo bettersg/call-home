@@ -3,13 +3,13 @@ FROM node:15 AS base
 
 WORKDIR /app/shared
 
-COPY shared/package.json .
-COPY shared/package-lock.json .
+COPY shared/package.json shared/package-lock.json shared/tsconfig.json .
 
 RUN npm run init
 RUN npm install
-
 COPY shared/types/ types/
+
+RUN npm run build
 
 # frontend
 FROM base AS frontend

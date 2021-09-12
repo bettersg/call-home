@@ -7,5 +7,6 @@ COPY package-lock.json .
 
 RUN npm run init
 RUN npm install
+RUN npm run build
 
 COPY types/ types/
