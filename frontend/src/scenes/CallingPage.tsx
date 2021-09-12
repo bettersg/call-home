@@ -111,7 +111,8 @@ export default function CallingPage({ locale, routePath }: SceneProps) {
   const [callSid, setCallSid] = useState<string | null>(null);
   const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
   const [featureState, featureService] = useFeatureService();
-  const { EDGE_EXPERIMENT: edgeFlag } = featureState || {};
+  const { EDGE_EXPERIMENT: edgeFlag, FEEDBACK_DIALOG: feedbackDialogFlag } =
+    featureState || {};
 
   const exitCallingPage = () => {
     userService?.setShouldSleep(true);
@@ -283,7 +284,7 @@ export default function CallingPage({ locale, routePath }: SceneProps) {
 
   const handleExitCallButton = useCallback(() => {
     disconnectCall();
-    if (activeConnection) {
+    if (activeConnection && feedbackDialogFlag) {
       return openFeedbackDialog();
     }
     return exitCallingPage();

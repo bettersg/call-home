@@ -7,6 +7,7 @@ import ObservableService from './observableService';
 export interface FeatureState {
   DORM_VALIDATION: boolean;
   EDGE_EXPERIMENT: Edge;
+  FEEDBACK_DIALOG: boolean;
 }
 
 const featureEndpoint = '/features';
@@ -17,6 +18,7 @@ export default class FeatureService extends ObservableService<FeatureState> {
     this.state = {
       DORM_VALIDATION: false,
       EDGE_EXPERIMENT: Edge.DEFAULT,
+      FEEDBACK_DIALOG: false,
     };
   }
 

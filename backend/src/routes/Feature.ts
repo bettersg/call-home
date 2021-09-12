@@ -19,6 +19,7 @@ function FeaturesRoutes(
       DORM_VALIDATION: featureService.shouldEnableDormValidation(),
       EDGE_EXPERIMENT:
         featureService.getEdgeExperimentFlag(userExperimentConfig),
+      FEEDBACK_DIALOG: featureService.shouldEnableFeedbackDialog(),
     };
     return res.status(200).json(features);
   });

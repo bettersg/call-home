@@ -7,6 +7,7 @@ const {
   ENABLE_DORM_VALIDATION,
   DISABLE_PERIODIC_JOBS,
   ENABLE_EDGE_EXPERIMENT,
+  ENABLE_FEEDBACK_DIALOG,
 } = process.env;
 
 function shouldEnableAllowlistSms(): boolean {
@@ -47,10 +48,15 @@ function getEdgeExperimentFlag(
     : Edge.DEFAULT;
 }
 
+function shouldEnableFeedbackDialog() {
+  return Boolean(ENABLE_FEEDBACK_DIALOG);
+}
+
 export {
   shouldDisableAllowlist,
   shouldEnableAllowlistSms,
   shouldEnableDormValidation,
   shouldDisablePeriodicJobs,
+  shouldEnableFeedbackDialog,
   getEdgeExperimentFlag,
 };
