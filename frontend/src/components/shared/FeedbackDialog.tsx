@@ -1,6 +1,7 @@
 import React, { FormEvent, useState } from 'react';
 import Dialog, { DialogProps } from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogActions from '@material-ui/core/DialogActions';
 import { withStyles } from '@material-ui/core/styles';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -8,6 +9,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Rating from '@material-ui/lab/Rating';
 import { Locale } from 'scenes/types';
 import { Connection } from 'twilio-client';
+import CloseIcon from '@material-ui/icons/Close';
+import { IconButton } from '@material-ui/core';
 import { PrimaryButton } from './RoundedButton';
 
 interface FeedbackDialogProps extends DialogProps {
@@ -54,6 +57,14 @@ const withDialogButtonStyles = withStyles(() => ({
 
 const DialogPrimaryButton = withDialogButtonStyles(PrimaryButton);
 
+const CloseDialogIconButton = withStyles(() => ({
+  root: {
+    position: 'absolute',
+    right: '0',
+    top: '0',
+  },
+}))(IconButton);
+
 export default function FeedbackDialog({
   locale,
   open,
@@ -63,25 +74,32 @@ export default function FeedbackDialog({
   const [feedback, setFeedback] = useState<number | null>(null);
   const [problem, setProblem] = useState<Connection.FeedbackIssue | null>(null);
 
+  const handleCloseDialog = () => {
+    if (onClose) {
+      onClose({}, 'escapeKeyDown');
+    }
+  };
+
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     // pass problem only when feedback is less than perfect
     if (feedback) {
       onSubmitFeedback(feedback, problem || undefined);
     }
-    if (onClose) {
-      onClose({}, 'escapeKeyDown');
-    }
+    handleCloseDialog();
   };
 
   return (
-    <Dialog
-      fullWidth
-      disableBackdropClick
-      maxWidth="sm"
-      open={open}
-      onClose={onClose}
-    >
+    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
+      <DialogActions>
+        <CloseDialogIconButton
+          onClick={() => {
+            handleCloseDialog();
+          }}
+        >
+          <CloseIcon />
+        </CloseDialogIconButton>
+      </DialogActions>
       <DialogTitle>{STRINGS[locale].FEEDBACK_DIALOG_TITLE}</DialogTitle>
       <form
         onSubmit={onSubmit}
