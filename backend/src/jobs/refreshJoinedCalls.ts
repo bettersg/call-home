@@ -6,7 +6,7 @@ import { readFile } from 'fs';
 import { logger } from '../config';
 import { sequelize } from '../models';
 
-const jobIntervalMillis = 24 * 60 * 60 * 1000;
+const jobIntervalMillis = 1 * 60 * 60 * 1000;
 
 function refreshJoinedCalls() {
   async function job() {
