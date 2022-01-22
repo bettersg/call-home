@@ -36,7 +36,6 @@ function CallService(
     }
 
     const isUserVerified = await userValidationService.isUserVerified(userId);
-    logger.info('Is user verified? %s', isUserVerified);
     if (!isUserVerified) {
       throw new Error(`Authorization error for user ${userId}`);
     }

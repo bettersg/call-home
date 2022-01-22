@@ -56,7 +56,6 @@ async function injectDbUser(req: AuthenticatedRequest) {
   // This returns the OAuth user info
   const { _raw, _json, ...userProfile } = req.user;
   const { emails } = userProfile;
-  req.log.info('Injecting for profile', userProfile);
   const userProfileResponse = userProfileToUserProfileResponse(userProfile);
   const auth0Id = userProfile.userId || userProfile.id;
 
@@ -89,10 +88,8 @@ async function injectDbUser(req: AuthenticatedRequest) {
     );
     return;
   }
-  const {
-    verifications,
-    state,
-  } = await UserValidationService.getVerificationsForUser(user.id);
+  const { verifications, state } =
+    await UserValidationService.getVerificationsForUser(user.id);
   const userResponse = userToUserResponse(
     user,
     verifications.phoneNumber,
