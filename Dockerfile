@@ -29,6 +29,9 @@ COPY frontend/public/ public/
 ENV NODE_ENV=production
 ARG PUBLIC_URL
 ENV PUBLIC_URL=${PUBLIC_URL}
+# Disable the create-react-app preflight check because it complains about eslint
+# but we don't care
+ENV SKIP_PREFLIGHT_CHECK=true
 RUN npm run build
 
 # backend
