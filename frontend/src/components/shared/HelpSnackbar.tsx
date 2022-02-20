@@ -40,7 +40,7 @@ function getRandomHelpMessage(locale: Locale): string {
 export default function HelpSnackbar({ locale }: { locale: Locale }) {
   const [isOpen, setIsOpen] = useState(true);
 
-  const handleClose = (_event: unknown) => {
+  const handleClose = () => {
     setIsOpen(false);
   };
 

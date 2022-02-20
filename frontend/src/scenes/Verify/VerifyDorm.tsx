@@ -21,7 +21,7 @@ const STRINGS = {
   },
 };
 
-export default function VerifyDorm({ locale, routePath }: SceneProps) {
+export default function VerifyDorm({ locale }: SceneProps) {
   const [dormState, dormService] = useDormService();
   const [, userService] = useUserService();
   // Use -1 as a magic constant because a number value must be supplied.

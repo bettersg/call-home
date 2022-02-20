@@ -28,8 +28,7 @@ const STRINGS = {
 };
 
 export default function VerifyPhoneNumber({ locale }: SceneProps) {
-  const [userState, userService] = useUserService();
-  const { verificationPhoneNumber } = userState || {};
+  const [, userService] = useUserService();
 
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isTouched, setIsTouched] = useState(false);

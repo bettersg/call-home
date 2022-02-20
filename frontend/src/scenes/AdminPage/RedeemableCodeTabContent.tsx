@@ -55,10 +55,8 @@ function QRCodeDialog({
 }
 
 export default function RedeemableCodeTabContent() {
-  const [
-    redeemableCodeState,
-    redeemableCodeService,
-  ] = useRedeemableCodeService();
+  const [redeemableCodeState, redeemableCodeService] =
+    useRedeemableCodeService();
   const [displayedQrCode, setDisplayedQrCode] = useState('');
 
   const redeemableCodes = redeemableCodeState?.codes ?? [];

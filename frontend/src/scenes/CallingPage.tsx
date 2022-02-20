@@ -91,7 +91,7 @@ function subscribeToOptionalDevice(
   };
 }
 
-export default function CallingPage({ locale, routePath }: SceneProps) {
+export default function CallingPage({ locale }: SceneProps) {
   const [hasAttemptedConnection, setHasAttemptedConnection] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [hasConnectedBefore, setHasConnectedBefore] = useState(false);

@@ -42,8 +42,8 @@ module.exports = {
     '@typescript-eslint/no-shadow': 'error',
     'no-unused-expressions': 'off',
     '@typescript-eslint/no-unused-expressions': 'error',
-    "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": ["error"],
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': ['error'],
     // end TS-variants
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     'react/jsx-filename-extension': 'off',

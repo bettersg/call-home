@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { SceneProps } from 'scenes/types';
 import useAdminRoute from 'util/useAdminRoute';
 import AllowlistTabContent from './AllowlistTabContent';
 import DormTabContent from './DormTabContent';
@@ -23,7 +22,7 @@ function TabPanel({
   return children;
 }
 
-export default function AdminPage(_props: SceneProps) {
+export default function AdminPage() {
   const [tabIndex, setTabIndex] = useState(0);
 
   const handleTabChange = useCallback(

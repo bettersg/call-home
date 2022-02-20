@@ -53,8 +53,7 @@ export default function VerificationPhoneNumberCode({
   locale,
   phoneNumber,
 }: VerifyPhoneNumberCodeProps) {
-  const [userState, userService] = useUserService();
-  const { me: user } = userState || {};
+  const [, userService] = useUserService();
   const [code, setCode] = useState('');
   const [hasBadOtpError, setHasBadOtpError] = useState(false);
   const [hasAllowlistError, setHasAllowlistError] = useState(false);

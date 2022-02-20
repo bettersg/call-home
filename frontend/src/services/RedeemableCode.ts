@@ -4,7 +4,7 @@ import apiClient from './apiClient';
 import ObservableService from './observableService';
 
 const facebookRedeemableCodeEndpoint = '/promo-codes/facebook-dorm';
-const cckRedeemableCodeEndpoint = '/promo-codes/cck-dorm';
+// const cckRedeemableCodeEndpoint = '/promo-codes/cck-dorm';
 
 export interface RedeemableCodeState {
   codes: RedeemableCode[];

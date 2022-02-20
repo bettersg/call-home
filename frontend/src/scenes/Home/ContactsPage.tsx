@@ -11,8 +11,6 @@ import { withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import CallIcon from '@material-ui/icons/Call';
 import PhoneDisabledIcon from '@material-ui/icons/PhoneDisabled';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import FeedbackIcon from '@material-ui/icons/Feedback';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import LinkIcon from '@material-ui/icons/Link';
@@ -27,7 +25,6 @@ import {
   PrimaryButton,
 } from 'components/shared/RoundedButton';
 import ContactsDialog from 'components/shared/ContactsDialog';
-import ReportIssueDialog from 'components/shared/ReportIssueDialog';
 import { useUserService, useContactService } from 'contexts';
 import { ApiValidationError } from 'services/apiClient';
 import PhoneNumberMasks from 'components/shared/PhoneNumberMask';
@@ -222,9 +219,8 @@ function AddContactDialog({
   const [, contactService] = useContactService();
   const [newContactName, setNewContactName] = useState('');
   const [newContactPhoneNumber, setNewContactPhoneNumber] = useState('');
-  const [newContactAvatarChoice, setNewContactAvatarChoice] = useState(
-    'female_1'
-  );
+  const [newContactAvatarChoice, setNewContactAvatarChoice] =
+    useState('female_1');
   const [errorMessage, setErrorMessage] = useState(null);
   const [isRequestInFlight, setIsRequestInFlight] = useState(false);
 
@@ -554,19 +550,16 @@ function CallContactButton({
 }
 
 const dialogHashId = '#new-contact';
-export default function ContactsPage({ locale, routePath }: SceneProps) {
+export default function ContactsPage({ locale }: SceneProps) {
   const history = useHistory();
   const location = useLocation();
   const [userState, userService] = useUserService();
   const { me: user } = userState || {};
   const [contactState, contactService] = useContactService();
   const { contacts = [], activeContact } = contactState || {};
-  const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
   const [contactToEdit, setContactToEdit] = useState(null);
-  const [
-    nextRefreshDuration,
-    setNextRefreshDuration,
-  ] = useState<Duration | null>(null);
+  const [nextRefreshDuration, setNextRefreshDuration] =
+    useState<Duration | null>(null);
   const [nextRefreshAmount, setNextRefreshAmount] = useState<Duration | null>(
     null
   );
@@ -595,11 +588,6 @@ export default function ContactsPage({ locale, routePath }: SceneProps) {
     return <Redirect to={PATHS.CALLING} />;
   }
 
-  const logout = async () => {
-    (window as any).location = '/oauth/logout';
-  };
-
-  const openFeedbackDialog = () => setIsFeedbackDialogOpen(true);
   const userCallTimeDuration = Duration.fromObject({
     seconds: (user as any).callTime,
   });

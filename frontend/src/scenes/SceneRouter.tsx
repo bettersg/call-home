@@ -27,7 +27,7 @@ export default function SceneRouter() {
   return (
     <Switch>
       <Route path={PATHS.ADMIN}>
-        <AdminPage locale={locale} routePath={PATHS.ADMIN} />
+        <AdminPage />
       </Route>
       <Route path={PATHS.CALLING}>
         <CallingPage locale={locale} routePath={PATHS.CALLING} />

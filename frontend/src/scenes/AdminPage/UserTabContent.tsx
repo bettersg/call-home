@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { UserWalletResponse } from '@call-home/shared/types/User';
 import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
-import { DataGrid, ColDef } from '@material-ui/data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Link } from 'react-router-dom';
 import { useAdminService } from 'contexts';
 import PATHS from 'scenes/paths';
@@ -27,7 +27,7 @@ export default function UserTabContent() {
     }
   }, [adminService]);
 
-  const columns: ColDef[] = [
+  const columns: GridColDef[] = [
     { field: 'id', headerName: 'Id', width: 80 },
     { field: 'name', headerName: 'Name', width: 300 },
     { field: 'phoneNumber', headerName: 'Phone Number', width: 150 },
@@ -79,19 +79,17 @@ export default function UserTabContent() {
   }));
 
   return (
-    <>
-      <div style={{ margin: '8px' }}>
-        <Typography variant="h5" component="h2">
-          Users
-        </Typography>
-        <DataGrid
-          autoHeight
-          rows={rows}
-          columns={columns}
-          pagination
-          rowsPerPageOptions={[10, 25, 100]}
-        />
-      </div>
-    </>
+    <div style={{ margin: '8px' }}>
+      <Typography variant="h5" component="h2">
+        Users
+      </Typography>
+      <DataGrid
+        autoHeight
+        rows={rows}
+        columns={columns}
+        pagination
+        rowsPerPageOptions={[10, 25, 100]}
+      />
+    </div>
   );
 }

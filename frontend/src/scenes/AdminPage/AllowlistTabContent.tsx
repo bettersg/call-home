@@ -8,7 +8,7 @@ import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
-import { DataGrid, ColDef } from '@material-ui/data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { FormControlLabel, Grid } from '@material-ui/core';
 import { useAllowlistService } from 'contexts';
 import PhoneNumberMasks from 'components/shared/PhoneNumberMask';
@@ -175,7 +175,7 @@ export default function AllowlistTabContent() {
     })
   );
 
-  const columns: ColDef[] = [
+  const columns: GridColDef[] = [
     { field: 'phoneNumber', headerName: 'Phone Number', width: 150 },
     { field: 'destinationCountry', headerName: 'Country' },
     {

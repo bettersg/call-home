@@ -196,7 +196,7 @@ function VerifyWorkpassPresenter({
   );
 }
 
-export default function VerifyWorkpass({ locale, routePath }: SceneProps) {
+export default function VerifyWorkpass({ locale }: SceneProps) {
   const [, userService] = useUserService();
 
   const [wpSerialNumber, setWpSerialNumber] = useState('');
