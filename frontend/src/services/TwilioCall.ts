@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/react';
-import { Connection, Device } from 'twilio-client';
+import { Call as TwilioSdkCall, Device } from '@twilio/voice-sdk';
 // TODO for some reason, this file requires using the dist/ directory
 import { Edge } from '@call-home/shared/dist/types/CallExperimentFlags';
 import { getLogger } from 'loglevel';
@@ -30,10 +30,7 @@ const TransientIssueErrorCodes = new Set([
 // Helper functions for performing Twilio calls. The goal of this is to abstract over some of the minor details of interacting with the Twilio device.
 // This assumes that there is only one global device.
 
-const SETUP_OPTIONS: Device.Options = {
-  enableIceRestart: true,
-  enableRingingState: true,
-};
+const SETUP_OPTIONS: Device.Options = {};
 
 function getEdgeOption(edgeFlag: Edge) {
   switch (edgeFlag) {
@@ -63,41 +60,31 @@ async function makeCallOnce(
   edgeFlag: Edge
 ): Promise<{
   device: Device;
-  connection: Connection;
+  twilioSdkCall: TwilioSdkCall;
 } | null> {
   if (!isProd) {
     return null;
   }
 
-  const device = new Device();
   const token = await getToken();
-  device.setup(token, {
+  const device = new Device(token, {
     ...SETUP_OPTIONS,
     ...getEdgeOption(edgeFlag),
   });
 
+  const twilioSdkCall = await device.connect({
+    params: call,
+  });
+
+  Sentry.addBreadcrumb({
+    category: 'twilio',
+    data: {
+      twilioSdkCall,
+    },
+  });
+
   return new Promise((resolve, reject) => {
-    if (device.status() === 'ready') {
-      const connection = device.connect(call);
-      resolve({ device, connection });
-      return;
-    }
-
-    // I thought I was free from callback hell.
-    const callWhenReady = () => {
-      const connection = device.connect(call);
-      Sentry.addBreadcrumb({
-        category: 'twilio',
-        data: {
-          twilioConnection: connection,
-        },
-      });
-      connection.on('ringing', () => resolve({ device, connection }));
-    };
-
-    // Could it be that the device is ready before the listener is attached?
-    // Is this insane??
-    device.once('ready', callWhenReady);
+    twilioSdkCall.on('ringing', () => resolve({ device, twilioSdkCall }));
     device.once('error', reject);
   });
 }

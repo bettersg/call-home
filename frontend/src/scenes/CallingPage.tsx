@@ -1,4 +1,4 @@
-import { Connection, Device } from 'twilio-client';
+import { Call as TwilioSdkCall, Device } from '@twilio/voice-sdk';
 import React, { useCallback, useState, useEffect } from 'react';
 import * as Sentry from '@sentry/react';
 import CallEndIcon from '@material-ui/icons/CallEnd';
@@ -99,9 +99,7 @@ export default function CallingPage({ locale }: SceneProps) {
   const [currentTime, setCurrentTime] = useState<DateTime | null>(null);
   const [wasCallSuccessful, setWasCallSuccessful] = useState(false);
   const [hasUserDisconnected, setHasUserDisconnected] = useState(false);
-  const [activeConnection, setActiveConnection] = useState<Connection | null>(
-    null
-  );
+  const [activeCall, setActiveCall] = useState<TwilioSdkCall | null>(null);
   const [device, setDevice] = useState<Device | null>(null);
   const [lastErrorMessage, setLastErrorMessage] = useState<string | null>(null);
   const [userState, userService] = useUserService();
@@ -138,8 +136,7 @@ export default function CallingPage({ locale }: SceneProps) {
     if (!device) {
       return;
     }
-    const status = device?.status();
-    if (status === 'busy') {
+    if (device.isBusy) {
       setIsConnected(true);
       setConnectTime(DateTime.local());
       setWasCallSuccessful(true);
@@ -220,7 +217,7 @@ export default function CallingPage({ locale }: SceneProps) {
     return subscribeToOptionalDevice(device, Device.EventName.Error, listener);
   }, [setLastErrorMessage, device]);
 
-  const connectionCallSid = activeConnection?.parameters.CallSid;
+  const connectionCallSid = activeCall?.parameters.CallSid;
   useEffect(() => {
     // This can be a 'temporary' id with a different schema.
     if (connectionCallSid && connectionCallSid.startsWith('CA')) {
@@ -237,7 +234,7 @@ export default function CallingPage({ locale }: SceneProps) {
       try {
         setHasAttemptedConnection(true);
         // TODO we can perform more sophisticated things with this connection like subscribe to updates
-        const { device: newDevice = null, connection = null } =
+        const { device: newDevice = null, twilioSdkCall = null } =
           (await makeCall(
             {
               userId: String(user!.id),
@@ -245,7 +242,7 @@ export default function CallingPage({ locale }: SceneProps) {
             },
             edgeFlag
           )) || {};
-        setActiveConnection(connection);
+        setActiveCall(twilioSdkCall);
         setDevice(newDevice);
       } catch (error) {
         if (device && !(device as any).isSupported) {
@@ -276,15 +273,15 @@ export default function CallingPage({ locale }: SceneProps) {
   }, [user, activeContact]);
 
   const disconnectCall = useCallback(() => {
-    if (activeConnection) {
-      activeConnection.disconnect();
+    if (activeCall) {
+      activeCall.disconnect();
     }
     setHasUserDisconnected(true);
-  }, [activeConnection]);
+  }, [activeCall]);
 
   const handleExitCallButton = useCallback(() => {
     disconnectCall();
-    if (activeConnection && feedbackDialogFlag) {
+    if (activeCall && feedbackDialogFlag) {
       return openFeedbackDialog();
     }
     return exitCallingPage();
@@ -375,7 +372,7 @@ export default function CallingPage({ locale }: SceneProps) {
           ) : null}
         </div>
         {isConnected ? DisconnectCallButton : ExitPageButton}
-        {activeConnection ? (
+        {activeCall ? (
           <FeedbackDialog
             onClose={() => closeFeedbackDialog()}
             onSubmitFeedback={onSubmitFeedback}

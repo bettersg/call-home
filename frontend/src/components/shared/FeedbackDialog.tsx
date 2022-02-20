@@ -8,7 +8,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Rating from '@material-ui/lab/Rating';
 import { Locale } from 'scenes/types';
-import { Connection } from 'twilio-client';
+import { Call as TwilioSdkCall } from '@twilio/voice-sdk';
 import CloseIcon from '@material-ui/icons/Close';
 import { IconButton } from '@material-ui/core';
 import { PrimaryButton } from './RoundedButton';
@@ -17,7 +17,7 @@ interface FeedbackDialogProps extends DialogProps {
   locale: Locale;
   onSubmitFeedback: (
     feedback: number,
-    issue?: Connection.FeedbackIssue
+    issue?: TwilioSdkCall.FeedbackIssue
   ) => unknown;
 }
 
@@ -30,12 +30,12 @@ const EN_STRINGS = {
     BAD: 'BAD',
   },
   PROBLEM_TITLES: {
-    'Call got disconnected': Connection.FeedbackIssue.DroppedCall,
-    'Lag in audio': Connection.FeedbackIssue.AudioLatency,
-    "Can't hear one another": Connection.FeedbackIssue.OneWayAudio,
-    'Sound breaking up': Connection.FeedbackIssue.ChoppyAudio,
-    'Poor audio quality': Connection.FeedbackIssue.NoisyCall,
-    'Audible echos during call': Connection.FeedbackIssue.Echo,
+    'Call got disconnected': TwilioSdkCall.FeedbackIssue.DroppedCall,
+    'Lag in audio': TwilioSdkCall.FeedbackIssue.AudioLatency,
+    "Can't hear one another": TwilioSdkCall.FeedbackIssue.OneWayAudio,
+    'Sound breaking up': TwilioSdkCall.FeedbackIssue.ChoppyAudio,
+    'Poor audio quality': TwilioSdkCall.FeedbackIssue.NoisyCall,
+    'Audible echos during call': TwilioSdkCall.FeedbackIssue.Echo,
   },
 };
 
@@ -72,7 +72,9 @@ export default function FeedbackDialog({
   onSubmitFeedback,
 }: FeedbackDialogProps) {
   const [feedback, setFeedback] = useState<number | null>(null);
-  const [problem, setProblem] = useState<Connection.FeedbackIssue | null>(null);
+  const [problem, setProblem] = useState<TwilioSdkCall.FeedbackIssue | null>(
+    null
+  );
 
   const handleCloseDialog = () => {
     if (onClose) {
@@ -123,7 +125,7 @@ export default function FeedbackDialog({
               name="problem"
               value={problem}
               onChange={(event) =>
-                setProblem(event.target.value as Connection.FeedbackIssue)
+                setProblem(event.target.value as TwilioSdkCall.FeedbackIssue)
               }
             >
               {Object.entries(STRINGS[locale].PROBLEM_TITLES).map(
