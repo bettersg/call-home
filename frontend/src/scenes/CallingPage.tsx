@@ -91,6 +91,27 @@ function subscribeToOptionalDevice(
   };
 }
 
+function subscribeToOptionalCall(
+  call: TwilioSdkCall | null,
+  eventName: string,
+  listener: (...args: any[]) => void
+) {
+  if (call) {
+    call.on(eventName, listener);
+  }
+  return () => {
+    if (!call) {
+      return;
+    }
+
+    try {
+      call.removeListener(eventName, listener);
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  };
+}
+
 export default function CallingPage({ locale }: SceneProps) {
   const [hasAttemptedConnection, setHasAttemptedConnection] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
@@ -145,14 +166,14 @@ export default function CallingPage({ locale }: SceneProps) {
     }
   }, [device, setIsConnected]);
 
-  const subscribeToDeviceStatusEvent = useCallback(
-    (eventName) => {
+  const subscribeToCallStatusEvent = useCallback(
+    (eventName: string) => {
       const listener = () => {
         handleStatusChange();
       };
-      return subscribeToOptionalDevice(device, eventName, listener);
+      return subscribeToOptionalCall(activeCall, eventName, listener);
     },
-    [device, handleStatusChange]
+    [activeCall, handleStatusChange]
   );
 
   useEffect(() => {
@@ -162,16 +183,24 @@ export default function CallingPage({ locale }: SceneProps) {
   }, [isConnected]);
 
   useEffect(() => {
-    return subscribeToDeviceStatusEvent('connect');
-  }, [subscribeToDeviceStatusEvent]);
+    return subscribeToCallStatusEvent('accept');
+  }, [subscribeToCallStatusEvent]);
 
   useEffect(() => {
-    return subscribeToDeviceStatusEvent('disconnect');
-  }, [subscribeToDeviceStatusEvent]);
+    return subscribeToCallStatusEvent('cancel');
+  }, [subscribeToCallStatusEvent]);
 
   useEffect(() => {
-    return subscribeToDeviceStatusEvent('offline');
-  }, [subscribeToDeviceStatusEvent]);
+    return subscribeToCallStatusEvent('disconnect');
+  }, [subscribeToCallStatusEvent]);
+
+  useEffect(() => {
+    return subscribeToCallStatusEvent('error');
+  }, [subscribeToCallStatusEvent]);
+
+  useEffect(() => {
+    return subscribeToCallStatusEvent('reject');
+  }, [subscribeToCallStatusEvent]);
 
   useEffect(() => {
     if (!isConnected) {
