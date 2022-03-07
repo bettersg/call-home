@@ -27,6 +27,13 @@ const TransientIssueErrorCodes = new Set([
   31205, // JWT expires. Not an issue, we will refresh it anyway.
 ]);
 
+interface CallMetadata {
+  numSamples: number;
+  avgMos: number;
+}
+
+const twilioCalls = new WeakMap<TwilioSdkCall, CallMetadata>();
+
 // Helper functions for performing Twilio calls. The goal of this is to abstract over some of the minor details of interacting with the Twilio device.
 // This assumes that there is only one global device.
 
@@ -53,6 +60,20 @@ function isTransientIssue(error: any) {
     return true;
   }
   return false;
+}
+
+function onSample(twilioSdkCall: TwilioSdkCall) {
+  return (sampleEvent: TwilioSdkCall.CallMetrics) => {
+    const callMetadata = twilioCalls.get(twilioSdkCall);
+    const { mos: newMos } = sampleEvent;
+    if (!callMetadata || !newMos) {
+      return;
+    }
+
+    const { avgMos, numSamples } = callMetadata;
+    callMetadata.avgMos = (numSamples * avgMos + newMos) / (numSamples + 1);
+    callMetadata.numSamples += 1;
+  };
 }
 
 async function makeCallOnce(
@@ -85,7 +106,12 @@ async function makeCallOnce(
 
   return new Promise((resolve, reject) => {
     twilioSdkCall.on('ringing', () => resolve({ device, twilioSdkCall }));
+    twilioSdkCall.on('sample', onSample(twilioSdkCall));
     device.once('error', reject);
+    twilioCalls.set(twilioSdkCall, {
+      numSamples: 0,
+      avgMos: 0,
+    });
   });
 }
 
@@ -107,4 +133,10 @@ async function makeCall(call: Call, edgeFlag: Edge) {
   throw lastError;
 }
 
-export { makeCall, isTransientIssue };
+function getAvgMos(twilioSdkCall: TwilioSdkCall): number | undefined {
+  // See call quality section for more info on mos
+  // https://www.twilio.com/docs/voice/sdks/javascript/twiliopreflighttest#report
+  return twilioCalls.get(twilioSdkCall)?.avgMos;
+}
+
+export { makeCall, isTransientIssue, getAvgMos };

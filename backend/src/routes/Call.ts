@@ -32,6 +32,7 @@ const POST_FEEDBACK_SCHEMA = z.object({
     twilioParentSid: z.string(),
   }),
   body: z.object({
+    avgMos: z.optional(z.number()),
     qualityScore: z.number(),
     qualityIssue: z.optional(z.string()),
   }),
@@ -136,9 +137,10 @@ function CallRoutes(
     requireSelf,
     validateRequest(POST_FEEDBACK_SCHEMA, async (parsedReq, res, req) => {
       const { userId, twilioParentSid } = parsedReq.params;
-      const { qualityScore, qualityIssue } = parsedReq.body;
+      const { qualityScore, qualityIssue, avgMos } = parsedReq.body;
       const feedback = await twilioCallService.postCallFeedback(
         twilioParentSid,
+        avgMos,
         qualityScore,
         qualityIssue
       );

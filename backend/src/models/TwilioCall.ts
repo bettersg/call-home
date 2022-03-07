@@ -58,6 +58,9 @@ class TwilioCall extends Model<TwilioCall> {
 
   @Column
   qualityIssue?: string;
+
+  @Column
+  avgMos?: number;
 }
 
 export default TwilioCall;

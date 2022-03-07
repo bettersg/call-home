@@ -17,7 +17,7 @@ import PATHS from './paths';
 import Container from '../components/shared/Container';
 import DetectBrowserSnackbar from '../components/shared/DetectBrowserSnackbar';
 import FeedbackDialog from '../components/shared/FeedbackDialog';
-import { makeCall, isTransientIssue } from '../services/TwilioCall';
+import { makeCall, isTransientIssue, getAvgMos } from '../services/TwilioCall';
 import { postFeedback } from '../services/Call';
 import { formatCallTime } from '../util/timeFormatters';
 import { SceneProps } from './types';
@@ -325,6 +325,7 @@ export default function CallingPage({ locale }: SceneProps) {
       postFeedback(String(user.id), callSid, {
         qualityScore: feedback,
         qualityIssue,
+        avgMos: activeCall ? getAvgMos(activeCall) : undefined,
       });
     }
   };

@@ -12,6 +12,7 @@ export interface RecentCall {
 export interface CallFeedback {
   qualityScore: number;
   qualityIssue?: string;
+  avgMos?: number;
 }
 
 // TODO make this configurable

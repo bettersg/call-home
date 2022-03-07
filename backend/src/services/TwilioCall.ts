@@ -215,6 +215,7 @@ function TwilioCallService(
 
   async function postCallFeedback(
     parentCallSid: string,
+    avgMos: number | undefined,
     qualityScore: number,
     qualityIssue?: string
   ): Promise<number | null> {
@@ -229,6 +230,7 @@ function TwilioCallService(
     }
     twilioCall.qualityScore = qualityScore;
     twilioCall.qualityIssue = qualityIssue;
+    twilioCall.avgMos = avgMos;
     await twilioCall.save();
     return feedback.qualityScore;
   }
