@@ -6,8 +6,6 @@ import qs from 'querystring';
 const workpassEndpoint =
   'https://service2.mom.gov.sg/nwpma/webresources/cwp/checkwpstatus/';
 
-const expiryDateFormat = 'yyyy-MM-dd';
-
 export type WorkpassStatus = 'valid' | 'invalid' | 'error' | 'unknown';
 
 interface WorkpassResponse {
@@ -15,8 +13,9 @@ interface WorkpassResponse {
   status: 'Success' | 'CardNotFound';
   card: {
     lost: boolean;
-    dateOfCancellation: string | null;
-    dateOfExpiry: string;
+    // TODO good reason to believe that this is a number too
+    dateOfCancellation: number | null;
+    dateOfExpiry: number;
     fin: string | null;
     dateOfApplication: null;
     passStatus: 'Valid' | 'Cancelled';
@@ -37,15 +36,15 @@ async function getSerialNumberStatus(
   const response = await axios.get(queryUrl);
   const responseJson: WorkpassResponse = response.data;
 
-  const expiryStr = responseJson.card?.dateOfExpiry;
-  if (responseJson.status !== 'Success' || !expiryStr) {
+  const expiryDateMillis = responseJson.card?.dateOfExpiry;
+  if (responseJson.status !== 'Success' || !expiryDateMillis) {
     return {
       status: 'unknown',
       expiry: null,
     };
   }
 
-  const expiryDateTime = DateTime.fromFormat(expiryStr, expiryDateFormat);
+  const expiryDateTime = DateTime.fromMillis(expiryDateMillis);
 
   // Apparently, even if the status is 'Valid', it can still be expired
   if (
