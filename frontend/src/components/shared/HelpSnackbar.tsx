@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
 import { Locale } from 'scenes/types';
+import { useFeatureService } from 'contexts';
+
+const HELP_MESSAGE_CREDIT_CAP =
+  'In order to let more brothers use Call Home, each user will be limited to 200 minutes from 01 July 2022. Thank you for understanding.';
 
 const EN_STRINGS = {
   HELP_MESSAGE_NO_LOCK:
@@ -39,15 +43,20 @@ function getRandomHelpMessage(locale: Locale): string {
 
 export default function HelpSnackbar({ locale }: { locale: Locale }) {
   const [isOpen, setIsOpen] = useState(true);
+  const [featureState] = useFeatureService();
 
   const handleClose = () => {
     setIsOpen(false);
   };
 
+  const helpMessage = featureState?.CREDIT_CAP
+    ? HELP_MESSAGE_CREDIT_CAP
+    : getRandomHelpMessage(locale);
+
   return (
     <Snackbar open={isOpen} onClose={handleClose}>
       <Alert onClose={handleClose as any} severity="warning">
-        {getRandomHelpMessage(locale)}
+        {helpMessage}
       </Alert>
     </Snackbar>
   );

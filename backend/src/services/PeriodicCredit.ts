@@ -1,9 +1,18 @@
 import { DateTime, Duration } from 'luxon';
 import { Op } from 'sequelize';
 import { sanitizeDbErrors } from './lib';
-import type { PeriodicCredit as PeriodicCreditEntity } from '../models';
-import type { PhoneNumberValidation, Transaction } from './index';
+import type {
+  PeriodicCredit as PeriodicCreditEntity,
+  Wallet as WalletEntity,
+} from '../models';
+import type {
+  Feature as FeatureService,
+  PhoneNumberValidation,
+  Transaction,
+} from '.';
+
 import { logger } from '../config';
+import { shouldEnableCreditCap } from './Feature';
 
 // Config object for handling multiple credit intervals for users. No longer necessary.
 const cohorts = {
@@ -15,7 +24,8 @@ const CREDIT_INTERVAL = 'month';
 
 function PeriodicCreditService(
   PeriodicCreditModel: typeof PeriodicCreditEntity,
-  phoneNumberValidationService: typeof PhoneNumberValidation,
+  WalletModel: typeof WalletEntity,
+  featureService: typeof FeatureService,
   transactionService: typeof Transaction
 ) {
   function getLastUpdateEpoch(creditInterval: keyof typeof cohorts) {
@@ -57,7 +67,21 @@ function PeriodicCreditService(
     // We do this by determining the start of a top up interval, the "epoch".
     // If the user has a credit that is later than the top up interval, the user does not get a credit.
     // Otherwise they get a credit.
-    const creditAmountSeconds = cohorts[CREDIT_INTERVAL].as('seconds');
+    const periodicAmount = cohorts[CREDIT_INTERVAL].as('seconds');
+    let creditAmountSeconds: number = periodicAmount;
+    if (shouldEnableCreditCap(userId)) {
+      const userWallet = await WalletModel.findOne({
+        where: {
+          userId,
+        },
+      });
+      // Something went wrong
+      if (!userWallet) {
+        logger.error('Failed to get wallet for user %d', userId);
+        throw new Error(`Failed to get wallet for user ${userId}`);
+      }
+      creditAmountSeconds = periodicAmount - userWallet.callTime;
+    }
     const latestPeriodicCredit = await getPeriodicCreditAfterEpoch(
       userId,
       CREDIT_INTERVAL

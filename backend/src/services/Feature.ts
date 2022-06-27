@@ -1,3 +1,4 @@
+import { DateTime, Zone } from 'luxon';
 import { Edge } from '@call-home/shared/types/CallExperimentFlags';
 import { UserExperimentConfig } from '../models';
 
@@ -52,11 +53,24 @@ function shouldEnableFeedbackDialog() {
   return Boolean(ENABLE_FEEDBACK_DIALOG);
 }
 
+function shouldEnableCreditCap(userId: number) {
+  const cutoffDate = DateTime.fromObject({
+    day: 1,
+    month: 7,
+    year: 2022,
+    zone: 'Asia/Singapore',
+  });
+  const today = DateTime.now();
+
+  return today >= cutoffDate;
+}
+
 export {
   shouldDisableAllowlist,
   shouldEnableAllowlistSms,
   shouldEnableDormValidation,
   shouldDisablePeriodicJobs,
   shouldEnableFeedbackDialog,
+  shouldEnableCreditCap,
   getEdgeExperimentFlag,
 };

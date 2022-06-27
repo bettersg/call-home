@@ -8,6 +8,7 @@ export interface FeatureState {
   DORM_VALIDATION: boolean;
   EDGE_EXPERIMENT: Edge;
   FEEDBACK_DIALOG: boolean;
+  CREDIT_CAP: boolean;
 }
 
 const featureEndpoint = '/features';
@@ -19,6 +20,7 @@ export default class FeatureService extends ObservableService<FeatureState> {
       DORM_VALIDATION: false,
       EDGE_EXPERIMENT: Edge.DEFAULT,
       FEEDBACK_DIALOG: false,
+      CREDIT_CAP: false,
     };
   }
 

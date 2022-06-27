@@ -52,7 +52,8 @@ const contactService = Contact(models.Contact, userService);
 const transactionService = Transaction(models.Transaction, walletService);
 const periodicCreditService = PeriodicCredit(
   models.PeriodicCredit,
-  phoneNumberValidationService,
+  models.Wallet,
+  Feature,
   transactionService
 );
 const adminGrantedValidationService = AdminGrantedValidation(
