@@ -80,7 +80,10 @@ function PeriodicCreditService(
         logger.error('Failed to get wallet for user %d', userId);
         throw new Error(`Failed to get wallet for user ${userId}`);
       }
-      creditAmountSeconds = periodicAmount - userWallet.callTime;
+      creditAmountSeconds = Math.min(
+        periodicAmount - userWallet.callTime,
+        periodicAmount
+      );
     }
     const latestPeriodicCredit = await getPeriodicCreditAfterEpoch(
       userId,
