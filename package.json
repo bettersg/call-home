@@ -4,6 +4,7 @@
   "description": "This is very much in the MVP stage.",
   "scripts": {
     "build": "docker build . -t call-home",
+    "deploy:cloudrun": "./buildAndDeploy.sh cloud-run",
     "deploy:staging": "./buildAndDeploy.sh staging",
     "deploy:prod": "./buildAndDeploy.sh prod",
     "init": "npm run init:shared && npm run init:backend && npm run init:frontend",

@@ -15,6 +15,17 @@ function buildAndDeployDocker {
     docker push registry.heroku.com/${HEROKU_APP}/web && heroku container:release web --app ${HEROKU_APP}
 }
 
+function buildAndDeployCloudRun {
+    # Populate the version in the build steps
+    docker build --build-arg PUBLIC_URL="${PUBLIC_URL}" --build-arg RELEASE_DATE="${VERSION}" . -t call-home &&
+
+    # Push the container
+    docker tag call-home gcr.io/call-home-320615/call-home &&
+    docker push gcr.io/call-home-320615/call-home &&
+    gcloud config set run/region asia-east1 &&
+    gcloud run deploy call-home --image=gcr.io/call-home-320615/call-home:latest
+}
+
 # Live source maps already work, but maybe this helps Sentry keep track of historical maps
 function deploySentrySourceMaps {
     # Clean up the previous stuff if needed
@@ -39,7 +50,12 @@ HEROKU_APP_PROD=call-home
 if [ "$1" = "prod" ]; then
     HEROKU_APP="${HEROKU_APP_PROD}"
     PUBLIC_URL="https://app.callhome.sg"
-    buildAndDeployDocker
+    buildAndDeployDocker &&
+    deploySentrySourceMaps
+elif [ "$1" = "cloud-run" ]; then
+    # PUBLIC_URL="https://call-home-zb4hycisva-de.a.run.app/"
+    PUBLIC_URL="https://app.callhome.sg"
+    buildAndDeployCloudRun &&
     deploySentrySourceMaps
 else
     HEROKU_APP="${HEROKU_APP_STAGING}"
