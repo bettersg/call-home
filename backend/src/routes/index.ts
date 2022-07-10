@@ -19,7 +19,7 @@ import FacebookDormCode from './FacebookDormCode';
 import OAuth from './OAuth';
 
 const callRoute = Call(services.Call, services.TwilioCall, services.Contact);
-const callTokenRoute = CallToken();
+const callTokenRoute = CallToken(services.Feature);
 const dormRoute = Dorm(services.Dorm);
 const twilioRoute = Twilio(services.Call, services.TwilioCall);
 const oAuthRoute = OAuth(services.User);

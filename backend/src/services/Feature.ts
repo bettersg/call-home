@@ -9,6 +9,7 @@ const {
   DISABLE_PERIODIC_JOBS,
   ENABLE_EDGE_EXPERIMENT,
   ENABLE_FEEDBACK_DIALOG,
+  ENABLE_SUPPORT_SERVICES,
 } = process.env;
 
 function shouldEnableAllowlistSms(): boolean {
@@ -65,6 +66,10 @@ function shouldEnableCreditCap(userId: number) {
   return today >= cutoffDate;
 }
 
+function shouldEnableSupportServices() {
+  return Boolean(ENABLE_SUPPORT_SERVICES);
+}
+
 export {
   shouldDisableAllowlist,
   shouldEnableAllowlistSms,
@@ -72,5 +77,6 @@ export {
   shouldDisablePeriodicJobs,
   shouldEnableFeedbackDialog,
   shouldEnableCreditCap,
+  shouldEnableSupportServices,
   getEdgeExperimentFlag,
 };
