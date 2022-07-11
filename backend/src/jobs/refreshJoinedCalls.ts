@@ -8,13 +8,17 @@ import { sequelize } from '../models';
 
 const jobIntervalMillis = 1 * 60 * 60 * 1000;
 
+const joinCallsSql = `
+REFRESH MATERIALIZED VIEW joined_calls;
+`;
+
 function refreshJoinedCalls() {
   async function job() {
     try {
       logger.info('refreshJoinedCalls==========');
-      readFile('join_calls.sql', 'utf8', (_, sql) => sequelize.query(sql));
+      sequelize.query(joinCallsSql);
     } catch (error) {
-      logger.error(error);
+      logger.error('joined calls error %s', error);
     } finally {
       setTimeout(job, jobIntervalMillis);
     }

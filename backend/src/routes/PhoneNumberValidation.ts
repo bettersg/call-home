@@ -33,9 +33,8 @@ function PhoneNumberValidationRoutes(
       if (!id) {
         req.log.error('wtf something is going wrong');
       }
-      const phoneNumberValidation = await phoneNumberValidationService.getPhoneNumberValidationForUser(
-        id
-      );
+      const phoneNumberValidation =
+        await phoneNumberValidationService.getPhoneNumberValidationForUser(id);
       if (
         phoneNumberValidation?.lastRequestTime &&
         Number(new Date()) - Number(phoneNumberValidation.lastRequestTime) <=
@@ -84,15 +83,16 @@ function PhoneNumberValidationRoutes(
         const token = await auth0Service.signIn(phoneNumber, code);
         req.log.info('Received a token', token);
         await userService.verifyUserPhoneNumber(userId, phoneNumber);
-        const phoneNumberValidation = await phoneNumberValidationService.getPhoneNumberValidationForUser(
-          userId
-        );
+        const phoneNumberValidation =
+          await phoneNumberValidationService.getPhoneNumberValidationForUser(
+            userId
+          );
         if (!phoneNumberValidation?.isPhoneNumberValidated) {
           return res.status(403).json({ message: 'NOT_WHITELISTED' });
         }
         return res.redirect('/');
       } catch (e) {
-        req.log.error(e);
+        req.log.error(e.data);
         const { response } = e;
         if (response && response.data && response.data.error) {
           if (response.data.error === 'invalid_grant') {
