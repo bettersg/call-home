@@ -11,6 +11,7 @@ type TwilioCallStatus =
   | 'no-answer';
 type CustomCallStatus = 'x-not-initiated' | 'x-parent-canceled';
 export type CallStatus = TwilioCallStatus | CustomCallStatus;
+export type CallType = 'personal' | 'healthserve';
 
 // Mirrors the Twilio Call REST API resource
 // https://www.twilio.com/docs/voice/tutorials/how-to-modify-calls-in-progress-node-js
@@ -61,6 +62,10 @@ class TwilioCall extends Model<TwilioCall> {
 
   @Column
   avgMos?: number;
+
+  // This was added later, so values might be missing. Default to 'personal'
+  @Column(DataType.STRING)
+  callType?: CallType;
 }
 
 export default TwilioCall;

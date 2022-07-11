@@ -1,25 +1,44 @@
 // TODO move the API clients somewhere else
 import twilio from 'twilio';
+import { CredentialSets } from './TwilioCreds';
+import type { CallType } from '../models';
 
-const {
-  TWILIO_ACCOUNT_SID,
-  TWILIO_AUTH_TOKEN,
-  TWILIO_CALL_PHONE_NUMBER,
-  TWILIO_SMS_PHONE_NUMBER,
-} = process.env;
+const { TWILIO_SMS_PHONE_NUMBER } = process.env;
 
-const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+const twilioClients: {
+  personal: twilio.Twilio;
+  healthserve?: twilio.Twilio;
+} = {
+  personal: twilio(
+    CredentialSets.personal.accountSid,
+    CredentialSets.personal.authToken
+  ),
+};
 
-async function getCall(twilioCallSid: string) {
-  return twilioClient.calls(twilioCallSid).fetch();
+if (CredentialSets.healthserve) {
+  twilioClients.healthserve = twilio(
+    CredentialSets.healthserve.accountSid,
+    CredentialSets.healthserve.authToken
+  );
 }
 
-async function getCallsByIncomingSid(twilioCallSid: string) {
-  return twilioClient.calls.list({ parentCallSid: twilioCallSid });
+async function getCall(twilioCallSid: string, callType: CallType) {
+  return (twilioClients[callType] as twilio.Twilio)
+    .calls(twilioCallSid)
+    .fetch();
+}
+
+async function getCallsByIncomingSid(
+  twilioCallSid: string,
+  callType: CallType
+) {
+  return (twilioClients[callType] as twilio.Twilio).calls.list({
+    parentCallSid: twilioCallSid,
+  });
 }
 
 async function sendSms(toPhoneNumber: string, body: string) {
-  return twilioClient.messages.create({
+  return twilioClients.personal.messages.create({
     body,
     to: toPhoneNumber,
     from: TWILIO_SMS_PHONE_NUMBER,
@@ -28,10 +47,11 @@ async function sendSms(toPhoneNumber: string, body: string) {
 
 async function postCallFeedback(
   twilioCallSid: string,
+  callType: CallType,
   qualityScore: number,
   reason?: string
 ) {
-  return twilioClient
+  return (twilioClients[callType] as twilio.Twilio)
     .calls(twilioCallSid)
     .feedback(twilioCallSid)
     .create({
@@ -40,20 +60,4 @@ async function postCallFeedback(
     });
 }
 
-// It's important to specify this is outgoing because TwiML from the browser is treated as an 'incoming call'
-// This means that the sid received by the hook are for the parent TwiML call and not the actual status of the outgoing call.
-// OMG KILL ME
-async function listOutgoingCalls(options = { limit: 20 }) {
-  return twilioClient.calls.list({
-    from: TWILIO_CALL_PHONE_NUMBER,
-    ...options,
-  });
-}
-
-export {
-  getCall,
-  listOutgoingCalls,
-  getCallsByIncomingSid,
-  sendSms,
-  postCallFeedback,
-};
+export { getCall, getCallsByIncomingSid, sendSms, postCallFeedback };

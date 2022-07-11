@@ -6,7 +6,7 @@ import Contact from './Contact';
 import Dorm from './Dorm';
 import PeriodicCredit from './PeriodicCredit';
 import Transaction from './Transaction';
-import TwilioCall, { CallStatus } from './TwilioCall';
+import TwilioCall, { CallStatus, CallType } from './TwilioCall';
 import User, { UserType } from './User';
 import UserExperimentConfig from './UserExperimentConfig';
 import RedeemableCode, { RedeemableCodeType } from './RedeemableCode';
@@ -137,6 +137,7 @@ export {
   AllowlistEntry,
   Call,
   CallStatus,
+  CallType,
   CodeRedemption,
   Contact,
   Dorm,

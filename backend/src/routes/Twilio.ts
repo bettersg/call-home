@@ -84,6 +84,7 @@ function TwilioRoutes(
         });
         await twilioCallService.createTwilioCall({
           parentCallSid: incomingTwilioCallSid,
+          callType: 'personal', // TODO replace with real call type
         });
         const response = new VoiceResponse();
         response.dial(

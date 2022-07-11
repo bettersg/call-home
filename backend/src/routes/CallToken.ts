@@ -1,27 +1,9 @@
 import express from 'express';
 import twilio from 'twilio';
 import { ClientCapabilityOptions } from 'twilio/lib/jwt/ClientCapability';
-import type { Feature } from '../services';
-import { logger } from '../config';
+import type { CredentialSet, CredentialSets, Feature } from '../services';
 
 const { ClientCapability } = twilio.jwt;
-
-const {
-  TWILIO_ACCOUNT_SID,
-  TWILIO_AUTH_TOKEN,
-  TWILIO_APP_SID,
-  TWILIO_HEALTHSERVE_ACCOUNT_SID,
-  TWILIO_HEALTHSERVE_AUTH_TOKEN,
-  TWILIO_HEALTHSERVE_APP_SID,
-} = process.env;
-
-interface CredentialSet {
-  accountSid: string;
-  authToken: string;
-  appSid: string;
-}
-
-type CredentialSetName = 'personal' | 'healthserve';
 
 function generateToken(credentialSet: CredentialSet) {
   const capability = new ClientCapability({
@@ -41,43 +23,28 @@ function generateToken(credentialSet: CredentialSet) {
 }
 
 // TODO This should only grant tokens for the amount of time needed to establish a connection (~20s)
-function CallTokenRoutes(featureService: typeof Feature): express.Router {
-  if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_APP_SID) {
-    throw Error('Missing twilio environment variables. Aborting...');
-  }
-
-  const personalCredentialSet = {
-    accountSid: TWILIO_ACCOUNT_SID,
-    authToken: TWILIO_AUTH_TOKEN,
-    appSid: TWILIO_APP_SID,
-  };
-
+function CallTokenRoutes(
+  featureService: typeof Feature,
+  credentialSets: typeof CredentialSets
+): express.Router {
   const router = express.Router();
 
-  if (featureService.shouldEnableSupportServices()) {
-    if (
-      !TWILIO_HEALTHSERVE_ACCOUNT_SID ||
-      !TWILIO_HEALTHSERVE_AUTH_TOKEN ||
-      !TWILIO_HEALTHSERVE_APP_SID
-    ) {
-      throw Error(
-        'Missing twilio healthserve environment variables. Aborting...'
-      );
-    }
+  if (!credentialSets.personal) {
+    throw new Error('BUG! No twilio credentials found');
+  }
 
-    const healthserveCredentialSet = {
-      accountSid: TWILIO_HEALTHSERVE_ACCOUNT_SID,
-      authToken: TWILIO_HEALTHSERVE_AUTH_TOKEN,
-      appSid: TWILIO_HEALTHSERVE_APP_SID,
-    };
+  if (
+    featureService.shouldEnableSupportServices() &&
+    credentialSets.healthserve
+  ) {
     router.get('/healthserve', (_req, res) => {
-      const token = generateToken(healthserveCredentialSet);
+      const token = generateToken(credentialSets.healthserve as CredentialSet);
       res.status(200).send(token);
     });
   }
 
   router.get('/', (_req, res) => {
-    const token = generateToken(personalCredentialSet);
+    const token = generateToken(credentialSets.personal);
     res.status(200).send(token);
   });
 

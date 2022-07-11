@@ -1,7 +1,7 @@
 import { Op } from 'sequelize';
 import { sanitizeDbErrors } from './lib';
 import { logger } from '../config';
-import type { TwilioCall as TwilioCallEntity } from '../models';
+import type { TwilioCall as TwilioCallEntity, CallType } from '../models';
 import type { Call, TwilioClient, Transaction } from './index';
 
 function TwilioCallService(
@@ -125,10 +125,10 @@ function TwilioCallService(
       'fetchTwilioDataForTwilioCall -> Updating call with id: %s',
       twilioCall.id
     );
-    const { parentCallSid } = twilioCall;
+    const { parentCallSid, callType } = twilioCall;
     const [twilioResponseCalls, twilioParentCall] = await Promise.all([
-      twilioClient.getCallsByIncomingSid(parentCallSid),
-      twilioClient.getCall(parentCallSid),
+      twilioClient.getCallsByIncomingSid(parentCallSid, callType ?? 'personal'),
+      twilioClient.getCall(parentCallSid, callType ?? 'personal'),
     ]);
     if (twilioParentCall.status === 'canceled') {
       await updateTwilioCall(twilioCall.id, {
@@ -215,12 +215,14 @@ function TwilioCallService(
 
   async function postCallFeedback(
     parentCallSid: string,
+    callType: CallType,
     avgMos: number | undefined,
     qualityScore: number,
     qualityIssue?: string
   ): Promise<number | null> {
     const feedback = await twilioClient.postCallFeedback(
       parentCallSid,
+      callType,
       qualityScore,
       qualityIssue
     );

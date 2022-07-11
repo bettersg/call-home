@@ -20,6 +20,7 @@ import UserValidation, { VerificationState } from './UserValidation';
 import FacebookDormCodeRedemption from './FacebookDormCodeRedemption';
 import Dorm from './Dorm';
 import UserExperimentConfig from './UserExperimentConfig';
+import { CredentialSet, CredentialSets } from './TwilioCreds';
 import Contact = require('./Contact');
 import Auth0 = require('./Auth0');
 
@@ -124,4 +125,6 @@ export {
   phoneNumberValidationService as PhoneNumberValidation,
   walletService as Wallet,
   workpassValidationService as WorkpassValidation,
+  CredentialSet,
+  CredentialSets,
 };

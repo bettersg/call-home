@@ -140,6 +140,7 @@ function CallRoutes(
       const { qualityScore, qualityIssue, avgMos } = parsedReq.body;
       const feedback = await twilioCallService.postCallFeedback(
         twilioParentSid,
+        'personal', // TODO add actual calltype
         avgMos,
         qualityScore,
         qualityIssue
