@@ -54,7 +54,7 @@ function shouldEnableFeedbackDialog() {
   return Boolean(ENABLE_FEEDBACK_DIALOG);
 }
 
-function shouldEnableCreditCap(userId: number) {
+function shouldEnableCreditCap() {
   const cutoffDate = DateTime.fromObject({
     day: 1,
     month: 7,

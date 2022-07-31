@@ -3,9 +3,16 @@ import Alert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
 import { Locale } from 'scenes/types';
 import { useFeatureService } from 'contexts';
+import { Link } from '@material-ui/core';
 
-const HELP_MESSAGE_CREDIT_CAP =
-  'In order to let more brothers use Call Home, each user will be limited to 200 minutes from 01 July 2022. Thank you for understanding.';
+const HELP_MESSAGE_CREDIT_CAP = (
+  <>
+    Call Home is working on some exciting new features! To give us time to
+    develop the features, from 01 August 2022, each user will now get 80 minutes
+    each month. Learn more at our&nbsp;
+    <Link href="https://callhome.sg/faqs">FAQ page</Link>
+  </>
+);
 
 const EN_STRINGS = {
   HELP_MESSAGE_NO_LOCK:

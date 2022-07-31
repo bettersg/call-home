@@ -16,8 +16,7 @@ import { shouldEnableCreditCap } from './Feature';
 
 // Config object for handling multiple credit intervals for users. No longer necessary.
 const cohorts = {
-  month: Duration.fromObject({ minutes: 200 }),
-  week: Duration.fromObject({ minutes: 50 }),
+  month: Duration.fromObject({ minutes: 80 }),
 };
 
 const CREDIT_INTERVAL = 'month';
@@ -69,7 +68,7 @@ function PeriodicCreditService(
     // Otherwise they get a credit.
     const periodicAmount = cohorts[CREDIT_INTERVAL].as('seconds');
     let creditAmountSeconds: number = periodicAmount;
-    if (shouldEnableCreditCap(userId)) {
+    if (shouldEnableCreditCap()) {
       const userWallet = await WalletModel.findOne({
         where: {
           userId,
