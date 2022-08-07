@@ -33,6 +33,23 @@ function OAuthRoutes(userService: typeof UserService): Router {
     }
   );
 
+  // Allow username-password login. Not actually used for prod, but needed for
+  // Facebook for Developers audit.
+  // For this to work, you must first choose the "Lock" template on
+  // https://manage.auth0.com/dashboard/us/ring-a-senior/login_page
+  // For some reason, their templates only allow for either Passwordless OR
+  // username-password
+  router.get(
+    '/login/universal',
+    passport.authenticate('auth0', {
+      scope: `openid email profile`,
+    } as any),
+    (req, res) => {
+      req.log.info('Received login');
+      return res.redirect('/');
+    }
+  );
+
   router.get('/callback', async (req, res) => {
     // eslint-disable-next-line
     passport.authenticate('auth0', async (err, user, info) => {
