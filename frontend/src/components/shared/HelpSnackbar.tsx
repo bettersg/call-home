@@ -5,15 +5,6 @@ import { Locale } from 'scenes/types';
 import { useFeatureService } from 'contexts';
 import { Link } from '@material-ui/core';
 
-const HELP_MESSAGE_CREDIT_CAP = (
-  <>
-    Call Home is working on some exciting new features! To give us time to
-    develop the features, from 01 August 2022, each user will now get 80 minutes
-    each month. Learn more at our&nbsp;
-    <Link href="https://callhome.sg/faqs">FAQ page</Link>
-  </>
-);
-
 const EN_STRINGS = {
   HELP_MESSAGE_NO_LOCK:
     'Make sure your screen doesn’t lock when you use Call Home! If your screen locks, your call may disconnect.',
@@ -23,6 +14,14 @@ const EN_STRINGS = {
     'For the best calling experience, don’t close the Call Home website while you are on a call. If you close the website, your call may disconnect.',
   HELP_MESSAGE_NO_NAVIGATE_CHROME:
     'If your calls sometimes disconnect, try keeping the Call Home website open and do not go to other websites while you are on a call.',
+  HELP_MESSAGE_CREDIT_CAP: (
+    <>
+      Call Home is working on some exciting new features! To give us time to
+      develop the features, from 01 August 2022, each user will now get 80
+      minutes each month. Learn more at our&nbsp;
+      <Link href="https://callhome.sg/#new-call-limit">FAQ page</Link>
+    </>
+  ),
 };
 
 const BN_STRINGS = {
@@ -35,6 +34,15 @@ const BN_STRINGS = {
     'সেরা কলিং অভিজ্ঞতার জন্য, আপনি কলটিতে থাকার সময় কল হোম ওয়েবসাইটটি বন্ধ করবেন না। আপনি যদি ওয়েবসাইটটি বন্ধ করেন তবে আপনার কলটি সংযোগ বিচ্ছিন্ন হতে পারে।',
   HELP_MESSAGE_NO_NAVIGATE_CHROME:
     'যদি আপনার কলগুলি মাঝে মাঝে সংযোগ বিচ্ছিন্ন হয়, কল হোম ওয়েবসাইটটি উন্মুক্ত রাখার চেষ্টা করুন এবং আপনি কোনও কল করার সময় অন্য ওয়েবসাইটগুলিতে যাবেন না।',
+  HELP_MESSAGE_CREDIT_CAP: (
+    <>
+      কল হোম এখন কিছু উত্তেজনাপূর্ণ নতুন বৈশিষ্ট্য কাজ করছে! এই বৈশিষ্ট্যগুলি
+      বিকাশ করার জন্য আমাদের সময় দিতে, 1লা আগস্ট 2022 থেকে, প্রতিটি ব্যবহারকারী
+      এখন প্রতি মাসে 80 মিনিট পাবেন। আমাদের&nbsp;
+      <Link href="https://callhome.sg/#new-call-limit">FAQ</Link> পৃষ্ঠায় আরও
+      জানুন।
+    </>
+  ),
 };
 
 const STRINGS = {
@@ -42,7 +50,7 @@ const STRINGS = {
   bn: BN_STRINGS,
 };
 
-function getRandomHelpMessage(locale: Locale): string {
+function getRandomHelpMessage(locale: Locale): React.ReactNode {
   const helpStrings = Object.values(STRINGS[locale]);
   const randomIdx = Math.floor(Math.random() * helpStrings.length);
   return helpStrings[randomIdx];
@@ -57,7 +65,7 @@ export default function HelpSnackbar({ locale }: { locale: Locale }) {
   };
 
   const helpMessage = featureState?.CREDIT_CAP
-    ? HELP_MESSAGE_CREDIT_CAP
+    ? STRINGS[locale].HELP_MESSAGE_CREDIT_CAP
     : getRandomHelpMessage(locale);
 
   return (
