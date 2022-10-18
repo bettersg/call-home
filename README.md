@@ -22,13 +22,12 @@ Backend runs on port `4000` while Frontend runs on port `3000` and can be run us
 
 - Get a working copy of `.env`
 
-- from project root, run `npm run init`
+- from project root, run `make init`
 
 - Start Backend:
 
 ```bash
 cd backend
-npm i
 npm run start:dev
 ```
 
@@ -48,7 +47,6 @@ VALUES ('+65YOURNUMBER', 'ADMIN', 'SG', NOW(), NOW());
 
 ```bash
 cd frontend
-npm i
 npm start
 ```
 
