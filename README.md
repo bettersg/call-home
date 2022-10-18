@@ -13,7 +13,7 @@ This is very much in the MVP stage.
 
 - [TypeScript](https://www.npmjs.com/package/typescript)
 - node 12 (preferably installed with versioning tool such as [Node Version Manager](https://github.com/nvm-sh/nvm))
-- [Docker and docker-compose](https://docs.docker.com/get-docker/), if you want to use the docker method
+- [Docker](https://docs.docker.com/get-docker/), if you want to use the docker method
 - A `backend/.env` file, taking reference from `backend/.env.sample`
 
 Backend runs on port `4000` while Frontend runs on port `3000` and can be run using the instructions below.
@@ -75,16 +75,14 @@ docker build . -t call-home
 docker run -it call-home
 ```
 
-#### docker-compose
-
-Or more conveniently with docker-compose from repository root.
+#### Docker Compose
 
 ```bash
 # To include new docker image build
-docker-compose up --build
+docker compose up --build
 
 # To use existing docker image
-docker-compose up
+docker compose up
 ```
 
 If you have conflicting ports, you can select the port for access via localhost in `docker-compose.yml`.
