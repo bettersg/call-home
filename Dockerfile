@@ -1,9 +1,9 @@
 # Prepare shared code in a base image
-FROM node:15 AS base
+FROM node:16 AS base
 
 WORKDIR /app/shared
 
-COPY shared/package.json shared/package-lock.json shared/tsconfig.json .
+COPY shared/package.json shared/package-lock.json shared/tsconfig.json ./
 
 RUN npm run init
 RUN npm install
