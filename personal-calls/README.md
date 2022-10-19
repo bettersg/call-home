@@ -1,6 +1,4 @@
-# callhome.sg
-
-This is very much in the MVP stage.
+# Personal Calls
 
 ## What does it do?
 
