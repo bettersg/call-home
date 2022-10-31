@@ -12,6 +12,7 @@ This is very much in the MVP stage.
 ### Setup
 
 - [TypeScript](https://www.npmjs.com/package/typescript)
+<!-- TODO we've upgraded node, so this is out of date -->
 - node 12 (preferably installed with versioning tool such as [Node Version Manager](https://github.com/nvm-sh/nvm))
 - [Docker](https://docs.docker.com/get-docker/), if you want to use the docker method
 - A `backend/.env` file, taking reference from `backend/.env.sample`
