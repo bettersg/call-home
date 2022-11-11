@@ -7,6 +7,13 @@ init: ## Install the project
 dev: ## Run the frontend in development mode
 	npm start
 
+format: ## Format JS code nicely. Run this before committing.
+	npm run format
+
+lint: ## Check JS for linting errors. Run this before committing.
+	npm run lint
+	npm run format:check
+
 copy-common: ## Copy common files from the personal-calls common directory
 	rm -rf src/common
 	cp -r ../../personal-calls/frontend/src/common src/

@@ -24,25 +24,27 @@ const colors = {
   },
 };
 
-const callHomeTheme = createTheme(adaptV4Theme({
-  palette: {
-    background: {
-      default: colors.primary[100],
+const callHomeTheme = createTheme(
+  adaptV4Theme({
+    palette: {
+      background: {
+        default: colors.primary[100],
+      },
+      primary: colors.primary,
+      grey: colors.grey,
+      error: colors.error,
+      warning: colors.yellow,
     },
-    primary: colors.primary,
-    grey: colors.grey,
-    error: colors.error,
-    warning: colors.yellow,
-  },
-  overrides: {
-    MuiTypography: {
-      root: {
-        color: colors.text.primary,
-        fontFamily:
-          '"Hind Siliguri", "Roboto", "Helvetica", "Arial", sans-serif !important',
+    overrides: {
+      MuiTypography: {
+        root: {
+          color: colors.text.primary,
+          fontFamily:
+            '"Hind Siliguri", "Roboto", "Helvetica", "Arial", sans-serif !important',
+        },
       },
     },
-  },
-}));
+  })
+);
 
 export default callHomeTheme;
