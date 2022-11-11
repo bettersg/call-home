@@ -7,21 +7,20 @@ import Button from '@mui/material/Button';
 function withStylesSx(styles) {
   return (Component) => {
     return (props) => {
-      const {
-        sx,
-        ...rest
-      } = props;
-      return <Component sx={[
-        styles,
-        ...(Array.isArray(sx) ? sx : [sx])
-      ]}{...rest}></Component>
-    }
-  }
+      const { sx, ...rest } = props;
+      return (
+        <Component
+          sx={[styles, ...(Array.isArray(sx) ? sx : [sx])]}
+          {...rest}
+        ></Component>
+      );
+    };
+  };
 }
 
 const RoundedButton = withStylesSx({
   // This just needs to be >50% of the button's height
-  borderRadius: '1000px'
+  borderRadius: '1000px',
 })(Button);
 
 const PrimaryButton = withStylesSx({
@@ -30,7 +29,7 @@ const PrimaryButton = withStylesSx({
   backgroundColor: 'primary.700',
   '&:hover': {
     backgroundColor: 'primary.700',
-  }
+  },
 })(RoundedButton);
 
 const NeutralButton = withStylesSx({
