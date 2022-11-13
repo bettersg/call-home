@@ -55,7 +55,7 @@ endif
 	deploy-sentry
 
 deploy-heroku: ## Deploy to heroku
-	docker tag call-home registry.heroku.com/$(HEROKU_APP)/web
+	docker tag call-home registry.heroku.com/$(HEROKU_APP_TARGET)/web
 	docker push registry.heroku.com/$(HEROKU_APP_TARGET)/web
 	heroku container:release web --app $(HEROKU_APP_TARGET)
 
