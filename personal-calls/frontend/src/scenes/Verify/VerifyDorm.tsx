@@ -5,8 +5,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { useDormService, useUserService } from 'contexts';
 
 import { validateDorm } from 'services/DormValidation';
-import Container from 'components/shared/Container';
-import { PrimaryButton } from 'components/shared/RoundedButton';
+import { Container, PrimaryButton } from 'components';
 import { SceneProps } from 'scenes/types';
 
 const EN_STRINGS = {

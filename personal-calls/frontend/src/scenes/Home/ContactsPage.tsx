@@ -16,18 +16,20 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import LinkIcon from '@material-ui/icons/Link';
 import HistoryIcon from '@material-ui/icons/History';
 import { Duration } from 'luxon';
-import DetectBrowserSnackbar from 'components/shared/DetectBrowserSnackbar';
-import HelpSnackbar from 'components/shared/HelpSnackbar';
-import Container from 'components/shared/Container';
 import {
+  Container,
+  DetectBrowserSnackbar,
   NeutralButton,
   ErrorButton,
   PrimaryButton,
-} from 'components/shared/RoundedButton';
-import ContactsDialog from 'components/shared/ContactsDialog';
+  HelpSnackbar,
+  ContactsDialog,
+  PhoneNumberMasks,
+  Footer,
+  RoundedProgressBar,
+} from 'components';
 import { useUserService, useContactService } from 'contexts';
 import { ApiValidationError } from 'services/apiClient';
-import PhoneNumberMasks from 'components/shared/PhoneNumberMask';
 import {
   formatDurationInMinutes,
   formatDurationInDaysHoursMinutes,
@@ -36,8 +38,6 @@ import { getNextRefresh } from 'services/PeriodicCredit';
 import PATHS from 'scenes/paths';
 import './ContactsPage.css';
 import { Locale, SceneProps } from 'scenes/types';
-import { RoundedProgressBar } from 'components/shared/RoundedProgressBar';
-import Footer from 'components/shared/Footer';
 import ContactService from 'services/Contact';
 import UserService from 'services/User';
 

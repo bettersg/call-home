@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ReportIssueDialog from 'components/shared/ReportIssueDialog';
+import { ReportIssueDialog } from 'components';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import FeedbackIcon from '@material-ui/icons/Feedback';

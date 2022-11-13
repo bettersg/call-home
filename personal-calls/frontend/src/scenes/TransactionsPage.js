@@ -9,7 +9,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TextField from '@material-ui/core/TextField';
 import { DateTime } from 'luxon';
 import React, { useEffect, useState } from 'react';
-import Container from '../components/shared/Container';
+import { Container } from '../components';
 import { useAdminService } from '../contexts';
 import useAdminRoute from '../util/useAdminRoute';
 import useQuery from '../util/useQuery';

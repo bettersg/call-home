@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import ContainerWrong from 'components/shared/Container';
+import {
+  Container as ContainerWrong,
+  Footer,
+  PrimaryButton,
+  RoundedButton,
+} from 'components';
 import { useUserService } from 'contexts';
-import RoundedButton, { PrimaryButton } from 'components/shared/RoundedButton';
 import { beginPhoneNumberValidation, login } from 'services/Auth';
 import { SceneProps } from 'scenes/types';
-import Footer from 'components/shared/Footer';
 
 interface VerifyPhoneNumberCodeProps extends SceneProps {
   phoneNumber: string;

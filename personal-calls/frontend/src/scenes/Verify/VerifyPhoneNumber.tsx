@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import TextFieldWrong from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import ContainerWrong from 'components/shared/Container';
+import {
+  Container as ContainerWrong,
+  Footer,
+  PrimaryButton,
+  PhoneNumberMasks,
+} from 'components';
 import { useUserService } from 'contexts';
-import { PrimaryButton } from 'components/shared/RoundedButton';
-import PhoneNumberMasks from 'components/shared/PhoneNumberMask';
 import { SceneProps } from 'scenes/types';
-import Footer from 'components/shared/Footer';
 
 const Container: React.FunctionComponent<any> = ContainerWrong;
 const TextField: React.FunctionComponent<any> = TextFieldWrong;

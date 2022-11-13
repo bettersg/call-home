@@ -14,9 +14,11 @@ import {
   useFeatureService,
 } from '../contexts';
 import PATHS from './paths';
-import Container from '../components/shared/Container';
-import DetectBrowserSnackbar from '../components/shared/DetectBrowserSnackbar';
-import FeedbackDialog from '../components/shared/FeedbackDialog';
+import {
+  Container,
+  DetectBrowserSnackbar,
+  FeedbackDialog,
+} from '../components';
 import { makeCall, isTransientIssue, getAvgMos } from '../services/TwilioCall';
 import { postFeedback } from '../services/Call';
 import { formatCallTime } from '../util/timeFormatters';
