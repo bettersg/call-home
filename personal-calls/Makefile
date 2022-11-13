@@ -44,6 +44,10 @@ build-deployment: ## Build for deployment
 	@echo "Building app..."
 	docker build --build-arg PUBLIC_URL="$(PUBLIC_URL_TARGET)" --build-arg RELEASE_DATE="$(VERSION)" -t call-home .
 
+heroku-login: ## Login to heroku
+	heroku login
+	heroku container:login
+
 deploy: build-deployment ## Deploy app to cloud
 ifeq ($(DEPLOY_TARGET),heroku)
 	@echo "Deploying to Heroku..."
