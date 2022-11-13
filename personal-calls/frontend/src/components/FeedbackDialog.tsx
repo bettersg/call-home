@@ -11,7 +11,7 @@ import { Locale } from 'scenes/types';
 import { Call as TwilioSdkCall } from '@twilio/voice-sdk';
 import CloseIcon from '@material-ui/icons/Close';
 import { IconButton } from '@material-ui/core';
-import { PrimaryButton } from './RoundedButton';
+import { PrimaryButton } from '../common/components/RoundedButton';
 
 interface FeedbackDialogProps extends DialogProps {
   locale: Locale;

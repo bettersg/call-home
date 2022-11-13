@@ -11,5 +11,5 @@ export {
   NeutralButton,
   ErrorButton,
   PrimaryButton,
-} from './RoundedButton';
+} from '../common/components/RoundedButton';
 export { RoundedProgressBar } from './RoundedProgressBar';

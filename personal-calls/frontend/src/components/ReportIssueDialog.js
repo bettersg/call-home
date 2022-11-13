@@ -7,7 +7,7 @@ import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import { withStyles } from '@material-ui/core/styles';
 import { reportUserIssue } from '../services/Sentry';
-import { PrimaryButton } from './RoundedButton';
+import { PrimaryButton } from '../common/components/RoundedButton';
 
 const EN_STRINGS = {
   REPORT_ISSUE_ISSUE_TYPE_LABEL: 'Issue Type',
