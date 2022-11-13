@@ -5,10 +5,8 @@ import Typography from '@material-ui/core/Typography';
 import { useRedeemableCodeService } from 'contexts';
 import { ApiValidationError } from 'services/apiClient';
 import useQuery from 'util/useQuery';
-import Container from 'components/shared/Container';
 import PATHS, { useAuthRouting } from 'scenes/paths';
-
-import { ErrorButton, PrimaryButton } from '../components/shared/RoundedButton';
+import { Container, ErrorButton, PrimaryButton } from '../components';
 
 import { SceneProps } from './types';
 

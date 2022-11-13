@@ -4,12 +4,10 @@ import Typography from '@material-ui/core/Typography';
 import { useTheme } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useUserService } from 'contexts';
-import Container from 'components/shared/Container';
-import { PrimaryButton } from 'components/shared/RoundedButton';
+import { PrimaryButton, Container, Footer } from 'components';
 import { validateWorkpass } from 'services/WorkpassValidation';
 import { Locale, SceneProps } from 'scenes/types';
 import './VerifyWorkpass.css';
-import Footer from 'components/shared/Footer';
 
 const EN_STRINGS = {
   VERIFY_WORKPASS_TITLE: 'Enter your Work Pass serial number',

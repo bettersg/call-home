@@ -1,6 +1,6 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import Container from '../components/shared/Container';
+import { Container } from '../components';
 
 // TODO figure out where to put these later
 const EN_STRINGS = {

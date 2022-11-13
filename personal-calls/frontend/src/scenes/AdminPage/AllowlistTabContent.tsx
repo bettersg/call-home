@@ -11,7 +11,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { FormControlLabel, Grid } from '@material-ui/core';
 import { useAllowlistService } from 'contexts';
-import PhoneNumberMasks from 'components/shared/PhoneNumberMask';
+import { PhoneNumberMasks } from 'components';
 import { ApiValidationError } from 'services/apiClient';
 
 interface AllowlistGridRow {

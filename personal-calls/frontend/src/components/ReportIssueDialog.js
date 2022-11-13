@@ -6,7 +6,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import { withStyles } from '@material-ui/core/styles';
-import { reportUserIssue } from '../../services/Sentry';
+import { reportUserIssue } from '../services/Sentry';
 import { PrimaryButton } from './RoundedButton';
 
 const EN_STRINGS = {

@@ -7,7 +7,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { withStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import { DateTime } from 'luxon';
-import Container from '../components/shared/Container';
+import { Container } from 'components';
 import { getRecentCalls, RecentCall } from '../services/Call';
 import { useUserService } from '../contexts';
 import PATHS from './paths';
