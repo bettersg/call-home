@@ -56,7 +56,7 @@ else ifeq ($(DEPLOY_TARGET),cloudrun)
 	@echo "Deploying to Cloud Run..."
 	$(MAKE) deploy-cloudrun
 endif
-	deploy-sentry
+	$(MAKE) deploy-sentry
 
 deploy-heroku: ## Deploy to heroku
 	docker tag call-home registry.heroku.com/$(HEROKU_APP_TARGET)/web
