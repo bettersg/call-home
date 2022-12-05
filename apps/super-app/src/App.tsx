@@ -1,4 +1,6 @@
 import './App.css';
+import { useEffect } from 'react';
+import { consoleSmokeTest } from './services';
 import { ThemeProvider } from './common/contexts';
 import {
   PrimaryButton,
@@ -7,6 +9,9 @@ import {
 } from './common/components/RoundedButton';
 
 function App() {
+  useEffect(() => {
+    consoleSmokeTest();
+  }, []);
   return (
     <ThemeProvider>
       <PrimaryButton>Primary</PrimaryButton>
