@@ -48,16 +48,15 @@ resource "google_project_service" "cloud_build_api" {
   service = "cloudbuild.googleapis.com"
 }
 
-data "google_service_account" "cloud_build_service_account" {
-  account_id = google_project_service.cloud_build_api.id
-}
-
 // Enable App Engine permissions for the Cloud Build service account
 resource "google_project_iam_binding" "app_engine_admin" {
   project = data.google_project.project.project_id
   role = "roles/appengine.appAdmin"
   members = [
-    data.google_service_account.cloud_build_service_account.member
+    "serviceAccount:${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
+  ]
+  depends_on = [
+    google_project_service.cloud_build_api
   ]
 }
 
@@ -66,7 +65,10 @@ resource "google_project_iam_binding" "service_account_user" {
   project = data.google_project.project.project_id
   role = "roles/iam.serviceAccountUser"
   members = [
-    data.google_service_account.cloud_build_service_account.member
+    "serviceAccount:${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
+  ]
+  depends_on = [
+    google_project_service.cloud_build_api
   ]
 }
 
