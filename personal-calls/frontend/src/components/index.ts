@@ -1,5 +1,5 @@
 export { default as ContactsDialog } from './ContactsDialog';
-export { default as Container } from './Container';
+export { Container } from '../common/components';
 export { default as DetectBrowserSnackbar } from './DetectBrowserSnackbar';
 export { default as FeedbackDialog } from './FeedbackDialog';
 export { default as Footer } from './Footer';
