@@ -15,7 +15,12 @@ function App() {
   }, []);
   return (
     <ThemeProvider>
-      <Container>
+      <Container
+        style={{
+          background: 'no-repeat url(/images/background.svg) bottom center',
+          backgroundSize: 'contain',
+        }}
+      >
         <PrimaryButton>Primary</PrimaryButton>
         <NeutralButton>Neutral</NeutralButton>
         <ErrorButton>Error</ErrorButton>
