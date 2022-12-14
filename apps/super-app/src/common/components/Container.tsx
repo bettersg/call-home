@@ -40,9 +40,7 @@ export default function Container({
     : CONTAINER_STYLES;
   return (
     <MuiContainer style={containerStyles} {...rest} maxWidth="sm">
-      {
-        children as any // Needed because the props don't accept null | undefined
-      }
+      {children}
     </MuiContainer>
   );
 }
