@@ -1,6 +1,7 @@
 import React from 'react';
-import MuContainer from '@material-ui/core/Container';
+import MuiContainer from '@material-ui/core/Container';
 
+// TODO document why meddling with --viewport-height is needed
 document.documentElement.style.setProperty(
   '--viewport-height',
   `${window.innerHeight}px`
@@ -38,10 +39,10 @@ export default function Container({
       }
     : CONTAINER_STYLES;
   return (
-    <MuContainer style={containerStyles} {...rest} maxWidth="sm">
+    <MuiContainer style={containerStyles} {...rest} maxWidth="sm">
       {
         children as any // Needed because the props don't accept null | undefined
       }
-    </MuContainer>
+    </MuiContainer>
   );
 }
