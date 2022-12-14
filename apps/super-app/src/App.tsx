@@ -2,6 +2,7 @@ import './App.css';
 import { useEffect } from 'react';
 import { consoleSmokeTest } from './services';
 import { ThemeProvider } from './common/contexts';
+import { Container } from './common/components';
 import {
   PrimaryButton,
   NeutralButton,
@@ -14,9 +15,11 @@ function App() {
   }, []);
   return (
     <ThemeProvider>
-      <PrimaryButton>Primary</PrimaryButton>
-      <NeutralButton>Neutral</NeutralButton>
-      <ErrorButton>Error</ErrorButton>
+      <Container>
+        <PrimaryButton>Primary</PrimaryButton>
+        <NeutralButton>Neutral</NeutralButton>
+        <ErrorButton>Error</ErrorButton>
+      </Container>
     </ThemeProvider>
   );
 }
