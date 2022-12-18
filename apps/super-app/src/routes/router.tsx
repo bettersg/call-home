@@ -1,6 +1,6 @@
 import { Route, Routes, Link } from 'react-router-dom';
 import { Path } from './paths';
-import { Scratch, SupportDetailWip } from '.';
+import { Options, Scratch, Support, SupportDetailWip } from '.';
 
 export function AppRoutes() {
   return (
@@ -11,6 +11,9 @@ export function AppRoutes() {
       ></Route>
       <Route path={Path.Scratch} element={<Scratch />}></Route>
       <Route path={Path.SupportDetail} element={<SupportDetailWip />}></Route>
+
+      <Route path={Path.Support} element={<Support />}></Route>
+      <Route path={Path.Options} element={<Options />}></Route>
     </Routes>
   );
 }
