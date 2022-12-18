@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css?family=Hind');
+a {
+  text-decoration: none;
+}
+
+.navbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 32px 10px;
+  gap: 56px;
+  width: 360px;
+  height: 72px;
+  left: 16px;
+  top: 104px;
+  background-color: #f3fafc;
+}
+
+.navbar-icon {
+  display: flex;
+  color: #bec7ca;
+  text-decoration: none;
+  text-align: center;
+  align-items: center;
+  line-height: 1rem;
+}
+
+.navbar-icon-text {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  font-family: 'hind';
+}
+
+.navbar-icon.navbar-icon-active {
+  color: #297b94;
+}
