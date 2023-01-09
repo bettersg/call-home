@@ -23,7 +23,7 @@
     "detect-browser": "^5.1.1",
     "lodash": "^4.17.19",
     "loglevel": "^1.6.8",
-    "luxon": "^1.25.0",
+    "luxon": "^2.5.2",
     "nosleep.js": "^0.12.0",
     "qrcode.react": "^1.0.1",
     "react": "^17.0.0",
