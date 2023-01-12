@@ -40,6 +40,13 @@ data "google_project" "project" {
   project_id = var.project_id
 }
 
+// Enable Cloud SQL Admin API to allow App Engine to connect to the database
+// See: https://cloud.google.com/sql/docs/mysql/connect-app-engine-standard
+resource "google_project_service" "sql_admin_api" {
+  project = data.google_project.project.project_id
+  service = "sqladmin.googleapis.com"
+}
+
 // Enable Cloud Build API and grant its service account App Engine and Service Account User
 // permissions to allow developers to build and deploy applications to App Engine using gcloud SDK.
 // See: https://cloud.google.com/build/docs/deploying-builds/deploy-appengine
