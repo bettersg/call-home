@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Link } from '@mui/material';
 import { Public as PublicIcon } from '@mui/icons-material';
-import { Twc2SupportDetail, getTwc2Detail } from '../services';
+import {
+  Twc2SupportDetail,
+  FacebookLinksSection,
+  getTwc2Detail,
+} from '../services';
 import { Container } from '../common/components';
 import { PrimaryButton } from '../common/components/RoundedButton';
 import './SupportDetailWip.css';
@@ -17,24 +21,56 @@ function BlurbIntro(props: { text: string }) {
   );
 }
 
-type BlurbProps = Pick<Twc2SupportDetail, 'blurbIntro'>;
+function BlurbFacebookLinks(props: FacebookLinksSection) {
+  const { links, title, imageSrc } = props;
+  return (
+    <section className="support-description-blurb-section">
+      <Typography variant="h6">{title}</Typography>
+      {links.map(({ href, text }, idx) => (
+        <div key={idx} className="support-description-blurb-facebook-link">
+          <img
+            src={imageSrc}
+            className="support-description-blurb-facebook-link-icon"
+          />
+          <Link
+            href={href}
+            sx={{
+              color: 'primary.800',
+              textDecorationColor: (theme) =>
+                // TODO it's hard to type the palette correctly because we use
+                // a different convention from @Mui, disable the warning for
+                // now.
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (theme.palette.primary as any)[800],
+            }}
+          >
+            {text}
+          </Link>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+type BlurbProps = Pick<Twc2SupportDetail, 'blurbIntro' | 'blurbFacebookLinks'>;
 
 function Blurb(props: BlurbProps) {
-  const { blurbIntro } = props;
+  const { blurbIntro, blurbFacebookLinks } = props;
   return (
     <>
       <BlurbIntro text={blurbIntro} />
+      <BlurbFacebookLinks {...blurbFacebookLinks} />
     </>
   );
 }
 
 type DescriptionProps = Pick<
   Twc2SupportDetail,
-  'logo' | 'name' | 'website' | 'blurbIntro'
+  'logo' | 'name' | 'website' | 'blurbIntro' | 'blurbFacebookLinks'
 >;
 
 function DescriptionSection(props: DescriptionProps) {
-  const { logo, name, website, blurbIntro } = props;
+  const { logo, name, website, blurbIntro, blurbFacebookLinks } = props;
   return (
     <main className="support-description-container">
       <section className="support-description-header">
@@ -61,7 +97,7 @@ function DescriptionSection(props: DescriptionProps) {
           <Typography>Website</Typography>
         </a>
       </section>
-      <Blurb blurbIntro={blurbIntro} />
+      <Blurb blurbIntro={blurbIntro} blurbFacebookLinks={blurbFacebookLinks} />
     </main>
   );
 }
@@ -90,7 +126,15 @@ export function SupportDetailWip() {
   if (!content) {
     return null;
   }
-  const { logo, name, website, blurbIntro, ctaBlurb, ctaButtonText } = content;
+  const {
+    logo,
+    name,
+    website,
+    blurbIntro,
+    blurbFacebookLinks,
+    ctaBlurb,
+    ctaButtonText,
+  } = content;
   return (
     <Container
       style={{
@@ -110,6 +154,7 @@ export function SupportDetailWip() {
         name={name}
         website={website}
         blurbIntro={blurbIntro}
+        blurbFacebookLinks={blurbFacebookLinks}
       ></DescriptionSection>
       <CtaSection
         ctaBlurb={ctaBlurb}

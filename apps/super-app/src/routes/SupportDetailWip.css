@@ -47,3 +47,13 @@
 .support-description-blurb-section {
   margin-bottom: 1em;
 }
+
+.support-description-blurb-facebook-link {
+  display: flex;
+  align-items: center;
+  gap: 0.25em
+}
+
+.support-description-blurb-facebook-link-icon {
+  height: 1em;
+}
