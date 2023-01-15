@@ -18,7 +18,20 @@ export interface SupportDetailAbout {
 }
 
 // We should consider moving TWC2-specific things to their own file.
-export type Twc2SupportDetail = SupportDetailAbout;
+export interface Twc2SupportDetail extends SupportDetailAbout {
+  blurbFacebookLinks: FacebookLinksSection;
+}
+
+export interface FacebookLinksSection {
+  title: string;
+  imageSrc: string;
+  links: FacebookLink[];
+}
+
+export interface FacebookLink {
+  href: string;
+  text: string;
+}
 
 export function getTwc2Detail(): Twc2SupportDetail {
   return {
@@ -26,6 +39,20 @@ export function getTwc2Detail(): Twc2SupportDetail {
     name: 'Transient Workers Count Too (TWC2)',
     website: 'foo.bar',
     blurbIntro: `TWC2 helps all foreigners working in Singapore, including those on Work Permits and S-Passes. They help for free. Most common issues are salary non-payment, contract issues and injuries.`,
+    blurbFacebookLinks: {
+      title: `Join TWC2's Facebook Community Pages!`,
+      imageSrc: '/images/facebook-icon.svg',
+      links: [
+        {
+          href: 'https://callhome.sg',
+          text: 'Bengali',
+        },
+        {
+          href: 'https://callhome.sg',
+          text: 'Tamil',
+        },
+      ],
+    },
     ctaBlurb: 'Call on Mondays to Fridays (9am - 9pm), message any time',
     ctaButtonText: '+65 6297 7564',
   };
