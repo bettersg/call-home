@@ -20,6 +20,17 @@
   min-height: 6rem;
 }
 
+.support-description-website-circle {
+  align-items: center;
+  border-radius: 1000px;
+  border-style: solid;
+  border-width: 2px;
+  display: flex;
+  height: 2em;
+  justify-content: center;
+  width: 2em;
+}
+
 .support-cta-container {
   align-items: center;
   background-color: white;
