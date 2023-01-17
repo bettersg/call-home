@@ -35,20 +35,20 @@ export interface FacebookLink {
 
 export function getTwc2Detail(): Twc2SupportDetail {
   return {
-    logo: 'foo.bar',
+    logo: '/images/twc2-logo.png',
     name: 'Transient Workers Count Too (TWC2)',
-    website: 'foo.bar',
+    website: 'https://twc2.org.sg/language-menu-for-qr-code/',
     blurbIntro: `TWC2 helps all foreigners working in Singapore, including those on Work Permits and S-Passes. They help for free. Most common issues are salary non-payment, contract issues and injuries.`,
     blurbFacebookLinks: {
       title: `Join TWC2's Facebook Community Pages!`,
       imageSrc: '/images/facebook-icon.svg',
       links: [
         {
-          href: 'https://callhome.sg',
+          href: 'https://www.facebook.com/twc2bangla',
           text: 'Bengali',
         },
         {
-          href: 'https://callhome.sg',
+          href: 'https://www.facebook.com/twc2tami',
           text: 'Tamil',
         },
       ],

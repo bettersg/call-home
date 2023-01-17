@@ -26,6 +26,11 @@ const colors = {
 
 const callHomeTheme = createTheme(
   adaptV4Theme({
+    typography: {
+      h4: {
+        fontWeight: 600,
+      },
+    },
     palette: {
       background: {
         default: colors.primary[100],

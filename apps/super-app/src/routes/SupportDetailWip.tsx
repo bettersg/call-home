@@ -74,14 +74,14 @@ function DescriptionSection(props: DescriptionProps) {
   return (
     <main className="support-description-container">
       <section className="support-description-header">
-        <img src={logo} style={{ flexBasis: '8rem' }} />
+        <img src={logo} style={{ flexBasis: '6rem', width: '1px' }} />
         <Typography variant="h4" component="h2" style={{ flex: 1 }}>
           {name}
         </Typography>
         <a
           href={website}
           style={{
-            flexBasis: '8rem',
+            flexBasis: '4rem',
             textDecoration: 'none',
             display: 'flex',
             flexDirection: 'column',
@@ -92,7 +92,9 @@ function DescriptionSection(props: DescriptionProps) {
             className="support-description-website-circle"
             sx={{ borderColor: 'primary.900' }}
           >
-            <PublicIcon sx={{ color: 'primary.900' }} />
+            <PublicIcon
+              sx={{ color: 'primary.900', height: '2.5rem', width: '2.5rem' }}
+            />
           </Box>
           <Typography>Website</Typography>
         </a>
