@@ -1,5 +1,17 @@
 // TODO This is a stub for testing, eventually replace this with Strapi Calls
-// Data shared by every Support detail page.
+
+// Strings that stay constant on each Support detail page.
+export interface SupportDetailStrings {
+  headerTitle: string;
+}
+
+export function getSupportDetailStrings(): SupportDetailStrings {
+  return {
+    headerTitle: 'Free Support Services',
+  };
+}
+
+// Data used by every Support detail page that changes per page.
 export interface SupportDetailAbout {
   // Url of logo image.
   logo: string;
@@ -48,7 +60,7 @@ export function getTwc2Detail(): Twc2SupportDetail {
           text: 'Bengali',
         },
         {
-          href: 'https://www.facebook.com/twc2tami',
+          href: 'https://www.facebook.com/twc2tamil',
           text: 'Tamil',
         },
       ],
