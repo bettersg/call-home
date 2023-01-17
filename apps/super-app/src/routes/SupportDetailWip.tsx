@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
+import { Public as PublicIcon } from '@mui/icons-material';
 import { Twc2SupportDetail, getTwc2Detail } from '../services';
 import { Container } from '../common/components';
 import { PrimaryButton } from '../common/components/RoundedButton';
@@ -41,7 +42,22 @@ function DescriptionSection(props: DescriptionProps) {
         <Typography variant="h4" component="h2" style={{ flex: 1 }}>
           {name}
         </Typography>
-        <a href={website} style={{ flexBasis: '8rem', textDecoration: 'none' }}>
+        <a
+          href={website}
+          style={{
+            flexBasis: '8rem',
+            textDecoration: 'none',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Box
+            className="support-description-website-circle"
+            sx={{ borderColor: 'primary.900' }}
+          >
+            <PublicIcon sx={{ color: 'primary.900' }} />
+          </Box>
           <Typography>Website</Typography>
         </a>
       </section>
