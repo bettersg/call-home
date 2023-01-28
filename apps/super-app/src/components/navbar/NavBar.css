@@ -8,8 +8,7 @@ a {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 0px 32px 10px;
-  gap: 56px;
+  padding: 0px 32px;
   width: 360px;
   height: 72px;
   left: 16px;
@@ -18,7 +17,7 @@ a {
 }
 
 .navbar-icon {
-  display: flex;
+  display: inline-block;
   color: #bec7ca;
   text-decoration: none;
   text-align: center;

@@ -9,7 +9,7 @@ import {
 import CallHome from './components/CallHome';
 import Support from './components/Support';
 import More from './components/More';
-import { NavBar } from './components/navbar/Navbar';
+import NavBar from './components/navbar/Navbar';
 
 function App() {
   return (

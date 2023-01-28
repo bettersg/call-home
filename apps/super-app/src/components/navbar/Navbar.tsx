@@ -4,7 +4,7 @@ import { ReactComponent as CallHomeIcon } from '../img/callhomeicon.svg';
 import { ReactComponent as SupportIcon } from '../img/supporticon.svg';
 import { ReactComponent as MoreIcon } from '../img/moreicon.svg';
 
-export const NavBar = () => {
+function NavBar (){
   return (
     <nav className="navbar">
       <NavIcon link="../callhome" text="Call Home" icon={<CallHomeIcon />} />
@@ -29,3 +29,5 @@ function NavIcon(props: { link: string; text: string; icon: React.ReactNode }) {
     </div>
   );
 }
+
+export default NavBar;
