@@ -8,10 +8,8 @@ import {
   getSupportDetailStrings,
   ServiceCardAbout,
   SupportDetailStrings,
-} from '../services/DetailServices';
+} from '../services';
 import { NavBar } from '../components';
-// TODO export this elegantly so that importers don't have to peek into
-//   components/
 import '../components/navbar/NavBarAbove.css';
 
 export function LandingPage() {

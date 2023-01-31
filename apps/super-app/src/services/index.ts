@@ -1,5 +1,9 @@
 export { consoleSmokeTest } from './CmsSmokeTest';
-export { getSupportDetailStrings, getTwc2Detail } from './DetailServices';
+export {
+  getSupportDetailStrings,
+  getTwc2Detail,
+  getServiceCardAbouts,
+} from './DetailServices';
 export type {
   ServiceCardAbout,
   SupportDetailStrings,
