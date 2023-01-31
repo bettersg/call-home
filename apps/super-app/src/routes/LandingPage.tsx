@@ -4,6 +4,7 @@ import { Box, Typography } from '@mui/material';
 import { Container } from '../common/components';
 import { ServiceCard } from '../common/components/ServiceCard';
 import {
+  useLanguage,
   getServiceCardAbouts,
   getSupportDetailStrings,
   ServiceCardAbout,
@@ -16,8 +17,9 @@ export function LandingPage() {
   const [fixedStrings, setFixedStrings] = useState<SupportDetailStrings | null>(
     null
   );
+  const [lang] = useLanguage();
   useEffect(() => {
-    setFixedStrings(getSupportDetailStrings());
+    setFixedStrings(getSupportDetailStrings(lang));
   }, []);
   if (!fixedStrings) {
     // TODO return something (hint or loading spinner) since this is landing page, we can't return null

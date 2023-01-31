@@ -11,3 +11,5 @@ export type {
   FacebookLinksSection,
   FacebookLink,
 } from './DetailServices';
+export type { LanguageOption } from './Language';
+export { useLanguage } from './Language';
