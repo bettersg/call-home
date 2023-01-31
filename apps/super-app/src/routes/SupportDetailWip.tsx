@@ -10,6 +10,7 @@ import {
   SupportDetailStrings,
   getSupportDetailStrings,
   getTwc2Detail,
+  useLanguage,
 } from '../services';
 import { Container } from '../common/components';
 import { PrimaryButton } from '../common/components/RoundedButton';
@@ -143,12 +144,13 @@ export function SupportDetailWip() {
   const [fixedStrings, setFixedStrings] = useState<SupportDetailStrings | null>(
     null
   );
+  const [lang] = useLanguage();
   const [content, setContent] = useState<Twc2SupportDetail | null>(null);
   useEffect(() => {
-    setContent(getTwc2Detail());
+    setContent(getTwc2Detail(lang));
   }, []);
   useEffect(() => {
-    setFixedStrings(getSupportDetailStrings());
+    setFixedStrings(getSupportDetailStrings(lang));
   }, []);
   if (!content || !fixedStrings) {
     return null;
