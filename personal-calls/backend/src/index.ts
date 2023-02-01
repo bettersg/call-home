@@ -47,7 +47,11 @@ type env = 'development' | 'production' | 'staging';
 
 // Env vars
 const { NODE_ENV } = process.env as { NODE_ENV: env };
-const { PORT = 4000, STATIC_DIR = 'static', FRONTEND_HOST = 'localhost' } = process.env;
+const {
+  PORT = 4000,
+  STATIC_DIR = 'static',
+  FRONTEND_HOST = 'localhost',
+} = process.env;
 
 app.use(morgan('dev'));
 app.use(pinoHttp(httpPinoConfig));
