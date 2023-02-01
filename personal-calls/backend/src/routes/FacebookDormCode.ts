@@ -35,7 +35,8 @@ function FacebookDormCodeRoutes(
     '/facebook-dorm',
     requireAdmin,
     async (req, res: Response<RedeemableCodeEntity[]>) => {
-      const redeemableCodes = await facebookDormCodeRedemptionService.getUnredeemedCodes();
+      const redeemableCodes =
+        await facebookDormCodeRedemptionService.getUnredeemedCodes();
       return res.json(redeemableCodes);
     }
   );
