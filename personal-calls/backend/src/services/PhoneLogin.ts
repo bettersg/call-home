@@ -4,7 +4,7 @@ const { AUTH0_DOMAIN, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET } = process.env;
 
 const AUTH0_HOST = `https://${AUTH0_DOMAIN}`;
 
-function Auth0Service() {
+function PhoneLoginService() {
   const auth0Args = {
     // domain: AUTH0_DOMAIN,
     client_id: AUTH0_CLIENT_ID,
@@ -39,4 +39,4 @@ function Auth0Service() {
   };
 }
 
-export default Auth0Service;
+export default PhoneLoginService;

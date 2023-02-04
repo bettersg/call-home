@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
 import * as z from 'zod';
-import type { User, Auth0, PhoneNumberValidation } from '../services';
+import type { User, PhoneLogin, PhoneNumberValidation } from '../services';
 import { normalizePhoneNumber } from '../util/country';
 import { validateRequest } from './helpers/validation';
 
@@ -21,7 +21,7 @@ const LOGIN_SCHEMA = z.object({
 
 function PhoneNumberValidationRoutes(
   userService: typeof User,
-  auth0Service: typeof Auth0,
+  phoneLoginService: typeof PhoneLogin,
   phoneNumberValidationService: typeof PhoneNumberValidation
 ): Router {
   const router = express.Router();
@@ -57,7 +57,7 @@ function PhoneNumberValidationRoutes(
           'SG'
         );
         req.log.info('Phone number is: ', formattedPhoneNumber);
-        await auth0Service.sendSms(formattedPhoneNumber);
+        await phoneLoginService.sendSms(formattedPhoneNumber);
         await phoneNumberValidationService.updatePhoneNumberValidationRequestTime(
           id
         );
@@ -80,7 +80,7 @@ function PhoneNumberValidationRoutes(
       }
       try {
         req.log.info('Received login attempt');
-        await auth0Service.signIn(phoneNumber, code);
+        await phoneLoginService.signIn(phoneNumber, code);
         await userService.verifyUserPhoneNumber(userId, phoneNumber);
         const phoneNumberValidation =
           await phoneNumberValidationService.getPhoneNumberValidationForUser(
