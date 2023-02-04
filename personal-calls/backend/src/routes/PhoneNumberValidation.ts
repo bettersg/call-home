@@ -80,8 +80,7 @@ function PhoneNumberValidationRoutes(
       }
       try {
         req.log.info('Received login attempt');
-        const token = await auth0Service.signIn(phoneNumber, code);
-        req.log.info('Received a token', token);
+        await auth0Service.signIn(phoneNumber, code);
         await userService.verifyUserPhoneNumber(userId, phoneNumber);
         const phoneNumberValidation =
           await phoneNumberValidationService.getPhoneNumberValidationForUser(
