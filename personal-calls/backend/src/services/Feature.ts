@@ -12,6 +12,7 @@ const {
   ENABLE_FEEDBACK_DIALOG,
   ENABLE_FIN_VALIDATION,
   ENABLE_SUPPORT_SERVICES,
+  ENABLE_TWILIO_VERIFY,
 } = process.env;
 
 function shouldEnableAllowlistSms(): boolean {
@@ -80,6 +81,10 @@ function shouldEnableFinValidation() {
   return Boolean(ENABLE_FIN_VALIDATION);
 }
 
+function shouldEnableTwilioVerify() {
+  return Boolean(ENABLE_TWILIO_VERIFY);
+}
+
 export {
   shouldDisableAllowlist,
   shouldDisablePeriodicJobs,
@@ -90,5 +95,6 @@ export {
   shouldEnableFeedbackDialog,
   shouldEnableFinValidation,
   shouldEnableSupportServices,
+  shouldEnableTwilioVerify,
   getEdgeExperimentFlag,
 };
