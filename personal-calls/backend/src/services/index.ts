@@ -26,7 +26,7 @@ import Contact = require('./Contact');
 import PhoneLogin from './PhoneLogin';
 
 // TOPOLOGICAL SORT LOL
-const phoneLoginService = PhoneLogin();
+const phoneLoginService = PhoneLogin(Feature, TwilioClient);
 
 const dormService = Dorm(models.Dorm);
 const walletService = Wallet(models.Wallet, models.WalletTransaction);

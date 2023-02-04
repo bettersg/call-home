@@ -3,7 +3,7 @@ import twilio from 'twilio';
 import { CredentialSets } from './TwilioCreds';
 import type { CallType } from '../models';
 
-const { TWILIO_SMS_PHONE_NUMBER } = process.env;
+const { TWILIO_SMS_PHONE_NUMBER, TWILIO_VERIFY_SID } = process.env;
 
 const twilioClients: {
   personal: twilio.Twilio;
@@ -22,6 +22,16 @@ if (CredentialSets.healthserve) {
   );
 }
 
+
+if (!TWILIO_VERIFY_SID) {
+  throw Error('Missing twilio environment variables. Aborting...');
+}
+// TODO we probably only need this for personal calls anyway
+const verifyClient = twilioClients.personal.verify.v2.services(TWILIO_VERIFY_SID);
+if (!verifyClient) {
+  throw Error('Unable to initialise Twilio Verify client');
+}
+
 async function getCall(twilioCallSid: string, callType: CallType) {
   return (twilioClients[callType] as twilio.Twilio)
     .calls(twilioCallSid)
@@ -35,6 +45,23 @@ async function getCallsByIncomingSid(
   return (twilioClients[callType] as twilio.Twilio).calls.list({
     parentCallSid: twilioCallSid,
   });
+}
+
+async function sendVerification(toPhoneNumber: string) {
+  return verifyClient.verifications.create({
+    to: toPhoneNumber,
+    channel: 'sms',
+  });
+}
+
+async function checkVerification(toPhoneNumber: string, code: string) {
+  const result = await verifyClient.verificationChecks.create({
+    to: toPhoneNumber,
+    code,
+  });
+  if (result.status !== 'approved') {
+    throw new Error('BAD_OTP');
+  }
 }
 
 async function sendSms(toPhoneNumber: string, body: string) {
@@ -60,4 +87,11 @@ async function postCallFeedback(
     });
 }
 
-export { getCall, getCallsByIncomingSid, sendSms, postCallFeedback };
+export {
+  checkVerification,
+  getCall,
+  getCallsByIncomingSid,
+  postCallFeedback,
+  sendSms,
+  sendVerification,
+};
