@@ -1,5 +1,4 @@
-const axios = require('axios');
-const logger = require('pino')();
+import axios from 'axios';
 
 const { AUTH0_DOMAIN, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET } = process.env;
 
@@ -12,8 +11,7 @@ function Auth0Service() {
     client_secret: AUTH0_CLIENT_SECRET,
   };
 
-  async function sendSms(phoneNumber) {
-    logger.info('Sending passwordless sms', phoneNumber);
+  async function sendSms(phoneNumber: string): Promise<unknown> {
     const response = await axios.post(`${AUTH0_HOST}/passwordless/start`, {
       ...auth0Args,
       phone_number: phoneNumber,
@@ -22,7 +20,7 @@ function Auth0Service() {
     return response.data;
   }
 
-  async function signIn(phoneNumber, code) {
+  async function signIn(phoneNumber: string, code: string): Promise<unknown> {
     const response = await axios.post(`${AUTH0_HOST}/oauth/token`, {
       ...auth0Args,
       connection: 'sms',
@@ -41,4 +39,4 @@ function Auth0Service() {
   };
 }
 
-module.exports = Auth0Service;
+export default Auth0Service;

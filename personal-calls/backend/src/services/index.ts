@@ -23,7 +23,7 @@ import Dorm from './Dorm';
 import UserExperimentConfig from './UserExperimentConfig';
 import { CredentialSet, CredentialSets } from './TwilioCreds';
 import Contact = require('./Contact');
-import Auth0 = require('./Auth0');
+import Auth0 from './Auth0';
 
 // TOPOLOGICAL SORT LOL
 const auth0Service = Auth0();
