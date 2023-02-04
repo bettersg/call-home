@@ -91,12 +91,8 @@ function PhoneNumberValidationRoutes(
         }
         return res.redirect('/');
       } catch (e) {
-        req.log.error(e.data);
-        const { response } = e;
-        if (response && response.data && response.data.error) {
-          if (response.data.error === 'invalid_grant') {
-            res.status(403).json({ message: 'BAD_OTP' });
-          }
+        if (e.message === 'BAD_OTP') {
+          return res.status(403).json({ message: 'BAD_OTP' });
         }
         return res.status(403).send();
       }

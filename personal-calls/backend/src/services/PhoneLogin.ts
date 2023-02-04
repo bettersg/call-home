@@ -21,16 +21,23 @@ function PhoneLoginService() {
   }
 
   async function signIn(phoneNumber: string, code: string): Promise<unknown> {
-    const response = await axios.post(`${AUTH0_HOST}/oauth/token`, {
-      ...auth0Args,
-      connection: 'sms',
-      grant_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
-      scope: 'openid',
-      realm: 'sms',
-      username: phoneNumber,
-      otp: code,
-    });
-    return response.data;
+    try {
+      const response = await axios.post(`${AUTH0_HOST}/oauth/token`, {
+        ...auth0Args,
+        connection: 'sms',
+        grant_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
+        scope: 'openid',
+        realm: 'sms',
+        username: phoneNumber,
+        otp: code,
+      });
+      return response.data;
+    } catch (e) {
+      if (e.response?.data?.error === 'invalid_grant') {
+        throw new Error('BAD_OTP');
+      }
+      throw new Error('UNKNOWN_ERROR');
+    }
   }
 
   return {
