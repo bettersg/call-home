@@ -32,6 +32,11 @@ variable "db_password" {
   sensitive = true
 }
 
+variable "frontend_bucket_name" {
+  type = string
+  default = "call-home-frontend"
+}
+
 ######################
 ## Project Settings ##
 ######################
@@ -118,4 +123,29 @@ resource "google_sql_user" "user" {
   password = var.db_password
   instance = google_sql_database_instance.strapi_db_instance.name
   project = data.google_project.project.project_id
+}
+
+##############
+## Frontend ##
+##############
+
+# Create a new storage bucket for frontend assets
+resource "google_storage_bucket" "call_home_frontend" {
+  project = data.google_project.project.project_id
+  name = var.frontend_bucket_name
+  location = var.location
+  force_destroy = true
+  uniform_bucket_level_access = true
+
+  website {
+    main_page_suffix = "index.html"
+  }
+}
+
+# TODO: Figure out bucket permission setting
+
+# Output the built frontend HTML index
+output "frontend-url" {
+  description = "Frontend URL"
+  value = "https://storage.googleapis.com/${google_storage_bucket.call_home_frontend.name}/index.html"
 }
