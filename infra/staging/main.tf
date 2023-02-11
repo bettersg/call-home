@@ -142,7 +142,18 @@ resource "google_storage_bucket" "call_home_frontend" {
   }
 }
 
-# TODO: Figure out bucket permission setting
+# Add proper permissions to bucket
+resource "google_storage_bucket_iam_member" "viewer" {
+  bucket = google_storage_bucket.call_home_frontend.name
+  role   = "roles/storage.objectViewer"
+  member = "allUsers"
+}
+
+resource "google_storage_bucket_iam_member" "admin-iam" {
+  bucket = google_storage_bucket.call_home_frontend.name
+  role   = "roles/storage.admin"
+  member = "projectOwner:${data.google_project.project.project_id}"
+}
 
 # Output the built frontend HTML index
 output "frontend-url" {
