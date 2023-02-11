@@ -12,4 +12,4 @@ In `staging/` or `production/`, configure your database username and password in
 
 ### Deployment
 
-Run `make tf-apply` to deploy the GCP resources using terraform.
+Run `make tf-apply` to deploy the GCP resources using terraform. To deploy the frontend on a GCS bucket, run `make frontend-deploy` after that.
