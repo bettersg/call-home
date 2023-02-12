@@ -139,6 +139,7 @@ resource "google_storage_bucket" "call_home_frontend" {
 
   website {
     main_page_suffix = "index.html"
+    not_found_page = "index.html"
   }
 }
 
