@@ -129,7 +129,7 @@ resource "google_sql_user" "user" {
 ## Frontend ##
 ##############
 
-# Create a new storage bucket for frontend assets
+// Create a new storage bucket for frontend assets
 resource "google_storage_bucket" "call_home_frontend" {
   project = data.google_project.project.project_id
   name = var.frontend_bucket_name
@@ -143,25 +143,9 @@ resource "google_storage_bucket" "call_home_frontend" {
   }
 }
 
-# Add proper permissions to bucket
+// Make resources in frontend bucket viewable by anyone
 resource "google_storage_bucket_iam_member" "frontend_bucket_viewer" {
   bucket = google_storage_bucket.call_home_frontend.name
   role   = "roles/storage.objectViewer"
   member = "allUsers"
-}
-
-resource "google_storage_bucket_iam_member" "frontend_bucket_admin" {
-  bucket = google_storage_bucket.call_home_frontend.name
-  role   = "roles/storage.admin"
-  member = "projectOwner:${data.google_project.project.project_id}"
-}
-
-#############
-## Outputs ##
-#############
-
-# Output the built frontend HTML index
-output "frontend-url" {
-  description = "Frontend URL"
-  value = "https://storage.googleapis.com/${google_storage_bucket.call_home_frontend.name}/index.html"
 }
