@@ -2,7 +2,7 @@
 
 ### Setting up
 
-Ensure that you have `terraform` and `gcloud` installed locally.
+Ensure that you have `terraform` and `gcloud` installed locally. Also make sure you have the appropriate environment variables set using `source .env.[environment]` from the root folder.
 
 Run `make gcloud-login` to login using `gcloud` if you are not logged in already.
 
@@ -12,4 +12,4 @@ In `staging/` or `production/`, configure your database username and password in
 
 ### Deployment
 
-Run `make tf-apply` to deploy the GCP resources using terraform. To deploy the frontend on a GCS bucket, run `make frontend-deploy` after that.
+Run `make tf-apply` to deploy the GCP resources using terraform.
