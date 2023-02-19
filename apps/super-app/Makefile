@@ -20,6 +20,12 @@ copy-common: ## Copy common files from the personal-calls common directory
 
 ##@ Deployment
 
+build: ## Create a directory with the production build
+	npm run build
+
+deploy:
+	gsutil cp -r build/* gs://$(TF_VAR_frontend_bucket_name)
+
 ##@ Helpers
 
 help: ## Display this help

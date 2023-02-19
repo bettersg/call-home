@@ -34,7 +34,6 @@ variable "db_password" {
 
 variable "frontend_bucket_name" {
   type = string
-  default = "call-home-frontend"
 }
 
 ######################
