@@ -1,17 +1,28 @@
 import { useEffect, useState } from 'react';
 import { Box, Typography, Link } from '@mui/material';
-import { Public as PublicIcon } from '@mui/icons-material';
+import {
+  ArrowBackIosNew as ArrowBackIosNewIcon,
+  Public as PublicIcon,
+} from '@mui/icons-material';
 import {
   Twc2SupportDetail,
   FacebookLinksSection,
+  SupportDetailStrings,
+  getSupportDetailStrings,
   getTwc2Detail,
 } from '../services';
 import { Container } from '../common/components';
 import { PrimaryButton } from '../common/components/RoundedButton';
 import './SupportDetailWip.css';
 
-function Header() {
-  return <nav className="support-header">Navigation</nav>;
+function Header(props: { title: string }) {
+  const { title } = props;
+  return (
+    <nav className="support-header">
+      <ArrowBackIosNewIcon />
+      <Typography variant="h4">{title}</Typography>
+    </nav>
+  );
 }
 
 function BlurbIntro(props: { text: string }) {
@@ -74,14 +85,14 @@ function DescriptionSection(props: DescriptionProps) {
   return (
     <main className="support-description-container">
       <section className="support-description-header">
-        <img src={logo} style={{ flexBasis: '8rem' }} />
+        <img src={logo} style={{ flexBasis: '6rem', width: '1px' }} />
         <Typography variant="h4" component="h2" style={{ flex: 1 }}>
           {name}
         </Typography>
         <a
           href={website}
           style={{
-            flexBasis: '8rem',
+            flexBasis: '4rem',
             textDecoration: 'none',
             display: 'flex',
             flexDirection: 'column',
@@ -92,7 +103,9 @@ function DescriptionSection(props: DescriptionProps) {
             className="support-description-website-circle"
             sx={{ borderColor: 'primary.900' }}
           >
-            <PublicIcon sx={{ color: 'primary.900' }} />
+            <PublicIcon
+              sx={{ color: 'primary.900', height: '2.5rem', width: '2.5rem' }}
+            />
           </Box>
           <Typography>Website</Typography>
         </a>
@@ -119,13 +132,20 @@ function CtaSection(props: CtaProps) {
 }
 
 export function SupportDetailWip() {
+  const [fixedStrings, setFixedStrings] = useState<SupportDetailStrings | null>(
+    null
+  );
   const [content, setContent] = useState<Twc2SupportDetail | null>(null);
   useEffect(() => {
     setContent(getTwc2Detail());
   }, []);
-  if (!content) {
+  useEffect(() => {
+    setFixedStrings(getSupportDetailStrings());
+  }, []);
+  if (!content || !fixedStrings) {
     return null;
   }
+  const { headerTitle } = fixedStrings;
   const {
     logo,
     name,
@@ -148,7 +168,7 @@ export function SupportDetailWip() {
         justifyContent: 'end',
       }}
     >
-      <Header></Header>
+      <Header title={headerTitle}></Header>
       <DescriptionSection
         logo={logo}
         name={name}
