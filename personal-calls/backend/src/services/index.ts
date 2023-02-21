@@ -14,6 +14,7 @@ import CodeRedemption from './CodeRedemption';
 import AdminGrantedValidation from './AdminGrantedValidation';
 import PhoneNumberValidation from './PhoneNumberValidation';
 import DormValidation from './DormValidation';
+import FinValidation, { FinValidationService } from './FinValidation';
 import WorkpassValidation from './WorkpassValidation';
 import * as WorkpassClient from './WorkpassClient';
 import UserValidation, { VerificationState } from './UserValidation';
@@ -31,6 +32,7 @@ const dormService = Dorm(models.Dorm);
 const walletService = Wallet(models.Wallet, models.WalletTransaction);
 const redeemableCodeService = RedeemableCode(models.RedeemableCode);
 
+const finValidationService = FinValidationService(models.FinValidation);
 const allowlistEntryService = AllowlistEntry(
   models.AllowlistEntry,
   TwilioClient
@@ -115,6 +117,7 @@ export {
   dormService as Dorm,
   dormValidationService as DormValidation,
   facebookDormCodeRedemptionService as FacebookDormCodeRedemption,
+  finValidationService as FinValidation,
   periodicCreditService as PeriodicCredit,
   redeemableCodeService as RedeemableCode,
   transactionService as Transaction,

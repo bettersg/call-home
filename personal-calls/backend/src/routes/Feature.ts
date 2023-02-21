@@ -21,6 +21,8 @@ function FeaturesRoutes(
         featureService.getEdgeExperimentFlag(userExperimentConfig),
       FEEDBACK_DIALOG: featureService.shouldEnableFeedbackDialog(),
       CREDIT_CAP: featureService.shouldEnableCreditCap(),
+      DISABLE_WORKPASS: featureService.shouldDisableWorkpassValidation(),
+      ENABLE_FIN: featureService.shouldEnableFinValidation(),
     };
     return res.status(200).json(features);
   });
