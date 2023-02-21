@@ -20,6 +20,7 @@ import {
   DormValidation as dormValidationRoutes,
   FacebookDormCode as facebookDormCodeRoutes,
   Feature as featureRoutes,
+  FinValidation as finValidationRoutes,
   OAuth as oauthRoutes,
   PeriodicCredit as periodicCreditRoutes,
   PhoneNumberValidation as phoneNumberValidationRoutes,
@@ -71,6 +72,7 @@ app.use('/features', secureRoutes, featureRoutes);
 // TODO For backwards-compatibility
 app.use('/passwordless', secureRoutes, phoneNumberValidationRoutes);
 app.use('/phone-number-validation', secureRoutes, phoneNumberValidationRoutes);
+app.use('/fin-validation', secureRoutes, finValidationRoutes);
 app.use('/workpass-validation', secureRoutes, workpassValidationRoutes);
 app.use(
   '/admin-granted-validation',

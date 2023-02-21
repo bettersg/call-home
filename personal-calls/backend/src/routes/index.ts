@@ -13,6 +13,7 @@ import Dorm from './Dorm';
 import AllowlistEntry from './AllowlistEntry';
 import AdminGrantedValidation from './AdminGrantedValidation';
 import DormValidation from './DormValidation';
+import FinValidation from './FinValidation';
 import PhoneNumberValidation from './PhoneNumberValidation';
 import WorkpassValidation from './WorkpassValidation';
 import FacebookDormCode from './FacebookDormCode';
@@ -48,6 +49,7 @@ const facebookDormCode = FacebookDormCode(
   services.FacebookDormCodeRedemption,
   services.RedeemableCode
 );
+const finValidationRoute = FinValidation(services.FinValidation);
 
 export {
   allowlistEntryRoute as AllowlistEntry,
@@ -59,6 +61,7 @@ export {
   dormValidationRoute as DormValidation,
   facebookDormCode as FacebookDormCode,
   featureRoute as Feature,
+  finValidationRoute as FinValidation,
   middlewares,
   oAuthRoute as OAuth,
   periodicCreditRoute as PeriodicCredit,

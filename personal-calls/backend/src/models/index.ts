@@ -4,6 +4,7 @@ import AllowlistEntry from './AllowlistEntry';
 import Call from './Call';
 import Contact from './Contact';
 import Dorm from './Dorm';
+import FinValidation from './FinValidation';
 import PeriodicCredit from './PeriodicCredit';
 import Transaction from './Transaction';
 import TwilioCall, { CallStatus, CallType } from './TwilioCall';
@@ -25,6 +26,7 @@ sequelize.addModels([
   Contact,
   Dorm,
   DormValidation,
+  FinValidation,
   PeriodicCredit,
   RedeemableCode,
   Transaction,
@@ -142,6 +144,7 @@ export {
   Contact,
   Dorm,
   DormValidation,
+  FinValidation,
   PeriodicCredit,
   RedeemableCode,
   RedeemableCodeType,
