@@ -47,7 +47,7 @@
     "pino-http": "^5.2.0",
     "pm2": "^5.1.1",
     "reflect-metadata": "^0.1.13",
-    "sequelize": "^5.21.6",
+    "sequelize": "^6.29.0",
     "sequelize-cli": "^5.5.1",
     "sequelize-typescript": "^1.1.0",
     "twilio": "^3.42.2",
