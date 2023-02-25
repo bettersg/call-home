@@ -23,30 +23,10 @@ export function ServiceCard(props: ServiceCardAbout) {
       <CardActionArea component={Link} to={route}>
         <Box sx={{ flex: '1 0 auto' }}>
           <CardContent>
-            <Typography
-              component="div"
-              variant="h5"
-              sx={{
-                fontSize: 16,
-                fontWeight: 600,
-                color: '#297B94',
-                fontFamily: 'Hind',
-                textDecoration: 'underline',
-              }}
-            >
+            <Typography component="div" variant="h6">
               {name}
             </Typography>
-            <Typography
-              variant="subtitle1"
-              color="text.secondary"
-              component="div"
-              sx={{
-                fontSize: 14,
-                fontWeight: 400,
-                color: '#000000',
-                fontFamily: 'Hind',
-              }}
-            >
+            <Typography variant="subtitle1" component="div">
               {shortBlurb}
             </Typography>
           </CardContent>

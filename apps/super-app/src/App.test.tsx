@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import App from './App';
 import { MemoryRouter } from 'react-router-dom';
 
-test('renders LandingPage component on load homepage', () => {
+test('it should render support cards on /', () => {
   render(
     <MemoryRouter>
       <App />
@@ -17,7 +17,7 @@ test('renders LandingPage component on load homepage', () => {
   expect(pbsg).toBeInTheDocument();
 });
 
-test('make sure app initializes on /landing-page', () => {
+test('it should render support cards on /landing-page', () => {
   render(
     <MemoryRouter initialEntries={['/landing-page']}>
       <App />

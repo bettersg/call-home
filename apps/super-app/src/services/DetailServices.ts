@@ -2,11 +2,11 @@
 
 // TODO remove routes from this page, https://github.com/bettersg/call-home/pull/121#discussion_r1110573633
 import { Path } from '../routes/paths';
-import { SupportAbout } from './SupportAboutServices';
+import { Support } from './SupportServices';
 
 // Data shared by every Support detail page.
 
-export interface ServiceCardAbout extends SupportAbout {
+export interface ServiceCardAbout extends Support {
   // The short blurb briefly explaining the services provided.
   shortBlurb: string;
   // The app internal route
@@ -25,7 +25,7 @@ export function getSupportDetailStrings(): SupportDetailStrings {
 }
 
 // Data used by every Support detail page that changes per page.
-export interface SupportDetailAbout extends SupportAbout {
+export interface SupportDetailAbout extends Support {
   // Url of org website.
   website: string;
   // Blurb introduction section. Subsequent parts of the blurb are defined

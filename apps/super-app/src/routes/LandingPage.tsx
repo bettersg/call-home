@@ -8,7 +8,7 @@ import {
   getSupportDetailStrings,
   ServiceCardAbout,
   SupportDetailStrings,
-} from '../services/ViewServices';
+} from '../services/DetailServices';
 
 export function LandingPage() {
   const [fixedStrings, setFixedStrings] = useState<SupportDetailStrings | null>(
@@ -18,7 +18,7 @@ export function LandingPage() {
     setFixedStrings(getSupportDetailStrings());
   }, []);
   if (!fixedStrings) {
-    // TODO return something (hint) since this is landing page, we can't return null
+    // TODO return something (hint or loading spinner) since this is landing page, we can't return null
     return null;
   }
   const { headerTitle } = fixedStrings;
