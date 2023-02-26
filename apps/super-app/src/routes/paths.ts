@@ -1,8 +1,8 @@
 export enum Path {
   Home = '/',
-  Options = '/options',
+  LandingPage = '/landing-page',
   SupportDetail = '/support-detail',
+  ProBonoSG = '/pro-bono',
+  Options = '/options',
   Support = '/support',
-  // TODO this is just for testing. Delete this before launch.
-  Scratch = '/scratch',
 }

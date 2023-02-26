@@ -3,27 +3,30 @@ import { render, screen } from '@testing-library/react';
 import App from './App';
 import { MemoryRouter } from 'react-router-dom';
 
-test('renders a nonsense homepage', () => {
+test('it should render support cards on /', () => {
   render(
     <MemoryRouter>
       <App />
     </MemoryRouter>
   );
-  const todoLink = screen.getByText(/TODO/i);
-  expect(todoLink).toBeInTheDocument();
+  const header = screen.getByText('Free Support Services');
+  expect(header).toBeInTheDocument();
+  const twc2 = screen.getByText('Transient Workers Count Too');
+  expect(twc2).toBeInTheDocument();
+  const pbsg = screen.getByText('Pro Bono SG');
+  expect(pbsg).toBeInTheDocument();
 });
 
-test('renders some nonsense buttons on /scratch', () => {
+test('it should render support cards on /landing-page', () => {
   render(
-    <MemoryRouter initialEntries={['/scratch']}>
+    <MemoryRouter initialEntries={['/landing-page']}>
       <App />
     </MemoryRouter>
   );
-
-  const primaryButton = screen.getByText(/Primary/i);
-  expect(primaryButton).toBeInTheDocument();
-  const neutralButton = screen.getByText(/Neutral/i);
-  expect(neutralButton).toBeInTheDocument();
-  const errorButton = screen.getByText(/Error/i);
-  expect(errorButton).toBeInTheDocument();
+  const header = screen.getByText('Free Support Services');
+  expect(header).toBeInTheDocument();
+  const twc2 = screen.getByText('Transient Workers Count Too');
+  expect(twc2).toBeInTheDocument();
+  const pbsg = screen.getByText('Pro Bono SG');
+  expect(pbsg).toBeInTheDocument();
 });

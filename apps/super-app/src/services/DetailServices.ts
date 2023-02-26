@@ -1,5 +1,18 @@
 // TODO This is a stub for testing, eventually replace this with Strapi Calls
 
+// TODO remove routes from this page, https://github.com/bettersg/call-home/pull/121#discussion_r1110573633
+import { Path } from '../routes/paths';
+import { Support } from './SupportServices';
+
+// Data shared by every Support detail page.
+
+export interface ServiceCardAbout extends Support {
+  // The short blurb briefly explaining the services provided.
+  shortBlurb: string;
+  // The app internal route
+  route: Path;
+}
+
 // Strings that stay constant on each Support detail page.
 export interface SupportDetailStrings {
   headerTitle: string;
@@ -12,11 +25,7 @@ export function getSupportDetailStrings(): SupportDetailStrings {
 }
 
 // Data used by every Support detail page that changes per page.
-export interface SupportDetailAbout {
-  // Url of logo image.
-  logo: string;
-  // The header of the about section.
-  name: string;
+export interface SupportDetailAbout extends Support {
   // Url of org website.
   website: string;
   // Blurb introduction section. Subsequent parts of the blurb are defined
@@ -43,6 +52,25 @@ export interface FacebookLinksSection {
 export interface FacebookLink {
   href: string;
   text: string;
+}
+
+export function getServiceCardAbouts(): ServiceCardAbout[] {
+  return [
+    {
+      logo: '/images/twc2-logo.png',
+      name: 'Transient Workers Count Too',
+      shortBlurb:
+        'Whatsapp call on Mondays to Fridays (9am - 9pm) or message anytime',
+      route: Path.SupportDetail,
+    },
+    {
+      logo: 'https://scontent.fsin16-1.fna.fbcdn.net/v/t39.30808-6/312822980_407024118308030_3649276446816297142_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=rusQliWmleEAX-XViuM&_nc_ht=scontent.fsin16-1.fna&oh=00_AfAzvXYCdtBtRovhSADhgAmeQ31Ev5ZUHiagle1qjfYcoA&oe=63ED310D',
+      name: 'Pro Bono SG',
+      shortBlurb:
+        'Book in-person appointment with a lawyer and get free basic legal advice',
+      route: Path.ProBonoSG,
+    },
+  ];
 }
 
 export function getTwc2Detail(): Twc2SupportDetail {
