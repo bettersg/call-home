@@ -21,14 +21,18 @@ function isUserVerified(
   if (user.verificationState.adminGranted) {
     return true;
   }
-  if (featureState.DORM_VALIDATION) {
-    return (
-      user.verificationState.phoneNumber &&
-      user.verificationState.workpass &&
-      user.verificationState.dorm
-    );
+  let isVerified = true;
+  isVerified = isVerified && user.verificationState.phoneNumber;
+  if (!featureState.DISABLE_WORKPASS) {
+    isVerified = isVerified && user.verificationState.workpass;
   }
-  return user.verificationState.phoneNumber && user.verificationState.workpass;
+  if (featureState.ENABLE_FIN) {
+    isVerified = isVerified && user.verificationState.fin;
+  }
+  if (featureState.DORM_VALIDATION) {
+    isVerified = isVerified && user.verificationState.dorm;
+  }
+  return isVerified;
 }
 
 function routeFromState(

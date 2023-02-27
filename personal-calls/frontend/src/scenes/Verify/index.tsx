@@ -6,6 +6,7 @@ import { useFeatureService } from 'contexts';
 import VerifyPhoneNumber from './VerifyPhoneNumber';
 import VerifyPhoneNumberCode from './VerifyPhoneNumberCode';
 import VerifyDorm from './VerifyDorm';
+import VerifyFin from './VerifyFin';
 import VerifyWorkpass from './VerifyWorkpass';
 
 function Verify({ locale, routePath }: SceneProps) {
@@ -37,7 +38,14 @@ function Verify({ locale, routePath }: SceneProps) {
   if (featureState?.DORM_VALIDATION) {
     return <VerifyDorm locale={locale} routePath={routePath} />;
   }
-  return <VerifyWorkpass locale={locale} routePath={routePath} />;
+  if (!featureState?.DISABLE_WORKPASS) {
+    return <VerifyWorkpass locale={locale} routePath={routePath} />;
+  }
+  if (featureState?.ENABLE_FIN) {
+    return <VerifyFin locale={locale} routePath={routePath} />;
+  }
+  // We've misconfigured something. Give up and show the generic error page..
+  throw Error('Internal error');
 }
 
 export default Verify;

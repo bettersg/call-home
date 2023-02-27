@@ -9,6 +9,8 @@ export interface FeatureState {
   EDGE_EXPERIMENT: Edge;
   FEEDBACK_DIALOG: boolean;
   CREDIT_CAP: boolean;
+  DISABLE_WORKPASS: boolean;
+  ENABLE_FIN: boolean;
 }
 
 const featureEndpoint = '/features';
@@ -21,6 +23,8 @@ export default class FeatureService extends ObservableService<FeatureState> {
       EDGE_EXPERIMENT: Edge.DEFAULT,
       FEEDBACK_DIALOG: false,
       CREDIT_CAP: false,
+      DISABLE_WORKPASS: false,
+      ENABLE_FIN: false,
     };
   }
 
