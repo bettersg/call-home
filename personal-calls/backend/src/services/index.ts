@@ -71,6 +71,7 @@ const userValidationService = UserValidation(
   adminGrantedValidationService,
   dormValidationService,
   phoneNumberValidationService,
+  finValidationService,
   workpassValidationService
 );
 const callService = Call(
