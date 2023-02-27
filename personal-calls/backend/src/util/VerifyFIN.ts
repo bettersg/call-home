@@ -1,18 +1,46 @@
 /* Sources:
-References supporting the algorithm
+References supporting the FG algorithm
 http://www.ngiam.net/NRIC/ppframe.htm
 
-To generate and validate FINs
-https://nric.biz
+M algorithm scraped from
 https://samliew.com/nric-generator
+
+See also:
+https://nric.biz (generate and validate FIN)
 */
 
-const checkAlpha = ['X', 'W', 'U', 'T', 'R', 'Q', 'P', 'N', 'M', 'L', 'K'];
+const fgCheck = ['X', 'W', 'U', 'T', 'R', 'Q', 'P', 'N', 'M', 'L', 'K'];
+const mCheck = ['X', 'W', 'U', 'T', 'R', 'Q', 'P', 'N', 'J', 'L', 'K'];
 const weightArray = [2, 7, 6, 5, 4, 3, 2];
+
+interface SeriesConfig {
+  offset: number;
+  checkArr: string[];
+}
+
+const seriesConfigs: Record<string, SeriesConfig> = {
+  F: {
+    offset: 0,
+    checkArr: fgCheck,
+  },
+  G: {
+    offset: 4,
+    checkArr: fgCheck,
+  },
+  M: {
+    offset: 3,
+    checkArr: mCheck,
+  },
+};
 
 function validateFIN(finLower: string): boolean {
   const fin = finLower.trim().toUpperCase();
   if (fin.length !== 9) {
+    return false;
+  }
+
+  const conf = seriesConfigs[fin[0]];
+  if (!conf) {
     return false;
   }
 
@@ -21,12 +49,9 @@ function validateFIN(finLower: string): boolean {
   for (let i = 0; i < numArray.length; i += 1) {
     sum += numArray[i] * weightArray[i];
   } // Cross multiply with weightArray to get sum
+  sum += conf.offset;
 
-  if (fin[0] === 'G') {
-    sum += 4;
-  } // FIN that starts with G has their checkAlpha shifted by 4
-
-  return checkAlpha[sum % 11] === fin.slice(-1);
+  return conf.checkArr[sum % 11] === fin.slice(-1);
 }
 
 export default validateFIN;
