@@ -10,9 +10,9 @@ https://samliew.com/nric-generator
 const checkAlpha = ['X', 'W', 'U', 'T', 'R', 'Q', 'P', 'N', 'M', 'L', 'K'];
 const weightArray = [2, 7, 6, 5, 4, 3, 2];
 
-function validateFIN(fin: string): boolean {
-  const finUpper = fin.trim().toUpperCase();
-  if (finUpper.length !== 9) {
+function validateFIN(finLower: string): boolean {
+  const fin = finLower.trim().toUpperCase();
+  if (fin.length !== 9) {
     return false;
   }
 
@@ -22,11 +22,11 @@ function validateFIN(fin: string): boolean {
     sum += numArray[i] * weightArray[i];
   } // Cross multiply with weightArray to get sum
 
-  if (finUpper[0] === 'G') {
+  if (fin[0] === 'G') {
     sum += 4;
   } // FIN that starts with G has their checkAlpha shifted by 4
 
-  return checkAlpha[sum % 11] === finUpper.slice(-1);
+  return checkAlpha[sum % 11] === fin.slice(-1);
 }
 
 export default validateFIN;
