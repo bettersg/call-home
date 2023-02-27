@@ -1,12 +1,14 @@
 import type {
   AdminGrantedValidation as AdminGrantedValidationEntity,
   DormValidation as DormValidationEntity,
+  FinValidation as FinValidationEntity,
   PhoneNumberValidation as PhoneNumberValidationEntity,
   WorkpassValidation as WorkpassValidationEntity,
 } from '../models';
 import type {
   AdminGrantedValidation,
   DormValidation,
+  FinValidation,
   PhoneNumberValidation,
   WorkpassValidation,
   Feature,
@@ -17,6 +19,7 @@ export interface VerificationCollection {
   workpass: WorkpassValidationEntity | null;
   dorm: DormValidationEntity | null;
   adminGranted: AdminGrantedValidationEntity | null;
+  fin: FinValidationEntity | null;
 }
 
 export interface VerificationState {
@@ -24,6 +27,7 @@ export interface VerificationState {
   workpass: boolean;
   dorm: boolean;
   adminGranted: boolean;
+  fin: boolean;
 }
 
 export interface UserVerifications {
@@ -36,6 +40,7 @@ function UserValidationService(
   adminGrantedValidationService: typeof AdminGrantedValidation,
   dormValidationService: typeof DormValidation,
   phoneNumberValidationService: typeof PhoneNumberValidation,
+  finValidationService: typeof FinValidation,
   workpassValidationService: typeof WorkpassValidation
 ): {
   getVerificationsForUser: (userId: number) => Promise<UserVerifications>;
@@ -52,11 +57,13 @@ function UserValidationService(
       workpassValidation,
       dormValidation,
       adminGrantedValidation,
+      finValidation,
     ] = await Promise.all([
       phoneNumberValidationService.getPhoneNumberValidationForUser(userId),
       workpassValidationService.getWorkpassValidationForUser(userId),
       dormValidationService.getDormValidationForUser(userId),
       adminGrantedValidationService.getAdminGrantedValidationForUser(userId),
+      finValidationService.getFinValidationForUser(userId),
     ]);
 
     return {
@@ -65,12 +72,14 @@ function UserValidationService(
         workpass: workpassValidation,
         dorm: dormValidation,
         adminGranted: adminGrantedValidation,
+        fin: finValidation,
       },
       state: {
         phoneNumber: phoneNumberValidation?.isPhoneNumberValidated || false,
         workpass: workpassValidation?.isWorkpassValidated || false,
         dorm: Boolean(dormValidation),
         adminGranted: Boolean(adminGrantedValidation),
+        fin: finValidation?.isFinValidated || false,
       },
     };
   }
@@ -88,7 +97,12 @@ function UserValidationService(
     }
     let isVerified = true;
     isVerified = isVerified && verificationState.phoneNumber;
-    isVerified = isVerified && verificationState.workpass;
+    if (!featureService.shouldDisableWorkpassValidation) {
+      isVerified = isVerified && verificationState.workpass;
+    }
+    if (featureService.shouldEnableFinValidation()) {
+      isVerified = isVerified && verificationState.fin;
+    }
     if (featureService.shouldEnableDormValidation()) {
       isVerified = isVerified && verificationState.dorm;
     }

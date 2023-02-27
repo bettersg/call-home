@@ -3,12 +3,14 @@ import { Edge } from '@call-home/shared/types/CallExperimentFlags';
 import { UserExperimentConfig } from '../models';
 
 const {
-  ENABLE_ALLOWLIST_SMS,
   DISABLE_ALLOWLIST,
-  ENABLE_DORM_VALIDATION,
   DISABLE_PERIODIC_JOBS,
+  DISABLE_WORKPASS_VALIDATION,
+  ENABLE_ALLOWLIST_SMS,
+  ENABLE_DORM_VALIDATION,
   ENABLE_EDGE_EXPERIMENT,
   ENABLE_FEEDBACK_DIALOG,
+  ENABLE_FIN_VALIDATION,
   ENABLE_SUPPORT_SERVICES,
 } = process.env;
 
@@ -70,13 +72,23 @@ function shouldEnableSupportServices() {
   return Boolean(ENABLE_SUPPORT_SERVICES);
 }
 
+function shouldDisableWorkpassValidation() {
+  return Boolean(DISABLE_WORKPASS_VALIDATION);
+}
+
+function shouldEnableFinValidation() {
+  return Boolean(ENABLE_FIN_VALIDATION);
+}
+
 export {
   shouldDisableAllowlist,
-  shouldEnableAllowlistSms,
-  shouldEnableDormValidation,
   shouldDisablePeriodicJobs,
-  shouldEnableFeedbackDialog,
+  shouldDisableWorkpassValidation,
+  shouldEnableAllowlistSms,
   shouldEnableCreditCap,
+  shouldEnableDormValidation,
+  shouldEnableFeedbackDialog,
+  shouldEnableFinValidation,
   shouldEnableSupportServices,
   getEdgeExperimentFlag,
 };
