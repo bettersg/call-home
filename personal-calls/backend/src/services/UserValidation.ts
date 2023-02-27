@@ -86,15 +86,13 @@ function UserValidationService(
     if (verificationState.adminGranted) {
       return true;
     }
-
+    let isVerified = true;
+    isVerified = isVerified && verificationState.phoneNumber;
+    isVerified = isVerified && verificationState.workpass;
     if (featureService.shouldEnableDormValidation()) {
-      return (
-        verificationState.phoneNumber &&
-        verificationState.workpass &&
-        verificationState.dorm
-      );
+      isVerified = isVerified && verificationState.dorm;
     }
-    return verificationState.phoneNumber && verificationState.workpass;
+    return isVerified;
   }
 
   return {
