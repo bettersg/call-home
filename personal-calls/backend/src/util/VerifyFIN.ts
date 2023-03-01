@@ -33,15 +33,17 @@ const seriesConfigs: Record<string, SeriesConfig> = {
   },
 };
 
-function validateFIN(finLower: string): boolean {
+export type FinResult = 'BAD_FORMAT' | 'BAD_SERIES' | 'BAD_CHECKSUM' | 'VALID';
+
+function validateFIN(finLower: string): FinResult {
   const fin = finLower.trim().toUpperCase();
   if (fin.length !== 9) {
-    return false;
+    return 'BAD_FORMAT';
   }
 
   const conf = seriesConfigs[fin[0]];
   if (!conf) {
-    return false;
+    return 'BAD_SERIES';
   }
 
   const numArray = fin.slice(1, 8).split('').map(Number); // FIN String into array of numbers to multiply by weight
@@ -51,7 +53,10 @@ function validateFIN(finLower: string): boolean {
   } // Cross multiply with weightArray to get sum
   sum += conf.offset;
 
-  return conf.checkArr[sum % 11] === fin.slice(-1);
+  if (conf.checkArr[sum % 11] !== fin.slice(-1)) {
+    return 'BAD_CHECKSUM';
+  }
+  return 'VALID';
 }
 
 export default validateFIN;
