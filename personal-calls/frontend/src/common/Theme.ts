@@ -25,6 +25,11 @@ const colors = {
 };
 
 const callHomeTheme = createMuiTheme({
+  typography: {
+    h4: {
+      fontWeight: 600,
+    }
+  },
   palette: {
     background: {
       default: colors.primary[100],

@@ -26,6 +26,31 @@ const colors = {
 
 const callHomeTheme = createTheme(
   adaptV4Theme({
+    typography: {
+      h4: {
+        fontWeight: 600,
+      },
+      h5: {
+        fontSize: 20,
+        fontWeight: 700,
+        color: '#133844',
+        fontFamily: 'Hind',
+        lineHeight: '28px',
+      },
+      h6: {
+        fontSize: 16,
+        fontWeight: 600,
+        color: '#297B94',
+        fontFamily: 'Hind',
+        textDecoration: 'underline',
+      },
+      subtitle1: {
+        fontSize: 14,
+        fontWeight: 400,
+        color: '#000000',
+        fontFamily: 'Hind',
+      },
+    },
     palette: {
       background: {
         default: colors.primary[100],
