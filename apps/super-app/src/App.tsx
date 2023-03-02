@@ -1,28 +1,19 @@
 import './App.css';
-import { Route, Routes } from 'react-router-dom';
+import { useEffect } from 'react';
+import CssBaseline from '@mui/material/CssBaseline';
+import { consoleSmokeTest } from './services';
 import { ThemeProvider } from './common/contexts';
-import {
-  PrimaryButton,
-  NeutralButton,
-  ErrorButton,
-} from './common/components/RoundedButton';
-import CallHome from './components/CallHome';
-import Support from './components/Support';
-import More from './components/More';
-import NavBar from './components/navbar/Navbar';
+import { AppRoutes } from './routes/router';
 
 function App() {
+  useEffect(() => {
+    consoleSmokeTest();
+  }, []);
+
   return (
     <ThemeProvider>
-      <PrimaryButton>Primary</PrimaryButton>
-      <NeutralButton>Neutral</NeutralButton>
-      <ErrorButton>Error</ErrorButton>
-      <NavBar />
-      <Routes>
-        <Route path="/callhome" element={<CallHome />}></Route>
-        <Route path="/support" element={<Support />}></Route>
-        <Route path="/more" element={<More />}></Route>
-      </Routes>
+      <CssBaseline />
+      <AppRoutes></AppRoutes>
     </ThemeProvider>
   );
 }

@@ -1,0 +1,59 @@
+.support-header {
+  align-items: center;
+  display: flex;
+  flex-basis: 6em;
+  padding: 1em;
+}
+
+.support-description-container {
+  background-color: white;
+  border-top-left-radius: 2rem;
+  border-top-right-radius: 2rem;
+  flex-basis: 40rem;
+  flex-grow: 1;
+  padding: 1em;
+}
+
+.support-description-header {
+  align-items: center;
+  display: flex;
+  min-height: 6rem;
+}
+
+.support-description-website-circle {
+  align-items: center;
+  border-radius: 1000px;
+  border-style: solid;
+  border-width: 2px;
+  display: flex;
+  height: 2em;
+  justify-content: center;
+  width: 2em;
+}
+
+.support-cta-container {
+  align-items: center;
+  background-color: white;
+  border-top-style: solid;
+  border-top-width: 2px;
+  box-sizing: border-box;
+  display: flex;
+  flex-basis: 8rem;
+  gap: 1rem;
+  padding: 1rem;
+  width: 100%;
+}
+
+.support-description-blurb-section {
+  margin-bottom: 1em;
+}
+
+.support-description-blurb-facebook-link {
+  display: flex;
+  align-items: center;
+  gap: 0.25em
+}
+
+.support-description-blurb-facebook-link-icon {
+  height: 1em;
+}

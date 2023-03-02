@@ -1,6 +1,7 @@
 import React from 'react';
-import MuContainer from '@material-ui/core/Container';
+import MuiContainer from '@mui/material/Container';
 
+// TODO document why meddling with --viewport-height is needed
 document.documentElement.style.setProperty(
   '--viewport-height',
   `${window.innerHeight}px`
@@ -16,8 +17,7 @@ const CONTAINER_STYLES: React.CSSProperties = {
   // Mad hacks
   height: '1px',
   minHeight: 'var(--viewport-height)',
-  padding: '2rem',
-  paddingTop: '3rem',
+  padding: '3rem 2rem 2rem 2rem',
   display: 'flex',
   flexDirection: 'column',
   position: 'relative',
@@ -31,6 +31,8 @@ export default function Container({
   children: React.ReactNode;
   style?: React.CSSProperties;
 }) {
+  // TODO Don't pass the style object like this because it's hard to combine
+  // with custom styling. Use a @mui native styling solution instead.
   const containerStyles = style
     ? {
         ...CONTAINER_STYLES,
@@ -38,10 +40,8 @@ export default function Container({
       }
     : CONTAINER_STYLES;
   return (
-    <MuContainer style={containerStyles} {...rest} maxWidth="sm">
-      {
-        children as any // Needed because the props don't accept null | undefined
-      }
-    </MuContainer>
+    <MuiContainer style={containerStyles} {...rest} maxWidth="sm">
+      {children}
+    </MuiContainer>
   );
 }

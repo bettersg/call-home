@@ -1,0 +1,19 @@
+{
+  "kind": "singleType",
+  "collectionName": "smoke_tests",
+  "info": {
+    "singularName": "smoke-test",
+    "pluralName": "smoke-tests",
+    "displayName": "smoke-test",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "test": {
+      "type": "boolean"
+    }
+  }
+}
