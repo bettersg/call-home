@@ -40,4 +40,4 @@ function NavIcon(props: { link: string; text: string; icon: React.ReactNode }) {
   );
 }
 
-export default NavBar;
+export { NavBar };

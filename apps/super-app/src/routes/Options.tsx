@@ -1,4 +1,4 @@
-import NavBar from '../components/navbar/Navbar';
+import { NavBar } from '../components';
 
 export function Options() {
   return (
