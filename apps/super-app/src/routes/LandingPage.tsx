@@ -1,6 +1,6 @@
 import './LandingPage.css';
 import { useEffect, useState } from 'react';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { Container } from '../common/components';
 import { ServiceCard } from '../common/components/ServiceCard';
 import {
@@ -9,6 +9,10 @@ import {
   ServiceCardAbout,
   SupportDetailStrings,
 } from '../services/DetailServices';
+import { NavBar } from '../components';
+// TODO export this elegantly so that importers don't have to peek into
+//   components/
+import '../components/navbar/NavBarAbove.css';
 
 export function LandingPage() {
   const [fixedStrings, setFixedStrings] = useState<SupportDetailStrings | null>(
@@ -28,26 +32,34 @@ export function LandingPage() {
       style={{
         background: 'no-repeat url(/images/background.svg) bottom center',
         backgroundSize: 'contain',
-        padding: '0px 20px',
+        padding: 0,
       }}
     >
-      <Typography
-        component="div"
-        variant="h5"
-        sx={{
-          margin: '16px 0px',
+      <Box
+        className="navbar-above"
+        style={{
+          padding: '0px 20px',
         }}
       >
-        {headerTitle}
-      </Typography>
-      {serviceCardAbouts.map(({ logo, name, shortBlurb, route }) => (
-        <ServiceCard
-          logo={logo}
-          name={name}
-          shortBlurb={shortBlurb}
-          route={route}
-        ></ServiceCard>
-      ))}
+        <Typography
+          component="div"
+          variant="h5"
+          sx={{
+            margin: '16px 0px',
+          }}
+        >
+          {headerTitle}
+        </Typography>
+        {serviceCardAbouts.map(({ logo, name, shortBlurb, route }) => (
+          <ServiceCard
+            logo={logo}
+            name={name}
+            shortBlurb={shortBlurb}
+            route={route}
+          ></ServiceCard>
+        ))}
+      </Box>
+      <NavBar />
     </Container>
   );
 }

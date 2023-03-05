@@ -1,0 +1,5 @@
+.navbar-above {
+  /* Set this to calc(100vh - $HEIGHT OF NAVBAR) */
+  height: calc(100vh - 6rem);
+  overflow-y: auto;
+}
