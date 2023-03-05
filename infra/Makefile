@@ -1,3 +1,5 @@
+ENVIRONMENT?=staging
+
 gcloud-login:
 	gcloud auth application-default login
 

@@ -34,6 +34,7 @@ variable "db_password" {
 
 variable "frontend_bucket_name" {
   type = string
+  default = "call-home-frontend"
 }
 
 ######################
@@ -147,4 +148,13 @@ resource "google_storage_bucket_iam_member" "frontend_bucket_viewer" {
   bucket = google_storage_bucket.call_home_frontend.name
   role   = "roles/storage.objectViewer"
   member = "allUsers"
+}
+
+#############
+## Outputs ##
+#############
+
+// Output the frontend GCS bucket name
+output "frontend_bucket" {
+  value = google_storage_bucket.call_home_frontend.name
 }
