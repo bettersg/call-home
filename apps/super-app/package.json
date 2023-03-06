@@ -27,8 +27,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint .",
-    "format": "prettier --write src/**/*.{tsx,js,ts}",
-    "format:check": "prettier --check src/**/*.{tsx,js,ts}"
+    "format": "prettier --write 'src/**/*.{tsx,js,ts}'",
+    "format:check": "prettier --check 'src/**/*.{tsx,js,ts}'"
   },
   "eslintConfig": {
     "extends": [
