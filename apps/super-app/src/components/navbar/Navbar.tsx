@@ -18,7 +18,7 @@ function NavBar() {
         text="Call Home"
         icon={<CallHomeIcon />}
       />
-      <NavIcon link={Path.Support} text="Support" icon={<SupportIcon />} />
+      <NavIcon link={Path.Home} text="Support" icon={<SupportIcon />} />
       <NavIcon link={Path.Options} text="More" icon={<MoreIcon />} />
     </nav>
   );
