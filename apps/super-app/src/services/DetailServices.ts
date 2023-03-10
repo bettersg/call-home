@@ -96,6 +96,6 @@ export function getTwc2Detail(): Twc2SupportDetail {
     },
     ctaBlurb: 'Call on Mondays to Fridays (9am - 9pm), message any time',
     ctaButtonText: '+65 6297 7564',
-    ctaLink: 'https://wa.me/6583668579',
+    ctaLink: 'https://wa.me/6562977564',
   };
 }
