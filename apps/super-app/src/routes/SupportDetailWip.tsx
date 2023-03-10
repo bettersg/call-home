@@ -14,7 +14,7 @@ import {
 import { Container } from '../common/components';
 import { PrimaryButton } from '../common/components/RoundedButton';
 import './SupportDetailWip.css';
-
+import { ReactComponent as WhatsappIcon } from './../common/whatsapp-icon.svg';
 function Header(props: { title: string }) {
   const { title } = props;
   return (
@@ -115,16 +115,23 @@ function DescriptionSection(props: DescriptionProps) {
   );
 }
 
-type CtaProps = Pick<Twc2SupportDetail, 'ctaBlurb' | 'ctaButtonText'>;
+type CtaProps = Pick<
+  Twc2SupportDetail,
+  'ctaBlurb' | 'ctaButtonText' | 'ctaLink'
+>;
 
 function CtaSection(props: CtaProps) {
-  const { ctaBlurb, ctaButtonText } = props;
+  const { ctaBlurb, ctaButtonText, ctaLink } = props;
   return (
     <Box className="support-cta-container" sx={{ borderTopColor: 'grey.200' }}>
       <div style={{ flex: 4, height: '100%' }}>{ctaBlurb}</div>
       <PrimaryButton
+        href={ctaLink}
+        target="_blank"
+        rel="noopener"
         sx={{ flex: 5, backgroundColor: 'primary.700', height: '100%' }}
       >
+        <WhatsappIcon></WhatsappIcon>
         {ctaButtonText}
       </PrimaryButton>
     </Box>
@@ -154,6 +161,7 @@ export function SupportDetailWip() {
     blurbFacebookLinks,
     ctaBlurb,
     ctaButtonText,
+    ctaLink,
   } = content;
   return (
     <Container
@@ -179,6 +187,7 @@ export function SupportDetailWip() {
       <CtaSection
         ctaBlurb={ctaBlurb}
         ctaButtonText={ctaButtonText}
+        ctaLink={ctaLink}
       ></CtaSection>
     </Container>
   );
