@@ -151,6 +151,61 @@ resource "google_storage_bucket_iam_member" "frontend_bucket_viewer" {
   role   = "roles/storage.objectViewer"
   member = "allUsers"
 }
+#######################################
+## Load balancer for frontend bucket ##
+#######################################
+
+// NOTE: Had to enable Compute Engine API on the project for this to work
+// Following the guide here: https://cloud.google.com/cdn/docs/setting-up-cdn-with-bucket
+
+// Setup IP address for load balancer
+resource "google_compute_global_address" "call_home_frontend_ip" {
+  project = data.google_project.project.project_id
+  name = "call-home-frontend-ip"
+}
+
+// Backend bucket with CDN policy with default ttl settings
+resource "google_compute_backend_bucket" "call_home_frontend_lb" {
+  name = "call-home-frontend-lb"
+  description = "Load balancer for the frontend GCS bucket"
+  project = data.google_project.project.project_id
+  bucket_name = google_storage_bucket.call_home_frontend.name
+  enable_cdn = true
+
+  cdn_policy {
+    cache_mode = "CACHE_ALL_STATIC"
+    client_ttl = 3600
+    default_ttl = 3600
+    max_ttl = 86400
+    negative_caching = true
+    serve_while_stale = 86400
+  }
+}
+
+// URL map for the backend bucket
+resource "google_compute_url_map" "call_home_frontend_lb_url_map" {
+  name = "call-home-frontend-lb-url-map"
+  project = data.google_project.project.project_id
+  default_service = google_compute_backend_bucket.call_home_frontend_lb.id
+}
+
+// HTTP proxy
+resource "google_compute_target_http_proxy" "call_home_frontend_lb_proxy" {
+  name = "call-home-frontend-lb-proxy"
+  project = data.google_project.project.project_id
+  url_map = google_compute_url_map.call_home_frontend_lb_url_map.id
+}
+
+// Forwarding rule
+resource "google_compute_global_forwarding_rule" "call_home_frontend_lb_forwarding" {
+  name = "call-home-frontend-lb-forwarding"
+  project = data.google_project.project.project_id
+  ip_protocol = "TCP"
+  load_balancing_scheme = "EXTERNAL"
+  port_range = "80"
+  target = google_compute_target_http_proxy.call_home_frontend_lb_proxy.id
+  ip_address = google_compute_global_address.call_home_frontend_ip.id
+}
 
 #############
 ## Outputs ##
