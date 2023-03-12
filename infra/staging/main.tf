@@ -32,6 +32,13 @@ variable "db_password" {
   sensitive = true
 }
 
+// TODO: Default values are not great for reproducibility.
+// Over time, we want to move the variable creation to a variable.tfvars file.
+variable "frontend_bucket_name" {
+  type = string
+  default = "call-home-frontend"
+}
+
 ######################
 ## Project Settings ##
 ######################
@@ -118,4 +125,38 @@ resource "google_sql_user" "user" {
   password = var.db_password
   instance = google_sql_database_instance.strapi_db_instance.name
   project = data.google_project.project.project_id
+}
+
+##############
+## Frontend ##
+##############
+
+// Create a new storage bucket for frontend assets
+resource "google_storage_bucket" "call_home_frontend" {
+  project = data.google_project.project.project_id
+  name = var.frontend_bucket_name
+  location = var.location
+  force_destroy = true
+  uniform_bucket_level_access = true
+
+  website {
+    main_page_suffix = "index.html"
+    not_found_page = "index.html"
+  }
+}
+
+// Make resources in frontend bucket viewable by anyone
+resource "google_storage_bucket_iam_member" "frontend_bucket_viewer" {
+  bucket = google_storage_bucket.call_home_frontend.name
+  role   = "roles/storage.objectViewer"
+  member = "allUsers"
+}
+
+#############
+## Outputs ##
+#############
+
+// Output the frontend GCS bucket name
+output "frontend_bucket" {
+  value = google_storage_bucket.call_home_frontend.name
 }

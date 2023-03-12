@@ -1,4 +1,6 @@
 .DEFAULT_GOAL:=help
+ENVIRONMENT?=staging
+ENVIRONMENT_FILE?=$$(git rev-parse --show-toplevel)/.env.${ENVIRONMENT}
 
 ##@ Dev
 init: ## Install the project
@@ -19,6 +21,11 @@ copy-common: ## Copy common files from the personal-calls common directory
 	cp -r ../../personal-calls/frontend/src/common src/
 
 ##@ Deployment
+build: ## Create a directory with the production build
+	npm run build
+
+deploy: ## Deploy the build directory to a GCS bucket
+	sh -ac '. ${ENVIRONMENT_FILE}; gsutil cp -r build/* gs://$${FRONTEND_BUCKET}'
 
 ##@ Helpers
 

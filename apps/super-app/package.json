@@ -53,5 +53,6 @@
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.5.0",
     "prettier": "^2.8.1"
-  }
+  },
+  "homepage": "."
 }
