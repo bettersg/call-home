@@ -42,8 +42,7 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 ## Deployment
 
 * Use `make build` to create the production build.
-* After creating the build, you can load the appropriate environment variables set `source .env.[environment]` from the root folder.
-* Run `make frontend-deploy` to deploy the production build to a GCS bucket.
+* Run `make deploy` to deploy the production build to a GCS bucket.
 
 ## Learn More
 

@@ -32,6 +32,8 @@ variable "db_password" {
   sensitive = true
 }
 
+// TODO: Default values are not great for reproducibility.
+// Over time, we want to move the variable creation to a variable.tfvars file.
 variable "frontend_bucket_name" {
   type = string
   default = "call-home-frontend"
