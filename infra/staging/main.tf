@@ -155,8 +155,13 @@ resource "google_storage_bucket_iam_member" "frontend_bucket_viewer" {
 ## Load balancer for frontend bucket ##
 #######################################
 
-// NOTE: Had to enable Compute Engine API on the project for this to work
 // Following the guide here: https://cloud.google.com/cdn/docs/setting-up-cdn-with-bucket
+
+// Enable Compute Engine API to setup an IP address
+resource "google_project_service" "compute_engine_api" {
+  project = data.google_project.project.project_id
+  service = "compute.googleapis.com"
+}
 
 // Setup IP address for load balancer
 resource "google_compute_global_address" "call_home_frontend_ip" {
