@@ -14,6 +14,7 @@ const EN_STRINGS = {
     'We need this to verify you’re a foreign worker in Singapore.',
   VERIFY_FIN_CANCEL: 'Cancel',
   VERIFY_FIN_WP_LIKE_MESSAGE: 'Enter your FIN, not work pass number',
+  VERIFY_FIN_INVALID_SN_MESSAGE: 'Not a valid FIN. Try again',
   VERIFY_FIN_UNKNOWN_SN_MESSAGE: 'An unknown error has occurred',
   VERIFY_FIN_CONFLICTING_SN_MESSAGE:
     'This FIN is already being used by somebody',
