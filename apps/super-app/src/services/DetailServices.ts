@@ -37,6 +37,7 @@ export interface SupportDetailAbout extends Support {
   // TODO This won't handle images/icons in the button. Figure that out.
   ctaButtonText: string;
   ctaLink: string;
+  whatsappLogoSrc: string;
 }
 
 // We should consider moving TWC2-specific things to their own file.
@@ -97,5 +98,6 @@ export function getTwc2Detail(): Twc2SupportDetail {
     ctaBlurb: 'Call on Mondays to Fridays (9am - 9pm), message any time',
     ctaButtonText: '+65 6297 7564',
     ctaLink: 'https://wa.me/6562977564',
+    whatsappLogoSrc: '/images/whatsapp-icon.svg',
   };
 }
