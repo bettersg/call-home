@@ -38,14 +38,13 @@ export function LandingPage() {
       <Box
         className="navbar-above"
         style={{
-          padding: '0px 20px',
+          padding: '0 16px',
         }}
       >
         <Typography
-          component="div"
-          variant="h5"
+          variant="h4"
           sx={{
-            margin: '16px 0px',
+            padding: '16px 0',
           }}
         >
           {headerTitle}

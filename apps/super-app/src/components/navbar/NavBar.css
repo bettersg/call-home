@@ -14,6 +14,13 @@ a {
   width: 100%
 }
 
+.navbar-icon-container {
+  display: inline-block;
+  min-width: 4.25rem;
+  text-align: center;
+  align-items: center;
+}
+
 .navbar-icon {
   display: inline-block;
   color: #bec7ca;

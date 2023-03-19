@@ -16,7 +16,7 @@ export function ServiceCard(props: ServiceCardAbout) {
     <Card sx={{ display: 'flex', marginBottom: '16px' }}>
       <CardMedia
         component="img"
-        sx={{ width: '5rem', height: '5rem', margin: 'auto 16px' }}
+        sx={{ width: '3.5rem', height: '3.5rem', margin: 'auto 0 auto 16px' }}
         image={logo}
         alt={`${name} logo`}
       />

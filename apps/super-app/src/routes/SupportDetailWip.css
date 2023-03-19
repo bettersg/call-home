@@ -1,17 +1,19 @@
 .support-header {
   align-items: center;
   display: flex;
-  flex-basis: 6em;
-  padding: 1em;
+  flex-basis: auto;
+  padding: 0.5em;
 }
 
 .support-description-container {
+  overflow-y: auto;
+  height: 100%;
   background-color: white;
   border-top-left-radius: 2rem;
   border-top-right-radius: 2rem;
   flex-basis: 40rem;
   flex-grow: 1;
-  padding: 1em;
+  padding: 0 1.25rem;
 }
 
 .support-description-header {
@@ -19,7 +21,7 @@
   display: flex;
   gap: 1rem;
   min-height: 6rem;
-  padding: 1rem;
+  padding-top: 1rem;
 }
 
 .support-description-website-circle {
@@ -42,12 +44,12 @@
   display: flex;
   flex-basis: 8rem;
   gap: 1rem;
-  padding: 1rem;
+  padding: 1rem 1.25rem;
   width: 100%;
 }
 
 .support-description-blurb-section {
-  margin-bottom: 1em;
+  padding-top: 1rem;
 }
 
 .support-description-blurb-facebook-link {

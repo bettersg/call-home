@@ -31,8 +31,6 @@ export interface SupportDetailAbout extends Support {
   // Blurb introduction section. Subsequent parts of the blurb are defined
   // separately.
   blurbIntro: string;
-  // Blurb for CTA section.
-  ctaBlurb: string;
   // Text for CTA button.
   // TODO This won't handle images/icons in the button. Figure that out.
   ctaButtonText: string;
@@ -64,7 +62,7 @@ export function getServiceCardAbouts(): ServiceCardAbout[] {
       route: Path.SupportDetail,
     },
     {
-      logo: 'https://scontent.fsin16-1.fna.fbcdn.net/v/t39.30808-6/312822980_407024118308030_3649276446816297142_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=rusQliWmleEAX-XViuM&_nc_ht=scontent.fsin16-1.fna&oh=00_AfAzvXYCdtBtRovhSADhgAmeQ31Ev5ZUHiagle1qjfYcoA&oe=63ED310D',
+      logo: 'https://www.probono.sg/wp-content/uploads/2022/12/Pro-Bono-SG-Logo.png',
       name: 'Pro Bono SG',
       shortBlurb:
         'Book in-person appointment with a lawyer and get free basic legal advice',
@@ -85,15 +83,14 @@ export function getTwc2Detail(): Twc2SupportDetail {
       links: [
         {
           href: 'https://www.facebook.com/twc2bangla',
-          text: 'Bengali',
+          text: 'Bengali বাংলা',
         },
         {
           href: 'https://www.facebook.com/twc2tamil',
-          text: 'Tamil',
+          text: 'Tamil தமிழ்',
         },
       ],
     },
-    ctaBlurb: 'Call on Mondays to Fridays (9am - 9pm), message any time',
     ctaButtonText: '+65 6297 7564',
   };
 }

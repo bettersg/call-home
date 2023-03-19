@@ -26,7 +26,7 @@ function NavBar() {
 
 function NavIcon(props: { link: string; text: string; icon: React.ReactNode }) {
   return (
-    <div>
+    <div className="navbar-icon-container">
       <NavLink
         to={props.link}
         className={({ isActive }) =>
