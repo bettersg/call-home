@@ -151,6 +151,7 @@ resource "google_storage_bucket_iam_member" "frontend_bucket_viewer" {
   role   = "roles/storage.objectViewer"
   member = "allUsers"
 }
+
 #######################################
 ## Load balancer for frontend bucket ##
 #######################################
@@ -192,6 +193,16 @@ resource "google_compute_url_map" "call_home_frontend_lb_url_map" {
   name = "call-home-frontend-lb-url-map"
   project = data.google_project.project.project_id
   default_service = google_compute_backend_bucket.call_home_frontend_lb.id
+}
+
+// Setup SSL certificate to enable HTTPS for load balancer
+resource "google_compute_managed_ssl_certificate" "call_home_frontend_lb_ssl" {
+  name = "call-home-frontend-lb-ssl"
+  project = data.google_project.project.project_id
+
+  managed {
+    domains = ["app2-staging.callhome.sg"]
+  }
 }
 
 // HTTP proxy
