@@ -134,13 +134,19 @@ function DescriptionSection(props: DescriptionProps) {
   );
 }
 
-type CtaProps = Pick<Twc2SupportDetail, 'ctaButtonText'>;
+type CtaProps = Pick<
+  Twc2SupportDetail,
+  'ctaButtonText' | 'ctaLink' | 'whatsappLogoSrc'
+>;
 
 function CtaSection(props: CtaProps) {
-  const { ctaButtonText } = props;
+  const { ctaButtonText, ctaLink, whatsappLogoSrc } = props;
   return (
     <Box className="support-cta-container" sx={{ borderTopColor: 'grey.200' }}>
       <PrimaryButton
+        href={ctaLink}
+        target="_blank"
+        rel="noopener"
         sx={{
           flex: 5,
           backgroundColor: 'primary.700',
@@ -148,6 +154,8 @@ function CtaSection(props: CtaProps) {
           borderRadius: '0.25rem',
         }}
       >
+        <img src={whatsappLogoSrc} />
+
         {ctaButtonText}
       </PrimaryButton>
     </Box>
@@ -169,8 +177,16 @@ export function SupportDetailWip() {
     return null;
   }
   const { headerTitle } = fixedStrings;
-  const { logo, name, website, blurbIntro, blurbFacebookLinks, ctaButtonText } =
-    content;
+  const {
+    logo,
+    name,
+    website,
+    blurbIntro,
+    blurbFacebookLinks,
+    ctaButtonText,
+    ctaLink,
+    whatsappLogoSrc,
+  } = content;
   return (
     <Container
       style={{
@@ -192,7 +208,11 @@ export function SupportDetailWip() {
         blurbIntro={blurbIntro}
         blurbFacebookLinks={blurbFacebookLinks}
       ></DescriptionSection>
-      <CtaSection ctaButtonText={ctaButtonText}></CtaSection>
+      <CtaSection
+        ctaButtonText={ctaButtonText}
+        ctaLink={ctaLink}
+        whatsappLogoSrc={whatsappLogoSrc}
+      ></CtaSection>
     </Container>
   );
 }
