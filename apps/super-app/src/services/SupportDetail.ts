@@ -2,7 +2,7 @@
 
 // TODO remove routes from this page, https://github.com/bettersg/call-home/pull/121#discussion_r1110573633
 import { Path } from '../routes/paths';
-import { Support } from './SupportServices';
+import { Support } from './Support';
 import type { LanguageOption } from './Language';
 
 // Data shared by every Support detail page.
