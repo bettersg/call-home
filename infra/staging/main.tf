@@ -203,13 +203,25 @@ resource "google_compute_managed_ssl_certificate" "call_home_frontend_lb_ssl" {
   managed {
     domains = ["app2-staging.callhome.sg"]
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 // HTTP proxy
-resource "google_compute_target_http_proxy" "call_home_frontend_lb_proxy" {
+resource "google_compute_target_https_proxy" "call_home_frontend_lb_proxy" {
   name = "call-home-frontend-lb-proxy"
   project = data.google_project.project.project_id
   url_map = google_compute_url_map.call_home_frontend_lb_url_map.id
+
+  ssl_certificates = [
+    google_compute_managed_ssl_certificate.call_home_frontend_lb_ssl.name
+  ]
+
+  depends_on = [
+    google_compute_managed_ssl_certificate.call_home_frontend_lb_ssl
+  ]
 }
 
 // Forwarding rule
@@ -218,8 +230,8 @@ resource "google_compute_global_forwarding_rule" "call_home_frontend_lb_forwardi
   project = data.google_project.project.project_id
   ip_protocol = "TCP"
   load_balancing_scheme = "EXTERNAL"
-  port_range = "80"
-  target = google_compute_target_http_proxy.call_home_frontend_lb_proxy.id
+  port_range = "443"
+  target = google_compute_target_https_proxy.call_home_frontend_lb_proxy.id
   ip_address = google_compute_global_address.call_home_frontend_ip.id
 }
 
