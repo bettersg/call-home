@@ -3,14 +3,14 @@ export {
   getSupportDetailStrings,
   getTwc2Detail,
   getServiceCardDetails,
-} from './DetailServices';
+} from './SupportDetail';
 export type {
   ServiceCardDetail,
   SupportDetailStrings,
   Twc2SupportDetail,
   FacebookLinksSection,
   FacebookLink,
-} from './DetailServices';
+} from './SupportDetail';
 export type { LanguageOption } from './Language';
 export { useLanguage } from './Language';
 export { getAppConfig } from './Config';
