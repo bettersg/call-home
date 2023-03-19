@@ -25,7 +25,10 @@ build: ## Create a directory with the production build
 	npm run build
 
 deploy: ## Deploy the build directory to a GCS bucket
-	sh -ac '. ${ENVIRONMENT_FILE}; gsutil cp -r build/* gs://$${FRONTEND_BUCKET}'
+# Note that gsutil rsync may require a version of python with crcmod
+# If you are running with the system python, this should be fixable with
+#   pip3 install crcmod
+	sh -ac '. ${ENVIRONMENT_FILE}; gsutil rsync -d -r build/ gs://$${FRONTEND_BUCKET}'
 
 ##@ Helpers
 
