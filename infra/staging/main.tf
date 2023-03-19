@@ -189,8 +189,8 @@ resource "google_compute_backend_bucket" "call_home_frontend_lb" {
 }
 
 // URL map for the backend bucket
-resource "google_compute_url_map" "call_home_frontend_lb_url_map" {
-  name = "call-home-frontend-lb-url-map"
+resource "google_compute_url_map" "call_home_lb" {
+  name = "call-home-lb"
   project = data.google_project.project.project_id
   default_service = google_compute_backend_bucket.call_home_frontend_lb.id
 }
@@ -213,7 +213,7 @@ resource "google_compute_managed_ssl_certificate" "call_home_frontend_lb_ssl" {
 resource "google_compute_target_https_proxy" "call_home_frontend_lb_proxy" {
   name = "call-home-frontend-lb-proxy"
   project = data.google_project.project.project_id
-  url_map = google_compute_url_map.call_home_frontend_lb_url_map.id
+  url_map = google_compute_url_map.call_home_lb.id
 
   ssl_certificates = [
     google_compute_managed_ssl_certificate.call_home_frontend_lb_ssl.name
