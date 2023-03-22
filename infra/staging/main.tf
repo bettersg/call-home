@@ -193,10 +193,6 @@ resource "google_compute_url_map" "call_home_lb" {
   name = "call-home-lb"
   project = data.google_project.project.project_id
   default_service = google_compute_backend_bucket.call_home_frontend_lb.id
-
-  depends_on = [
-    google_compute_backend_bucket.call_home_frontend_lb
-  ]
 }
 
 // Setup SSL certificate to enable HTTPS for load balancer
@@ -206,10 +202,6 @@ resource "google_compute_managed_ssl_certificate" "call_home_frontend_lb_ssl" {
 
   managed {
     domains = ["app2-staging.callhome.sg"]
-  }
-
-  lifecycle {
-    create_before_destroy = true
   }
 }
 
@@ -222,11 +214,6 @@ resource "google_compute_target_https_proxy" "call_home_frontend_lb_proxy" {
   ssl_certificates = [
     google_compute_managed_ssl_certificate.call_home_frontend_lb_ssl.name
   ]
-
-  depends_on = [
-    google_compute_managed_ssl_certificate.call_home_frontend_lb_ssl,
-    google_compute_url_map.call_home_lb
-  ]
 }
 
 // Forwarding rule
@@ -238,11 +225,6 @@ resource "google_compute_global_forwarding_rule" "call_home_frontend_lb_forwardi
   port_range = "443"
   target = google_compute_target_https_proxy.call_home_frontend_lb_proxy.id
   ip_address = google_compute_global_address.call_home_frontend_ip.id
-
-  depends_on = [
-    google_compute_target_https_proxy.call_home_frontend_lb_proxy,
-    google_compute_global_address.call_home_frontend_ip
-  ]
 }
 
 #############
