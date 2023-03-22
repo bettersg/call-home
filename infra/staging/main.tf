@@ -39,6 +39,11 @@ variable "frontend_bucket_name" {
   default = "call-home-frontend"
 }
 
+variable "website_domain_name" {
+  type = string
+  default = "app2-staging.callhome.sg"
+}
+
 ######################
 ## Project Settings ##
 ######################
@@ -201,7 +206,7 @@ resource "google_compute_managed_ssl_certificate" "call_home_frontend_lb_ssl" {
   project = data.google_project.project.project_id
 
   managed {
-    domains = ["app2-staging.callhome.sg"]
+    domains = [var.website_domain_name]
   }
 }
 
