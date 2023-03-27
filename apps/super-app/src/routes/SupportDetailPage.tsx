@@ -11,6 +11,7 @@ import {
   SupportDetailStrings,
   getSupportDetailStrings,
   getTwc2Detail,
+  getTwc2DetailStrapi,
   useLanguage,
 } from '../services';
 import { Container } from '../common/components';
@@ -166,14 +167,20 @@ function CtaSection(props: CtaProps) {
 }
 
 export function SupportDetailPage() {
+  // TODO actually make this switchable
+  const USE_STRAPI = true;
   const [fixedStrings, setFixedStrings] = useState<SupportDetailStrings | null>(
     null
   );
   const [lang] = useLanguage();
   const [content, setContent] = useState<Twc2SupportDetail | null>(null);
   useEffect(() => {
-    setContent(getTwc2Detail(lang));
-  }, []);
+    if (USE_STRAPI) {
+      getTwc2DetailStrapi(lang).then((twc2Detail) => setContent(twc2Detail));
+    } else {
+      setContent(getTwc2Detail(lang));
+    }
+  }, [USE_STRAPI]);
   useEffect(() => {
     setFixedStrings(getSupportDetailStrings(lang));
   }, []);
