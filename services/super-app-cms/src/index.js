@@ -17,6 +17,21 @@ const seedData = [
     {
       test: true
     }
+  ],
+  [
+    'api::support-twc2.support-twc2',
+    {
+      support_basic: {
+        logo: '/images/twc2-logo.png',
+        name: 'Transient Workers Count Too (TWC2)',
+        website: 'https://twc2.org.sg/language-menu-for-qr-code/',
+        blurbIntro: `TWC2 helps all foreigners working in Singapore, including those on Work Permits and S-Passes. They help for free. Most common issues are salary non-payment, contract issues and injuries.`,
+        ctaBlurb: 'Call on Mondays to Fridays (9am - 9pm), message any time',
+        ctaButtonText: '+65 6297 7564',
+        ctaLink: 'https://wa.me/6562977564',
+        whatsappLogoSrc: '/images/whatsapp-icon.svg',
+      }
+    }
   ]
 ]
 
