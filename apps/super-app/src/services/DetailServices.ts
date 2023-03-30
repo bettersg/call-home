@@ -6,7 +6,7 @@ import { Support } from './SupportServices';
 
 // Data shared by every Support detail page.
 
-export interface ServiceCardAbout extends Support {
+export interface ServiceCardDetail extends Support {
   // The short blurb briefly explaining the services provided.
   shortBlurb: string;
   // The app internal route
@@ -25,7 +25,7 @@ export function getSupportDetailStrings(): SupportDetailStrings {
 }
 
 // Data used by every Support detail page that changes per page.
-export interface SupportDetailAbout extends Support {
+export interface SupportDetail extends Support {
   // Url of org website.
   website: string;
   // Blurb introduction section. Subsequent parts of the blurb are defined
@@ -35,11 +35,11 @@ export interface SupportDetailAbout extends Support {
   // TODO This won't handle images/icons in the button. Figure that out.
   ctaButtonText: string;
   ctaLink: string;
-  whatsappLogoSrc: string;
+  ctaIcon: string;
 }
 
 // We should consider moving TWC2-specific things to their own file.
-export interface Twc2SupportDetail extends SupportDetailAbout {
+export interface Twc2SupportDetail extends SupportDetail {
   blurbFacebookLinks: FacebookLinksSection;
 }
 
@@ -54,7 +54,7 @@ export interface FacebookLink {
   text: string;
 }
 
-export function getServiceCardAbouts(): ServiceCardAbout[] {
+export function getServiceCardDetails(): ServiceCardDetail[] {
   return [
     {
       logo: '/images/twc2-logo.png',
@@ -95,6 +95,6 @@ export function getTwc2Detail(): Twc2SupportDetail {
     },
     ctaButtonText: '+65 6297 7564',
     ctaLink: 'https://wa.me/6562977564',
-    whatsappLogoSrc: '/images/whatsapp-icon.svg',
+    ctaIcon: '/images/whatsapp-icon.svg',
   };
 }

@@ -4,9 +4,9 @@ import { Box, Typography } from '@mui/material';
 import { Container } from '../common/components';
 import { ServiceCard } from '../common/components/ServiceCard';
 import {
-  getServiceCardAbouts,
+  getServiceCardDetails,
   getSupportDetailStrings,
-  ServiceCardAbout,
+  ServiceCardDetail,
   SupportDetailStrings,
 } from '../services/DetailServices';
 import { NavBar } from '../components';
@@ -26,7 +26,7 @@ export function LandingPage() {
     return null;
   }
   const { headerTitle } = fixedStrings;
-  const serviceCardAbouts: ServiceCardAbout[] = getServiceCardAbouts();
+  const serviceCardDetails: ServiceCardDetail[] = getServiceCardDetails();
   return (
     <Container
       style={{
@@ -49,7 +49,7 @@ export function LandingPage() {
         >
           {headerTitle}
         </Typography>
-        {serviceCardAbouts.map(({ logo, name, shortBlurb, route }) => (
+        {serviceCardDetails.map(({ logo, name, shortBlurb, route }) => (
           <ServiceCard
             logo={logo}
             name={name}

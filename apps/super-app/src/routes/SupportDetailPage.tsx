@@ -14,7 +14,8 @@ import {
 } from '../services';
 import { Container } from '../common/components';
 import { PrimaryButton } from '../common/components/RoundedButton';
-import './SupportDetailWip.css';
+import './SupportDetailPage.css';
+import { Path } from './paths';
 
 function Header(props: { title: string }) {
   const { title } = props;
@@ -24,7 +25,7 @@ function Header(props: { title: string }) {
       <IconButton
         aria-label="back"
         sx={{ color: 'text.primary' }}
-        onClick={() => navigate(-1)}
+        onClick={() => navigate(Path.LandingPage)}
       >
         <ArrowBackIosNewIcon />
       </IconButton>
@@ -98,6 +99,8 @@ type DescriptionProps = Pick<
 function DescriptionSection(props: DescriptionProps) {
   const { logo, name, website, blurbIntro, blurbFacebookLinks } = props;
   return (
+    // TODO: support logo overflows vertically if aspect ratio is tall.
+    // Need to either square all logos or find a CSS solution
     <main className="support-description-container">
       <section className="support-description-header">
         <img src={logo} style={{ flexBasis: '3.5rem', width: '1px' }} />
@@ -136,11 +139,11 @@ function DescriptionSection(props: DescriptionProps) {
 
 type CtaProps = Pick<
   Twc2SupportDetail,
-  'ctaButtonText' | 'ctaLink' | 'whatsappLogoSrc'
+  'ctaButtonText' | 'ctaLink' | 'ctaIcon'
 >;
 
 function CtaSection(props: CtaProps) {
-  const { ctaButtonText, ctaLink, whatsappLogoSrc } = props;
+  const { ctaButtonText, ctaLink, ctaIcon } = props;
   return (
     <Box className="support-cta-container" sx={{ borderTopColor: 'grey.200' }}>
       <PrimaryButton
@@ -154,15 +157,14 @@ function CtaSection(props: CtaProps) {
           borderRadius: '0.25rem',
         }}
       >
-        <img src={whatsappLogoSrc} />
-
+        <img src={ctaIcon} style={{ padding: '0.25rem' }} />
         {ctaButtonText}
       </PrimaryButton>
     </Box>
   );
 }
 
-export function SupportDetailWip() {
+export function SupportDetailPage() {
   const [fixedStrings, setFixedStrings] = useState<SupportDetailStrings | null>(
     null
   );
@@ -185,7 +187,7 @@ export function SupportDetailWip() {
     blurbFacebookLinks,
     ctaButtonText,
     ctaLink,
-    whatsappLogoSrc,
+    ctaIcon,
   } = content;
   return (
     <Container
@@ -211,7 +213,7 @@ export function SupportDetailWip() {
       <CtaSection
         ctaButtonText={ctaButtonText}
         ctaLink={ctaLink}
-        whatsappLogoSrc={whatsappLogoSrc}
+        ctaIcon={ctaIcon}
       ></CtaSection>
     </Container>
   );
