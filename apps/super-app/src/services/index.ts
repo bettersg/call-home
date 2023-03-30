@@ -1,5 +1,9 @@
 export { consoleSmokeTest } from './CmsSmokeTest';
-export { getSupportDetailStrings, getTwc2Detail } from './DetailServices';
+export {
+  getSupportDetailStrings,
+  getTwc2Detail,
+  getServiceCardDetails,
+} from './DetailServices';
 export type {
   ServiceCardDetail,
   SupportDetailStrings,
@@ -7,3 +11,5 @@ export type {
   FacebookLinksSection,
   FacebookLink,
 } from './DetailServices';
+export type { LanguageOption } from './Language';
+export { useLanguage } from './Language';

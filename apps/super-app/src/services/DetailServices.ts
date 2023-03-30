@@ -3,6 +3,7 @@
 // TODO remove routes from this page, https://github.com/bettersg/call-home/pull/121#discussion_r1110573633
 import { Path } from '../routes/paths';
 import { Support } from './SupportServices';
+import type { LanguageOption } from './Language';
 
 // Data shared by every Support detail page.
 
@@ -18,10 +19,16 @@ export interface SupportDetailStrings {
   headerTitle: string;
 }
 
-export function getSupportDetailStrings(): SupportDetailStrings {
-  return {
+const SUPPORT_DETAIL_STRINGS: Record<LanguageOption, SupportDetailStrings> = {
+  en: {
     headerTitle: 'Free Support Services',
-  };
+  },
+};
+
+export function getSupportDetailStrings(
+  language: LanguageOption
+): SupportDetailStrings {
+  return SUPPORT_DETAIL_STRINGS[language];
 }
 
 // Data used by every Support detail page that changes per page.
@@ -73,8 +80,8 @@ export function getServiceCardDetails(): ServiceCardDetail[] {
   ];
 }
 
-export function getTwc2Detail(): Twc2SupportDetail {
-  return {
+const TWC2_DETAIL: Record<LanguageOption, Twc2SupportDetail> = {
+  en: {
     logo: '/images/twc2-logo.png',
     name: 'Transient Workers Count Too (TWC2)',
     website: 'https://twc2.org.sg/language-menu-for-qr-code/',
@@ -96,5 +103,9 @@ export function getTwc2Detail(): Twc2SupportDetail {
     ctaButtonText: '+65 6297 7564',
     ctaLink: 'https://wa.me/6562977564',
     ctaIcon: '/images/whatsapp-icon.svg',
-  };
+  },
+};
+
+export function getTwc2Detail(language: LanguageOption): Twc2SupportDetail {
+  return TWC2_DETAIL[language];
 }

@@ -4,22 +4,22 @@ import { Box, Typography } from '@mui/material';
 import { Container } from '../common/components';
 import { ServiceCard } from '../common/components/ServiceCard';
 import {
+  useLanguage,
   getServiceCardDetails,
   getSupportDetailStrings,
   ServiceCardDetail,
   SupportDetailStrings,
-} from '../services/DetailServices';
+} from '../services';
 import { NavBar } from '../components';
-// TODO export this elegantly so that importers don't have to peek into
-//   components/
 import '../components/navbar/NavBarAbove.css';
 
 export function LandingPage() {
   const [fixedStrings, setFixedStrings] = useState<SupportDetailStrings | null>(
     null
   );
+  const [lang] = useLanguage();
   useEffect(() => {
-    setFixedStrings(getSupportDetailStrings());
+    setFixedStrings(getSupportDetailStrings(lang));
   }, []);
   if (!fixedStrings) {
     // TODO return something (hint or loading spinner) since this is landing page, we can't return null
