@@ -64,9 +64,7 @@ const callHomeTheme = createTheme(
       grey: colors.grey,
       error: colors.error,
       warning: colors.yellow,
-      text: {
-        primary: colors.text.primary,
-      },
+      text: colors.text,
     },
     overrides: {
       MuiTypography: {
