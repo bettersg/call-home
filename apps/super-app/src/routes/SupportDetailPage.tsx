@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Box, Typography, Link } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Box, Typography, Link, IconButton } from '@mui/material';
 import {
   ArrowBackIosNew as ArrowBackIosNewIcon,
   Public as PublicIcon,
@@ -14,14 +15,29 @@ import {
 } from '../services';
 import { Container } from '../common/components';
 import { PrimaryButton } from '../common/components/RoundedButton';
-import './SupportDetailWip.css';
+import './SupportDetailPage.css';
+import { Path } from './paths';
 
 function Header(props: { title: string }) {
   const { title } = props;
+  const navigate = useNavigate();
   return (
     <nav className="support-header">
-      <ArrowBackIosNewIcon />
-      <Typography variant="h4">{title}</Typography>
+      <IconButton
+        aria-label="back"
+        sx={{ color: 'text.primary' }}
+        onClick={() => navigate(Path.LandingPage)}
+      >
+        <ArrowBackIosNewIcon />
+      </IconButton>
+      <Typography
+        variant="h4"
+        sx={{
+          margin: '0',
+        }}
+      >
+        {title}
+      </Typography>
     </nav>
   );
 }
@@ -84,10 +100,12 @@ type DescriptionProps = Pick<
 function DescriptionSection(props: DescriptionProps) {
   const { logo, name, website, blurbIntro, blurbFacebookLinks } = props;
   return (
+    // TODO: support logo overflows vertically if aspect ratio is tall.
+    // Need to either square all logos or find a CSS solution
     <main className="support-description-container">
       <section className="support-description-header">
-        <img src={logo} style={{ flexBasis: '6rem', width: '1px' }} />
-        <Typography variant="h4" component="h2" style={{ flex: 1 }}>
+        <img src={logo} style={{ flexBasis: '3.5rem', width: '1px' }} />
+        <Typography variant="h5" component="h2" style={{ flex: 1 }}>
           {name}
         </Typography>
         <a
@@ -102,13 +120,17 @@ function DescriptionSection(props: DescriptionProps) {
         >
           <Box
             className="support-description-website-circle"
-            sx={{ borderColor: 'primary.900' }}
+            sx={{
+              borderColor: 'primary.900',
+              height: '2rem',
+              width: '2rem',
+            }}
           >
             <PublicIcon
-              sx={{ color: 'primary.900', height: '2.5rem', width: '2.5rem' }}
+              sx={{ color: 'primary.900', height: '1.5rem', width: '1.5rem' }}
             />
           </Box>
-          <Typography>Website</Typography>
+          <Typography variant="subtitle1">Website</Typography>
         </a>
       </section>
       <Blurb blurbIntro={blurbIntro} blurbFacebookLinks={blurbFacebookLinks} />
@@ -118,29 +140,32 @@ function DescriptionSection(props: DescriptionProps) {
 
 type CtaProps = Pick<
   Twc2SupportDetail,
-  'ctaBlurb' | 'ctaButtonText' | 'ctaLink' | 'whatsappLogoSrc'
+  'ctaButtonText' | 'ctaLink' | 'ctaIcon'
 >;
 
 function CtaSection(props: CtaProps) {
-  const { ctaBlurb, ctaButtonText, ctaLink, whatsappLogoSrc } = props;
+  const { ctaButtonText, ctaLink, ctaIcon } = props;
   return (
     <Box className="support-cta-container" sx={{ borderTopColor: 'grey.200' }}>
-      <div style={{ flex: 4, height: '100%' }}>{ctaBlurb}</div>
       <PrimaryButton
         href={ctaLink}
         target="_blank"
         rel="noopener"
-        sx={{ flex: 5, backgroundColor: 'primary.700', height: '100%' }}
+        sx={{
+          flex: 5,
+          backgroundColor: 'primary.700',
+          height: '3.5rem',
+          borderRadius: '0.25rem',
+        }}
       >
-        <img src={whatsappLogoSrc} />
-
+        <img src={ctaIcon} style={{ padding: '0.25rem' }} />
         {ctaButtonText}
       </PrimaryButton>
     </Box>
   );
 }
 
-export function SupportDetailWip() {
+export function SupportDetailPage() {
   const [fixedStrings, setFixedStrings] = useState<SupportDetailStrings | null>(
     null
   );
@@ -162,10 +187,9 @@ export function SupportDetailWip() {
     website,
     blurbIntro,
     blurbFacebookLinks,
-    ctaBlurb,
     ctaButtonText,
     ctaLink,
-    whatsappLogoSrc,
+    ctaIcon,
   } = content;
   return (
     <Container
@@ -189,10 +213,9 @@ export function SupportDetailWip() {
         blurbFacebookLinks={blurbFacebookLinks}
       ></DescriptionSection>
       <CtaSection
-        ctaBlurb={ctaBlurb}
         ctaButtonText={ctaButtonText}
         ctaLink={ctaLink}
-        whatsappLogoSrc={whatsappLogoSrc}
+        ctaIcon={ctaIcon}
       ></CtaSection>
     </Container>
   );

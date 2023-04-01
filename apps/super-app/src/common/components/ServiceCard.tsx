@@ -8,15 +8,22 @@ import {
   Box,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { ServiceCardAbout } from '../../services';
+import { ServiceCardDetail } from '../../services';
 
-export function ServiceCard(props: ServiceCardAbout) {
+export function ServiceCard(props: ServiceCardDetail) {
   const { logo, name, shortBlurb, route } = props;
   return (
     <Card sx={{ display: 'flex', marginBottom: '16px' }}>
       <CardMedia
         component="img"
-        sx={{ width: '5rem', height: '5rem', margin: 'auto 16px' }}
+        sx={{
+          width: '3.5rem',
+          height: '3.5rem',
+          marginY: 'auto',
+          marginLeft: '16px',
+          marginRight: '0',
+          objectFit: 'contain',
+        }}
         image={logo}
         alt={`${name} logo`}
       />

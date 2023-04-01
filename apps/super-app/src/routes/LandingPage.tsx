@@ -5,9 +5,9 @@ import { Container } from '../common/components';
 import { ServiceCard } from '../common/components/ServiceCard';
 import {
   useLanguage,
-  getServiceCardAbouts,
+  getServiceCardDetails,
   getSupportDetailStrings,
-  ServiceCardAbout,
+  ServiceCardDetail,
   SupportDetailStrings,
 } from '../services';
 import { NavBar } from '../components';
@@ -26,7 +26,7 @@ export function LandingPage() {
     return null;
   }
   const { headerTitle } = fixedStrings;
-  const serviceCardAbouts: ServiceCardAbout[] = getServiceCardAbouts();
+  const serviceCardDetails: ServiceCardDetail[] = getServiceCardDetails();
   return (
     <Container
       style={{
@@ -38,19 +38,18 @@ export function LandingPage() {
       <Box
         className="navbar-above"
         style={{
-          padding: '0px 20px',
+          padding: '0 16px',
         }}
       >
         <Typography
-          component="div"
-          variant="h5"
+          variant="h4"
           sx={{
-            margin: '16px 0px',
+            padding: '16px 0',
           }}
         >
           {headerTitle}
         </Typography>
-        {serviceCardAbouts.map(({ logo, name, shortBlurb, route }) => (
+        {serviceCardDetails.map(({ logo, name, shortBlurb, route }) => (
           <ServiceCard
             logo={logo}
             name={name}

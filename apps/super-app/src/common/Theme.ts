@@ -28,20 +28,25 @@ const callHomeTheme = createTheme(
   adaptV4Theme({
     typography: {
       h4: {
-        fontWeight: 600,
-      },
-      h5: {
         fontSize: 20,
         fontWeight: 700,
-        color: '#133844',
+        color: colors.text.primary,
         fontFamily: 'Hind',
         lineHeight: '28px',
+      },
+      h5: {
+        fontSize: 18,
+        fontWeight: 600,
+        color: colors.text.primary,
+        fontFamily: 'Hind',
+        lineHeight: '24px',
       },
       h6: {
         fontSize: 16,
         fontWeight: 600,
-        color: '#297B94',
+        color: 'colors.primary.800',
         fontFamily: 'Hind',
+        lineHeight: '20px',
         textDecoration: 'underline',
       },
       subtitle1: {
@@ -59,6 +64,9 @@ const callHomeTheme = createTheme(
       grey: colors.grey,
       error: colors.error,
       warning: colors.yellow,
+      text: {
+        primary: colors.text.primary,
+      },
     },
     overrides: {
       MuiTypography: {

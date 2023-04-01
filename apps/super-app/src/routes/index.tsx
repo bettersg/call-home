@@ -1,3 +1,3 @@
 export { LandingPage } from './LandingPage';
 export { Options } from './Options';
-export { SupportDetailWip } from './SupportDetailWip';
+export { SupportDetailPage } from './SupportDetailPage';

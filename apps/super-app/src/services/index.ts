@@ -2,10 +2,10 @@ export { consoleSmokeTest } from './CmsSmokeTest';
 export {
   getSupportDetailStrings,
   getTwc2Detail,
-  getServiceCardAbouts,
+  getServiceCardDetails,
 } from './DetailServices';
 export type {
-  ServiceCardAbout,
+  ServiceCardDetail,
   SupportDetailStrings,
   Twc2SupportDetail,
   FacebookLinksSection,
