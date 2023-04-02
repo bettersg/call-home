@@ -1,0 +1,35 @@
+{
+  "collectionName": "components_support_detail_page_support_details",
+  "info": {
+    "displayName": "support-detail",
+    "icon": "align-justify",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "logo": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "blurbIntro": {
+      "type": "text"
+    },
+    "ctaBlurb": {
+      "type": "string"
+    },
+    "ctaButtonText": {
+      "type": "string"
+    },
+    "ctaLink": {
+      "type": "string"
+    },
+    "whatsappLogoSrc": {
+      "type": "string"
+    }
+  }
+}

@@ -11,6 +11,7 @@ export type {
   FacebookLinksSection,
   FacebookLink,
 } from './SupportDetail';
+export { getTwc2DetailStrapi } from './StrapiSupportDetail';
 export type { LanguageOption } from './Language';
 export { useLanguage } from './Language';
 export { getAppConfig } from './Config';
