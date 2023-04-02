@@ -1,8 +1,8 @@
 import './LandingPage.css';
 import { useEffect, useState } from 'react';
-import { Box, Typography } from '@mui/material';
-import { Container } from '../common/components';
+import { Typography } from '@mui/material';
 import { ServiceCard } from '../common/components/ServiceCard';
+import { NavBarContainer } from '../components';
 import {
   useLanguage,
   getServiceCardDetails,
@@ -10,8 +10,6 @@ import {
   ServiceCardDetail,
   SupportDetailStrings,
 } from '../services';
-import { NavBar } from '../components';
-import '../components/navbar/NavBarAbove.css';
 
 export function LandingPage() {
   const [fixedStrings, setFixedStrings] = useState<SupportDetailStrings | null>(
@@ -28,19 +26,16 @@ export function LandingPage() {
   const { headerTitle } = fixedStrings;
   const serviceCardDetails: ServiceCardDetail[] = getServiceCardDetails();
   return (
-    <Container
-      style={{
+    <NavBarContainer
+      containerStyle={{
         background: 'no-repeat url(/images/background.svg) bottom center',
         backgroundSize: 'contain',
         padding: 0,
       }}
+      aboveStyle={{
+        padding: '0 16px',
+      }}
     >
-      <Box
-        className="navbar-above"
-        style={{
-          padding: '0 16px',
-        }}
-      >
         <Typography
           variant="h4"
           sx={{
@@ -57,8 +52,6 @@ export function LandingPage() {
             route={route}
           ></ServiceCard>
         ))}
-      </Box>
-      <NavBar />
-    </Container>
+    </NavBarContainer>
   );
 }
