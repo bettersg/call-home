@@ -193,11 +193,75 @@ resource "google_compute_backend_bucket" "call_home_frontend_lb" {
   }
 }
 
-// URL map for the backend bucket
+resource "google_compute_global_network_endpoint_group" "strapi_external_proxy" {
+  provider = google-beta
+  project = data.google_project.project.project_id
+  name = "strapi-network-endpoint-group"
+  network_endpoint_type = "INTERNET_FQDN_PORT"
+  default_port = 90
+}
+
+# resource "google_compute_global_network_endpoint" "strapi_proxy" {
+#   provider = google-beta
+#   project = data.google_project.project.project_id
+#   global_network_endpoint_group = google_compute_global_network_endpoint_group.strapi_external_proxy.id
+#   fqdn = google_app_engine_application.app.default_hostname
+#   port = google_compute_global_network_endpoint_group.strapi_external_proxy.default_port
+# }
+
+# GOAL: try to map https://app2-staging.callhome.sg/api/* routes to https://call-home-staging.as.r.appspot.com/api/*
+# Latest update: it's failing with 502 and `statusDetails: "failed_to_pick_backend"` as seen in the logs when hitting
+# `https://app2-staging.callhome.sg/api/<whatever>`. Not sure why, perhaps it's because the protocol is wrong (HTTP(S) or TCP),
+# or the health checks are not set up correctly (perhaps on strapi's end too) so LB didn't pick strapi as the backend.
+
+# See StackOverflow answer for 502 failed to pick backend: https://stackoverflow.com/questions/63493125/google-cloud-load-balancer-causing-error-502-failed-to-pick-backend
+# See logs at https://console.cloud.google.com/logs
+# GCP docs on setting up LB infra:
+# - Internet NEG (current approach): https://cloud.google.com/load-balancing/docs/https/setting-up-https-external-backend-internet-neg
+# - Serverless NEG (KIV, might require regional NEGs that are not really compatible with URL maps): https://cloud.google.com/load-balancing/docs/https/setting-up-https-serverless
+# Terraform resources:
+# - Global NEG: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_global_network_endpoint_group
+# - Backend service: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_backend_service
+
+resource "google_compute_backend_service" "call_home_strapi" {
+  provider = google-beta
+  project = data.google_project.project.project_id
+  name = "call-home-strapi-backend-service"
+  description = "Load balancer for the strapi backend service"
+  # enable_cdn                      = true
+  timeout_sec                     = 10
+  connection_draining_timeout_sec = 10
+  log_config {
+    enable = true
+    sample_rate = 1
+  }
+  # health_checks = []
+  # custom_request_headers          = ["host: ${google_compute_global_network_endpoint.strapi_proxy.fqdn}"]
+  custom_request_headers          = ["host: ${google_app_engine_application.app.default_hostname}"]
+  # custom_response_headers         = ["X-Cache-Hit: {cdn_cache_status}"]
+  backend {
+    group = google_compute_global_network_endpoint_group.strapi_external_proxy.id
+  }
+}
+
+// URL map for the backend bucket and service
+// Map only /api routes to the strapi backend service, otherwise map all routes to the GCS bucket
 resource "google_compute_url_map" "call_home_lb" {
   name = "call-home-lb"
   project = data.google_project.project.project_id
   default_service = google_compute_backend_bucket.call_home_frontend_lb.id
+  host_rule {
+    hosts = ["*"]
+    path_matcher = "all-paths"
+  }
+  path_matcher {
+    name = "all-paths"
+    default_service = google_compute_backend_bucket.call_home_frontend_lb.id
+    path_rule {
+      paths = ["/api/*"]
+      service = google_compute_backend_service.call_home_strapi.id
+    }
+  }
 }
 
 // Setup SSL certificate to enable HTTPS for load balancer
