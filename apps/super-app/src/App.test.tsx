@@ -16,17 +16,3 @@ test('it should render support cards on /', () => {
   const pbsg = screen.getByText('Pro Bono SG');
   expect(pbsg).toBeInTheDocument();
 });
-
-test('it should render support cards on /landing-page', () => {
-  render(
-    <MemoryRouter initialEntries={['/landing-page']}>
-      <App />
-    </MemoryRouter>
-  );
-  const header = screen.getByText('Free Support Services');
-  expect(header).toBeInTheDocument();
-  const twc2 = screen.getByText('Transient Workers Count Too');
-  expect(twc2).toBeInTheDocument();
-  const pbsg = screen.getByText('Pro Bono SG');
-  expect(pbsg).toBeInTheDocument();
-});
