@@ -1,0 +1,13 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+# See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+name: apps/super-app CI (pull request against master)
+
+on:
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    uses: ./.github/workflows/node_build.yml
