@@ -1,13 +1,13 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import ButtonBase from '@material-ui/core/ButtonBase';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ButtonBase from '@mui/material/ButtonBase';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import './ContactsDialog.css';
 
@@ -72,13 +72,23 @@ function AvatarPicker({ avatarChoice, setAvatarChoice }) {
         marginBottom: '12px',
       }}
     >
-      <IconButton type="button" value="" onClick={choosePrevVariant}>
+      <IconButton
+        type="button"
+        value=""
+        onClick={choosePrevVariant}
+        size="large"
+      >
         <ArrowBackIosIcon style={{ height: '0.5em', width: '0.5em' }} />
       </IconButton>
       <ButtonBase>
         <img style={{ height: '4em', width: '4em' }} alt="" src={avatarUrl} />
       </ButtonBase>
-      <IconButton type="button" value="" onClick={chooseNextVariant}>
+      <IconButton
+        type="button"
+        value=""
+        onClick={chooseNextVariant}
+        size="large"
+      >
         <ArrowForwardIosIcon style={{ height: '0.5em', width: '0.5em' }} />
       </IconButton>
     </div>
@@ -111,6 +121,7 @@ export default function ContactsDialog({
           justifyContent: 'center',
           padding: '8px 24px',
         }}
+        variant="h5"
       >
         {titleText}
       </DialogTitle>

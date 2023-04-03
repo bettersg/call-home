@@ -1,16 +1,16 @@
 import React, { useEffect, useState, FormEvent } from 'react';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import TextField from '@material-ui/core/TextField';
-import Table from '@material-ui/core/Table';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import Typography from '@material-ui/core/Typography';
-import CloseIcon from '@material-ui/icons/Close';
-import EditIcon from '@material-ui/icons/Edit';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import TextField from '@mui/material/TextField';
+import Table from '@mui/material/Table';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import Typography from '@mui/material/Typography';
+import CloseIcon from '@mui/icons-material/Close';
+import EditIcon from '@mui/icons-material/Edit';
 import { useDormService } from 'contexts';
 import { DormResponse } from '@call-home/shared/types/Dorm';
 
@@ -131,6 +131,7 @@ export default function DormTabContent() {
                         setDormIdToEdit(dorm.id);
                       }
                     }}
+                    size="large"
                   >
                     <EditIcon />
                   </IconButton>
@@ -142,6 +143,7 @@ export default function DormTabContent() {
                     onClick={() => {
                       dormService?.deleteDorm(Number(dorm.id));
                     }}
+                    size="large"
                   >
                     <CloseIcon />
                   </IconButton>

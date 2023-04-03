@@ -1,15 +1,15 @@
 import React, { useState, useEffect, FormEvent } from 'react';
-import Button from '@material-ui/core/Button';
-import Switch from '@material-ui/core/Switch';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import IconButton from '@material-ui/core/IconButton';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import CloseIcon from '@material-ui/icons/Close';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { FormControlLabel, Grid } from '@material-ui/core';
+import Button from '@mui/material/Button';
+import Switch from '@mui/material/Switch';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import IconButton from '@mui/material/IconButton';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import CloseIcon from '@mui/icons-material/Close';
+import Grid, { GridColDef } from '@mui/material/Grid';
+import { FormControlLabel } from '@mui/material';
 import { useAllowlistService } from 'contexts';
 import { PhoneNumberMasks } from 'components';
 import { ApiValidationError } from 'services/apiClient';
@@ -190,6 +190,7 @@ export default function AllowlistTabContent() {
             onClick={() => {
               deleteAllowlistEntry(Number(row.row.id));
             }}
+            size="large"
           >
             <CloseIcon />
           </IconButton>
@@ -215,7 +216,7 @@ export default function AllowlistTabContent() {
         <Typography variant="body2" component="h3">
           Current Entries
         </Typography>
-        <DataGrid
+        <Grid
           autoHeight
           rows={rows}
           columns={columns}

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Alert from '@material-ui/lab/Alert';
-import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 import { Locale } from 'scenes/types';
 import { useFeatureService } from 'contexts';
-import { Link } from '@material-ui/core';
+import { Link } from '@mui/material';
 
 const EN_STRINGS = {
   HELP_MESSAGE_NO_LOCK:

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import TextFieldWrong from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import TextFieldWrong from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import {
   Container as ContainerWrong,
   Footer,
@@ -77,6 +77,9 @@ export default function VerifyPhoneNumber({ locale }: SceneProps) {
               variant="outlined"
               InputProps={{
                 inputComponent: PhoneNumberMasks.SG,
+              }}
+              InputLabelProps={{
+                shrink: true,
               }}
               onChange={(event: any) => {
                 setIsTouched(true);

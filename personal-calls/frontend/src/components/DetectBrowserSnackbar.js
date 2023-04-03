@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { detect as detectBrowser } from 'detect-browser';
-import Alert from '@material-ui/lab/Alert';
-import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 
 const supportedBrowsers = new Set(['chrome', 'safari']);
 const browser = detectBrowser();

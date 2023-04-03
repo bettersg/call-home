@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import QRCode from 'qrcode.react';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Dialog from '@material-ui/core/Dialog';
-import Table from '@material-ui/core/Table';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import Typography from '@material-ui/core/Typography';
-import CropFreeIcon from '@material-ui/icons/CropFree';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Dialog from '@mui/material/Dialog';
+import Table from '@mui/material/Table';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import Typography from '@mui/material/Typography';
+import CropFreeIcon from '@mui/icons-material/CropFree';
 import { useRedeemableCodeService } from 'contexts';
 import PATHS from '../paths';
 import './RedeemableCodeTabContent.css';
@@ -45,7 +45,11 @@ function QRCodeDialog({
           padding: '2rem',
         }}
       >
-        <IconButton style={{ marginBottom: '1rem' }} onClick={onClose}>
+        <IconButton
+          style={{ marginBottom: '1rem' }}
+          onClick={onClose}
+          size="large"
+        >
           <CloseIcon />
         </IconButton>
         <QRCode size={256} value={codeUrl.href} />
@@ -107,6 +111,7 @@ export default function RedeemableCodeTabContent() {
                     <IconButton
                       role="button"
                       onClick={() => setDisplayedQrCode(redeemableCode.code)}
+                      size="large"
                     >
                       <CropFreeIcon />
                     </IconButton>
@@ -119,6 +124,7 @@ export default function RedeemableCodeTabContent() {
                           redeemableCode.id
                         )
                       }
+                      size="large"
                     >
                       <CloseIcon />
                     </IconButton>

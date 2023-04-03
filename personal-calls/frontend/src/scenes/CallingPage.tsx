@@ -1,11 +1,11 @@
 import { Call as TwilioSdkCall, Device } from '@twilio/voice-sdk';
 import React, { useCallback, useState, useEffect } from 'react';
 import * as Sentry from '@sentry/react';
-import CallEndIcon from '@material-ui/icons/CallEnd';
-import CloseIcon from '@material-ui/icons/Close';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import CallEndIcon from '@mui/icons-material/CallEnd';
+import CloseIcon from '@mui/icons-material/Close';
+import { withStyles } from 'hack/withStyles';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import { DateTime } from 'luxon';
 import { Redirect } from 'react-router-dom';
 import {
@@ -49,15 +49,16 @@ const STRINGS = {
   },
 };
 
-const CallEndButton = withStyles((theme) => ({
-  root: {
-    backgroundColor: theme.palette.error.main,
-    height: '5em',
-    width: '5em',
-    borderRadius: '1000px',
-    color: 'white',
+const CallEndButton = withStyles({
+  backgroundColor: 'error.main',
+  height: '5em',
+  width: '5em',
+  borderRadius: '1000px',
+  color: 'white',
+  '&:hover': {
+    backgroundColor: 'error.main',
   },
-}))(Button);
+})(Button);
 
 const USER_ACTIONABLE_TWILIO_ERROR_CODE_TO_ACTION_MESSAGE: Record<
   number,

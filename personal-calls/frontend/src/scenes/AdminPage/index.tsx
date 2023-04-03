@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import useAdminRoute from 'util/useAdminRoute';
 import AllowlistTabContent from './AllowlistTabContent';
 import DormTabContent from './DormTabContent';

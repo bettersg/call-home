@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import TextField from '@material-ui/core/TextField';
-import InputLabel from '@material-ui/core/InputLabel';
-import { withStyles } from '@material-ui/core/styles';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
+import InputLabel from '@mui/material/InputLabel';
+import { withStyles } from 'hack/withStyles';
 import { reportUserIssue } from '../services/Sentry';
 import { PrimaryButton } from '../common/components/RoundedButton';
 
@@ -31,13 +31,11 @@ const STRINGS = {
 };
 
 // TODO move this to its own module
-const withDialogButtonStyles = withStyles(() => ({
-  root: {
-    padding: '1em 2em',
-    flex: '1 0',
-    margin: '0 0.5rem',
-  },
-}));
+const withDialogButtonStyles = withStyles({
+  padding: '1em 2em',
+  flex: '1 0',
+  margin: '0 0.5rem',
+});
 
 const DialogPrimaryButton = withDialogButtonStyles(PrimaryButton);
 

@@ -1,4 +1,4 @@
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createTheme, adaptV4Theme } from '@mui/material/styles';
 
 const colors = {
   primary: {
@@ -24,30 +24,33 @@ const colors = {
   },
 };
 
-const callHomeTheme = createMuiTheme({
-  typography: {
-    h4: {
-      fontWeight: 600,
-    }
-  },
-  palette: {
-    background: {
-      default: colors.primary[100],
-    },
-    primary: colors.primary,
-    grey: colors.grey,
-    error: colors.error,
-    warning: colors.yellow,
-  },
-  overrides: {
-    MuiTypography: {
-      root: {
-        color: colors.text.primary,
-        fontFamily:
-          '"Hind Siliguri", "Roboto", "Helvetica", "Arial", sans-serif !important',
+const callHomeTheme = createTheme(
+  adaptV4Theme({
+    typography: {
+      h4: {
+        fontWeight: 600,
       },
     },
-  },
-});
+    palette: {
+      background: {
+        default: colors.primary[100],
+      },
+      text: colors.text,
+      primary: colors.primary,
+      grey: colors.grey,
+      error: colors.error,
+      warning: colors.yellow,
+    },
+    overrides: {
+      MuiTypography: {
+        root: {
+          color: colors.text.primary,
+          fontFamily:
+            '"Hind Siliguri", "Roboto", "Helvetica", "Arial", sans-serif !important',
+        },
+      },
+    },
+  })
+);
 
 export default callHomeTheme;

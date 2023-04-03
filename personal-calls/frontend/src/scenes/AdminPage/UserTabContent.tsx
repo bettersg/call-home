@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { UserWalletResponse } from '@call-home/shared/types/User';
-import Switch from '@material-ui/core/Switch';
-import Typography from '@material-ui/core/Typography';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import Switch from '@mui/material/Switch';
+import Typography from '@mui/material/Typography';
+import Grid, { GridColDef } from '@mui/material/Grid';
 import { Link } from 'react-router-dom';
 import { useAdminService } from 'contexts';
 import PATHS from 'scenes/paths';
@@ -83,7 +83,7 @@ export default function UserTabContent() {
       <Typography variant="h5" component="h2">
         Users
       </Typography>
-      <DataGrid
+      <Grid
         autoHeight
         rows={rows}
         columns={columns}
