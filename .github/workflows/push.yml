@@ -50,5 +50,4 @@ jobs:
       with:
         path: 'apps/super-app/build'
         destination: 'call-home-frontend'
-        parent: false
-  
+        parent: false 
