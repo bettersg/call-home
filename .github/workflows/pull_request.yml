@@ -10,4 +10,30 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/node_build.yml
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: apps/super-app/package-lock.json
+    - name: Install
+      run: npm ci
+      working-directory: apps/super-app/
+    - name: Lint
+      run: npm run lint
+      working-directory: apps/super-app/
+    - name: Check formatting
+      run: npm run format:check
+      working-directory: apps/super-app/
+    - name: Test
+      run: npm test
+      working-directory: apps/super-app/
+    - name: Build
+      run: npm run build
+      working-directory: apps/super-app/

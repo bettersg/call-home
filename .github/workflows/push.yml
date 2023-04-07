@@ -9,14 +9,37 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
-    uses: ./.github/workflows/node_build.yml
-  deploy:
+  build_and_deploy:
+    runs-on: ubuntu-latest
     permissions:
       contents: 'read'
       id-token: 'write'
+    strategy:
+      matrix:
+        node-version: [18.x]
     steps:
     - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: apps/super-app/package-lock.json
+    - name: Install
+      run: npm ci
+      working-directory: apps/super-app/
+    - name: Lint
+      run: npm run lint
+      working-directory: apps/super-app/
+    - name: Check formatting
+      run: npm run format:check
+      working-directory: apps/super-app/
+    - name: Test
+      run: npm test
+      working-directory: apps/super-app/
+    - name: Build
+      run: npm run build
+      working-directory: apps/super-app/
     - name: 'Authenticate'
       uses: 'google-github-actions/auth@v1'
       with:
@@ -24,9 +47,7 @@ jobs:
         service_account: 'github-actions-service-account@call-home-staging.iam.gserviceaccount.com'
     - name: 'Upload folder'
       uses: 'google-github-actions/upload-cloud-storage@v1'
-      working-directory: apps/super-app/
       with:
-        path: '/build'
+        path: 'apps/super-app/build'
         destination: 'call-home-frontend'
-    needs: build
   
