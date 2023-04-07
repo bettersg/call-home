@@ -6,6 +6,9 @@ ENVIRONMENT_FILE?=$$(git rev-parse --show-toplevel)/.env.${ENVIRONMENT}
 init: ## Install the project
 	npm ci
 
+clean: ## Delete build artifacts
+	rm -rf build/
+
 dev: ## Run the frontend in development mode
 	npm start
 
