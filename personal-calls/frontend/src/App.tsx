@@ -67,7 +67,7 @@ function InitApp() {
   return <SceneRouter />;
 }
 
-class ErrorBoundary extends React.Component {
+class ErrorBoundary extends React.Component<any> {
   state: {
     error: Error | null;
   };
