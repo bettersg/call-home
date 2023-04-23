@@ -7,7 +7,7 @@ import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
 import { withStyles } from 'hack/withStyles';
 import { reportUserIssue } from '../services/Sentry';
-import { PrimaryButton } from '../common/components/RoundedButton';
+import { PrimaryButton } from '../common/components';
 
 const EN_STRINGS = {
   REPORT_ISSUE_ISSUE_TYPE_LABEL: 'Issue Type',
