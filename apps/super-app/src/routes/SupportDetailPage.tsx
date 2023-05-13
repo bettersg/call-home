@@ -26,7 +26,7 @@ function Header(props: { title: string }) {
       <IconButton
         aria-label="back"
         sx={{ color: 'text.primary' }}
-        onClick={() => navigate(Path.LandingPage)}
+        onClick={() => navigate(Path.Home)}
       >
         <ArrowBackIosNewIcon />
       </IconButton>
