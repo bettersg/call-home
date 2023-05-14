@@ -26,7 +26,7 @@ const twilioRoute = Twilio(services.Call, services.TwilioCall);
 const oAuthRoute = OAuth(services.User);
 const phoneNumberValidationRoute = PhoneNumberValidation(
   services.User,
-  services.Auth0,
+  services.PhoneLogin,
   services.PhoneNumberValidation
 );
 const userRoute = User(

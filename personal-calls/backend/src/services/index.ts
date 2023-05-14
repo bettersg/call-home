@@ -23,10 +23,10 @@ import Dorm from './Dorm';
 import UserExperimentConfig from './UserExperimentConfig';
 import { CredentialSet, CredentialSets } from './TwilioCreds';
 import Contact = require('./Contact');
-import Auth0 = require('./Auth0');
+import PhoneLogin from './PhoneLogin';
 
 // TOPOLOGICAL SORT LOL
-const auth0Service = Auth0();
+const phoneLoginService = PhoneLogin(Feature, TwilioClient);
 
 const dormService = Dorm(models.Dorm);
 const walletService = Wallet(models.Wallet, models.WalletTransaction);
@@ -111,7 +111,7 @@ export {
   WorkpassClient,
   adminGrantedValidationService as AdminGrantedValidation,
   allowlistEntryService as AllowlistEntry,
-  auth0Service as Auth0,
+  phoneLoginService as PhoneLogin,
   callService as Call,
   codeRedemptionService as CodeRedemption,
   contactService as Contact,

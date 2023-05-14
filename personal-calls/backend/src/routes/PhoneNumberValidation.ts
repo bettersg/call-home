@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
 import * as z from 'zod';
-import type { User, Auth0, PhoneNumberValidation } from '../services';
+import type { User, PhoneLogin, PhoneNumberValidation } from '../services';
 import { normalizePhoneNumber } from '../util/country';
 import { validateRequest } from './helpers/validation';
 
@@ -21,7 +21,7 @@ const LOGIN_SCHEMA = z.object({
 
 function PhoneNumberValidationRoutes(
   userService: typeof User,
-  auth0Service: typeof Auth0,
+  phoneLoginService: typeof PhoneLogin,
   phoneNumberValidationService: typeof PhoneNumberValidation
 ): Router {
   const router = express.Router();
@@ -57,7 +57,7 @@ function PhoneNumberValidationRoutes(
           'SG'
         );
         req.log.info('Phone number is: ', formattedPhoneNumber);
-        await auth0Service.sendSms(formattedPhoneNumber);
+        await phoneLoginService.sendSms(formattedPhoneNumber);
         await phoneNumberValidationService.updatePhoneNumberValidationRequestTime(
           id
         );
@@ -80,8 +80,7 @@ function PhoneNumberValidationRoutes(
       }
       try {
         req.log.info('Received login attempt');
-        const token = await auth0Service.signIn(phoneNumber, code);
-        req.log.info('Received a token', token);
+        await phoneLoginService.signIn(phoneNumber, code);
         await userService.verifyUserPhoneNumber(userId, phoneNumber);
         const phoneNumberValidation =
           await phoneNumberValidationService.getPhoneNumberValidationForUser(
@@ -92,12 +91,8 @@ function PhoneNumberValidationRoutes(
         }
         return res.redirect('/');
       } catch (e) {
-        req.log.error(e.data);
-        const { response } = e;
-        if (response && response.data && response.data.error) {
-          if (response.data.error === 'invalid_grant') {
-            res.status(403).json({ message: 'BAD_OTP' });
-          }
+        if (e.message === 'BAD_OTP') {
+          return res.status(403).json({ message: 'BAD_OTP' });
         }
         return res.status(403).send();
       }

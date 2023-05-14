@@ -37,9 +37,8 @@ function FacebookDormCodeRedemption(
       throw new Error('Validation Error: WRONG_CODE_HANDLER');
     }
 
-    const previousUserRedemptions = await codeRedemptionService.getRedemptionsForUser(
-      userId
-    );
+    const previousUserRedemptions =
+      await codeRedemptionService.getRedemptionsForUser(userId);
     const redeemedCodes = await Promise.all(
       previousUserRedemptions.map((redemption) =>
         redeemableCodeService.getRedeemableCode(redemption.codeId)
