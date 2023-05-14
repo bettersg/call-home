@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Typography, Link, IconButton } from '@mui/material';
 import {
   ArrowBackIosNew as ArrowBackIosNewIcon,
   Public as PublicIcon,
 } from '@mui/icons-material';
 import {
-  Twc2SupportDetail,
+  SupportDetailWithSocials,
   FacebookLinksSection,
   SupportDetailStrings,
   getSupportDetailStrings,
-  getTwc2Detail,
+  getPartnerDetail,
   useLanguage,
 } from '../services';
 import { Container } from '../common/components';
@@ -80,7 +80,10 @@ function BlurbFacebookLinks(props: FacebookLinksSection) {
   );
 }
 
-type BlurbProps = Pick<Twc2SupportDetail, 'blurbIntro' | 'blurbFacebookLinks'>;
+type BlurbProps = Pick<
+  SupportDetailWithSocials,
+  'blurbIntro' | 'blurbFacebookLinks'
+>;
 
 function Blurb(props: BlurbProps) {
   const { blurbIntro, blurbFacebookLinks } = props;
@@ -93,7 +96,7 @@ function Blurb(props: BlurbProps) {
 }
 
 type DescriptionProps = Pick<
-  Twc2SupportDetail,
+  SupportDetailWithSocials,
   'logo' | 'name' | 'website' | 'blurbIntro' | 'blurbFacebookLinks'
 >;
 
@@ -139,7 +142,7 @@ function DescriptionSection(props: DescriptionProps) {
 }
 
 type CtaProps = Pick<
-  Twc2SupportDetail,
+  SupportDetailWithSocials,
   'ctaButtonText' | 'ctaLink' | 'ctaIcon'
 >;
 
@@ -170,9 +173,10 @@ export function SupportDetailPage() {
     null
   );
   const [lang] = useLanguage();
-  const [content, setContent] = useState<Twc2SupportDetail | null>(null);
+  const [content, setContent] = useState<SupportDetailWithSocials | null>(null);
+  const { partner } = useParams();
   useEffect(() => {
-    setContent(getTwc2Detail(lang));
+    setContent(getPartnerDetail(partner, lang));
   }, []);
   useEffect(() => {
     setFixedStrings(getSupportDetailStrings(lang));

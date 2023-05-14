@@ -11,7 +11,7 @@ export interface ServiceCardDetail extends Support {
   // The short blurb briefly explaining the services provided.
   shortBlurb: string;
   // The app internal route
-  route: Path;
+  route: string;
 }
 
 // Strings that stay constant on each Support detail page.
@@ -46,7 +46,7 @@ export interface SupportDetail extends Support {
 }
 
 // We should consider moving TWC2-specific things to their own file.
-export interface Twc2SupportDetail extends SupportDetail {
+export interface SupportDetailWithSocials extends SupportDetail {
   blurbFacebookLinks: FacebookLinksSection;
 }
 
@@ -68,19 +68,59 @@ export function getServiceCardDetails(): ServiceCardDetail[] {
       name: 'Transient Workers Count Too',
       shortBlurb:
         'Whatsapp call on Mondays to Fridays (9am - 9pm) or message anytime',
-      route: Path.SupportDetail,
+      route: `${Path.SupportDetail}/twc2`,
     },
     {
       logo: 'https://www.probono.sg/wp-content/uploads/2022/12/Pro-Bono-SG-Logo.png',
       name: 'Pro Bono SG',
       shortBlurb:
         'Book in-person appointment with a lawyer and get free basic legal advice',
-      route: Path.ProBonoSG,
+      route: `${Path.SupportDetail}/pro-bono-sg`,
+    },
+    {
+      logo: 'https://www.agoodspace.org/wp-content/uploads/2020/09/0.png',
+      name: 'ItsRainingRaincoats',
+      shortBlurb:
+        'Register for interactive activities, learning programs, and welfare programs',
+      route: `${Path.SupportDetail}/irr`,
+    },
+    {
+      logo: 'https://img.paperform.co/fetch/w_400,f_auto/https://s3.amazonaws.com/pf-upload-01/u-40359/1/2019-10-07/xm03ygs/HealthServe%20Logo%20colour.png',
+      name: 'HealthServe',
+      shortBlurb:
+        'Provides mental health and counseling hotline',
+      route: `${Path.SupportDetail}/healthserve`,
     },
   ];
 }
 
-const TWC2_DETAIL: Record<LanguageOption, Twc2SupportDetail> = {
+const EMPTY_DETAIL: Record<LanguageOption, SupportDetailWithSocials> = {
+  en: {
+    logo: '',
+    name: '',
+    website: '',
+    blurbIntro: '',
+    blurbFacebookLinks: {
+      title: '',
+      imageSrc: '',
+      links: [
+        {
+          href: '',
+          text: '',
+        },
+        {
+          href: '',
+          text: '',
+        },
+      ],
+    },
+    ctaButtonText: '',
+    ctaLink: '',
+    ctaIcon: '',
+  },
+};
+
+const TWC2_DETAIL: Record<LanguageOption, SupportDetailWithSocials> = {
   en: {
     logo: '/images/twc2-logo.png',
     name: 'Transient Workers Count Too (TWC2)',
@@ -106,6 +146,97 @@ const TWC2_DETAIL: Record<LanguageOption, Twc2SupportDetail> = {
   },
 };
 
-export function getTwc2Detail(language: LanguageOption): Twc2SupportDetail {
-  return TWC2_DETAIL[language];
+
+
+const PRO_BONO_SG_DETAIL: Record<LanguageOption, SupportDetailWithSocials> = {
+  en: {
+    logo: 'https://www.probono.sg/wp-content/uploads/2022/12/Pro-Bono-SG-Logo.png',
+    name: 'Pro Bono SG',
+    website: 'https://www.probono.sg/',
+    blurbIntro: 'Pro Bono SG (UEN No. 201700430E) is a registered charity with the status of Institution of a Public Character and a company limited by guarantee. It started as a department within The Law Society of Singapore and later became Law Society Pro Bono Services. Since 2007, we’ve expanded our legal initiatives and programs, helping over 132,000 people with legal awareness, guidance, and representation. In FY 21/22, we helped over 17,000 individuals and community organisations. Our volunteer base has grown to 1,000 registered volunteers from various industries and specialities.',
+    blurbFacebookLinks: {
+      title: '',
+      imageSrc: '',
+      links: [
+        {
+          href: '',
+          text: '',
+        },
+        {
+          href: '',
+          text: '',
+        },
+      ],
+    },
+    ctaButtonText: 'Schedule a Free Legal Clinic',
+    ctaLink: 'https://forms.office.com/Pages/ResponsePage.aspx?id=2SIByMB8W06hRKsXHMIqYg9U_LFeiCRHgqHNQqZ_EfxUMTJZNkhEMUlOMU00WVlUODROTFBMTU5IMyQlQCN0PWcu',
+    ctaIcon: '',
+  },
+};
+
+const IRR_DETAIL: Record<LanguageOption, SupportDetailWithSocials> = {
+  en: {
+    logo: 'https://www.agoodspace.org/wp-content/uploads/2020/09/0.png',
+    name: 'ItsRainingRaincoats',
+    website: 'https://itsrainingraincoats.com/',
+    blurbIntro: 'ItsRainingRaincoats is a Singapore charity that aims to build bridges of integration between migrant workers and residents of Singapore. We work to improve their welfare and believe that their seamless integration into our community will benefit not just our migrant workers but Singapore as a whole.',
+    blurbFacebookLinks: {
+      title: '',
+      imageSrc: '',
+      links: [
+        {
+          href: '',
+          text: '',
+        },
+        {
+          href: '',
+          text: '',
+        },
+      ],
+    },
+    ctaButtonText: 'Visit IRR Facebook Page for Free Services',
+    ctaLink: 'https://www.facebook.com/itsrainingraincoats/',
+    ctaIcon: '',
+  },
+};
+
+const HEALTHSERVE_DETAIL: Record<LanguageOption, SupportDetailWithSocials> = {
+  en: {
+    logo: 'https://img.paperform.co/fetch/w_400,f_auto/https://s3.amazonaws.com/pf-upload-01/u-40359/1/2019-10-07/xm03ygs/HealthServe%20Logo%20colour.png',
+    name: 'HealthServe',
+    website: 'https://www.healthserve.org.sg/',
+    blurbIntro: 'Founded in 2006 on Christian values, HealthServe is an IPC registered charity that seeks to bring healing and hope to vulnerable low-wage migrant workers in Singapore.',
+    blurbFacebookLinks: {
+      title: '',
+      imageSrc: '',
+      links: [
+        {
+          href: '',
+          text: '',
+        },
+        {
+          href: '',
+          text: '',
+        },
+      ],
+    },
+    ctaButtonText: '24-hour mental health hotline',
+    ctaLink: 'tel:+65%203129%205000',
+    ctaIcon: '',
+  },
+};
+
+export function getPartnerDetail(partner: string | undefined, language: LanguageOption): SupportDetailWithSocials {
+  switch (partner) {
+    case 'twc2':
+      return TWC2_DETAIL[language];
+    case 'pro-bono-sg':
+      return PRO_BONO_SG_DETAIL[language];
+    case 'irr':
+      return IRR_DETAIL[language];
+    case 'healthserve':
+      return HEALTHSERVE_DETAIL[language];
+    default:
+      return EMPTY_DETAIL[language];
+  }
 }
