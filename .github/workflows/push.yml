@@ -1,24 +1,22 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# This workflow will do a clean installation of node dependencies, cache/restore them, and run tests across different versions of node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+# See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
-name: apps/super-app CI
+name: apps/super-app CI (push to master)
 
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
 
 jobs:
-  build:
-
+  build_and_deploy:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     strategy:
       matrix:
         node-version: [18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
@@ -42,3 +40,15 @@ jobs:
     - name: Test
       run: npm test
       working-directory: apps/super-app/
+    - name: 'Authenticate'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        # TODO: add these to the Terraform setup
+        workload_identity_provider: 'projects/427853968081/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider'
+        service_account: 'github-actions-service-account@call-home-staging.iam.gserviceaccount.com'
+    - name: 'Upload folder'
+      uses: 'google-github-actions/upload-cloud-storage@v1'
+      with:
+        path: 'apps/super-app/build'
+        destination: 'call-home-frontend'
+        parent: false 
