@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import CssBaseline from '@mui/material/CssBaseline';
 import * as Sentry from '@sentry/react';
 import {
   AdminServiceProvider,
@@ -67,7 +67,7 @@ function InitApp() {
   return <SceneRouter />;
 }
 
-class ErrorBoundary extends React.Component {
+class ErrorBoundary extends React.Component<any> {
   state: {
     error: Error | null;
   };

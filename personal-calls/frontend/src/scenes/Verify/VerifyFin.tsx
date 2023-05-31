@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import { useTheme } from '@material-ui/core/styles';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { useUserService } from 'contexts';
 import { PrimaryButton, Container, Footer } from 'components';
 import { validateFin } from 'services/FinValidation';
@@ -45,8 +44,6 @@ function VerifyFinPresenter({
   onFinChanged,
   errorMessage,
 }: VerifyFinPresenterProps) {
-  const theme = useTheme();
-
   return (
     <Container>
       <form

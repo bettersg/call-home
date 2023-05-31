@@ -1,11 +1,9 @@
 import React, { useCallback, useState } from 'react';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import useAdminRoute from 'util/useAdminRoute';
-import AllowlistTabContent from './AllowlistTabContent';
 import DormTabContent from './DormTabContent';
 import RedeemableCodeTabContent from './RedeemableCodeTabContent';
-import UserTabContent from './UserTabContent';
 
 function TabPanel({
   value,
@@ -26,7 +24,7 @@ export default function AdminPage() {
   const [tabIndex, setTabIndex] = useState(0);
 
   const handleTabChange = useCallback(
-    (_event, newValue) => {
+    (_event: unknown, newValue: number) => {
       setTabIndex(newValue);
     },
     [setTabIndex]
@@ -40,21 +38,13 @@ export default function AdminPage() {
   return (
     <>
       <Tabs value={tabIndex} onChange={handleTabChange}>
-        <Tab label="Users" />
-        <Tab label="Allowlist" />
         <Tab label="Dorms" />
         <Tab label="Promo codes" />
       </Tabs>
       <TabPanel value={tabIndex} index={0}>
-        <UserTabContent />
-      </TabPanel>
-      <TabPanel value={tabIndex} index={1}>
-        <AllowlistTabContent />
-      </TabPanel>
-      <TabPanel value={tabIndex} index={2}>
         <DormTabContent />
       </TabPanel>
-      <TabPanel value={tabIndex} index={3}>
+      <TabPanel value={tabIndex} index={1}>
         <RedeemableCodeTabContent />
       </TabPanel>
     </>

@@ -1,5 +1,5 @@
 import React from 'react';
-import MuiContainer from '@material-ui/core/Container';
+import MuiContainer from '@mui/material/Container';
 
 // TODO document why meddling with --viewport-height is needed
 document.documentElement.style.setProperty(

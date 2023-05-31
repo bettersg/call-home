@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { ReportIssueDialog } from 'components';
-import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
-import FeedbackIcon from '@material-ui/icons/Feedback';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import Typography from '@mui/material/Typography';
+import { withStyles } from 'hack/withStyles';
+import FeedbackIcon from '@mui/icons-material/Feedback';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { useUserService } from 'contexts';
 import { Locale } from 'scenes/types';
 
@@ -37,13 +37,11 @@ export default function Footer({ locale }: FooterProps) {
   };
   const [userState] = useUserService();
   const { me: user } = userState || {};
-  const ActionLink = withStyles((theme) => ({
-    root: {
-      cursor: 'pointer',
-      display: 'flex',
-      color: (theme as any).palette.primary[900],
-    },
-  }))(Typography);
+  const ActionLink = withStyles({
+    cursor: 'pointer',
+    display: 'flex',
+    color: 'primary.900',
+  })(Typography);
   return (
     <div
       style={{

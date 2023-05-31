@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
-import { withStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
+import { withStyles } from 'hack/withStyles';
+import Box from '@mui/material/Box';
 import { DateTime } from 'luxon';
 import { Container } from 'components';
 import { getRecentCalls, RecentCall } from '../services/Call';
@@ -42,12 +42,11 @@ function formatCallDuration(seconds: number) {
   }`;
 }
 
-const RecentCallsBox = withStyles((theme) => ({
-  root: {
-    backgroundColor: 'white',
-    border: `1px solid ${theme.palette.grey[200]}`,
-  },
-}))(Box);
+const RecentCallsBox = withStyles({
+  backgroundColor: 'white',
+  border: '1px solid',
+  borderColor: 'grey.200',
+})(Box);
 
 function prettyFormatDate(date: string, locale: string) {
   const dateObj = DateTime.fromISO(date);

@@ -1,8 +1,8 @@
 import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
+import { withStyles } from 'hack/withStyles';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import { Container, DetectBrowserSnackbar } from 'components';
 import { SceneProps } from 'scenes/types';
 
@@ -28,35 +28,36 @@ const STRINGS = {
   },
 };
 
-const DataConsumptionCopy = withStyles((theme: any) => ({
-  root: {
-    borderRadius: '10000px',
-    background: 'white',
-    border: `1px solid ${theme.palette.primary[800]}`,
-    color: theme.palette.primary[800],
-    padding: '0 12px',
-  },
-}))(Box);
+const DataConsumptionCopy = withStyles({
+  borderRadius: '10000px',
+  background: 'white',
+  border: 1,
+  borderColor: 'primary.800',
+  color: 'primary.800',
+  padding: '0 12px',
+})(Box);
 
-const FacebookButton = withStyles(() => ({
-  root: {
-    marginTop: '60px',
+const FacebookButton = withStyles({
+  marginTop: '60px',
+  backgroundColor: '#1877F2',
+  width: '100%',
+  color: 'white',
+  padding: '19px',
+  '&:hover': {
     backgroundColor: '#1877F2',
-    width: '100%',
-    color: 'white',
-    padding: '19px',
   },
-}))(Button);
+})(Button);
 
-const GoogleButton = withStyles(() => ({
-  root: {
-    marginTop: '60px',
+const GoogleButton = withStyles({
+  marginTop: '60px',
+  backgroundColor: '#FFFFFF',
+  width: '100%',
+  color: 'grey',
+  fontWeight: 'bold',
+  '&:hover': {
     backgroundColor: '#FFFFFF',
-    width: '100%',
-    color: 'grey',
-    fontWeight: 'bold',
   },
-}))(Button);
+})(Button);
 
 export default function Login({ locale }: SceneProps) {
   return (

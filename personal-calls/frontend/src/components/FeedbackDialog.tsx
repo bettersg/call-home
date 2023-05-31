@@ -1,16 +1,16 @@
 import React, { FormEvent, useState } from 'react';
-import Dialog, { DialogProps } from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogActions from '@material-ui/core/DialogActions';
-import { withStyles } from '@material-ui/core/styles';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Rating from '@material-ui/lab/Rating';
+import Dialog, { DialogProps } from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
+import { withStyles } from 'hack/withStyles';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Rating from '@mui/material/Rating';
 import { Locale } from 'scenes/types';
 import { Call as TwilioSdkCall } from '@twilio/voice-sdk';
-import CloseIcon from '@material-ui/icons/Close';
-import { IconButton } from '@material-ui/core';
+import CloseIcon from '@mui/icons-material/Close';
+import { IconButton } from '@mui/material';
 import { PrimaryButton } from '../common/components/RoundedButton';
 
 interface FeedbackDialogProps extends DialogProps {
@@ -47,23 +47,19 @@ const STRINGS = {
 };
 
 // TODO move this to its own module
-const withDialogButtonStyles = withStyles(() => ({
-  root: {
-    padding: '1em 2em',
-    flex: '1 0',
-    margin: '0 0.5rem',
-  },
-}));
+const withDialogButtonStyles = withStyles({
+  padding: '1em 2em',
+  flex: '1 0',
+  margin: '0 0.5rem',
+});
 
 const DialogPrimaryButton = withDialogButtonStyles(PrimaryButton);
 
-const CloseDialogIconButton = withStyles(() => ({
-  root: {
-    position: 'absolute',
-    right: '0',
-    top: '0',
-  },
-}))(IconButton);
+const CloseDialogIconButton = withStyles({
+  position: 'absolute',
+  right: '0',
+  top: '0',
+})(IconButton);
 
 export default function FeedbackDialog({
   locale,

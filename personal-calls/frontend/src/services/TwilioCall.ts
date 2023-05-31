@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/react';
 import { Call as TwilioSdkCall, Device } from '@twilio/voice-sdk';
 // TODO for some reason, this file requires using the dist/ directory
-import { Edge } from '@call-home/shared/dist/types/CallExperimentFlags';
+import { Edge } from '@call-home/shared/types/CallExperimentFlags';
 import { getLogger } from 'loglevel';
 import getToken from './CallToken';
 

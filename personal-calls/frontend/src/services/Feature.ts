@@ -1,5 +1,5 @@
 // TODO for some reason, this file requires using the dist/ directory
-import { Edge } from '@call-home/shared/dist/types/CallExperimentFlags';
+import { Edge } from '@call-home/shared/types/CallExperimentFlags';
 import { noRedirectClient, UnauthenticatedError } from './apiClient';
 import ObservableService from './observableService';
 

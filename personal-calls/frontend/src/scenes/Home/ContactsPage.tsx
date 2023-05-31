@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Redirect, Link, useLocation, useHistory } from 'react-router-dom';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Box from '@material-ui/core/Box';
-import TextField from '@material-ui/core/TextField';
-import { withStyles } from '@material-ui/core/styles';
-import AddIcon from '@material-ui/icons/Add';
-import CallIcon from '@material-ui/icons/Call';
-import PhoneDisabledIcon from '@material-ui/icons/PhoneDisabled';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import LinkIcon from '@material-ui/icons/Link';
-import HistoryIcon from '@material-ui/icons/History';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import { withStyles } from 'hack/withStyles';
+import AddIcon from '@mui/icons-material/Add';
+import CallIcon from '@mui/icons-material/Call';
+import PhoneDisabledIcon from '@mui/icons-material/PhoneDisabled';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import LinkIcon from '@mui/icons-material/Link';
+import HistoryIcon from '@mui/icons-material/History';
 import { Duration } from 'luxon';
 import {
   Container,
@@ -135,71 +135,55 @@ const STRINGS = {
   },
 };
 
-const AddContactButton = withStyles((theme) => ({
-  root: {
+const AddContactButton = withStyles({
+  backgroundColor: 'white',
+  border: '1px solid',
+  borderColor: 'grey.200',
+  color: 'primary.700',
+  fontWeight: 'bold',
+  '&:hover': {
     backgroundColor: 'white',
-    border: `1px solid ${theme.palette.grey[200]}`,
-    color: (theme as any).palette.primary[700],
-    fontWeight: 'bold',
-    '&:hover': {
-      backgroundColor: 'white',
-    },
   },
-}))(Button);
+})(Button);
 
-const AddContactIcon = withStyles((theme) => ({
-  root: {
-    color: 'white',
-    backgroundColor: (theme as any).palette.primary[300],
-    borderRadius: '1000px',
-  },
-}))(AddIcon);
+const AddContactIcon = withStyles({
+  color: 'white',
+  backgroundColor: 'primary.300',
+  borderRadius: '1000px',
+})(AddIcon);
 
-const ContactBox: any = withStyles((theme) => ({
-  root: {
-    backgroundColor: 'white',
-    border: `1px solid ${theme.palette.grey[200]}`,
-  },
-}))(Box);
+const ContactBox: any = withStyles({
+  backgroundColor: 'white',
+  border: '1px solid',
+  borderColor: 'grey.200',
+})(Box);
 
-const ContactCallIcon = withStyles((theme) => ({
-  root: {
-    transform: 'rotate(270deg)',
-    color: (theme as any).palette.primary[900],
-  },
-}))(CallIcon);
+const ContactCallIcon = withStyles({
+  transform: 'rotate(270deg)',
+  color: 'primary.900',
+})(CallIcon);
 
-const ActionLink = withStyles((theme) => ({
-  root: {
-    cursor: 'pointer',
-    display: 'flex',
-    color: (theme as any).palette.primary[900],
-  },
-}))(Typography);
+const ActionLink = withStyles({
+  cursor: 'pointer',
+  display: 'flex',
+  color: 'primary.900',
+})(Typography);
 
-const withDialogButtonStyles = withStyles(() => ({
-  root: {
-    padding: '1em 2em',
-    flex: '1 0',
-    margin: '0 0.5rem',
-  },
-}));
+const withDialogButtonStyles = withStyles({
+  padding: '1em 2em',
+  flex: '1 0',
+  margin: '0 0.5rem',
+});
 
-const InfoItem = withStyles((theme) => ({
-  root: {
-    color: (theme as any).palette.primary[900],
-  },
-}))(Typography);
-const LightInfoItem = withStyles((theme) => ({
-  root: {
-    color: (theme as any).palette.primary[700],
-  },
-}))(Typography);
-const ErrorInfoItem = withStyles((theme) => ({
-  root: {
-    color: theme.palette.error.main,
-  },
-}))(Typography);
+const InfoItem = withStyles({
+  color: 'primary.900',
+})(Typography);
+const LightInfoItem = withStyles({
+  color: 'primary.700',
+})(Typography);
+const ErrorInfoItem = withStyles({
+  color: 'error.main',
+})(Typography);
 
 const DialogNeutralButton = withDialogButtonStyles(NeutralButton);
 const DialogPrimaryButton = withDialogButtonStyles(PrimaryButton);
@@ -543,7 +527,12 @@ function CallContactButton({
   const Icon = disabled ? PhoneDisabledIcon : ContactCallIcon;
 
   return (
-    <IconButton style={{ padding: '0' }} onClick={onClick} disabled={disabled}>
+    <IconButton
+      style={{ padding: '0' }}
+      onClick={onClick}
+      disabled={disabled}
+      size="large"
+    >
       <Icon />
     </IconButton>
   );
