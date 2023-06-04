@@ -1,5 +1,5 @@
 import React from 'react';
-import { withStyles } from 'hack/withStyles';
+import { withStyles } from 'hack';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';

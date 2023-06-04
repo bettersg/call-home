@@ -1,29 +1,12 @@
 import Button from '@mui/material/Button';
+import { withStyles } from '../hack/withStyles';
 
-// This uses the mui5 sx prop.
-// TODO Presumably there's something easier than this e.g. a styling solution
-// that doesn't use the sx prop or an HOC that already does this exact thing,
-// but I couldn't figure out where, and this has tortured me enough.
-function withStylesSx(styles) {
-  return (Component) => {
-    return (props) => {
-      const { sx, ...rest } = props;
-      return (
-        <Component
-          sx={[styles, ...(Array.isArray(sx) ? sx : [sx])]}
-          {...rest}
-        ></Component>
-      );
-    };
-  };
-}
-
-const RoundedButton = withStylesSx({
+const RoundedButton = withStyles({
   // This just needs to be >50% of the button's height
   borderRadius: '1000px',
 })(Button);
 
-const PrimaryButton = withStylesSx({
+const PrimaryButton = withStyles({
   color: 'white',
   // sx has direct access to the theme, so we provide just a string.
   backgroundColor: 'primary.700',
@@ -32,12 +15,12 @@ const PrimaryButton = withStylesSx({
   },
 })(RoundedButton);
 
-const NeutralButton = withStylesSx({
+const NeutralButton = withStyles({
   backgroundColor: 'white',
   color: 'primary.700',
 })(RoundedButton);
 
-const ErrorButton = withStylesSx({
+const ErrorButton = withStyles({
   backgroundColor: 'error.main',
   color: 'white',
 })(RoundedButton);

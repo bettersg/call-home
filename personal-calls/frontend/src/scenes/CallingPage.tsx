@@ -3,7 +3,7 @@ import React, { useCallback, useState, useEffect } from 'react';
 import * as Sentry from '@sentry/react';
 import CallEndIcon from '@mui/icons-material/CallEnd';
 import CloseIcon from '@mui/icons-material/Close';
-import { withStyles } from 'hack/withStyles';
+import { withStyles } from 'hack';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { DateTime } from 'luxon';

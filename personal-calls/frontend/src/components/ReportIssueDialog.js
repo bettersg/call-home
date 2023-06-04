@@ -5,7 +5,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
-import { withStyles } from 'hack/withStyles';
+import { withStyles } from 'hack';
 import { reportUserIssue } from '../services/Sentry';
 import { PrimaryButton } from '../common/components';
 

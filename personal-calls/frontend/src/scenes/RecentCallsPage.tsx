@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
-import { withStyles } from 'hack/withStyles';
+import { withStyles } from 'hack';
 import Box from '@mui/material/Box';
 import { DateTime } from 'luxon';
 import { Container } from 'components';

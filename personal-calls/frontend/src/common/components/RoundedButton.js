@@ -1,13 +1,15 @@
 import Button from '@mui/material/Button';
-import { withStyles } from 'hack/withStyles';
+import { withStyles } from '../hack/withStyles';
 
 const RoundedButton = withStyles({
-  borderRadius: '1000px', // This just needs to be >50% of the button's height
+  // This just needs to be >50% of the button's height
+  borderRadius: '1000px',
 })(Button);
 
 const PrimaryButton = withStyles({
-  backgroundColor: 'primary.700',
   color: 'white',
+  // sx has direct access to the theme, so we provide just a string.
+  backgroundColor: 'primary.700',
   '&:hover': {
     backgroundColor: 'primary.700',
   },
