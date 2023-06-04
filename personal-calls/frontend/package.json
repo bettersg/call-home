@@ -31,6 +31,7 @@
     "init": "npm link @call-home/shared",
     "start": "SKIP_PREFLIGHT_CHECK=true react-scripts start",
     "build": "react-scripts build",
+    "copy-common": "scripts/copy-common.sh",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint",
