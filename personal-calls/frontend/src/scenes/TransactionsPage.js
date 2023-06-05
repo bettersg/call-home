@@ -52,7 +52,7 @@ export default function TransactionsPage() {
 
   return (
     <Container>
-      <Typography style={{ marginTop: '4rem' }} variant="h5" component="h2">
+      <Typography style={{ marginTop: '4rem' }} component="h2">
         Transactions
       </Typography>
       <Typography variant="body1">

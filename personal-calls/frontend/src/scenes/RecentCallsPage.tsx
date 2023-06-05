@@ -171,7 +171,7 @@ export default function RecentCallsPage({
     >
       <BackButton />
       <Typography
-        variant="h5"
+        variant="h2"
         component="h1"
         style={{
           marginBottom: '12px',

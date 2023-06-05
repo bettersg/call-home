@@ -70,7 +70,7 @@ function VerificationModal({
         src="/images/work_pass_caller.svg"
       />
       <Typography
-        variant="h5"
+        variant="h2"
         component="h1"
         style={{
           marginTop: '36px',
@@ -135,7 +135,7 @@ function VerifyWorkpassPresenter({
         style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
       >
         <Typography
-          variant="h5"
+          variant="h2"
           component="h1"
           style={{ marginBottom: '12px' }}
         >

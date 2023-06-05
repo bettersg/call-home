@@ -15,7 +15,12 @@ const colors = {
   text: {
     primary: '#133844',
   },
-  grey: { 200: '#DBE0E1' },
+  grey: {
+    200: '#DBE0E1',
+    // TODO taken from 'Call Home/ Medium Gray' in the new mockup. Figure out
+    // the right label for this.
+    medium: '#BEC7CA',
+  },
   error: {
     main: '#FF3131',
   },
@@ -27,19 +32,51 @@ const colors = {
 const callHomeTheme = createTheme(
   adaptV4Theme({
     typography: {
+      h2: {
+        fontFamily: 'Hind',
+        fontWeight: 400,
+        fontSize: '1.5rem',
+        lineHeight: 1.334,
+        letterSpacing: '0em',
+      },
       h4: {
+        fontSize: 20,
+        fontWeight: 700,
+        color: colors.text.primary,
+        fontFamily: 'Hind',
+        lineHeight: '28px',
+      },
+      h5: {
+        fontSize: 18,
         fontWeight: 600,
+        color: colors.text.primary,
+        fontFamily: 'Hind',
+        lineHeight: '24px',
+      },
+      h6: {
+        fontSize: 16,
+        fontWeight: 600,
+        color: 'colors.primary.800',
+        fontFamily: 'Hind',
+        lineHeight: '20px',
+        textDecoration: 'underline',
+      },
+      subtitle1: {
+        fontSize: 14,
+        fontWeight: 400,
+        color: '#000000',
+        fontFamily: 'Hind',
       },
     },
     palette: {
       background: {
         default: colors.primary[100],
       },
-      text: colors.text,
       primary: colors.primary,
       grey: colors.grey,
       error: colors.error,
       warning: colors.yellow,
+      text: colors.text,
     },
     overrides: {
       MuiTypography: {

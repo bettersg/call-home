@@ -388,7 +388,7 @@ export default function CallingPage({ locale }: SceneProps) {
             alt=""
             src={avatarUrl}
           />
-          <Typography style={{ marginTop: '4rem' }} variant="h5" component="h2">
+          <Typography style={{ marginTop: '4rem' }} component="h2">
             {activeContact.name}
           </Typography>
           {callDuration && (

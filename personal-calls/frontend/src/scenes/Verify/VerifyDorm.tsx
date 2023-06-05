@@ -45,7 +45,7 @@ export default function VerifyDorm({ locale }: SceneProps) {
 
   return (
     <Container>
-      <Typography variant="h5" component="h1" style={{ marginBottom: '12px' }}>
+      <Typography variant="h2" component="h1" style={{ marginBottom: '12px' }}>
         {STRINGS[locale].VERIFY_DORM_TITLE}
       </Typography>
       <form

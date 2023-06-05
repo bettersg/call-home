@@ -623,7 +623,7 @@ export default function ContactsPage({ locale }: SceneProps) {
       <DetectBrowserSnackbar />
       <HelpSnackbar locale={locale} />
       <Typography
-        variant="h5"
+        variant="h2"
         component="h1"
         style={{
           marginBottom: '12px',

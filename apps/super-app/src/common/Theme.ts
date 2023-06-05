@@ -32,6 +32,13 @@ const colors = {
 const callHomeTheme = createTheme(
   adaptV4Theme({
     typography: {
+      h2: {
+        fontFamily: 'Hind',
+        fontWeight: 400,
+        fontSize: '1.5rem',
+        lineHeight: 1.334,
+        letterSpacing: '0em',
+      },
       h4: {
         fontSize: 20,
         fontWeight: 700,

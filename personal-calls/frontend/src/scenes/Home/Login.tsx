@@ -71,7 +71,7 @@ export default function Login({ locale }: SceneProps) {
       <DetectBrowserSnackbar />
       <div className="login-content">
         <img alt="" src="/images/landing_splash.svg" />
-        <Typography style={{ marginTop: '24px' }} variant="h5" component="h1">
+        <Typography style={{ marginTop: '24px' }} variant="h2" component="h1">
           {STRINGS[locale].DISPLAY_TITLE}
         </Typography>
         <Typography
