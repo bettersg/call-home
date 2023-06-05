@@ -2,7 +2,6 @@ import './LandingPage.css';
 import { useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import { Container } from '../common/components';
-import { ServiceCard } from '../common/components/ServiceCard';
 import {
   useLanguage,
   getServiceCardDetails,
@@ -10,7 +9,7 @@ import {
   ServiceCardDetail,
   SupportDetailStrings,
 } from '../services';
-import { NavBar } from '../components';
+import { ServiceCard, NavBar } from '../components';
 import '../components/navbar/NavBarAbove.css';
 
 export function LandingPage() {
