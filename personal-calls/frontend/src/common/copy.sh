@@ -10,8 +10,7 @@ echo "Copying common code from ${APPS_COMMON_DIR} to ${PERSONAL_CALLS_COMMON_DIR
 rm -fr "$PERSONAL_CALLS_COMMON_DIR"
 cp -r "$APPS_COMMON_DIR" "$PERSONAL_CALLS_COMMON_DIR"
 
-# TODO(glencbz) super-app isn't ready yet.
-# SUPER_APP_COMMON_DIR="${PROJECT_ROOT}/apps/super-app/src/common"
-# echo "Copying common code from ${APPS_COMMON_DIR} to ${SUPER_APP_COMMON_DIR}"
-# rm -fr "$SUPER_APP_COMMON_DIR"
-# cp -r "$APPS_COMMON_DIR" "$SUPER_APP_COMMON_DIR"
+SUPER_APP_COMMON_DIR="${PROJECT_ROOT}/apps/super-app/src/common"
+echo "Copying common code from ${APPS_COMMON_DIR} to ${SUPER_APP_COMMON_DIR}"
+rm -fr "$SUPER_APP_COMMON_DIR"
+cp -r "$APPS_COMMON_DIR" "$SUPER_APP_COMMON_DIR"

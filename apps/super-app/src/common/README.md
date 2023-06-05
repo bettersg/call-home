@@ -1,23 +1,44 @@
 # Common
 
-TODO TODO TODO TODO TODO TODO TODO TODO
-Refactor this out so that it can _actually_ be shared.
-TODO TODO TODO TODO TODO TODO TODO TODO
+This contains files that are shared between apps.
 
-This contains files that _should_ be shared between apps, but we just haven't
-for whatever reasons, e.g.:
+TODO Replace copying with an actually scalable solution.
 
-- Different versions of Material UI (v5.0.0 was introduced between
-  personal-calls and super-app) break how the modules are used and imported
-- Different versions of React and c-r-a (react@18.0.0) affect typechecking
-- This reduces the risk of accidental breakage of personal-calls
+Sharing is done by copying the contents of this directory to the various
+locations. Copies live in
 
-## Development
+- `/apps/super-app/src/common`
+- `/personal-calls/frontend/src/common`
 
-These files can't be shared as-is, so modifications must be made to all versions
-in tandem.
+These copies should not be modified directly - the 'main' one should be changed
+and then copied over. We can consider `.gitignore`-ing the copies, but that
+might lead to confusing 'works on my machine' issues during code review if a
+developer accidentally changes a copy instead of the original.
 
-Copies of this directory live in:
+Now, this is obviously terrible, but incredibly, the obvious alternatives don't
+work!
 
-- `/apps/super-app/src/common`: Material UI v5, React 18
-- `/personal-calls/frontend/src/common`: Material UI v4, React 16
+- The easiest way to do this is to symlink `/apps/common` into the various
+  directories we want, _but_ `create-react-app`'s Webpack configuration will
+  only convert TypeScript files that are under `src/`, and it happens to resolve
+  the symlinks into the real paths, so it refuses to transpile those.
+  
+  We _could_ try to fiddle with the Webpack config, but I frankly don't think
+  it's worth ejecting (then we have to config everything ourselves), or using
+  yet another library to try to patch the config (because when things break,
+  it'll be confusing as heck to handle, and who knows how well these libraries
+  work).
+  
+- The alternative is to make `apps/common` a local npm package that we can
+  compile into JS and then install to the various apps, similar to the
+  `personal-calls/shared` directory. Sounds simple, except that `apps/common`
+  contains React code, and React Hooks requires that the `react` import resolves
+  to the [same module](https://react.dev/warnings/invalid-hook-call-warning#duplicate-react).
+  Building `apps/common` will use its own `react`, which doesn't match the app's
+  `react`.
+  
+  It might be possible to dependency inject `react` into `apps/common`, but that
+  sounds tedious rewrite.
+
+A convenient side benefit, though, is that we don't have to change how
+`personal-calls` builds, because it already has the files it needs.
