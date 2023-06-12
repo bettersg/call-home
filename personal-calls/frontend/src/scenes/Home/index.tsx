@@ -1,5 +1,5 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { SceneProps } from 'scenes/types';
 import PATHS, { useReadyUserState, isUserVerified } from 'scenes/paths';
 import { useFeatureService } from 'contexts';
@@ -19,7 +19,7 @@ function Home({ locale, routePath }: SceneProps) {
   }
 
   if (!isUserVerified(user, featureState)) {
-    return <Redirect to={PATHS.VERIFY} />;
+    return <Navigate to={PATHS.VERIFY} replace />;
   }
   return <ContactsPage locale={locale} routePath={routePath} />;
 }

@@ -1,6 +1,6 @@
 import { UserWalletResponse } from '@call-home/shared/types/User';
 import React, { useState, useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useUserService, useFeatureService } from '../contexts';
 import { UserState, FeatureState } from '../services';
 
@@ -105,7 +105,7 @@ function useAuthRouting(ownRoute: string): RoutingResult {
   if (route && route !== ownRoute) {
     return {
       ready: true,
-      renderElement: <Redirect to={route} />,
+      renderElement: <Navigate to={route} replace />,
     };
   }
 

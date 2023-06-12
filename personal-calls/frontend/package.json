@@ -24,7 +24,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-imask": "^6.0.5",
-    "react-router-dom": "^5.2.0",
+    "react-router-dom": "^6.4.5",
     "util": "^0.12.5"
   },
   "scripts": {

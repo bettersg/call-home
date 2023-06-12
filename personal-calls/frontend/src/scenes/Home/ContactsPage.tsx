@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Redirect, Link, useLocation, useHistory } from 'react-router-dom';
+import { Navigate, Link, useLocation, useNavigate } from 'react-router-dom';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Typography from '@mui/material/Typography';
@@ -540,7 +540,7 @@ function CallContactButton({
 
 const dialogHashId = '#new-contact';
 export default function ContactsPage({ locale }: SceneProps) {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const [userState, userService] = useUserService();
   const { me: user } = userState || {};
@@ -574,7 +574,7 @@ export default function ContactsPage({ locale }: SceneProps) {
   }, []);
 
   if (activeContact) {
-    return <Redirect to={PATHS.CALLING} />;
+    return <Navigate to={PATHS.CALLING} replace />;
   }
 
   const userCallTimeDuration = Duration.fromObject({
@@ -767,7 +767,7 @@ export default function ContactsPage({ locale }: SceneProps) {
           }}
           variant="outlined"
           onClick={() => {
-            history.push(dialogHashId);
+            navigate(dialogHashId);
           }}
         >
           <AddContactIcon
@@ -790,7 +790,7 @@ export default function ContactsPage({ locale }: SceneProps) {
       >
         <AddContactDialog
           onClose={() => {
-            history.replace('');
+            navigate('');
           }}
           open={isAddDialogOpen}
           locale={locale}

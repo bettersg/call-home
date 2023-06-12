@@ -7,7 +7,7 @@ import { withStyles } from 'hack/withStyles';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { DateTime } from 'luxon';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import {
   useUserService,
   useContactService,
@@ -320,7 +320,7 @@ export default function CallingPage({ locale }: SceneProps) {
   }, [contactService, disconnectCall]);
 
   if (!user || !activeContact) {
-    return <Redirect to={PATHS.HOME} />;
+    return <Navigate to={PATHS.HOME} replace />;
   }
 
   const onSubmitFeedback = (feedback: number, qualityIssue?: string) => {

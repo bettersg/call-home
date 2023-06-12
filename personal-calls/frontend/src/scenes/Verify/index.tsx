@@ -1,5 +1,5 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { SceneProps } from 'scenes/types';
 import PATHS, { useReadyUserState, isUserVerified } from 'scenes/paths';
 import { useFeatureService } from 'contexts';
@@ -18,7 +18,7 @@ function Verify({ locale, routePath }: SceneProps) {
 
   const user = userState.me;
   if (!user || isUserVerified(user, featureState)) {
-    return <Redirect to={PATHS.HOME} />;
+    return <Navigate to={PATHS.HOME} replace />;
   }
 
   // Verify phone number before work pass.

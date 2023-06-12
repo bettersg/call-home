@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useUserService } from '../contexts';
 import PATHS from '../scenes/paths';
 
@@ -15,7 +15,7 @@ export default function useAdminRoute() {
   }, [userService]);
 
   if (!user && !userRequestInFlight) {
-    return <Redirect to={PATHS.HOME} />;
+    return <Navigate to={PATHS.HOME} replace />;
   }
   return null;
 }
