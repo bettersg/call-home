@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box} from '@mui/material';
+import { Box } from '@mui/material';
 import { NavBar } from './navbar';
 import { Container } from '../common/components';
 import './navbar/NavBarAbove.css';
@@ -11,21 +11,14 @@ interface NavBarContainerProps {
 }
 
 export function NavBarContainer<T extends NavBarContainerProps>(props: T) {
-  const {
-    children,
-    aboveStyle,
-    containerStyle,
-    ...rest
-  } = props
+  const { children, aboveStyle, containerStyle, ...rest } = props;
 
-
-  return <Container {...rest} style={containerStyle}>
-    <Box
-      className="navbar-above"
-      style={aboveStyle}
-    >
-      {children}
-    </Box>
-    <NavBar />
-  </Container>;
+  return (
+    <Container {...rest} style={containerStyle}>
+      <Box className="navbar-above" style={aboveStyle}>
+        {children}
+      </Box>
+      <NavBar />
+    </Container>
+  );
 }
