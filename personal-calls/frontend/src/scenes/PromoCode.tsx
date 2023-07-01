@@ -1,5 +1,5 @@
 import React, { useState, useEffect, FormEvent } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useRedeemableCodeService } from 'contexts';
@@ -32,7 +32,7 @@ const STRINGS: Record<string, typeof EN_STRINGS> = {
 
 export default function PromoCode({ locale, routePath }: SceneProps) {
   const [, redeemableCodeService] = useRedeemableCodeService();
-  const history = useHistory();
+  const navigate = useNavigate();
   const routeResult = useAuthRouting(routePath);
   const [codeClaimed, setCodeClaimed] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -127,7 +127,7 @@ export default function PromoCode({ locale, routePath }: SceneProps) {
           style={{
             marginTop: '12px',
           }}
-          onClick={() => history.push(PATHS.HOME)}
+          onClick={() => navigate(PATHS.HOME)}
         >
           {STRINGS[locale].CLOSE}
         </ErrorButton>

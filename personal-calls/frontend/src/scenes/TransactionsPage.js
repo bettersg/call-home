@@ -1,4 +1,4 @@
-import { Link, Redirect } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import Table from '@mui/material/Table';
 import TableContainer from '@mui/material/TableContainer';
@@ -47,7 +47,7 @@ export default function TransactionsPage() {
   };
 
   if (!userId) {
-    return <Redirect to={PATHS.ADMIN} />;
+    return <Navigate to={PATHS.ADMIN} replace />;
   }
 
   return (
