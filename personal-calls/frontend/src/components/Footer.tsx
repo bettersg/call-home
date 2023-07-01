@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ReportIssueDialog } from 'components';
 import Typography from '@mui/material/Typography';
-import { withStyles } from 'hack/withStyles';
+import { withStyles } from 'hack';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { useUserService } from 'contexts';

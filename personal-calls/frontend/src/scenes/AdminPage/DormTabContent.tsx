@@ -99,7 +99,7 @@ export default function DormTabContent() {
 
   return (
     <>
-      <Typography variant="h5" component="h2" style={{ margin: '8px' }}>
+      <Typography component="h2" style={{ margin: '8px' }}>
         Dorms
       </Typography>
       <NewDormForm />

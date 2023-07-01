@@ -36,7 +36,7 @@ export default function Error({ error, reportError, locale = 'en' }) {
         backgroundSize: 'contain',
       }}
     >
-      <Typography style={{ marginTop: '24px' }} variant="h5" component="h1">
+      <Typography style={{ marginTop: '24px' }} variant="h2" component="h1">
         {errorMessage}
       </Typography>
     </Container>

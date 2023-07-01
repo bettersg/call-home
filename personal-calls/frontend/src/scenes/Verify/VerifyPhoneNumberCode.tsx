@@ -129,7 +129,7 @@ export default function VerificationPhoneNumberCode({
         >
           <div>
             <Typography
-              variant="h5"
+              variant="h2"
               component="h1"
               color={hasBadOtpError ? 'error' : 'inherit'}
               style={{ marginBottom: '12px' }}

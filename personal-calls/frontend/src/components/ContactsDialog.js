@@ -121,7 +121,7 @@ export default function ContactsDialog({
           justifyContent: 'center',
           padding: '8px 24px',
         }}
-        variant="h5"
+        variant="h2"
       >
         {titleText}
       </DialogTitle>

@@ -62,7 +62,7 @@ export default function VerifyPhoneNumber({ locale }: SceneProps) {
         >
           <div>
             <Typography
-              variant="h5"
+              variant="h2"
               component="h1"
               style={{ marginBottom: '12px' }}
             >

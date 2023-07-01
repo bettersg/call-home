@@ -1,0 +1,34 @@
+name: personal-calls CI (pull request against master)
+
+on:
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    # Creates the Git repo
+    - uses: actions/checkout@v3
+    # Check that apps/common is copied properly to the proper locations
+    - name: Check apps/common
+      run: |
+        # Git stores hashes of directories and their contents. Use the values of
+        # the hashes to do an easy equality comparison.
+        APPS_COMMON_HASH="$(git rev-parse HEAD:apps/common)"
+
+        PERSONAL_CALLS_HASH="$(git rev-parse HEAD:personal-calls/frontend/src/common)"
+        if [[ "$APPS_COMMON_HASH" = "$PERSONAL_CALLS_HASH" ]]; then
+          echo '"apps/common" and "personal-calls" match'
+        else
+          echo '"apps/common" and "personal-calls" mismatch!'
+          exit 1
+        fi
+
+        SUPER_APP_HASH="$(git rev-parse HEAD:apps/super-app/src/common)"
+        if [[ "$APPS_COMMON_HASH" = "$SUPER_APP_HASH" ]]; then
+          echo '"apps/common" and "personal-calls" match'
+        else
+          echo '"apps/common" and "personal-calls" mismatch!'
+          exit 1
+        fi

@@ -89,7 +89,7 @@ export default function PromoCode({ locale, routePath }: SceneProps) {
 
   return (
     <Container>
-      <Typography variant="h5" component="h1" style={{ marginBottom: '12px' }}>
+      <Typography variant="h2" component="h1" style={{ marginBottom: '12px' }}>
         {STRINGS[locale].PROMO_CODE_TITLE}
       </Typography>
       <form

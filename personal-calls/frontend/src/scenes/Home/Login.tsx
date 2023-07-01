@@ -1,5 +1,5 @@
 import React from 'react';
-import { withStyles } from 'hack/withStyles';
+import { withStyles } from 'hack';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -71,7 +71,7 @@ export default function Login({ locale }: SceneProps) {
       <DetectBrowserSnackbar />
       <div className="login-content">
         <img alt="" src="/images/landing_splash.svg" />
-        <Typography style={{ marginTop: '24px' }} variant="h5" component="h1">
+        <Typography style={{ marginTop: '24px' }} variant="h2" component="h1">
           {STRINGS[locale].DISPLAY_TITLE}
         </Typography>
         <Typography

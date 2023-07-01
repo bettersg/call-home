@@ -1,5 +1,5 @@
 import LinearProgress from '@mui/material/LinearProgress';
-import { withStyles } from 'hack/withStyles';
+import { withStyles } from 'hack';
 
 export const RoundedProgressBar = withStyles({
   height: 8,

@@ -7,7 +7,7 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import { withStyles } from 'hack/withStyles';
+import { withStyles } from 'hack';
 import AddIcon from '@mui/icons-material/Add';
 import CallIcon from '@mui/icons-material/Call';
 import PhoneDisabledIcon from '@mui/icons-material/PhoneDisabled';
@@ -623,7 +623,7 @@ export default function ContactsPage({ locale }: SceneProps) {
       <DetectBrowserSnackbar />
       <HelpSnackbar locale={locale} />
       <Typography
-        variant="h5"
+        variant="h2"
         component="h1"
         style={{
           marginBottom: '12px',
