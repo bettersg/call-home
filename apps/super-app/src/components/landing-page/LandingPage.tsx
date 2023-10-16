@@ -36,22 +36,22 @@ export function LandingPage() {
         padding: '0 16px',
       }}
     >
-        <Typography
-          variant="h4"
-          sx={{
-            padding: '16px 0',
-          }}
-        >
-          {headerTitle}
-        </Typography>
-        {serviceCardDetails.map(({ logo, name, shortBlurb, route }) => (
-          <ServiceCard
-            logo={logo}
-            name={name}
-            shortBlurb={shortBlurb}
-            route={route}
-          ></ServiceCard>
-        ))}
+      <Typography
+        variant="h4"
+        sx={{
+          padding: '16px 0',
+        }}
+      >
+        {headerTitle}
+      </Typography>
+      {serviceCardDetails.map(({ logo, name, shortBlurb, route }) => (
+        <ServiceCard
+          logo={logo}
+          name={name}
+          shortBlurb={shortBlurb}
+          route={route}
+        ></ServiceCard>
+      ))}
     </NavBarContainer>
   );
 }
