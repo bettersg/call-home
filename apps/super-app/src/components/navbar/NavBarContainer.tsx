@@ -2,7 +2,7 @@ import React from 'react';
 import { Box } from '@mui/material';
 import { NavBar } from '.';
 import { Container } from '../../common/components';
-import './navbar/NavBarAbove.css';
+import './NavBarAbove.css';
 
 interface NavBarContainerProps {
   children: React.ReactNode;
