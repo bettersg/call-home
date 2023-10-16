@@ -1,15 +1,15 @@
 import './LandingPage.css';
 import { useEffect, useState } from 'react';
 import { Typography } from '@mui/material';
-import { ServiceCard } from '../common/components/ServiceCard';
-import { NavBarContainer } from '../components';
+import { ServiceCard } from '../../common/components';
+import { NavBarContainer } from '..';
 import {
   useLanguage,
   getServiceCardDetails,
   getSupportDetailStrings,
   ServiceCardDetail,
   SupportDetailStrings,
-} from '../services';
+} from '../../services';
 
 export function LandingPage() {
   const [fixedStrings, setFixedStrings] = useState<SupportDetailStrings | null>(

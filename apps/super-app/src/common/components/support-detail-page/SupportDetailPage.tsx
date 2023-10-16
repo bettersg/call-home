@@ -12,11 +12,11 @@ import {
   getSupportDetailStrings,
   getTwc2Detail,
   useLanguage,
-} from '../services';
-import { Container } from '../common/components';
-import { PrimaryButton } from '../common/components/RoundedButton';
+} from '../../../services';
+import { Container } from '..';
+import { PrimaryButton } from '../RoundedButton';
 import './SupportDetailPage.css';
-import { Path } from './paths';
+import { Path } from '../../../routes/paths';
 
 function Header(props: { title: string }) {
   const { title } = props;
