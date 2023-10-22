@@ -1,16 +1,20 @@
 export { consoleSmokeTest } from './CmsSmokeTest';
+
 export {
   getSupportDetailStrings,
-  getTwc2Detail,
-  getServiceCardDetails,
 } from './SupportDetail';
 export type {
-  ServiceCardDetail,
   SupportDetailStrings,
-  Twc2SupportDetail,
   FacebookLinksSection,
   FacebookLink,
 } from './SupportDetail';
+
+export { getServiceCardDetails } from './ServiceCardDetails';
+export type { ServiceCardDetail } from './ServiceCardDetails';
+
+export { getTwc2Detail } from './ServiceSupportDetails';
+export type { Twc2SupportDetail } from './ServiceSupportDetails';
+
 export type { LanguageOption } from './Language';
 export { useLanguage } from './Language';
 export { getAppConfig } from './Config';
