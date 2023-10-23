@@ -8,7 +8,7 @@ import {
   Box,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { ServiceCardDetail } from '../../services';
+import { ServiceCardDetail } from '../../../services';
 
 export function ServiceCard(props: ServiceCardDetail) {
   const { logo, name, shortBlurb, route } = props;

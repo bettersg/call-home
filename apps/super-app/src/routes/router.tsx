@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import { Path } from './paths';
-import { Options, LandingPage, SupportDetailPage } from '.';
+import { Options, LandingPage } from '../components';
+import { SupportDetailPage } from '../common/components';
 
 export function AppRoutes() {
   return (

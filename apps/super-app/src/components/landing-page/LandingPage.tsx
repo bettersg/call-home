@@ -1,15 +1,15 @@
 import './LandingPage.css';
 import { useEffect, useState } from 'react';
 import { Typography } from '@mui/material';
-import { ServiceCard } from '../common/components/ServiceCard';
-import { NavBarContainer } from '../components';
+import { ServiceCard } from '../../common/components';
+import { NavBarContainer } from '..';
 import {
   useLanguage,
   getServiceCardDetails,
   getSupportDetailStrings,
   ServiceCardDetail,
   SupportDetailStrings,
-} from '../services';
+} from '../../services';
 
 export function LandingPage() {
   const [fixedStrings, setFixedStrings] = useState<SupportDetailStrings | null>(
@@ -36,22 +36,22 @@ export function LandingPage() {
         padding: '0 16px',
       }}
     >
-        <Typography
-          variant="h4"
-          sx={{
-            padding: '16px 0',
-          }}
-        >
-          {headerTitle}
-        </Typography>
-        {serviceCardDetails.map(({ logo, name, shortBlurb, route }) => (
-          <ServiceCard
-            logo={logo}
-            name={name}
-            shortBlurb={shortBlurb}
-            route={route}
-          ></ServiceCard>
-        ))}
+      <Typography
+        variant="h4"
+        sx={{
+          padding: '16px 0',
+        }}
+      >
+        {headerTitle}
+      </Typography>
+      {serviceCardDetails.map(({ logo, name, shortBlurb, route }) => (
+        <ServiceCard
+          logo={logo}
+          name={name}
+          shortBlurb={shortBlurb}
+          route={route}
+        ></ServiceCard>
+      ))}
     </NavBarContainer>
   );
 }
