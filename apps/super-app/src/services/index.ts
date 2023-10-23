@@ -1,8 +1,6 @@
 export { consoleSmokeTest } from './CmsSmokeTest';
 
-export {
-  getSupportDetailStrings,
-} from './SupportDetail';
+export { getSupportDetailStrings } from './SupportDetail';
 export type {
   SupportDetailStrings,
   FacebookLinksSection,
