@@ -1,7 +1,7 @@
 // TODO This is a stub for testing, eventually replace this with Strapi Calls
 
 import { Support } from './Support';
-import type { LanguageOption } from './Language';
+import type { LanguageOption } from '../utils';
 
 // Data shared by every Support detail page.
 // Strings that stay constant on each Support detail page.

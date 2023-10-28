@@ -1,5 +1,5 @@
 import { SupportDetail, FacebookLinksSection } from './SupportDetail';
-import { LanguageOption } from './Language';
+import { LanguageOption } from '../utils';
 
 // We should consider moving TWC2-specific things to their own file.
 export interface Twc2SupportDetail extends SupportDetail {

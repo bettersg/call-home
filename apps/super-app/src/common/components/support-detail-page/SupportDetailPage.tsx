@@ -5,18 +5,21 @@ import {
   ArrowBackIosNew as ArrowBackIosNewIcon,
   Public as PublicIcon,
 } from '@mui/icons-material';
+
+import { Container } from '..';
+import { PrimaryButton } from '../RoundedButton';
+
 import {
   Twc2SupportDetail,
   FacebookLinksSection,
   SupportDetailStrings,
   getSupportDetailStrings,
-  getTwc2Detail,
-  useLanguage,
+  getTwc2Detail
 } from '../../../services';
-import { Container } from '..';
-import { PrimaryButton } from '../RoundedButton';
-import './SupportDetailPage.css';
 import { Path } from '../../../routes/paths';
+import { useLanguage } from '../../../utils';
+
+import './SupportDetailPage.css';
 
 function Header(props: { title: string }) {
   const { title } = props;

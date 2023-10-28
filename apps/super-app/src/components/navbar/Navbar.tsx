@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from '@mui/material';
-import { getAppConfig, AppConfig } from '../../services';
+import { getAppConfig, AppConfig } from '../../utils';
 import { Path } from '../../routes/paths';
 import { NavLink } from 'react-router-dom';
 import { ReactComponent as CallHomeIcon } from './callhome-icon.svg';
