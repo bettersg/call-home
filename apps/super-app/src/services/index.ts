@@ -9,4 +9,4 @@ export { getServiceCardDetails } from './ServiceCardDetails';
 export type { ServiceCardDetail } from './ServiceCardDetails';
 
 export { getTwc2Detail } from './ServiceSupportDetails';
-export type { Twc2SupportDetail } from './ServiceSupportDetails';
+export type { SupportDetail } from './SupportDetail';

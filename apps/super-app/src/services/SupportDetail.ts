@@ -28,6 +28,8 @@ export interface SupportDetail extends Support {
   // Blurb introduction section. Subsequent parts of the blurb are defined
   // separately.
   blurbIntro: string;
+  // Blurb section for Facebook links
+  blurbFacebookLinks: FacebookLinksSection;
   // Text for CTA button.
   // TODO This won't handle images/icons in the button. Figure that out.
   ctaButtonText: string;

@@ -10,14 +10,13 @@ import { Container } from '..';
 import { PrimaryButton } from '../RoundedButton';
 
 import {
-  Twc2SupportDetail,
+  SupportDetail,
   FacebookLinksSection,
-  SupportDetailStrings,
   getSupportDetailStrings,
   getTwc2Detail
 } from '../../../services';
 import { Path } from '../../../routes/paths';
-import { useLanguage } from '../../../utils';
+import { LanguageOption, useLanguage } from '../../../utils';
 
 import './SupportDetailPage.css';
 
@@ -83,7 +82,7 @@ function BlurbFacebookLinks(props: FacebookLinksSection) {
   );
 }
 
-type BlurbProps = Pick<Twc2SupportDetail, 'blurbIntro' | 'blurbFacebookLinks'>;
+type BlurbProps = Pick<SupportDetail, 'blurbIntro' | 'blurbFacebookLinks'>;
 
 function Blurb(props: BlurbProps) {
   const { blurbIntro, blurbFacebookLinks } = props;
@@ -96,7 +95,7 @@ function Blurb(props: BlurbProps) {
 }
 
 type DescriptionProps = Pick<
-  Twc2SupportDetail,
+  SupportDetail,
   'logo' | 'name' | 'website' | 'blurbIntro' | 'blurbFacebookLinks'
 >;
 
@@ -142,7 +141,7 @@ function DescriptionSection(props: DescriptionProps) {
 }
 
 type CtaProps = Pick<
-  Twc2SupportDetail,
+  SupportDetail,
   'ctaButtonText' | 'ctaLink' | 'ctaIcon'
 >;
 
@@ -168,21 +167,23 @@ function CtaSection(props: CtaProps) {
   );
 }
 
-export function SupportDetailPage() {
-  const [fixedStrings, setFixedStrings] = useState<SupportDetailStrings | null>(
-    null
-  );
+type SupportDetailPageProps = {
+  getServiceDetailFunction: (language: LanguageOption) => SupportDetail;
+}
+
+export function SupportDetailPage({getServiceDetailFunction}: SupportDetailPageProps) {
   const [lang] = useLanguage();
-  const [content, setContent] = useState<Twc2SupportDetail | null>(null);
+  const fixedStrings = getSupportDetailStrings(lang);
+
+  const [content, setContent] = useState<SupportDetail | null>(null);
   useEffect(() => {
-    setContent(getTwc2Detail(lang));
+    setContent(getServiceDetailFunction(lang));
   }, []);
-  useEffect(() => {
-    setFixedStrings(getSupportDetailStrings(lang));
-  }, []);
+
   if (!content || !fixedStrings) {
     return null;
   }
+  
   const { headerTitle } = fixedStrings;
   const {
     logo,

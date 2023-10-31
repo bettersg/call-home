@@ -1,12 +1,7 @@
-import { SupportDetail, FacebookLinksSection } from './SupportDetail';
+import { SupportDetail } from './SupportDetail';
 import { LanguageOption } from '../utils';
 
-// We should consider moving TWC2-specific things to their own file.
-export interface Twc2SupportDetail extends SupportDetail {
-  blurbFacebookLinks: FacebookLinksSection;
-}
-
-const TWC2_DETAIL: Record<LanguageOption, Twc2SupportDetail> = {
+const TWC2_DETAIL: Record<LanguageOption, SupportDetail> = {
   en: {
     logo: '/images/twc2-logo.png',
     name: 'Transient Workers Count Too (TWC2)',
@@ -32,6 +27,6 @@ const TWC2_DETAIL: Record<LanguageOption, Twc2SupportDetail> = {
   },
 };
 
-export function getTwc2Detail(language: LanguageOption): Twc2SupportDetail {
+export function getTwc2Detail(language: LanguageOption): SupportDetail {
   return TWC2_DETAIL[language];
 }
