@@ -6,5 +6,5 @@ export enum AppPath {
 
 export enum ServicePath {
   Twc2 = '/twc2',
-  ProBonoSG = '/pro-bono'
+  ProBonoSG = '/pro-bono',
 }

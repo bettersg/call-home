@@ -13,7 +13,7 @@ import {
   SupportDetail,
   FacebookLinksSection,
   getSupportDetailStrings,
-  getTwc2Detail
+  getTwc2Detail,
 } from '../../../services';
 import { AppPath } from '../../../routes/paths';
 import { LanguageOption, useLanguage } from '../../../utils';
@@ -140,10 +140,7 @@ function DescriptionSection(props: DescriptionProps) {
   );
 }
 
-type CtaProps = Pick<
-  SupportDetail,
-  'ctaButtonText' | 'ctaLink' | 'ctaIcon'
->;
+type CtaProps = Pick<SupportDetail, 'ctaButtonText' | 'ctaLink' | 'ctaIcon'>;
 
 function CtaSection(props: CtaProps) {
   const { ctaButtonText, ctaLink, ctaIcon } = props;
@@ -169,9 +166,11 @@ function CtaSection(props: CtaProps) {
 
 type SupportDetailPageProps = {
   getServiceDetailFunction: (language: LanguageOption) => SupportDetail;
-}
+};
 
-export function SupportDetailPage({getServiceDetailFunction}: SupportDetailPageProps) {
+export function SupportDetailPage({
+  getServiceDetailFunction,
+}: SupportDetailPageProps) {
   const [lang] = useLanguage();
   const fixedStrings = getSupportDetailStrings(lang);
 
@@ -183,7 +182,7 @@ export function SupportDetailPage({getServiceDetailFunction}: SupportDetailPageP
   if (!content || !fixedStrings) {
     return null;
   }
-  
+
   const { headerTitle } = fixedStrings;
   const {
     logo,

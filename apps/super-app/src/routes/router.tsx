@@ -12,8 +12,13 @@ export function AppRoutes() {
       <Route path={AppPath.Options} element={<Options />}></Route>
 
       {/* Route through the different services and provide a separate page for each service */}
-      {serviceRoutes.map(path => (
-        <Route path={path} element={<SupportDetailPage getServiceDetailFunction={getTwc2Detail} />}></Route>
+      {serviceRoutes.map((path) => (
+        <Route
+          path={path}
+          element={
+            <SupportDetailPage getServiceDetailFunction={getTwc2Detail} />
+          }
+        ></Route>
       ))}
     </Routes>
   );
