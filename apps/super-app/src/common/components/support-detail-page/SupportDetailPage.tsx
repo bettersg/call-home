@@ -13,7 +13,6 @@ import {
   SupportDetail,
   FacebookLinksSection,
   getSupportDetailStrings,
-  getTwc2Detail,
 } from '../../../services';
 import { AppPath } from '../../../routes/paths';
 import { LanguageOption, useLanguage } from '../../../utils';
