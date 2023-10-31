@@ -15,7 +15,7 @@ import {
   getSupportDetailStrings,
   getTwc2Detail
 } from '../../../services';
-import { Path } from '../../../routes/paths';
+import { AppPath } from '../../../routes/paths';
 import { LanguageOption, useLanguage } from '../../../utils';
 
 import './SupportDetailPage.css';
@@ -28,7 +28,7 @@ function Header(props: { title: string }) {
       <IconButton
         aria-label="back"
         sx={{ color: 'text.primary' }}
-        onClick={() => navigate(Path.Home)}
+        onClick={() => navigate(AppPath.Home)}
       >
         <ArrowBackIosNewIcon />
       </IconButton>

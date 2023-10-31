@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from '@mui/material';
 import { getAppConfig, AppConfig } from '../../utils';
-import { Path } from '../../routes/paths';
+import { AppPath } from '../../routes/paths';
 import { NavLink } from 'react-router-dom';
 import { ReactComponent as CallHomeIcon } from './callhome-icon.svg';
 import { ReactComponent as SupportIcon } from './support-icon.svg';
@@ -28,8 +28,8 @@ function NavBar() {
         text="Call Home"
         icon={<CallHomeIcon />}
       />
-      <NavIcon link={Path.Home} text="Support" icon={<SupportIcon />} />
-      <NavIcon link={Path.Options} text="More" icon={<MoreIcon />} />
+      <NavIcon link={AppPath.Home} text="Support" icon={<SupportIcon />} />
+      <NavIcon link={AppPath.Options} text="More" icon={<MoreIcon />} />
     </nav>
   );
 }
