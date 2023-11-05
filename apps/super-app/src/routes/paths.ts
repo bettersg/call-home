@@ -1,7 +1,10 @@
-export enum Path {
+export enum AppPath {
   Home = '/',
-  SupportDetail = '/support-detail',
-  ProBonoSG = '/pro-bono',
   Options = '/options',
   Support = '/support',
+}
+
+export enum ServicePath {
+  Twc2 = '/twc2',
+  ProBonoSG = '/pro-bono',
 }

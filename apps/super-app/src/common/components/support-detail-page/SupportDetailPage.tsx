@@ -5,18 +5,19 @@ import {
   ArrowBackIosNew as ArrowBackIosNewIcon,
   Public as PublicIcon,
 } from '@mui/icons-material';
-import {
-  Twc2SupportDetail,
-  FacebookLinksSection,
-  SupportDetailStrings,
-  getSupportDetailStrings,
-  getTwc2Detail,
-  useLanguage,
-} from '../../../services';
+
 import { Container } from '..';
 import { PrimaryButton } from '../RoundedButton';
+
+import {
+  SupportDetail,
+  FacebookLinksSection,
+  getSupportDetailStrings,
+} from '../../../services';
+import { AppPath } from '../../../routes/paths';
+import { LanguageOption, useLanguage } from '../../../utils';
+
 import './SupportDetailPage.css';
-import { Path } from '../../../routes/paths';
 
 function Header(props: { title: string }) {
   const { title } = props;
@@ -26,7 +27,7 @@ function Header(props: { title: string }) {
       <IconButton
         aria-label="back"
         sx={{ color: 'text.primary' }}
-        onClick={() => navigate(Path.Home)}
+        onClick={() => navigate(AppPath.Home)}
       >
         <ArrowBackIosNewIcon />
       </IconButton>
@@ -80,7 +81,7 @@ function BlurbFacebookLinks(props: FacebookLinksSection) {
   );
 }
 
-type BlurbProps = Pick<Twc2SupportDetail, 'blurbIntro' | 'blurbFacebookLinks'>;
+type BlurbProps = Pick<SupportDetail, 'blurbIntro' | 'blurbFacebookLinks'>;
 
 function Blurb(props: BlurbProps) {
   const { blurbIntro, blurbFacebookLinks } = props;
@@ -93,7 +94,7 @@ function Blurb(props: BlurbProps) {
 }
 
 type DescriptionProps = Pick<
-  Twc2SupportDetail,
+  SupportDetail,
   'logo' | 'name' | 'website' | 'blurbIntro' | 'blurbFacebookLinks'
 >;
 
@@ -138,10 +139,7 @@ function DescriptionSection(props: DescriptionProps) {
   );
 }
 
-type CtaProps = Pick<
-  Twc2SupportDetail,
-  'ctaButtonText' | 'ctaLink' | 'ctaIcon'
->;
+type CtaProps = Pick<SupportDetail, 'ctaButtonText' | 'ctaLink' | 'ctaIcon'>;
 
 function CtaSection(props: CtaProps) {
   const { ctaButtonText, ctaLink, ctaIcon } = props;
@@ -165,21 +163,25 @@ function CtaSection(props: CtaProps) {
   );
 }
 
-export function SupportDetailPage() {
-  const [fixedStrings, setFixedStrings] = useState<SupportDetailStrings | null>(
-    null
-  );
+type SupportDetailPageProps = {
+  getServiceDetailFunction: (language: LanguageOption) => SupportDetail;
+};
+
+export function SupportDetailPage({
+  getServiceDetailFunction,
+}: SupportDetailPageProps) {
   const [lang] = useLanguage();
-  const [content, setContent] = useState<Twc2SupportDetail | null>(null);
+  const fixedStrings = getSupportDetailStrings(lang);
+
+  const [content, setContent] = useState<SupportDetail | null>(null);
   useEffect(() => {
-    setContent(getTwc2Detail(lang));
+    setContent(getServiceDetailFunction(lang));
   }, []);
-  useEffect(() => {
-    setFixedStrings(getSupportDetailStrings(lang));
-  }, []);
+
   if (!content || !fixedStrings) {
     return null;
   }
+
   const { headerTitle } = fixedStrings;
   const {
     logo,
