@@ -6,7 +6,7 @@ import {
   Public as PublicIcon,
 } from '@mui/icons-material';
 
-import { Container } from '..';
+import { Container, Carousel } from '..';
 import { PrimaryButton } from '../RoundedButton';
 
 import {
@@ -189,6 +189,7 @@ export function SupportDetailPage({
     website,
     blurbIntro,
     blurbFacebookLinks,
+    carouselSection,
     ctaButtonText,
     ctaLink,
     ctaIcon,
@@ -214,6 +215,7 @@ export function SupportDetailPage({
         blurbIntro={blurbIntro}
         blurbFacebookLinks={blurbFacebookLinks}
       ></DescriptionSection>
+      {/* <Carousel carouselSection={carouselSection}></Carousel> */}
       <CtaSection
         ctaButtonText={ctaButtonText}
         ctaLink={ctaLink}

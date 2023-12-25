@@ -2,7 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import { AppPath, ServicePath } from './paths';
 import { Options, LandingPage } from '../components';
 import { SupportDetailPage } from '../common/components';
-import { getTwc2Detail } from '../services';
+import { getProBonoSGDetail, getTwc2Detail } from '../services';
 
 export function AppRoutes() {
   return (
@@ -14,6 +14,10 @@ export function AppRoutes() {
       <Route
         path={ServicePath.Twc2}
         element={<SupportDetailPage getServiceDetailFunction={getTwc2Detail} />}
+      ></Route>
+      <Route
+        path={ServicePath.ProBonoSG}
+        element={<SupportDetailPage getServiceDetailFunction={getProBonoSGDetail} />}
       ></Route>
     </Routes>
   );
