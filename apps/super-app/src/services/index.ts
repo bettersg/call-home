@@ -10,4 +10,4 @@ export type {
 export { getServiceCardDetails } from './ServiceCardDetails';
 export type { ServiceCardDetail } from './ServiceCardDetails';
 
-export { getTwc2Detail, getProBonoSGDetail } from './ServiceSupportDetails';
+export { getPartnerDetail } from './ServiceSupportDetails';

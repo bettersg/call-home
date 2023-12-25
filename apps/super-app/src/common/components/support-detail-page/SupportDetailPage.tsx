@@ -13,9 +13,10 @@ import {
   SupportDetail,
   FacebookLinksSection,
   getSupportDetailStrings,
+  getPartnerDetail,
 } from '../../../services';
 import { AppPath } from '../../../routes/paths';
-import { LanguageOption, useLanguage } from '../../../utils';
+import { useLanguage } from '../../../utils';
 
 import './SupportDetailPage.css';
 
@@ -164,18 +165,18 @@ function CtaSection(props: CtaProps) {
 }
 
 type SupportDetailPageProps = {
-  getServiceDetailFunction: (language: LanguageOption) => SupportDetail;
+  partner: string | undefined;
 };
 
 export function SupportDetailPage({
-  getServiceDetailFunction,
+  partner,
 }: SupportDetailPageProps) {
   const [lang] = useLanguage();
   const fixedStrings = getSupportDetailStrings(lang);
 
   const [content, setContent] = useState<SupportDetail | null>(null);
   useEffect(() => {
-    setContent(getServiceDetailFunction(lang));
+    setContent(getPartnerDetail(partner, lang));
   }, []);
 
   if (!content || !fixedStrings) {
