@@ -215,7 +215,7 @@ export function SupportDetailPage({
         blurbIntro={blurbIntro}
         blurbFacebookLinks={blurbFacebookLinks}
       ></DescriptionSection>
-      {/* <Carousel carouselSection={carouselSection}></Carousel> */}
+      <Carousel carouselSection={carouselSection}></Carousel>
       <CtaSection
         ctaButtonText={ctaButtonText}
         ctaLink={ctaLink}
