@@ -1,5 +1,5 @@
 export enum AppPath {
-  Home = '',
+  Home = '/',
   Options = 'options',
   Support = 'support',
 }
@@ -16,5 +16,5 @@ export enum ServicePath {
   Jwb = 'jwb',
   Adeo = 'adeo',
   SGAccidentHelpCentre = 'sgaccidenthelpcentre',
-  Mwc = 'mwc'
+  Mwc = 'mwc',
 }

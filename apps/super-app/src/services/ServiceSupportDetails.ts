@@ -29,8 +29,6 @@ const TWC2_DETAIL: Record<LanguageOption, SupportDetail> = {
   },
 };
 
-
-
 const PRO_BONO_SG_DETAIL: Record<LanguageOption, SupportDetail> = {
   en: {
     logo: 'https://www.probono.sg/wp-content/uploads/2022/12/Pro-Bono-SG-Logo.png',
@@ -306,10 +304,7 @@ const ADEO_DETAIL: Record<LanguageOption, SupportDetail> = {
   },
 };
 
-const SGACCIDENTHELPCENTRE_DETAIL: Record<
-  LanguageOption,
-  SupportDetail
-> = {
+const SGACCIDENTHELPCENTRE_DETAIL: Record<LanguageOption, SupportDetail> = {
   en: {
     logo: 'https://static.wixstatic.com/media/862048_3725dd21f0d64ef492b3e5665c257ab5~mv2.jpg/v1/crop/x_46,y_63,w_725,h_433/fill/w_219,h_131,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/IMG-20180416-WA0009%20(1).jpg',
     name: 'SG Accident Help Centre',

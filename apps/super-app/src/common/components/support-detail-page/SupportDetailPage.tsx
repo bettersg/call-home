@@ -168,9 +168,7 @@ type SupportDetailPageProps = {
   partner: string | undefined;
 };
 
-export function SupportDetailPage({
-  partner,
-}: SupportDetailPageProps) {
+export function SupportDetailPage({ partner }: SupportDetailPageProps) {
   const [lang] = useLanguage();
   const fixedStrings = getSupportDetailStrings(lang);
 

@@ -4,7 +4,7 @@ export type {
   FacebookLinksSection,
   FacebookLink,
   SupportDetail,
-  CarouselCard
+  CarouselCard,
 } from './SupportDetail';
 
 export { getServiceCardDetails } from './ServiceCardDetails';

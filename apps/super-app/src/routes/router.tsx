@@ -1,7 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
-import { AppPath, ServicePath } from './paths';
+import { AppPath } from './paths';
 import { Options, LandingPage } from '../components';
 import { SupportDetailPage } from '../common/components';
+import { getServiceCardDetails, ServiceCardDetail } from '../services';
 
 export function AppRoutes() {
   return (
@@ -10,14 +11,12 @@ export function AppRoutes() {
       <Route path={AppPath.Options} element={<Options />}></Route>
 
       {/* Route through the different services and provide a separate page for each service */}
-      <Route
-        path={ServicePath.Twc2}
-        element={<SupportDetailPage partner={ServicePath.Twc2} />}
-      ></Route>
-      <Route
-        path={ServicePath.ProBonoSG}
-        element={<SupportDetailPage partner={ServicePath.ProBonoSG} />}
-      ></Route>
+      {getServiceCardDetails().map((serviceCardDetail: ServiceCardDetail) => (
+        <Route
+          path={serviceCardDetail.route}
+          element={<SupportDetailPage partner={serviceCardDetail.route} />}
+        ></Route>
+      ))}
     </Routes>
   );
 }
