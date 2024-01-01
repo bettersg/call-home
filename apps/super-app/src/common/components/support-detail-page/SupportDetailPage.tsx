@@ -6,16 +6,17 @@ import {
   Public as PublicIcon,
 } from '@mui/icons-material';
 
-import { Container } from '..';
+import { Container, Carousel } from '..';
 import { PrimaryButton } from '../RoundedButton';
 
 import {
   SupportDetail,
   FacebookLinksSection,
   getSupportDetailStrings,
+  getPartnerDetail,
 } from '../../../services';
-import { AppPath } from '../../../routes/paths';
-import { LanguageOption, useLanguage } from '../../../utils';
+import { AppPath, ServicePath } from '../../../routes/paths';
+import { useLanguage } from '../../../utils';
 
 import './SupportDetailPage.css';
 
@@ -164,18 +165,16 @@ function CtaSection(props: CtaProps) {
 }
 
 type SupportDetailPageProps = {
-  getServiceDetailFunction: (language: LanguageOption) => SupportDetail;
+  partner: ServicePath;
 };
 
-export function SupportDetailPage({
-  getServiceDetailFunction,
-}: SupportDetailPageProps) {
+export function SupportDetailPage({ partner }: SupportDetailPageProps) {
   const [lang] = useLanguage();
   const fixedStrings = getSupportDetailStrings(lang);
 
   const [content, setContent] = useState<SupportDetail | null>(null);
   useEffect(() => {
-    setContent(getServiceDetailFunction(lang));
+    setContent(getPartnerDetail(partner, lang));
   }, []);
 
   if (!content || !fixedStrings) {
@@ -189,6 +188,7 @@ export function SupportDetailPage({
     website,
     blurbIntro,
     blurbFacebookLinks,
+    carouselSection,
     ctaButtonText,
     ctaLink,
     ctaIcon,
@@ -214,6 +214,9 @@ export function SupportDetailPage({
         blurbIntro={blurbIntro}
         blurbFacebookLinks={blurbFacebookLinks}
       ></DescriptionSection>
+      {carouselSection != null && carouselSection.length > 0 && (
+        <Carousel carouselSection={carouselSection}></Carousel>
+      )}
       <CtaSection
         ctaButtonText={ctaButtonText}
         ctaLink={ctaLink}

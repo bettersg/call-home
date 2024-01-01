@@ -30,6 +30,8 @@ export interface SupportDetail extends Support {
   blurbIntro: string;
   // Blurb section for Facebook links
   blurbFacebookLinks: FacebookLinksSection;
+  // Carousel section to display details in a carousel component.
+  carouselSection: CarouselCard[] | null;
   // Text for CTA button.
   // TODO This won't handle images/icons in the button. Figure that out.
   ctaButtonText: string;
@@ -48,4 +50,12 @@ export interface FacebookLinksSection {
 export interface FacebookLink {
   href: string;
   text: string;
+}
+
+export interface CarouselCard {
+  title: string;
+  description: string;
+  iconPath: string;
+  ctaText: string;
+  route: string;
 }
