@@ -15,7 +15,7 @@ import {
   getSupportDetailStrings,
   getPartnerDetail,
 } from '../../../services';
-import { AppPath } from '../../../routes/paths';
+import { AppPath, ServicePath } from '../../../routes/paths';
 import { useLanguage } from '../../../utils';
 
 import './SupportDetailPage.css';
@@ -165,7 +165,7 @@ function CtaSection(props: CtaProps) {
 }
 
 type SupportDetailPageProps = {
-  partner: string | undefined;
+  partner: ServicePath;
 };
 
 export function SupportDetailPage({ partner }: SupportDetailPageProps) {
@@ -214,7 +214,9 @@ export function SupportDetailPage({ partner }: SupportDetailPageProps) {
         blurbIntro={blurbIntro}
         blurbFacebookLinks={blurbFacebookLinks}
       ></DescriptionSection>
-      <Carousel carouselSection={carouselSection}></Carousel>
+      {carouselSection != null && carouselSection.length > 0 && (
+        <Carousel carouselSection={carouselSection}></Carousel>
+      )}
       <CtaSection
         ctaButtonText={ctaButtonText}
         ctaLink={ctaLink}

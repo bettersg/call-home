@@ -5,7 +5,7 @@ export interface ServiceCardDetail extends Support {
   // The short blurb briefly explaining the services provided.
   shortBlurb: string;
   // The app internal route
-  route: string;
+  route: ServicePath;
 }
 
 // This function defines all the service card details that we render on the main landing page

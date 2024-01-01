@@ -22,7 +22,7 @@ const TWC2_DETAIL: Record<LanguageOption, SupportDetail> = {
         },
       ],
     },
-    carouselSection: [],
+    carouselSection: null,
     ctaButtonText: '+65 6297 7564',
     ctaLink: 'https://wa.me/6562977564',
     ctaIcon: '/images/whatsapp-icon.svg',
@@ -91,7 +91,7 @@ const HEALTHSERVE_DETAIL: Record<LanguageOption, SupportDetail> = {
     website: 'https://www.healthserve.org.sg/',
     blurbIntro:
       'Founded in 2006 on Christian values, HealthServe is an IPC registered charity that seeks to bring healing and hope to vulnerable low-wage migrant workers in Singapore.',
-    carouselSection: [],
+    carouselSection: null,
     blurbFacebookLinks: {
       title: '',
       imageSrc: '',
@@ -119,7 +119,7 @@ const AIDHA_DETAIL: Record<LanguageOption, SupportDetail> = {
     website: 'https://www.aidha.org/',
     blurbIntro:
       'Aidha offers courses for helpers in money management, communication, computer and entrepreneurship. Aidha’s mission is to help migrant domestic workers and low-income Singaporean women achieve economic independence through financial education, wealth creation and entrepreneurship. Founded in 2006, Aidha is an award-winning charity with Institution of Public Character (IPC) status. We have 500 students currently enrolled in our programmes.',
-    carouselSection: [],
+    carouselSection: null,
     blurbFacebookLinks: {
       title: '',
       imageSrc: '',
@@ -147,7 +147,7 @@ const HOME_DETAIL: Record<LanguageOption, SupportDetail> = {
     website: 'https://www.home.org.sg/',
     blurbIntro:
       'Humanitarian Organization for Migration Economics [“H.O.M.E.”] is a Singapore-based charity founded in 2004 by the late Ms Bridget Tan. HOME is dedicated to empowering and supporting migrant workers who experience abuse and exploitation. We provide immediate crisis intervention as well as long-term support such as education and training programmes to achieve our goal of enhancing the wellbeing and employment prospects of migrant workers. HOME also promotes the diverse voices of migrant workers in Singapore through outreach projects, and public education. Three pillars guide us: Welfare, Empowerment and Advocacy.',
-    carouselSection: [],
+    carouselSection: null,
     blurbFacebookLinks: {
       title: '',
       imageSrc: '',
@@ -175,13 +175,13 @@ const CDE_DETAIL: Record<LanguageOption, SupportDetail> = {
     website: 'https://www.cde.org.sg/wps/portal/cde/home/',
     blurbIntro:
       'The Centre for Domestic Employees (CDE) promote the fair treatment of all domestic employees in Singapore through issues resolution, humanitarian aid, social integration and support. We can support you in up-skilling and emotional resilience',
-    carouselSection: [],
+    carouselSection: null,
     blurbFacebookLinks: {
       title: 'Find us on Facebook',
       imageSrc: '/images/facebook-icon.svg',
       links: [
         {
-          href: 'www.facebook.com/cde.singapore',
+          href: 'https://www.facebook.com/cde.singapore',
           text: 'CDE Facebook',
         },
       ],
@@ -199,7 +199,7 @@ const FAST_DETAIL: Record<LanguageOption, SupportDetail> = {
     website: 'https://www.fast.org.sg/',
     blurbIntro:
       'FAST empowers foreign domestic workers through various programs, including skills training, counseling, and community engagement, fostering their well-being and integration into society. FAST also conducts a two-day Onboarding and Integration Programme to help new MDW arrivals adjust and adapt to work life in Singapore, learning life essentials',
-    carouselSection: [],
+    carouselSection: null,
     blurbFacebookLinks: {
       title: 'Explore our services',
       imageSrc: '/images/link-icon.png',
@@ -239,7 +239,7 @@ const HAGAR_DETAIL: Record<LanguageOption, SupportDetail> = {
     website: 'https://hagar.org.sg/human-trafficking-in-singapore/',
     blurbIntro:
       'Hagar Singapore provides holistic support to survivors of human trafficking, offering shelter, counseling, education, and vocational training to empower them towards a new and dignified life.',
-    carouselSection: [],
+    carouselSection: null,
     blurbFacebookLinks: {
       title: '',
       imageSrc: '/images/facebook-icon.svg',
@@ -263,7 +263,7 @@ const JWB_DETAIL: Record<LanguageOption, SupportDetail> = {
     website: 'https://forjusticewithoutborders.org/about/',
     blurbIntro:
       'We support victims of labour exploitation and human trafficking in getting compensation against their abusers, even after they return home.',
-    carouselSection: [],
+    carouselSection: null,
     blurbFacebookLinks: {
       title: '',
       imageSrc: '/images/facebook-icon.svg',
@@ -287,7 +287,7 @@ const ADEO_DETAIL: Record<LanguageOption, SupportDetail> = {
     website: 'https://adeo.sg/#what-we-do',
     blurbIntro:
       'ADEO is a movement of the Hope Initiative Alliance and aims to provide programs and events to care for domestic helpers in the areas of mental wellness, case management, recreation activities, empowerment, and skill development',
-    carouselSection: [],
+    carouselSection: null,
     blurbFacebookLinks: {
       title: '',
       imageSrc: '/images/facebook-icon.svg',
@@ -311,7 +311,7 @@ const SGACCIDENTHELPCENTRE_DETAIL: Record<LanguageOption, SupportDetail> = {
     website: 'https://www.sgaccident.org.sg/about',
     blurbIntro:
       'We are here for the injured and needy. We want to care for injured migrant workers in the community and teach employed workers on workplace safety and injury prevention',
-    carouselSection: [],
+    carouselSection: null,
     blurbFacebookLinks: {
       title: '',
       imageSrc: '/images/facebook-icon.svg',
@@ -335,7 +335,7 @@ const MWC_DETAIL: Record<LanguageOption, SupportDetail> = {
     website: 'https://mwc.org.sg/wps/portal/mwc/home/Aboutus/whatwedo',
     blurbIntro:
       'We can advise you about unfair employment practices and provide shelter and food for those in need. We also provide membership to protect you against critical illness, death, and accidents as well as meaningful benefits',
-    carouselSection: [],
+    carouselSection: null,
     blurbFacebookLinks: {
       title: 'Explore our services',
       imageSrc: '/images/link-icon.png',
@@ -362,7 +362,7 @@ const EMPTY_DETAIL: Record<LanguageOption, SupportDetail> = {
     name: '',
     website: '',
     blurbIntro: '',
-    carouselSection: [],
+    carouselSection: null,
     blurbFacebookLinks: {
       title: '',
       imageSrc: '',
@@ -384,7 +384,7 @@ const EMPTY_DETAIL: Record<LanguageOption, SupportDetail> = {
 };
 
 export function getPartnerDetail(
-  partner: string | undefined,
+  partner: ServicePath,
   language: LanguageOption
 ): SupportDetail {
   switch (partner) {
