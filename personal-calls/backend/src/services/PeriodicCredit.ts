@@ -16,7 +16,7 @@ import { shouldEnableCreditCap } from './Feature';
 
 // Config object for handling multiple credit intervals for users. No longer necessary.
 const cohorts = {
-  month: Duration.fromObject({ minutes: 80 }),
+  month: Duration.fromObject({ minutes: 40 }),
 };
 
 const CREDIT_INTERVAL = 'month';
