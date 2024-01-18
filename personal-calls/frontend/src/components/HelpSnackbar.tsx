@@ -22,6 +22,8 @@ const EN_STRINGS = {
       <Link href="https://callhome.sg/#new-call-limit">FAQ page</Link>
     </>
   ),
+  HELP_MESSAGE_WIND_DOWN:
+    'As the world reopens, it’s time for us to phase out Call Home. Please be informed that we will only be supporting calls for the next 2 weeks. You will no longer be able to make outgoing calls from 1st February 2024. Thank you for using our services for the last 3 years!',
 };
 
 const BN_STRINGS = {
@@ -64,14 +66,14 @@ export default function HelpSnackbar({ locale }: { locale: Locale }) {
     setIsOpen(false);
   };
 
-  const helpMessage = featureState?.CREDIT_CAP
-    ? STRINGS[locale].HELP_MESSAGE_CREDIT_CAP
-    : getRandomHelpMessage(locale);
+  // const helpMessage = featureState?.CREDIT_CAP
+  //   ? STRINGS[locale].HELP_MESSAGE_CREDIT_CAP
+  //   : getRandomHelpMessage(locale);
 
   return (
     <Snackbar open={isOpen} onClose={handleClose}>
       <Alert onClose={handleClose as any} severity="warning">
-        {helpMessage}
+        {STRINGS[locale].HELP_MESSAGE_WIND_DOWN}
       </Alert>
     </Snackbar>
   );

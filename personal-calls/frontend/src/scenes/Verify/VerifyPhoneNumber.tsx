@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import {
   Container as ContainerWrong,
   Footer,
+  HelpSnackbar,
   PrimaryButton,
   PhoneNumberMasks,
 } from 'components';
@@ -51,6 +52,7 @@ export default function VerifyPhoneNumber({ locale }: SceneProps) {
 
   return (
     <Container>
+      <HelpSnackbar locale={locale} />
       <form onSubmit={onSubmit} style={{ height: '100%' }}>
         <div
           style={{
