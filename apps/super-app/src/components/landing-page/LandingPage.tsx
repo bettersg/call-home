@@ -10,6 +10,7 @@ import {
   SupportDetailStrings,
 } from '../../services';
 import { useLanguage } from '../../utils';
+import { SearchBar } from '..';
 
 import './LandingPage.css';
 
@@ -46,6 +47,7 @@ export function LandingPage() {
       >
         {headerTitle}
       </Typography>
+      <SearchBar />
       {serviceCardDetails.map(({ logo, name, shortBlurb, route }) => (
         <ServiceCard
           logo={logo}
