@@ -11,7 +11,7 @@ export function AppRoutes() {
       <Route path={AppPath.Options} element={<Options />}></Route>
 
       {/* Route through the different services and provide a separate page for each service */}
-      {getServiceCardDetails().map((serviceCardDetail: ServiceCardDetail) => (
+      {getServiceCardDetails('').map((serviceCardDetail: ServiceCardDetail) => (
         <Route
           path={serviceCardDetail.route}
           element={<SupportDetailPage partner={serviceCardDetail.route} />}
