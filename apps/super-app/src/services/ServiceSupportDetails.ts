@@ -90,23 +90,22 @@ const HEALTHSERVE_DETAIL: Record<LanguageOption, SupportDetail> = {
     name: 'HealthServe',
     website: 'https://www.healthserve.org.sg/',
     blurbIntro:
-      'Founded in 2006 on Christian values, HealthServe is an IPC registered charity that seeks to bring healing and hope to vulnerable low-wage migrant workers in Singapore.',
+      `HealthServe provides holistic and affordable care including:
+        1. Medical services such as consultations, chronic disease management, dental or eye check-ups
+        2. Mental health services including a 24-hour helpline
+        3. Casework support and other forms of social assistance`,
     carouselSection: null,
     blurbFacebookLinks: {
-      title: '',
-      imageSrc: '',
+      title: 'Connect with us on Facebook',
+      imageSrc: '/images/facebook-icon.svg',
       links: [
         {
-          href: '',
-          text: '',
-        },
-        {
-          href: '',
-          text: '',
+          href: 'https://www.facebook.com/healthservesg/',
+          text: 'Facebook page',
         },
       ],
     },
-    ctaButtonText: '24-hour mental health hotline',
+    ctaButtonText: 'Call our 24-hour helpline for counselling',
     ctaLink: 'tel:+65%203129%205000',
     ctaIcon: '',
   },
@@ -118,7 +117,12 @@ const AIDHA_DETAIL: Record<LanguageOption, SupportDetail> = {
     name: 'Aidha',
     website: 'https://www.aidha.org/',
     blurbIntro:
-      'Aidha offers courses for helpers in money management, communication, computer and entrepreneurship. Aidha’s mission is to help migrant domestic workers and low-income Singaporean women achieve economic independence through financial education, wealth creation and entrepreneurship. Founded in 2006, Aidha is an award-winning charity with Institution of Public Character (IPC) status. We have 500 students currently enrolled in our programmes.',
+      `Aidha offers courses and resources to help you:
+      1. Plan your finances and future
+      2. Learn technology skills
+      3. Communicate better. 
+      
+      Students of AIDHA programs have started their own businesses, learned important skills to pass on to their children, and found new hobbies and friends.`,
     carouselSection: null,
     blurbFacebookLinks: {
       title: '',
@@ -146,20 +150,16 @@ const HOME_DETAIL: Record<LanguageOption, SupportDetail> = {
     name: 'HOME',
     website: 'https://www.home.org.sg/',
     blurbIntro:
-      'Humanitarian Organization for Migration Economics [“H.O.M.E.”] is a Singapore-based charity founded in 2004 by the late Ms Bridget Tan. HOME is dedicated to empowering and supporting migrant workers who experience abuse and exploitation. We provide immediate crisis intervention as well as long-term support such as education and training programmes to achieve our goal of enhancing the wellbeing and employment prospects of migrant workers. HOME also promotes the diverse voices of migrant workers in Singapore through outreach projects, and public education. Three pillars guide us: Welfare, Empowerment and Advocacy.',
+      'HOME provides direct assistance for survivors of abuse and exploitation, employment advice, and legal aid. In addition, the HOME academy offers skills training for domestic workers.',
     carouselSection: null,
     blurbFacebookLinks: {
       title: '',
-      imageSrc: '',
+      imageSrc: '/images/facebook-icon.svg',
       links: [
         {
-          href: '',
-          text: '',
-        },
-        {
-          href: '',
-          text: '',
-        },
+          href: 'https://www.facebook.com/home.migrants.sg/',
+          text: 'Facebook page',
+        }
       ],
     },
     ctaButtonText: '+65 9787 3122',
@@ -174,7 +174,7 @@ const CDE_DETAIL: Record<LanguageOption, SupportDetail> = {
     name: 'Centre for Domestic Employees (CDE)',
     website: 'https://www.cde.org.sg/wps/portal/cde/home/',
     blurbIntro:
-      'The Centre for Domestic Employees (CDE) promote the fair treatment of all domestic employees in Singapore through issues resolution, humanitarian aid, social integration and support. We can support you in up-skilling and emotional resilience',
+      'CDE can provide assistance and aid if you are facing unfair treatment. They also conduct social activities that help with learning new skills and staying strong emotionally.',
     carouselSection: null,
     blurbFacebookLinks: {
       title: 'Find us on Facebook',
@@ -198,7 +198,9 @@ const FAST_DETAIL: Record<LanguageOption, SupportDetail> = {
     name: 'Foreign Domestic Worker Association for Social Support and Training (FAST)',
     website: 'https://www.fast.org.sg/',
     blurbIntro:
-      'FAST empowers foreign domestic workers through various programs, including skills training, counseling, and community engagement, fostering their well-being and integration into society. FAST also conducts a two-day Onboarding and Integration Programme to help new MDW arrivals adjust and adapt to work life in Singapore, learning life essentials',
+      `FAST offers several social services to help you feel good and assist in times of need. 
+
+      It also has a Clubhouse with various amenities, provides training, and conducts several major events every year.`,
     carouselSection: null,
     blurbFacebookLinks: {
       title: 'Explore our services',
@@ -226,7 +228,7 @@ const FAST_DETAIL: Record<LanguageOption, SupportDetail> = {
         },
       ],
     },
-    ctaButtonText: 'Visit our website for a list of our services',
+    ctaButtonText: 'Access social support services',
     ctaLink: 'https://www.fast.org.sg/social-support',
     ctaIcon: '',
   },
@@ -238,7 +240,7 @@ const HAGAR_DETAIL: Record<LanguageOption, SupportDetail> = {
     name: 'Hagar',
     website: 'https://hagar.org.sg/human-trafficking-in-singapore/',
     blurbIntro:
-      'Hagar Singapore provides holistic support to survivors of human trafficking, offering shelter, counseling, education, and vocational training to empower them towards a new and dignified life.',
+      'Hagar Singapore gives full help to survivors of human trafficking. If you are or know a survivor, they can assist with providing shelter, advice, education, and job training.',
     carouselSection: null,
     blurbFacebookLinks: {
       title: '',
@@ -250,7 +252,7 @@ const HAGAR_DETAIL: Record<LanguageOption, SupportDetail> = {
         },
       ],
     },
-    ctaButtonText: 'Message us on Facebook',
+    ctaButtonText: 'Message Hagar on Facebook',
     ctaLink: 'https://www.facebook.com/HagarSingapore/',
     ctaIcon: '',
   },
@@ -274,7 +276,7 @@ const JWB_DETAIL: Record<LanguageOption, SupportDetail> = {
         },
       ],
     },
-    ctaButtonText: 'We can help you claim compensation',
+    ctaButtonText: 'Check if we can help you get your salary',
     ctaLink: 'https://forjusticewithoutborders.org/get-help/',
     ctaIcon: '',
   },
@@ -310,7 +312,7 @@ const SGACCIDENTHELPCENTRE_DETAIL: Record<LanguageOption, SupportDetail> = {
     name: 'SG Accident Help Centre',
     website: 'https://www.sgaccident.org.sg/about',
     blurbIntro:
-      'We are here for the injured and needy. We want to care for injured migrant workers in the community and teach employed workers on workplace safety and injury prevention',
+      'SG Accident Help Centre offers care and support if you or someone you know are hurt or need help. They also teach about work safety and preventing injuries.',
     carouselSection: null,
     blurbFacebookLinks: {
       title: '',
@@ -334,7 +336,7 @@ const MWC_DETAIL: Record<LanguageOption, SupportDetail> = {
     name: "Migrant Workers' Centre",
     website: 'https://mwc.org.sg/wps/portal/mwc/home/Aboutus/whatwedo',
     blurbIntro:
-      'We can advise you about unfair employment practices and provide shelter and food for those in need. We also provide membership to protect you against critical illness, death, and accidents as well as meaningful benefits',
+      'MWC can advice you about unfair work practices, and provide food and a place to stay. They offer membership to protect you from sickness, accidents, and other problems.',
     carouselSection: null,
     blurbFacebookLinks: {
       title: 'Explore our services',

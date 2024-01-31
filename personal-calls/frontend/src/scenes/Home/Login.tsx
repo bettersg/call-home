@@ -3,7 +3,7 @@ import { withStyles } from 'hack/withStyles';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import { Container, DetectBrowserSnackbar } from 'components';
+import { Container, HelpSnackbar } from 'components';
 import { SceneProps } from 'scenes/types';
 
 import './Login.css';
@@ -68,7 +68,7 @@ export default function Login({ locale }: SceneProps) {
         overflow: 'auto',
       }}
     >
-      <DetectBrowserSnackbar />
+      <HelpSnackbar locale={locale} />
       <div className="login-content">
         <img alt="" src="/images/landing_splash.svg" />
         <Typography style={{ marginTop: '24px' }} variant="h5" component="h1">
