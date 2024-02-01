@@ -19,14 +19,14 @@ export function LandingPage() {
   const [fixedStrings, setFixedStrings] = useState<SupportDetailStrings | null>(
     null
   );
-  const [serviceCardDetails, setServiceCardDetails] = useState<ServiceCardDetail[]>(
-    getServiceCardDetails([])
-  )
+  const [serviceCardDetails, setServiceCardDetails] = useState<
+    ServiceCardDetail[]
+  >(getServiceCardDetails([]));
 
   // function to update the service card details being displayed
   const updateServiceCardDetails = (query: string[]): void => {
     setServiceCardDetails(getServiceCardDetails(query));
-  }
+  };
 
   // Setup initial date for the site and any side-effect hooks
   const [lang] = useLanguage();
@@ -58,7 +58,7 @@ export function LandingPage() {
       >
         {headerTitle}
       </Typography>
-      <SearchBar searchFunction={(updateServiceCardDetails)} />
+      <SearchBar searchFunction={updateServiceCardDetails} />
       {serviceCardDetails.map(({ logo, name, shortBlurb, route }) => (
         <ServiceCard
           logo={logo}

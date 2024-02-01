@@ -37,7 +37,7 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
   };
 }
 
-export function SearchBar({searchFunction}: SearchBarProps) {
+export function SearchBar({ searchFunction }: SearchBarProps) {
   const theme = useTheme();
   const [categories, setCategories] = useState<string[]>([]);
 
@@ -47,19 +47,26 @@ export function SearchBar({searchFunction}: SearchBarProps) {
     } = event;
     setCategories(
       // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value,
+      typeof value === 'string' ? value.split(',') : value
     );
   };
 
   return (
     <FormControl sx={{ marginBottom: 2 }} fullWidth>
-      <InputLabel id="multiple-chip-label">Which services do you need?</InputLabel>
+      <InputLabel id="multiple-chip-label">
+        Which services do you need?
+      </InputLabel>
       <Select
         labelId="mutliple-chip-label"
         multiple
         value={categories}
         onChange={handleChange}
-        input={<OutlinedInput id="select-multiple-chip" label="Which services do you need?" />}
+        input={
+          <OutlinedInput
+            id="select-multiple-chip"
+            label="Which services do you need?"
+          />
+        }
         renderValue={(selected) => (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
             {selected.map((value) => (
@@ -73,7 +80,9 @@ export function SearchBar({searchFunction}: SearchBarProps) {
           searchFunction(categories);
         }}
       >
-        {(Object.keys(searchCategories) as (keyof typeof searchCategories)[]).map((category) => (
+        {(
+          Object.keys(searchCategories) as (keyof typeof searchCategories)[]
+        ).map((category) => (
           <MenuItem
             key={searchCategories[category]}
             value={searchCategories[category]}
@@ -84,5 +93,5 @@ export function SearchBar({searchFunction}: SearchBarProps) {
         ))}
       </Select>
     </FormControl>
-  )
+  );
 }

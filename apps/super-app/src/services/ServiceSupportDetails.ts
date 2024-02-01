@@ -89,8 +89,7 @@ const HEALTHSERVE_DETAIL: Record<LanguageOption, SupportDetail> = {
     logo: 'https://img.paperform.co/fetch/w_400,f_auto/https://s3.amazonaws.com/pf-upload-01/u-40359/1/2019-10-07/xm03ygs/HealthServe%20Logo%20colour.png',
     name: 'HealthServe',
     website: 'https://www.healthserve.org.sg/',
-    blurbIntro:
-      `HealthServe provides holistic and affordable care including:
+    blurbIntro: `HealthServe provides holistic and affordable care including:
         1. Medical services such as consultations, chronic disease management, dental or eye check-ups
         2. Mental health services including a 24-hour helpline
         3. Casework support and other forms of social assistance`,
@@ -116,8 +115,7 @@ const AIDHA_DETAIL: Record<LanguageOption, SupportDetail> = {
     logo: 'https://www.aidha.org/wp-content/uploads/2018/06/logo.jpg',
     name: 'Aidha',
     website: 'https://www.aidha.org/',
-    blurbIntro:
-      `Aidha offers courses and resources to help you:
+    blurbIntro: `Aidha offers courses and resources to help you:
       1. Plan your finances and future
       2. Learn technology skills
       3. Communicate better. 
@@ -159,7 +157,7 @@ const HOME_DETAIL: Record<LanguageOption, SupportDetail> = {
         {
           href: 'https://www.facebook.com/home.migrants.sg/',
           text: 'Facebook page',
-        }
+        },
       ],
     },
     ctaButtonText: '+65 9787 3122',
@@ -197,8 +195,7 @@ const FAST_DETAIL: Record<LanguageOption, SupportDetail> = {
     logo: '/images/fast-logo.png',
     name: 'Foreign Domestic Worker Association for Social Support and Training (FAST)',
     website: 'https://www.fast.org.sg/',
-    blurbIntro:
-      `FAST offers several social services to help you feel good and assist in times of need. 
+    blurbIntro: `FAST offers several social services to help you feel good and assist in times of need. 
 
       It also has a Clubhouse with various amenities, provides training, and conducts several major events every year.`,
     carouselSection: null,
