@@ -50,6 +50,7 @@
 
 .support-description-blurb-section {
   padding-top: 1rem;
+  white-space: pre-line;
 }
 
 .support-description-blurb-facebook-link {

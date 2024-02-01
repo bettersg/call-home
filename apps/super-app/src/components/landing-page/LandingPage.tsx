@@ -10,13 +10,25 @@ import {
   SupportDetailStrings,
 } from '../../services';
 import { useLanguage } from '../../utils';
+import { SearchBar } from '..';
 
 import './LandingPage.css';
 
 export function LandingPage() {
+  // Set up states for the functional component
   const [fixedStrings, setFixedStrings] = useState<SupportDetailStrings | null>(
     null
   );
+  const [serviceCardDetails, setServiceCardDetails] = useState<
+    ServiceCardDetail[]
+  >(getServiceCardDetails([]));
+
+  // function to update the service card details being displayed
+  const updateServiceCardDetails = (query: string[]): void => {
+    setServiceCardDetails(getServiceCardDetails(query));
+  };
+
+  // Setup initial date for the site and any side-effect hooks
   const [lang] = useLanguage();
   useEffect(() => {
     setFixedStrings(getSupportDetailStrings(lang));
@@ -26,7 +38,7 @@ export function LandingPage() {
     return null;
   }
   const { headerTitle } = fixedStrings;
-  const serviceCardDetails: ServiceCardDetail[] = getServiceCardDetails();
+
   return (
     <NavBarContainer
       containerStyle={{
@@ -46,6 +58,7 @@ export function LandingPage() {
       >
         {headerTitle}
       </Typography>
+      <SearchBar searchFunction={updateServiceCardDetails} />
       {serviceCardDetails.map(({ logo, name, shortBlurb, route }) => (
         <ServiceCard
           logo={logo}
