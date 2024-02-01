@@ -20,11 +20,11 @@ export function LandingPage() {
     null
   );
   const [serviceCardDetails, setServiceCardDetails] = useState<ServiceCardDetail[]>(
-    getServiceCardDetails('')
+    getServiceCardDetails([])
   )
 
   // function to update the service card details being displayed
-  const updateServiceCardDetails = (query: string): void => {
+  const updateServiceCardDetails = (query: string[]): void => {
     setServiceCardDetails(getServiceCardDetails(query));
   }
 
@@ -58,7 +58,7 @@ export function LandingPage() {
       >
         {headerTitle}
       </Typography>
-      <SearchBar searchFunction={updateServiceCardDetails} />
+      <SearchBar searchFunction={(updateServiceCardDetails)} />
       {serviceCardDetails.map(({ logo, name, shortBlurb, route }) => (
         <ServiceCard
           logo={logo}
