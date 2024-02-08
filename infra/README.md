@@ -8,9 +8,10 @@ Run `make gcloud-login` to login using `gcloud` if you are not logged in already
 
 ### Using Terraform
 
-Run `make init` to set up terraform using the remote state hosted on GCS.
+Configure whether you're deploying to staging or production by setting the
+`ENVIRONMENT` env variable to either `staging` (default) or `prod`.
 
-In `staging/` or `production/`, configure your database username and password in `secret.tfvars`.
+Run `make init` to set up terraform using the remote state hosted on GCS.
 
 ### Deployment
 
