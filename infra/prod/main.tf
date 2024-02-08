@@ -4,7 +4,7 @@
 
 variable "project_id" {
   type = string
-  default = "call-home-staging"
+  default = "call-home-prod"
 }
 
 variable "location" {
@@ -16,12 +16,12 @@ variable "location" {
 // Over time, we want to move the variable creation to a variable.tfvars file.
 variable "frontend_bucket_name" {
   type = string
-  default = "call-home-frontend"
+  default = "call-home-frontend-prod"
 }
 
 variable "website_domain_name" {
   type = string
-  default = "app2-staging.callhome.sg"
+  default = "app2.callhome.sg"
 }
 
 ######################
