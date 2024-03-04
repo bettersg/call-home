@@ -18,12 +18,18 @@ const EN_STRINGS = {
     <>
       Call Home is working on some exciting new features! To give us time to
       develop the features, from 01 August 2022, each user will now get 80
-      minutes each month. Learn more at our&nbsp;
+      minutes each month. Learn more at our
       <Link href="https://callhome.sg/#new-call-limit">FAQ page</Link>
     </>
   ),
-  HELP_MESSAGE_WIND_DOWN:
-    'As the world reopens, it’s time for us to phase out Call Home. Please be informed that we will only be supporting calls for the next 2 weeks. You will no longer be able to make outgoing calls from 1st February 2024. Thank you for using our services for the last 3 years!',
+  HELP_MESSAGE_WIND_DOWN: (
+    <>
+      As the world reopens, we're shifting our focus towards making you feel more
+      safe and supported in Singapore. Therefore, please be informed that we will only
+      be supporting calls until May 2024. Thank you for using our services for the last
+      3 years, and please explore the new&nbsp;<Link href="app2-staging.callhome.sg ">Call Home</Link>!
+    </> 
+  ),
 };
 
 const BN_STRINGS = {
