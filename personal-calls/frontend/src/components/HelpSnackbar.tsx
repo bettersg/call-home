@@ -27,7 +27,7 @@ const EN_STRINGS = {
       As the world reopens, we're shifting our focus towards making you feel more
       safe and supported in Singapore. Therefore, please be informed that we will only
       be supporting calls until May 2024. Thank you for using our services for the last
-      3 years, and please explore the new&nbsp;<Link href="app2-staging.callhome.sg ">Call Home</Link>!
+      3 years, and please explore the new&nbsp;<Link href="https://app2-staging.callhome.sg/">Call Home</Link>!
     </> 
   ),
 };
